@@ -1,0 +1,155 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/4_sample.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> 4_sample.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"flags"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#008000>; this sample shows how cmp instruction sets the flags. </font>
+
+<font color=#008000>; usually cmp instruction is followed by any relative </font>
+<font color=#008000>; jump instruction such as: je, ja, jl, jae... </font>
+
+<font color=#008000>; it is recommended to click "flags" and "analyze" </font>
+<font color=#008000>; for better visual expirience before stepping through this code. </font>
+
+<font color=#008000>; (signed/unsigned) </font>
+<font color=#008000>; 4 is equal to 4 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 4
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 4
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; (signed/unsigned) </font>
+<font color=#008000>; 4 is above and greater then 3 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 4
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 3
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; -5 = 251 = 0fbh </font>
+
+<font color=#008000>; (signed) </font>
+<font color=#008000>; 1 is greater then -5 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#0064C8>-</font>5
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; (unsigned) </font>
+<font color=#008000>; 1 is below 251 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 251
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; (signed) </font>
+<font color=#008000>; -3 is less then -2 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, <font color=#0064C8>-</font>3
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#0064C8>-</font>2
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; (signed) </font>
+<font color=#008000>; -2 is greater then -3 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, <font color=#0064C8>-</font>2
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#0064C8>-</font>3
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; (unsigned) </font>
+<font color=#008000>; 255 is above 1 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 255
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1
+<font color=#0000FF>cmp</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+<font color=#0000FF>nop</font>
+
+<font color=#008000>; now a little game: </font>
+game:  <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg1
+       <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+       <font color=#0000FF>int</font> 21h
+
+       <font color=#008000>; read character in al: </font>
+       <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+       <font color=#0000FF>int</font> 21h
+
+       <font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'0'</font>
+       <font color=#0000FF>jb</font> stop
+
+       <font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'9'</font>
+       <font color=#0000FF>ja</font> stop
+
+       <font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'5'</font>
+       <font color=#0000FF>jb</font> below
+       <font color=#0000FF>ja</font> above
+       <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> equal_5
+       <font color=#0000FF>jmp</font> print
+below: <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> below_5
+       <font color=#0000FF>jmp</font> print
+above: <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> above_5
+print: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+       <font color=#0000FF>int</font> 21h
+       <font color=#0000FF>jmp</font> game  <font color=#008000>; loop. </font>
+
+
+stop: <font color=#0000FF>ret</font>  <font color=#008000>; stop </font>
+
+
+msg1 <font color=#000064>db</font> <font color=#800080>"enter a number or any other character to exit:  $"</font>
+equal_5 <font color=#000064>db</font> <font color=#800080>" is five! (equal)"</font>, 0Dh,0Ah, <font color=#800080>"$"</font>
+below_5 <font color=#000064>db</font> <font color=#800080>" is below five!"</font> , 0Dh,0Ah, <font color=#800080>"$"</font>
+above_5 <font color=#000064>db</font> <font color=#800080>" is above five!"</font> , 0Dh,0Ah, <font color=#800080>"$"</font>
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/4_sample.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,288 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/simplest.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> simplest.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; simplest virtual device for emu8086 in pure assembly code.... </font>
+
+<font color=#008000>; this example reads and sends ascii codes to virtual port 3. </font>
+
+
+<font color=#008000>; for real test, it is required to compile this code and run it outside </font>
+<font color=#008000>; of the emulator (external-&gt;run). if you copy the compiled file to c:\emu8086\devices\ </font>
+<font color=#008000>; folder it will start automatically. when simplest.com is running it's possible </font>
+<font color=#008000>; to see the interraction with the emulator using this code: </font>
+
+<font color=#008000>;        #start=simplest.com# </font>
+<font color=#008000>;        mov al, 'a' </font>
+<font color=#008000>;        send_byte: </font>
+<font color=#008000>;        out 3, al </font>
+<font color=#008000>;        inc al </font>
+<font color=#008000>;        jmp send_byte </font>
+<font color=#008000>;        end </font>
+
+<font color=#008000>;; note: you can uncomment block of code by selecting it and clicking edit-&gt;uncomment block. </font>
+
+
+name <font color=#800080>"simplest"</font>
+
+<font color=#000064>org</font> 100h
+
+
+
+
+<font color=#0000FF>jmp</font> start
+
+
+filename <font color=#000064>db</font> <font color=#800080>"c:\emu8086.io"</font>, 0      <font color=#008000>; note: for the emulator this path is c:\emu8086\c\emu8086.io </font>
+handle <font color=#000064>dw</font> ?
+
+print <font color=#0000FF>macro</font> x, y, attrib, sdat
+LOCAL   s_dcl, skip_dcl, s_dcl_end
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#800000>cs</font>
+    <font color=#0000FF>mov</font> <font color=#800000>es</font>, <font color=#C80000>dx</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 13h
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1
+    <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0
+    <font color=#0000FF>mov</font> <font color=#C80000>bl</font>, attrib
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, <font color=#000064>offset</font> s_dcl_end <font color=#0064C8>-</font> <font color=#000064>offset</font> s_dcl
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, x
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, y
+    <font color=#0000FF>mov</font> <font color=#C80000>bp</font>, <font color=#000064>offset</font> s_dcl
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>popa</font>
+    <font color=#0000FF>jmp</font> skip_dcl
+    s_dcl <font color=#000064>DB</font> sdat
+    s_dcl_end <font color=#000064>DB</font> 0
+    skip_dcl:
+endm
+
+
+clear_screen <font color=#0000FF>macro</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0600h
+    <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0000_1111b
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, 24
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 79
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>popa</font>
+endm
+
+
+
+start:
+clear_screen
+<font color=#0000FF>call</font> create_if_missing
+
+simplest:
+print 1,1,0010_1111b, <font color=#800080>" simplest virtual device for emu8086 "</font>
+print 1,2,0010_1111b, <font color=#800080>" press esc to exit - press enter to get byte without sending "</font>
+read_byte:
+print 1,4,0010_1010b, <font color=#800080>" get byte from virtual port 0 ---&gt; "</font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, 3
+<font color=#0000FF>call</font> get_byte_from_port
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2
+<font color=#0000FF>int</font> 21h
+write_byte:
+print 1,5,0010_1010b, <font color=#800080>" send byte  to virtual port 0 ---&gt; "</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 27 <font color=#008000>; esc? </font>
+<font color=#0000FF>je</font> stop
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 0dh <font color=#008000>; enter? </font>
+<font color=#0000FF>je</font> just_get
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, 3
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#C80000>al</font>
+<font color=#0000FF>call</font> send_byte_to_port
+just_get:
+<font color=#0000FF>call</font> wait_a_bit
+clear_screen
+<font color=#0000FF>jmp</font> simplest
+
+stop:
+clear_screen
+print 1,1,1110_0000b, <font color=#800080>" simplest virtual device stoped "</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 0ah
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 0dh
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>ret</font>
+
+
+
+
+
+<font color=#008000>; entry: bx - port number </font>
+<font color=#008000>; return: dl - value </font>
+get_byte_from_port <font color=#0000FF>proc</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> i_port, <font color=#C80000>bx</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 2
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3dh
+	<font color=#0000FF>int</font> 21h   <font color=#008000>; open... </font>
+	<font color=#0000FF>jnc</font> kg
+	print 1,7,0000_1100b, <font color=#800080>"  cannot open c:\emu8086.io      "</font>
+	<font color=#0000FF>jmp</font> err_i
+	kg:
+	<font color=#0000FF>mov</font> handle, <font color=#C80000>ax</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, i_port
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 42h
+	<font color=#0000FF>int</font> 21h <font color=#008000>; seek...	 </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> i_byte
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 1
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3fh
+	<font color=#0000FF>int</font> 21h <font color=#008000>; read byte from file... </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+	<font color=#0000FF>int</font> 21h <font color=#008000>; close file...	 </font>
+err_i:
+	<font color=#0000FF>popa</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, i_byte <font color=#008000>; return. </font>
+	<font color=#0000FF>ret</font>
+	i_port <font color=#000064>dw</font> ?
+	i_byte <font color=#000064>db</font> ?
+endp
+
+
+
+
+
+
+<font color=#008000>; entry: bx - port number </font>
+<font color=#008000>;        dl - value </font>
+send_byte_to_port <font color=#0000FF>proc</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> o_port, <font color=#C80000>bx</font>
+    <font color=#0000FF>mov</font> o_byte, <font color=#C80000>dl</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 2
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3dh
+	<font color=#0000FF>int</font> 21h   <font color=#008000>; open... </font>
+	<font color=#0000FF>jnc</font> ks
+	print 1,7,0000_1100b, <font color=#800080>"  cannot open c:\emu8086.io      "</font>
+	<font color=#0000FF>jmp</font> err_s
+	ks:
+	<font color=#0000FF>mov</font> handle, <font color=#C80000>ax</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, o_port
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 42h
+	<font color=#0000FF>int</font> 21h <font color=#008000>; seek...	 </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> o_byte
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 1
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 40h
+	<font color=#0000FF>int</font> 21h <font color=#008000>; write to file... </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+	<font color=#0000FF>int</font> 21h <font color=#008000>; close file... </font>
+err_s:
+	<font color=#0000FF>popa</font>
+	<font color=#0000FF>ret</font>
+	o_port <font color=#000064>dw</font> ?
+	o_byte <font color=#000064>db</font> ?
+endp
+
+
+
+
+create_if_missing <font color=#0000FF>proc</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 43h
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0
+    <font color=#0000FF>int</font> 21h  <font color=#008000>; get attributes. </font>
+    <font color=#0000FF>jc</font> create:
+    <font color=#0000FF>jmp</font> ok_f
+create:
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3ch
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+	<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3ch
+	<font color=#0000FF>int</font> 21h  <font color=#008000>; create... </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, <font color=#C80000>ax</font>
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+	<font color=#0000FF>int</font> 21h  <font color=#008000>; close... </font>
+ok_f:
+    <font color=#0000FF>popa</font>
+    <font color=#0000FF>ret</font>
+endp
+
+
+
+wait_a_bit <font color=#0000FF>proc</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2ch
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>mov</font> orig_secs, <font color=#C80000>dh</font>
+    wait_more:
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2ch
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>cmp</font> orig_secs, <font color=#C80000>dh</font>
+    <font color=#0000FF>je</font> wait_more
+    <font color=#0000FF>popa</font>
+    <font color=#0000FF>ret</font>
+    orig_secs <font color=#000064>db</font> ?
+endp
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/simplest.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

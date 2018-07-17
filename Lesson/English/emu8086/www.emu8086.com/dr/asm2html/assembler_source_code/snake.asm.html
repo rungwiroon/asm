@@ -1,0 +1,314 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/snake.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> snake.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this is the screen eating snake game... </font>
+<font color=#008000>; </font>
+<font color=#008000>; this game pushes the emulator to its limits, </font>
+<font color=#008000>; and even with maximum speed it still runs slowly. </font>
+<font color=#008000>; to enjoy this game it's recommended to run it on real </font>
+<font color=#008000>; computer, however the emulator can be useful to debug </font>
+<font color=#008000>; tiny games and other similar programs such as this before </font>
+<font color=#008000>; they become bug-free and workable. </font>
+<font color=#008000>; </font>
+<font color=#008000>; you can control the snake using arrow keys on your keyboard. </font>
+<font color=#008000>; </font>
+<font color=#008000>; all other keys will stop the snake. </font>
+<font color=#008000>; </font>
+<font color=#008000>; press esc to exit. </font>
+
+
+name <font color=#800080>"snake"</font>
+
+<font color=#000064>org</font>     100h
+
+<font color=#008000>; jump over data section: </font>
+<font color=#0000FF>jmp</font>     start
+
+<font color=#008000>; ------ data section ------ </font>
+
+s_size  <font color=#000064>equ</font>     7
+
+<font color=#008000>; the snake coordinates </font>
+<font color=#008000>; (from head to tail) </font>
+<font color=#008000>; low byte is left, high byte </font>
+<font color=#008000>; is top - [top, left] </font>
+snake <font color=#000064>dw</font> s_size dup(0)
+
+tail    <font color=#000064>dw</font>      ?
+
+<font color=#008000>; direction constants </font>
+<font color=#008000>;          (bios key codes): </font>
+left    <font color=#000064>equ</font>     4bh
+right   <font color=#000064>equ</font>     4dh
+up      <font color=#000064>equ</font>     48h
+down    <font color=#000064>equ</font>     50h
+
+<font color=#008000>; current snake direction: </font>
+cur_dir <font color=#000064>db</font>      right
+
+wait_time <font color=#000064>dw</font>    0
+
+<font color=#008000>; welcome message </font>
+msg 	<font color=#000064>db</font> <font color=#800080>"==== how to play ===="</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"this game was debugged on emu8086"</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"but it is not designed to run on the emulator"</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"because it requires relatively fast video card and cpu."</font>, 0dh,0ah, 0ah
+
+	<font color=#000064>db</font> <font color=#800080>"if you want to see how this game really works,"</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"run it on a real computer (click external-&gt;run from the menu)."</font>, 0dh,0ah, 0ah
+
+	<font color=#000064>db</font> <font color=#800080>"you can control the snake using arrow keys"</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"all other keys will stop the snake."</font>, 0dh,0ah, 0ah
+
+	<font color=#000064>db</font> <font color=#800080>"press esc to exit."</font>, 0dh,0ah
+	<font color=#000064>db</font> <font color=#800080>"===================="</font>, 0dh,0ah, 0ah
+	<font color=#000064>db</font> <font color=#800080>"press any key to start...$"</font>
+
+<font color=#008000>; ------ code section ------ </font>
+
+start:
+
+<font color=#008000>; print welcome message: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+
+
+<font color=#008000>; wait for any key: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 00h
+<font color=#0000FF>int</font> 16h
+
+
+<font color=#008000>; hide text cursor: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font>     <font color=#C80000>ch</font>, 2bh
+<font color=#0000FF>mov</font>     <font color=#C80000>cl</font>, 0bh
+<font color=#0000FF>int</font>     10h
+
+
+game_loop:
+
+<font color=#008000>; === select first video page </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 0  <font color=#008000>; page number. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 05h
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; === show new head: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>
+
+<font color=#008000>; set cursor at dl,dh </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 02h
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; print '*' at the location: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>'*'</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 09h
+<font color=#0000FF>mov</font>     <font color=#C80000>bl</font>, 0eh <font color=#008000>; attribute. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 1   <font color=#008000>; single char. </font>
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; === keep the tail: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, snake<font color=#0064C8>[</font>s_size <font color=#0064C8>*</font> 2 <font color=#0064C8>-</font> 2<font color=#0064C8>]</font>
+<font color=#0000FF>mov</font>     tail, <font color=#C80000>ax</font>
+
+<font color=#0000FF>call</font>    move_snake
+
+
+<font color=#008000>; === hide old tail: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, tail
+
+<font color=#008000>; set cursor at dl,dh </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 02h
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; print ' ' at the location: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>' '</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 09h
+<font color=#0000FF>mov</font>     <font color=#C80000>bl</font>, 0eh <font color=#008000>; attribute. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 1   <font color=#008000>; single char. </font>
+<font color=#0000FF>int</font>     10h
+
+
+
+check_for_key:
+
+<font color=#008000>; === check for player commands: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 01h
+<font color=#0000FF>int</font>     16h
+<font color=#0000FF>jz</font>      no_key
+
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 00h
+<font color=#0000FF>int</font>     16h
+
+<font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 1bh    <font color=#008000>; esc - key? </font>
+<font color=#0000FF>je</font>      stop_game  <font color=#008000>; </font>
+
+<font color=#0000FF>mov</font>     cur_dir, <font color=#C80000>ah</font>
+
+no_key:
+
+
+
+<font color=#008000>; === wait a few moments here: </font>
+<font color=#008000>; get number of clock ticks </font>
+<font color=#008000>; (about 18 per second) </font>
+<font color=#008000>; since midnight into cx:dx </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 00h
+<font color=#0000FF>int</font>     1ah
+<font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, wait_time
+<font color=#0000FF>jb</font>      check_for_key
+<font color=#0000FF>add</font>     <font color=#C80000>dx</font>, 4
+<font color=#0000FF>mov</font>     wait_time, <font color=#C80000>dx</font>
+
+
+
+<font color=#008000>; === eternal game loop: </font>
+<font color=#0000FF>jmp</font>     game_loop
+
+
+stop_game:
+
+<font color=#008000>; show cursor back: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font>     <font color=#C80000>ch</font>, 0bh
+<font color=#0000FF>mov</font>     <font color=#C80000>cl</font>, 0bh
+<font color=#0000FF>int</font>     10h
+
+<font color=#0000FF>ret</font>
+
+<font color=#008000>; ------ functions section ------ </font>
+
+<font color=#008000>; this procedure creates the </font>
+<font color=#008000>; animation by moving all snake </font>
+<font color=#008000>; body parts one step to tail, </font>
+<font color=#008000>; the old tail goes away: </font>
+<font color=#008000>; [last part (tail)]-&gt; goes away </font>
+<font color=#008000>; [part i] -&gt; [part i+1] </font>
+<font color=#008000>; .... </font>
+
+move_snake <font color=#0000FF>proc</font> near
+
+<font color=#008000>; set es to bios info segment:   </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 40h
+<font color=#0000FF>mov</font>     <font color=#800000>es</font>, <font color=#C80000>ax</font>
+
+  <font color=#008000>; point di to tail </font>
+  <font color=#0000FF>mov</font>   <font color=#C80000>di</font>, s_size <font color=#0064C8>*</font> 2 <font color=#0064C8>-</font> 2
+  <font color=#008000>; move all body parts </font>
+  <font color=#008000>; (last one simply goes away) </font>
+  <font color=#0000FF>mov</font>   <font color=#C80000>cx</font>, s_size<font color=#0064C8>-</font>1
+move_array:
+  <font color=#0000FF>mov</font>   <font color=#C80000>ax</font>, snake<font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>-</font>2<font color=#0064C8>]</font>
+  <font color=#0000FF>mov</font>   snake<font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#C80000>ax</font>
+  <font color=#0000FF>sub</font>   <font color=#C80000>di</font>, 2
+  <font color=#0000FF>loop</font>  move_array
+
+
+<font color=#0000FF>cmp</font>     cur_dir, left
+  <font color=#0000FF>je</font>    move_left
+<font color=#0000FF>cmp</font>     cur_dir, right
+  <font color=#0000FF>je</font>    move_right
+<font color=#0000FF>cmp</font>     cur_dir, up
+  <font color=#0000FF>je</font>    move_up
+<font color=#0000FF>cmp</font>     cur_dir, down
+  <font color=#0000FF>je</font>    move_down
+
+<font color=#0000FF>jmp</font>     stop_move       <font color=#008000>; no direction. </font>
+
+
+move_left:
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>
+  <font color=#0000FF>dec</font>   <font color=#C80000>al</font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>, <font color=#C80000>al</font>
+  <font color=#0000FF>cmp</font>   <font color=#C80000>al</font>, <font color=#0064C8>-</font>1
+  <font color=#0000FF>jne</font>   stop_move
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, <font color=#800000>es</font>:<font color=#0064C8>[</font>4ah<font color=#0064C8>]</font>    <font color=#008000>; col number. </font>
+  <font color=#0000FF>dec</font>   <font color=#C80000>al</font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>, <font color=#C80000>al</font>  <font color=#008000>; return to right. </font>
+  <font color=#0000FF>jmp</font>   stop_move
+
+move_right:
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>
+  <font color=#0000FF>inc</font>   <font color=#C80000>al</font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>, <font color=#C80000>al</font>
+  <font color=#0000FF>cmp</font>   <font color=#C80000>al</font>, <font color=#800000>es</font>:<font color=#0064C8>[</font>4ah<font color=#0064C8>]</font>    <font color=#008000>; col number.    </font>
+  <font color=#0000FF>jb</font>    stop_move
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>0<font color=#0064C8>]</font>, 0   <font color=#008000>; return to left. </font>
+  <font color=#0000FF>jmp</font>   stop_move
+
+move_up:
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>
+  <font color=#0000FF>dec</font>   <font color=#C80000>al</font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>, <font color=#C80000>al</font>
+  <font color=#0000FF>cmp</font>   <font color=#C80000>al</font>, <font color=#0064C8>-</font>1
+  <font color=#0000FF>jne</font>   stop_move
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, <font color=#800000>es</font>:<font color=#0064C8>[</font>84h<font color=#0064C8>]</font>    <font color=#008000>; row number -1. </font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>, <font color=#C80000>al</font>  <font color=#008000>; return to bottom. </font>
+  <font color=#0000FF>jmp</font>   stop_move
+
+move_down:
+  <font color=#0000FF>mov</font>   <font color=#C80000>al</font>, b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>
+  <font color=#0000FF>inc</font>   <font color=#C80000>al</font>
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>, <font color=#C80000>al</font>
+  <font color=#0000FF>cmp</font>   <font color=#C80000>al</font>, <font color=#800000>es</font>:<font color=#0064C8>[</font>84h<font color=#0064C8>]</font>    <font color=#008000>; row number -1. </font>
+  <font color=#0000FF>jbe</font>   stop_move
+  <font color=#0000FF>mov</font>   b.snake<font color=#0064C8>[</font>1<font color=#0064C8>]</font>, 0   <font color=#008000>; return to top. </font>
+  <font color=#0000FF>jmp</font>   stop_move
+
+stop_move:
+  <font color=#0000FF>ret</font>
+move_snake endp
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/snake.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,112 @@
+LESSON7 - PROCEDURES AND MACROS
+
+in assembly as in pascal,c and basic you have the option of using
+procedures, to declare a procedure you do :
+
+Proc name "proc" distance (far/near)
+
+.
+.
+.
+
+ret
+endp ; end proc
+
+and to call the proc you type "Call Procname"
+the ret must come because you have to return to the exact point
+you called the proc from, if you pushed registers and didn't pop them
+it might not return to the calling position.
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ds:cseg,ss:sseg,es:nothing
+
+clearscreen proc near
+
+mov ax,0b800h
+mov es,ax       ; clear the screen, point to screen
+mov di,0
+
+mov ax,0
+mov cx,2000
+rep stosw       ; if don't understand go back to learn
+
+ret             ; try to erase this and see what happends
+
+endp
+
+start :
+
+push ds
+
+call clearscreen
+
+pop ds
+
+mov ax,4c00h
+int 21h
+
+ends
+end start
+end
+
+what is macro, macro is a type of semi procedure, the compiler
+will copy the code of the macro into the calling point
+and therefore increasing the code size and saving a few cycles.
+one problem the macro has is that you can't use labels becase if
+you will and call it number of times there will be duplicate labels
+and the compiler will return error message.
+
+macro declarating :
+Macro name "macro" parameters
+.
+.
+.
+endm ; end macro
+
+to call the macro you just write his name, the parameters
+is values to pass
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ds:cseg,ss:sseg,es:nothing
+
+macro clearscreen amount ; amount is a parameter
+
+mov ax,0b800h
+mov es,ax       ; clear the screen, point to screen
+mov di,0
+
+mov ax,0
+mov cx,amount
+rep stosw       ; if don't understand go back to learn
+
+endm            ; go back
+
+start :
+
+push ds
+
+clearscreen 2000 ; the code will be copied to this point
+
+pop ds
+
+mov ax,4c00h
+int 21h
+
+ends
+end start
+end
+
+so when you write code you will have to deside what's better for you speed
+(not much) or size (it can go up to ....) I usually use procs
+
+a problem comes up, what happend if a want to use procs and save them
+in another file (like unit,lib) and use them in my code, the next
+chapter will disscuss that.

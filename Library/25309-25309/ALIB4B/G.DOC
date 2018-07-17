@@ -1,0 +1,67 @@
+
+                 "G" Go to directory
+                    Version 2.1
+                     04-14-97
+               Freeware by Jeff Owens
+
+                kowens@teleport.com
+
+               
+G.EXE is a directory changer similiar to DOS's CHDRR command.  It
+provides several novel features not found in previous directory
+change prorams, including sorted directories, color coding, TSR
+status, and memory status, etc., plus it is easy to use.  The
+program GSETUP.EXE can be used to select amoung the features
+desired.
+
+The quickest way to see G.EXE in action is to type "G;" and look
+at the displays.  Then execute GSETUP.EXE to see what can be configured.
+
+Summary of parameters:
+
+    Parameter                       Action
+    ---------       ---------------------------------------------------
+     none           G.EXE will move to root directory
+      .             move back one directory
+      ..            move back two directories
+      ?             display help message
+      +             Temp enable of all displays
+      \             root request or optional path separator
+      ;             stay in current directory after displaying status
+    path fragment   input for G.EXE's path search logic
+  
+
+CHANGING DIRECTORIES USING -G.EXE-
+  
+  Path changes can be made using either a NEAR approach or a FAR approach.
+  The near aproach requires only the partial name of the target directory
+  but requires that the directory be within one level of present location.
+  For example if the directory ALPHA is near then it can probably be reached
+  by typeing "G A".
+  The FAR approach views the disk from the root directory and trys to find
+  the path from there. For example if you had a directory:
+                \WINDOWS\ZIPS\GAMES
+  Then the command to get there is "G W Z G" or G WI Z GA" or "G W Z GAM"
+  etc.  The G.EXE program will always try to solve the puzzle you give it.
+
+  The special characters "." can be used to move back one directory.  And
+  the "\" character will move to the root if it is specified by itself.
+
+------------------------------- GSETUP.EXE --------------------------------
+
+The GSETUP.EXE program will configure G.EXE.  The setup
+features are:
+
+    1.  The colors of all displays and directory entries can be
+        changed.
+    2.  Each display type can be disabled or enabled
+    3.  Sorting, Display speed and other flags can be changed.
+
+-----------------------------------history------------------------------------
+
+Version 2.1 Additions:
+
+  The TSR line was improved by adding a display of device drivers loaded.
+  Drivers are displayed in lower case to differentiate between TSR's
+  loaded low.  TSR's loaded high still have a seperate color.
+  

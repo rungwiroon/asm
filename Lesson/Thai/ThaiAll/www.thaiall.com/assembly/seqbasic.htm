@@ -1,0 +1,145 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/seqbasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>การทำงานแบบตามลำดับ (Sequential Processing)</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="sequential,assembly,clear,screen">
+<meta name="description" content="การทำงานแบบตามลำดับ (Sequential Processing)">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+การทำงานแบบตามลำดับ</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2551-09-02 (สลับ 0d,0a)
+<br>
+
+<center><font size=6>พื้นฐานการทำตามลำดับ<br>Sequence</font></center>
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=blue><b>1. พิมพ์ a และ b บรรทัดละตัว แล้ว end</b>
+<font color=gray><dd>เป็นแนวการเขียนโปรแกรมแบบ .exe โปรแกรมที่ได้มีขนาด 548 Byte
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">
+; Memory using : tiny, small, medium, compact, large, huge
+        .model  small   
+        .data
+x1      db      "a",0dh,0ah,'$'
+x2      db      "b",0dh,0ah,'$'
+        .code
+pmain   proc    far
+; for .exe
+        push    ds      ; 1 of 5 line required for end .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+; display 2 character
+        mov     ah,09h
+        lea     dx,x1
+        int     21h
+        mov     ah,09h
+        lea     dx,x2
+        int     21h
+; bye
+        ret             ; Can not use int 20h
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=blue><b>2. พิมพ์ตัวอักษร a และ CF ด้วยวิธีบวกค่าเพิ่มผ่านคำสั่ง add ให้ตัวแปร x2</b>
+<font color=gray><dd>เป็นแนวการเขียนโปรแกรมแบบ .exe โปรแกรมที่ได้มีขนาด 564 Byte
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">
+; Result of this program is a and CF in difference line
+        .model  small   
+        .data
+x1      db      "a",0dh,0ah,'$'
+x2      db      "A",'$'
+        .code
+pmain   proc    far     ; can not change far to near because error on execute
+; for .exe
+        push    ds      ; 1 of 5 line required for end .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+; display 3 character
+        mov     ah,09h
+        lea     dx,x1   ; get a with line feed
+        int     21h
+        mov     ah,09h
+        add     x2,2    ; add A to C
+        lea     dx,x2   ; get C
+        int     21h
+        mov     ah,09h
+        add     x2,3    ; add C to F
+        lea     dx,x2   ; get F
+        int     21h
+; bye
+        ret             ; Can not use int 20h
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=blue><b>3. การ clear screen และ move cursor</b>
+<font color=gray><dd>int 10, ah 06, bh : 0=ดำ 1=น้ำเงิน 2=เขียว 3=ฟ้า 4=แดง 5=ม่วง 6=ทอง 7=เทา 
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">
+        .model small 
+        .data 
+x1      db     "type e or E to Exit",0dh,0ah,'$' 
+        .code 
+pmain   proc   far      ; can not change far to near 
+        push   ds       ; 1 of 5 line required for end .exe 
+        mov    ax,0     ; 2 clear ax by xor ax,ax 
+        push   ax       ; 3 send ax to stack 
+        mov    ax,@data 
+        mov    ds,ax 
+; clear screen 
+        mov    ax,0600h ; al หมายถึงจำนวนบรรทัดที่ว่าง 
+        mov    bh,71h   ; สีของพื้น และตัวอักษร 
+                        ; 0=ดำ 1=น้ำเงิน 2=เขียว 3=ฟ้า 4=แดง 5=ม่วง 6=ทอง 7=เทา 
+        mov    cx,0000h ; มุมบนซ้าย 
+        mov    dx,103fh ; มุมล่างขวา 
+        int    10h 
+; move cursor 
+        mov    ah,02h   ; กำหนดตำแหน่ง cursor 
+        mov    bh,00    ; เลขหน้าเป็น 0 ถึงจะเริ่มบนสุด 
+        mov    dh,02h   ; เริ่มต้นบรรทัดที่ 2  
+        mov    dl,10h   ; เริ่มต้นหลักที่ 16  ( mov dx,0210h ) 
+        int    10h 
+finish: ret 
+pmain   endp 
+        end    pmain 
+</table>
+<hr color=black>
+
+
+<center>
+<script language=JavaScript>
+<!--
+url = document.location.href.substr(7,11)
+page = "assembly_seqbasic"
+if (url == "lampang.thc" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if (url == "www.yonok.a" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if (url == "www.thaiall" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if (url == "www.thainam" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/h0013970.js'></script>")
+if (url == "www.thaiabc" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/h0014200.js'></script>")
+if (url == "www.perlphp" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if (url == "thaiall.kor") document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+if (url == "202.29.78.2" ) document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/i0015336.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/seqbasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+</html>

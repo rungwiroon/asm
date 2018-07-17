@@ -1,0 +1,131 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/matrix.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> matrix.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; matrix transpose sample (reverse rows with columns). </font>
+
+name <font color=#800080>"matrix"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start <font color=#008000>; go to code... </font>
+
+msg <font color=#000064>db</font> <font color=#800080>"to the view matrix click vars button,"</font>, 0dh,0ah
+    <font color=#000064>db</font> <font color=#800080>" and set elements property to 3 for these items:"</font>, 0dh,0ah, 0ah
+    <font color=#000064>db</font> <font color=#800080>"   matrix    "</font>, 0dh,0ah
+    <font color=#000064>db</font> <font color=#800080>"   row1      "</font>, 0dh,0ah
+    <font color=#000064>db</font> <font color=#800080>"   row2      "</font>, 0dh,0ah, 0dh,0ah
+    <font color=#000064>db</font> <font color=#800080>"or add print-out support to this program..."</font>, 0dh,0ah, <font color=#800080>'$'</font>
+
+matrix_size <font color=#000064>equ</font> 3
+
+<font color=#008000>; ----- matrix ------ </font>
+matrix     <font color=#000064>db</font> 1,2,3
+row1       <font color=#000064>db</font> 4,5,6
+row2       <font color=#000064>db</font> 7,8,9
+<font color=#008000>;-------------------- </font>
+
+i <font color=#000064>dw</font> ?
+j <font color=#000064>dw</font> ?
+
+start:
+<font color=#0000FF>mov</font> i, 0
+next_i:
+
+	<font color=#008000>; j = i + 1 </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, i
+	<font color=#0000FF>inc</font> <font color=#C80000>cx</font>
+	<font color=#0000FF>mov</font> j, <font color=#C80000>cx</font>
+	next_j:
+
+		<font color=#0000FF>mov</font> <font color=#C80000>si</font>, i
+		<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, j
+
+		<font color=#0000FF>mov</font> <font color=#C80000>al</font>, matrix_size
+		<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, <font color=#C80000>si</font>
+		<font color=#0000FF>mul</font> <font color=#C80000>cl</font>
+		<font color=#0000FF>mov</font> <font color=#C80000>si</font>, <font color=#C80000>ax</font>
+		<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, matrix<font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font><font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>
+
+		<font color=#0000FF>mov</font> <font color=#C80000>si</font>, i
+		<font color=#0000FF>mov</font> <font color=#C80000>al</font>, matrix_size
+		<font color=#0000FF>mul</font> <font color=#C80000>bl</font>
+		<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, <font color=#C80000>ax</font>
+		<font color=#0000FF>xchg</font> matrix<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font><font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>, <font color=#C80000>dl</font>
+
+		<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, j
+		<font color=#0000FF>mov</font> <font color=#C80000>al</font>, matrix_size
+		<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, <font color=#C80000>si</font>
+		<font color=#0000FF>mul</font> <font color=#C80000>cl</font>
+		<font color=#0000FF>mov</font> <font color=#C80000>si</font>, <font color=#C80000>ax</font>
+		<font color=#0000FF>mov</font> matrix<font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font><font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>, <font color=#C80000>dl</font>
+
+	<font color=#0000FF>inc</font> j
+	<font color=#0000FF>cmp</font> j, matrix_size
+	<font color=#0000FF>jb</font> next_j
+<font color=#0000FF>inc</font> i
+<font color=#0000FF>cmp</font> i, matrix_size<font color=#0064C8>/</font>2
+<font color=#0000FF>jbe</font> next_i
+
+
+<font color=#008000>; print message.... </font>
+<font color=#0000FF>lea</font> <font color=#C80000>dx</font>, msg
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; wait for any key press... </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+<font color=#0000FF>ret</font>
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/matrix.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,1 @@
+sprite.exe test.txt

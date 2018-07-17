@@ -1,0 +1,88 @@
+LESSON6 - MEMORY MOVING
+
+lets say I want to move from one memory point to another lets say
+for now the text screen, (seg is 0b800h and it's size is 4000 bytes)
+
+so we have to use some very special command :
+
+MOVSB       - Moves string byte, moves one byte from DS:SI to ES:DI and if
+              the CF is 0 (CLD is the command thats set is to 0) then
+              both si and di are incremented, if CF is 1 then (STD)
+              si and di are decremented.
+MOVSW       - Moves string word, moves one word (2 bytes) from DS:SI to ES:DI
+              the method of incrementing is the same like movsb just it does
+              it by 2 and by 1 byte.
+REP command - Repeats a certain command lets say "rep movsw" it will preform
+              movsw in a loop and which cx defines how much, if cx is 10 then
+              the movsw will be done 10 times.
+
+now after we know those command lets implement them !!!!!!!!!!!!!!!!!
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ss:sseg,ds:cseg,es:nothing
+
+buf   db 4000 dup (?)
+
+start :
+
+push ds        ; we must save it
+
+mov ax,seg buf ; we cannot type into segment registers directly
+mov ds,ax      ; it goes into simple register and then to the segment
+mov si,offset buf
+
+mov ax,0b800h  ; adress of screen
+mov es,ax
+mov di,0
+
+mov cx,2000    ; to speed up use movsw (4000 bytes/2)
+rep movsw
+
+pop ds
+
+mov ax,4c00h
+int 21h
+ends
+end start
+end
+
+and thats is, but what I will do if I want lets say clear the memory
+with out using buffer or clearing the buffer it self ????
+
+STOSB - Store string byte, stores al in ES:DI if the CF is 0 then
+        di is incremented, if CF is 1 then di is decremented.
+STOSW - Store string word, stores ax in ES:DI if the CF is 0 then
+        di is incremented, (by 2) if CF is 1 then di is decremented (by 2).
+                                                               ^
+now the procedure is almost the same as the moving of a buffer ³
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ss:sseg,ds:cseg,es:nothing
+
+start :
+
+push ds        ; we must save it
+
+mov ax,0b800h  ; adress of screen
+mov es,ax
+mov di,0
+
+mov cx,2000    ; to speed up use movsw (4000 bytes/2)
+mov ax,0       ; we want to clear it
+rep stosw      ; stores ax 2000 times in ES:DI (screen)
+
+pop ds
+
+mov ax,4c00h
+int 21h
+ends
+end start
+end

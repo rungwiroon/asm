@@ -1,0 +1,516 @@
+
+***********************  FLOATING-POINT DATA  *******************************
+
+ASM32 floating-point data subroutines (C) Copyright 1994 Douglas Herr
+all rights reserved
+
+ASM32 recognizes two floating point formats: IEEE-standard single-
+precision, and IEEE-standard double-precision.  Single-precision
+floating point numbers are 4 bytes long, and are referred to as float4
+or simply f4, while double-precision floating point numbers are 8 bytes
+long, which I describe as float8 or f8.  This is the format used by the
+Intel 80x87 math coprocessors.
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ABSF4:     absolute value of float4 number
+Source:    absf4.asm
+
+Call with: DS:[EBX] pointing to 4-byte real number
+Returns:   number converted to absolute value
+Uses:      flags
+
+Example:
+
+include model.inc
+
+extrn   absf4:near
+
+include dataseg.inc
+f4      dd -123.456
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea     ebx,f4           ; point to 4-byte real number
+        call    absf4            ; convert to absolute value
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ABSF8:     absolute value of float8 number
+Source:    absf8.asm
+
+Call with: DS:[EBX] pointing to 8-byte real number
+Returns:   number converted to absolute value
+Uses:      flags
+
+Example:
+
+include model.inc
+
+extrn   absf8:near
+
+include dataseg.inc
+f8      dd -123.456789
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea     bx,f8            ; point to 8-byte real number
+        call    absf8            ; convert to absolute value
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ADDF4:     add two float4 numbers
+Source:    addf4.asm
+
+80x87 not required; no OS dependancies
+
+Call with: DS:[ESI] pointing to number0, ES:[EDI] pointing to number1
+           both numbers must be float4 numbers in IEEE format
+Returns:   if CF = 0, number0 is replaced by the sum
+           if CF = 1, the sum would result in an overflow or underflow;
+              neither number is changed
+Uses:      flags
+
+Example:
+
+include model.inc
+
+extrn addf4:near
+
+include dataseg.inc
+number0 dd 123.456
+number1 dd -67.4
+
+include codeseg.inc
+         .
+         .
+         .
+        push    ds
+        pop     es           ; ES = DS
+        lea     esi,number0
+        lea     edi,number1
+        call    addf4
+
+; note that this can be used for subtraction by changing the sign
+; of one of the numbers.
+;
+; changing the sign is trivial: if DS:[ESI] points to a float4 number,
+; the sign is changed with
+;
+;      xor    byte ptr 3[esi],10000000b
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ADDF8:     add two float8 numbers
+Source:    addf8.asm
+
+80x87 not required; no OS dependancies
+
+Call with: DS:[ESI] pointing to number0, ES:[EDI] pointing to number1
+           both numbers must be float8 numbers in IEEE format
+Returns:   if CF = 0, number0 is replaced by the sum
+           if CF = 1, the sum would result in an overflow or underflow;
+              neither number is changed
+Uses:      CF
+
+Example:
+
+include model.inc
+
+extrn addf8:near
+
+include dataseg.inc
+number0 dq 123.456e16
+number1 dq -67.407865
+
+include codeseg.inc
+         .
+         .
+         .
+        push    ds
+        pop     es           ; ES = DS
+        lea     esi,number0
+        lea     edi,number1
+        call    addf4
+
+; note that this can be used for subtraction by changing the sign
+; of one of the numbers.
+;
+; changing the sign is trivial: if DS:[ESI] points to a float8 number,
+; the sign is changed with
+;
+;      xor    byte ptr 7[esi],10000000b
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+CMPF4:      compare two float4 numbers
+Source:     cmpf4.asm
+
+CMPF8:      compare two float8 numbers
+Source:     cmpf8.asm
+
+80x87 NOT required
+
+Call with:  ESI pointing to number 0
+            EDI pointing to number 1
+Returns:    if ZF = 1, numbers are equal
+            if SF = 1, number 1 is larger
+Uses:       zero flag (ZF), sign flag (SF)
+Example:
+
+extrn   cmpf4:near
+
+
+include dataseg.inc
+
+v0      dd 12.345
+v1      dd 17.04
+
+@curseg ends
+
+include codeseg.inc
+
+         .
+         .
+         .
+        lea    esi,v0            ; point ESI to number 0
+        lea    edi,v1            ; point EDI to number 1
+        call   cmpf4             ; compare
+        js     number1           ; v1 is larger if SF = 1
+        je     equal             ; numbers identical if ZF = 1
+                                  ; otherwise v0 is larger
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+F4TOI2:     copies the integer portion of a float4 number to AX
+Source:     f4toi2.asm
+
+80x87 not required
+
+Note:       only the integer portion of the number is converted; decimals
+            are truncated
+Call with:  ESI pointing to a float4 number
+Returns:    if CF = 0, AX = integer number
+            if CF = 1, float4 number is too large (if positive)
+                       or is too small (if negtive)
+Uses:       AX, CF; all other flags and registers are saved
+Example:
+
+
+extrn   f4toi2:near
+
+include dataseg.inc
+
+float4  dd  1234.567
+
+@curseg ends
+
+include codeseg.inc
+
+        .
+        .
+        .
+        lea  esi,float4
+        call f4toi2
+        jc   oops                     ; gotta fix something if error
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+F4TOI4:     copies the long integer portion of a float4 number to EAX
+Source:     f4toi4.asm
+
+80x87 not required
+
+Note:       only the integer portion of the number is converted; decimals
+            are truncated
+Call with:  ESI pointing to a float4 number
+Returns:    if CF = 0, EAX = long integer number
+            if CF = 1, float4 number is too large (if positive)
+                       or is too small (if negtive)
+Uses:       EAX, CF; all other flags and registers are saved
+Example:
+
+extrn   f4toi4:near
+
+include dataseg.inc
+
+float4  dd  1234.567
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea    esi,float4
+        call   f4toi4
+        jc     oops                   ; gotta fix something if error
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+I4TOF4:     convert 4-byte integer to float4 IEEE format
+Source:     i4tof4.asm
+
+80x87 not required
+
+Call with:  DS:[EBX] pointing to 4-byte buffer for float4 number
+            EAX = signed integer number to convert
+Returns:    converted number in float4 IEEE format at DS:[EBX]
+Uses:       nothing; all registers and flags are saved
+Example:
+
+include model.inc
+
+extrn   i4tof4:near
+
+include dataseg.inc
+float4  dd ?                          ; initial number undefined
+longint dd -123456789
+
+include codeseg.inc
+        .
+        .
+        .
+        mov    eax,longint       ; signed integer
+        lea    ebx,float4        ; point to buffer for converted number
+        call   i4tof4
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MAXF4, MAXF4b: find maximum value in single-precision real-number array
+Source:        maxf4.asm
+
+MINF4, MINF4b: find minimum value in single-precision real-number array
+Source:        minf4.asm
+
+80x87 not required
+
+Call with:  EDI pointing to array element at start of search
+            ECX = number of array elements to search
+            For maxf4b or minf4b, call with EBX = byte increment between
+            array elements.  Maxf4 and minf4 assume byte increment = 4.
+Returns:    EAX = array element number with maximum or minimum value
+            note that the offset of that number is EDI + (EAX shl 2).
+            With maxf4b and minf4b, the offset of the number is
+            EDI + (EAX * EBX).  CF = 1 if called with ECX = 0.
+Uses:       EAX, CF
+Example:
+
+extrn  maxf4:near
+
+include dataseg.inc
+
+floatdata   dd 1500 dup(0)
+
+@curseg ends
+
+include codeseg.inc
+
+; program provides values for the array
+       .
+       .
+       .
+       lea    edi,floatdata      ; EDI points to the data array
+       mov    ecx,1500           ; search entire array
+       call   maxf4              ; returns with EAX = array element
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MAXF8, MAXF8b: find maximum value in double-precision real-number array
+Source:        maxf8.asm
+
+MINF8, MINF8b: find minimum value in double-precision real-number array
+Source:        minf8.asm
+
+80x87 not required
+
+Call with:  EDI pointing to array element at start of search
+            ECX = number of array elements to search
+            For maxf8b or minf8b, call with EBX = byte increment between
+            array elements.  Maxf8 and minf8 assume byte increment = 8.
+Returns:    EAX = array element number with maximum or minimum value
+            note that the offset of that number is EDI + (EAX shl 3)
+            With maxf8b and minf8b, the offset of the number is
+            EDI + (EAX * EBX).  CF = 1 if called with ECX = 0.
+Uses:       EAX, CF
+Example:
+
+extrn  maxf8:near
+
+include dataseg.inc
+
+floatdata   dq 1500 dup(0)
+
+@curseg ends
+
+include codeseg.inc
+
+; program provides values for the array
+       .
+       .
+       .
+       lea    edi,floatdata      ; EDI points to the data array
+       mov    ecx,1500           ; search entire array
+       call   maxf8              ; returns with EAX = array element
+       shl    eax,3
+       add    edi,eax            ; EDI points to maximum value
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MULF4:      multiplies two float4 numbers
+Source:     mulf4.asm
+
+80x87 not required
+
+Call with:  DS:[ESI] pointing to number0, ES:[EDI] pointing to number1
+Returns:    if CF = 0, no error; product replaces number0 at DS:[ESI]
+            if CF = 1, the product is either zero or infinity (number0 is lost)
+Uses:       CF; all other flags and registers are saved
+Example:
+
+include model.inc
+
+extrn   mulf4:near
+
+include dataseg.inc
+number0 dd 1.234
+number1 dd 0.5
+@curseg ends
+
+include codeseg.inc
+         .
+         .
+         .
+         push   ds
+         pop    es
+         lea    esi,number0
+         lea    edi,number1
+         call   mulf4
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SCALEF4:    scale a float4 number by an integer power of 2
+Source:     scalef4.asm
+
+SCALEF8:    scale a float8 number by an integer power of 2
+Source:     scalef8.asm
+
+80x87 not required; no OS dependancies
+
+Call with:  DS:[ESI] pointing to the float4 data
+            AL = scale factor (may be positive or negative)
+Returns:    CF = 0 if success: number was properly scaled
+            CF = 1 if error: resulting number would have overflowed
+                   number unchanged in this case
+Uses:       CF; all other flags and all registers saved
+Example:
+
+include model.inc
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   esi,float4data
+        mov   al,3             ; scale by (2^3) effectively multiplies by 8
+        call  scalef4
+        jc    oops             ; take remedial action if error
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SORTF4HI:    sort an array of single-precision real numbers, highest first
+Source:      sortf4hi.asm
+
+SORTF4LO:    sort an array of single-precision real numbers, lowest first
+Source:      sortf4lo.asm
+
+80x87 not required
+
+Call with:  ES:[EDI] pointing to the first of the array elements to be
+            sorted, ECX = number of array elements
+Returns:    nothing
+Uses:       nothing; all registers and flags are saved
+Example:
+
+extrn   sortf4hi:near
+
+include dataseg.inc
+
+floatdata   dd 1500 dup(0)
+
+@curseg	ends
+
+include codeseg.inc
+
+; program provides values for the array
+        .
+        .
+        lea     edi,floatdata
+        push    ds
+        pop     es
+        mov     ecx,1500           ; sort entire array
+        call    sortf4hi           ; highest number first
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SORTF8HI:    sort an array of double-precision real numbers, highest first
+Source:      sortf8hi.asm
+
+SORTF8LO:    sort an array of double-precision real numbers, lowest first
+Source:      sortf8lo.asm
+
+80x87 not required
+
+Call with:  ES:[EDI] pointing to the first of the array elements to be
+            sorted, ECX = number of array elements
+Returns:    nothing
+Uses:       nothing; all registers and flags are saved
+Example:
+
+extrn   sortf8hi:near
+
+include dataseg.inc
+
+floatdata   dq 1500 dup(?)
+
+@curseg	ends
+
+include codeseg.inc
+
+; program provides values for the array
+        .
+        .
+        lea     edi,floatdata
+        push    ds
+        pop     es
+        mov     ecx,1500           ; sort entire array
+        call    sortf8hi           ; highest value first
+
+
+

@@ -1,0 +1,728 @@
+
+*****************************  SYSTEM  *************************************
+
+ASM32 system subroutines Copyright (C) 1993 - 1995 Douglas Herr
+all rights reserved
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+COLOR16:     calculate color value for palette register
+Source:      color16.asm
+
+Call with:   EBX pointing to red value (0-3), green value (0-3)
+             and blue value (0-3); see also Palette16
+Returns:     AH = color value for 16-color palette register
+Uses:        AH
+Supports:    VGA 16-color modes (text or graphics)
+             EGA 16-color modes, except with CGA monitor
+Example:
+
+extrn   color16:near
+
+include dataseg.inc
+
+c16     db 3                  ; brightest red
+        db 1                  ; dim green
+        db 0                  ; no blue
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   ebx,c16
+        call  color16
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+EXENAME:     determine the full path and filename of the executing program
+Source:      exename.asm (strlen.asm)
+
+Call with:   no parameters
+Returns:     ECX = length of program name string
+(CauseWay FLAT model)
+             [EBX] = near pointer to the name of the executing program,
+             including drive and full path.
+
+(all except CauseWay FLAT model)
+             ES:[EBX] = far pointer to the the name of the executing program,
+             including drive and full path.
+
+             The filename returned is an ASCIIZ string in the program's
+             environment segment.
+
+(all except CauseWay FLAT model)
+             Version 2.0: Note that EXENAME does not copy the program name to
+             near data.  It returns a far pointer to the program name which
+             you may copy to near data with STRNDUP if you wish.
+
+Uses:        ES (except CW FLAT model), EBX, ECX, flags
+Example:
+
+extrn   exename:near
+
+include codeseg.inc
+
+        .
+        .
+        .
+        call    exename         ; string returned at ES:[EBX]
+IFNDEF  FLATMODEL
+        call    strndup         ; copy to near data area
+ENDIF
+      
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+EXESIZE:     determine size of .EXE program
+Source:      exesize.asm
+
+Call with:   [EDX] pointing to ASCIIZ .EXE filename
+Returns:     if CF = 1, AX = DOS error code
+                        if AX = 0, not an EXE-format file
+             if CF = 0, EAX = bytes in .EXE file loaded by DOS program
+                        loader and by CauseWay
+             Note that additional data may be copied to the end of a DOS
+             .EXE file with the DOS COPY /B command.  This is handy for
+             help screens or other such data that you want to keep with
+             the .EXE file, but that you don't want to be loaded in memory
+             with the program.  If you do copy additional data to the .EXE
+             file, EXESize will report only the portion of the file loaded
+             in RAM by the DOS program loader and CauseWay, while FSize (in
+             DISK.DOC) reports the entire file size.
+Uses:        EAX, flags
+Example:
+
+;
+; code used to test EXEsize
+;
+include model.inc
+
+public  testcode
+extrn   exename:near, exesize:near
+extrn   strndup:near, i4tostr:near
+extrn   tprint:near, getkey:near
+
+include dataseg.inc
+extrn   pspseg:word
+space   db 20 dup(0)
+@curseg ends
+
+include codeseg.inc
+testcode        proc near
+        mov     es,pspseg
+        call    exename         ; get name of this program
+        call    strndup         ; copy to near heap
+                                ; startup code was assembled with /DHEAP
+        mov     edx,ebx         ; [EDX] -> EXE filename
+        call    exesize         ; EAX = EXE program size
+        lea     esi,space
+        call    i4tostr         ; convert to ASCIIZ string
+        xor     edx,edx         ; point to UL corner of screen
+        mov     ah,12           ; "can't miss it" color
+        call    tprint          ; print it
+        call    getkey          ; don't scroll off screen yet
+        ret                     ; go back to calling code
+testcode        endp
+
+@curseg ends
+        end
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FLOPPIES:    determine the number of floppy disk drives intalled
+Source:      floppies.asm
+
+Call with:   no parameters
+Returns:     AX = number of floppy drives
+Uses:        AX; all other registers and flags are saved
+Example:
+
+include model.inc
+
+extrn   floppies:near
+
+include codeseg.inc
+
+myproc  proc   near
+        .
+        call   floppies
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FLOPPYTYPE:  determine the type of floppy disk drives intalled
+Source:      floptype.asm
+
+Call with:   DL = drive number (0 = drive A:)
+Returns:     AX = floppy drive type
+              0 = invalid drive number
+              1 = 360k
+              2 = 1.2M
+              3 = 720k
+              4 = 1.44M
+Uses:        AX, flags
+Example:
+
+include model.inc
+
+public  myproc
+extrn   floppytype:near
+
+.data
+drive_number   db 0
+
+.code
+myproc  proc
+        .
+        mov    dl,drive_number
+        call   floppytype
+        or     ax,ax
+        jz     bad_drive_number
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+GETCPU:      detects cpu type
+Source:      getcpu.asm
+
+Call with:   no parameters
+Returns:     AX = 3 if 386 (SX or DX)
+             AX = 4 if 486 (SX or DX)
+Uses:        AX
+Example:     call   getcpu
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+GETCRT:      determines active monitor type
+Source:      getcrt.asm ($herc.asm, isevga.asm)
+
+Call with:   no parameters
+Returns:     AX = code for active video system
+             CGA = -1
+             MDA = 0
+             EGA mono = 0100h
+             VGA mono = 0300h
+             EGA color = 1
+             MCGA = 2
+             VGA color = 3
+             HGC = 128
+             HGC+ = 144
+             InColor = 208
+             Note: GetCRT may be re-assembled with the /DNOHERC switch
+             to eliminate code which detects Hercules equipment
+Uses:        AX
+Supports:    CGA, MCGA, MDA, HGC, HGC+, InColor, EGA, VGA
+Example:     call    getcrt
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+INSERT:      control INSERT key status
+Source:      insert.asm (cw$info.asm)
+
+Call with:   AL = 0 to turn INSERT off in BIOS data area
+             AL = 1 to turn INSERT on in BIOS data area
+Returns:     nothing
+Uses:        nothing
+Example:
+
+include codeseg.inc
+
+extrn   insert:near
+
+; code
+
+        mov     al,1         ; turn INSERT on in BIOS data area
+        call    insert
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISANSI:      determines if ANSI or compatible is loaded and active
+Source:      isansi.asm
+
+Call with:   no parameters
+Returns:     CF = 1 if no ANSI device driver loaded and active
+             CF = 0 if ANSI loaded and active
+Uses:        CF
+Example:
+
+include codeseg.inc
+
+extrn   isansi:near
+
+; code
+        .
+        .
+        .
+        call   isansi         ; let's see if ansi.sys is loaded
+        jc     no_ansi        ; jump if not
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISATT:       determines if an ATT 6300-type display card is installed
+             This equipment is like a CGA except that it has an additional
+             640 x 400 2-color graphics mode (mode 40h)
+Source:      isatt.asm ($6845.asm, isevga.asm)
+
+Call with:   no parameters
+Returns:     if CF = 1, ATT 6300 display not present
+             if CF = 0, ATT 6300 display is installed
+Uses:        flags
+Example:
+
+public  cgamode
+
+extrn   isatt:near
+
+include codeseg.inc
+
+cgamode proc    near
+        mov     ax,06h             ; default: set CGA mode
+        call    isatt              ; see if mode 40h is available
+        jc      short set_mode     ;  nope
+        mov     ax,40h             ; use ATT 6300 mode 40h
+set_mode:
+        int     10h                ; use BIOS to set mode
+        ret
+
+cgamode endp
+
+@curseg ends
+        end
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISEVGA:      determines if an EGA or VGA is installed
+Source:      isevga.asm
+
+Call with:   no parameters
+Returns:     if CF = 1, no EGA or VGA
+             if CF = 0
+               DX = video memory in kbytes
+               AL = monitor type
+                AL = -1 if monitor is CGA
+                AL = 0 if monitor is monochrome
+                AL = 1 if monitor is EGA or better
+
+               AH = EGA/VGA flag
+                AH = 1 if EGA
+                AH = 3 if VGA
+
+Uses:        AX, DX, CF
+Example:
+
+include codeseg.inc
+
+extrn   isevga:near
+
+; code
+        .
+        .
+        .
+        call   isevga
+        jc     no_evga
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISHERC:      determines if a Hercules card or compatible is installed
+             and if so, determines if it is the active video system.
+Source:      isherc.asm ($herc.asm)
+
+Call with:   no parameters
+Returns:     if CF = 1, no Hercules or compatible installed
+             if CF = 0, AX = Hercules model
+             128 = Hercules Graphics Card or compatible; active
+             144 = Hercules Graphics Card Plus; active
+             208 = Hercules InColor card; active
+             -128 = Hercules Graphics Card or compatible; not active
+             -144 = Hercules Graphics Card Plus; not active
+             -208 = Hercules InColor card; not active
+Uses:        AX, CF; all other flags and registers are saved
+Example:
+
+include codeseg.inc
+
+extrn   isherc:near
+
+; code
+        .
+        .
+        .
+        call  isherc
+        jc    no_herc
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISMONO:      detects a monochrome-compatible video card
+             this is handy in 2-monitor systems.
+Source:      $6845.asm
+
+Call with:   no parameters
+Returns:     if CF = 1, no monochrome monitor
+             if CF = 0, monochrome monitor is installed
+                        including Hercules InColor
+Uses:        flags
+Supports:    MDA, EGA & VGA MONO, HGC, HGC+, InColor
+Example:
+
+include codeseg.inc
+
+extrn   ismono:near
+
+; code
+        .
+        .
+        .
+        call  ismono
+        jc    no_monochrome
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISMOUSE:     determines if a mouse is installed
+Source:      ismouse.asm
+
+Call with:   no parameters
+Returns:     if CF = 0, AX = number of mouse buttons
+             if CF = 1, no mouse or mouse driver not installed
+Uses:        AX, flags
+Example:
+
+include  codeseg.inc
+
+extrn    ismouse:near
+
+; code
+        .
+        .
+        .
+        call    ismouse
+        jc      no_mouse
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISSEVGA:     determines if a Super EGA or Super VGA is installed
+Source:      issevga.asm
+
+Call with:   no parameters
+Returns:     if CF = 1, no Super EGA or Super VGA recognized by ASM32
+
+             if CF = 0
+
+              if AH = 1: (Super EGA)
+               AL = 1 if Paradise EGA 480
+               AL = 2 if Everex EGA
+
+              if AH = 3: (Super VGA)
+               AL = 1 if Paradise VGA
+               AL = 3 if Tseng VGA chipset
+               AL = 4 if Oak VGA
+               AL = 5 if Western Digital VGA chipset
+
+             See also IsEVGA and WhichVGA
+Uses:        AX, CF
+Example:
+
+include codeseg.inc
+
+extrn   issevga:near
+
+; code
+        .
+        .
+        .
+        call   issevga
+        jc     no_superevga
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ISVBE:       determines if VESA Video BIOS Extension (VBE) is installed
+Source:      isvbe.asm
+
+Call with:   no parameters
+Returns:     if CF = 1, no VBE video card installed
+             if CF = 0, EBX = near pointer to VESA info data structure
+
+             The VESA information data structure in IsVBE is similar to
+             the information structure returned by VESA function AX = 4F00h
+             except that IsVBE copies the data to 32-bit memory and converts
+             the OEMSTR and VIDEOMODEPTR pointers from real-mode addresses to
+             32-bit linear addresses.  See VESA VBE documentation for
+             description of VGAInfoBlock fields.
+
+Uses:        EBX, CF
+Supports:    VBE versions 1.x and 2.x
+Known bugs:  Trident 9400CXi BIOS may return incorrect TotalMemory field.
+Example:
+
+; I want to use VESA mode 110h, a 640x480, 32k-color mode
+; check for VBE, then check the VideoModePtr for 0110h
+
+include model.inc
+
+extrn   isvbe:near
+
+VGAInfoBlock    struc
+signature       db 'VESA'
+vbever          dw ?
+oemstr          dd ?
+capabilities    db 4 dup(?)
+VideoModePtr    dd ?
+TotalMemory     dw ?
+Reserved        db 236 dup(?)
+pad             db 256 dup(?)
+VGAInfoBlock	ends
+
+include dataseg.inc
+
+; external data in STARTxx.ASM
+extrn   zero_sel:dword         ; selector for linear memory address
+                               ; tell the assmebler it's a DWORD so it
+                               ; won't add a superfluous 66h byte prefix.
+@curseg ends
+
+; (continued on next page)
+
+; IsVBE example, continued)
+
+include codeseg.inc
+        .
+        .
+        .
+        call    isvbe
+        jc      short cant_use_0110h
+
+;
+; get linear address of list of supported modes
+;
+        mov     edi,[ebx].VideoModePtr
+        mov     ax,0110h
+        mov     es,zero_sel             ; ES:[EDI] -> list of supported modes
+        cld
+ck_list_end:
+        cmp     word ptr es:[edi],0FFh  ; end of mode list?
+        je      short cant_use_0110h
+        scasw                           ; mode supported?
+        jne     short ck_list_end       ;  not found yet
+
+;
+; mode 0110h is supported
+; do what you want with it
+;
+        .
+        .
+
+
+
+;
+; general failure
+;
+cant_use_0110h:
+        .
+        .
+        .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+KBDTYPE:     determines type of keyboard and functions supported
+Source:      kbdtype.asm
+
+Call with:   no parameters
+Returns:     if AH = 10h, advanced keyboard functions supported
+                  AL = 0 if 84-key keyboard
+                  AL = 1 if 101-key keyboard
+
+             if AH = 0, advanced keyboard functions not supported
+                  AL = 0
+
+             if advanced keyboard functions are not supported, it is
+             likely the program is running on an old XT-type computer
+             converted to 386 with the Intel InBoard 386/PC board.  You
+             will not encounter this equipment often.
+
+Uses:        AX, flags
+Example:
+
+; Use KBDTYPE to determine which function to use to read a keystroke
+
+extrn   kbdtype:near
+
+        .
+        .
+        .
+        call    kbdtype            ; get appropriate BIOS function number
+        int     16h                ; get key from keyboard buffer
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MATHCHIP:    determines if x87 math coprocessor is installed
+Source:      mathchip.asm
+
+Call with:   no parameters
+Returns:     AX = code for x87 model
+             0 = not installed
+             2 = 287                   ; earliest 386 computers used 287
+             3 = 387 (DX or SX)
+             4 = 487 (DX or SX)
+             If the coprocessor is present, it is initilaized by MathChip.
+Uses:        AX, all x87 registers
+Example:     call  mathchip
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MOUSESAVE:   save mouse state
+Source:      moussave.asm
+
+MOUSERESTORE:restore previously saved mouse state
+Source:      moussave.asm
+
+             MouseSave and MouseRestore are handy when you have installed a
+             mouse event handler and you will be using the SYSTEM command,
+             where some other program may reset or otherwise change the
+             mouse event trapping.
+
+             MouseSave allocates a buffer, saves the mouse state in the
+             buffer, resets the mouse driver and returns the buffer address.
+
+             MouseRestore restores a specified mouse state and releases the
+             buffer.  Both MouseSave and MouseRestore assume that you already
+             know there is a mouse in the system.
+
+Call with:   MouseSave: no paramerters
+             MouseRestore: AX = buffer address returned by MouseSave
+Returns:     if CF = 1, AH = DOS error code
+             if CF = 0, no error; MouseSave returns buffer address in AX
+Uses:        AX, flags
+Example:
+
+include model.inc
+extrn   msave:near, mrestore:near
+
+include dataseg.inc
+save_mouse dw 0
+@curseg	ends
+
+include codeseg.inc
+
+        .
+        .
+        .
+
+; save the mouse driver state
+; I've already checked to see if there's a mouse
+        call    mousesave
+        jc      dos_error
+        mov     save_mouse,ax
+        .
+        .
+; some other subroutine has messed with the mouse
+        mov     ax,save_mouse   ; buffer address from previous MSave
+        call    mouserestore
+        jc      dos_error
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+PALETTE16:   change palette in EGA, VGA or SVGA 16-color mode
+             changing the palette changes the actual color associated
+             with a color attribute
+Source:      palet16.asm
+
+Call with:   BH = color value (see Color16 in SYSTEM.DOC)
+             BL = color attribute to map color to (0-0Fh)
+             restore default palette with BX = 0FFFFh
+Returns:     nothing
+Uses:        nothing
+Supports:    EGA, VGA, SVGA 16-color modes, text or graphics
+             except EGA with CGA monitor
+Example:
+
+include codeseg.inc
+
+extrn   color16:near, palette16:near
+
+; data
+c16     db 3                  ; brightest red
+        db 1                  ; dim green
+        db 0                  ; no blue
+
+; code
+        .
+        .
+        .
+        lea   ebx,c16
+        call  color16
+        mov   bh,ah           ; color value in BH
+        mov   bl,15           ; color attribute 0Fh
+        call  palette16
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+USE32K:      limit Hercules equipment to 32k memory (128k on InColor)
+USE64K:      allow full 64k on HGC and HGC+ (256k on InColor)
+Source:      $herc.asm
+
+Requires Hercules or compatible
+
+Call with:   no parameters
+             Use32k is equivalent to the Hercules "half" configuration
+             Use64k is equivalent to the Hercules "full" configuration
+             ASM32's default is "half".  Use this configuration if you
+             have a 2-monitor system, unless you are using the Hercules
+             CGA card. 
+Returns:     nothing
+Uses:        nothing
+Example:     ; in this example I'm determining if a Hercules is installed
+             ; and setting the configuration to "full"
+
+
+extrn   IsHerc:near
+extrn   Use64k:near
+
+include codeseg.inc
+
+        .
+        .
+        .
+        call  IsHerc
+        jc    no_herc
+        or    ax,ax
+
+; use_only_half if HGC is not default monitor
+        js    short use_only_half
+        call  use64k          ; else use all Hercules memory
+use_only_half:
+
+

@@ -1,0 +1,87 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/winhex.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:41:59 GMT -->
+<head><title>WinHex สามารถแก้ไขข้อมูลในแฟ้มเชิงลึก</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="winhex,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="WinHex สามารถแก้ไขข้อมูลในแฟ้มเชิงลึก">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+WinHex สามารถแก้ไขข้อมูลในแฟ้มเชิงลึก</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2549-06-29 (เปลี่ยนรหัสผ่านของ testpassword.exe)
+<br> 
+
+<table width=760 align=center><td>
+<font size=6>แนะนำ WinHex</font>
+<dd>WinHex สามารถแก้ไขข้อมูลในแฟ้มเชิงลึกได้ .. แต่รุ่นทดลองใช้แก้ไขไม่ได้ ดูได้อย่างเดียว
+<dd>WinHex เป็นเพียงเครื่องมือประกอบการ Crack เท่านั้น ถ้าท่านจะ Crack ต้องใช้ SoftIce หาข้อมูลที่ต้องการเปลี่ยนแปลง
+<dd>WinHex : A hex editor is capable of completely displaying the contents of each file type. Unlike a text editor, a  hex editor even displays control codes (e. g. linefeed and carriage-return characters) and executable code, using a two-digit number based on the hexadecimal system.
+<dd>Consider one byte to be a sequence of 8 bits. Each bit is either 0 or 1, it assumes one of two possible states. Therefore one byte can have one of 2•2•2•2•2•2•2•2 = 2^8 = 256 different values. Since 256 is the square of 16, a byte value can be defined by a two-digit number based on the hexadecimal system, where each digit represents a tetrade or nibble of a byte, i. e. 4 bits. The sixteen digits used in the hexadecimal system are 0-9, A-F. 
+<center>Download : <a href=http://www.listsoft.com/16743/>http://www.listsoft.com/16743/</a><a href=../download/winhex-e.html>#</a>
+<br>Register : <a href=http://www.winhex.com/winhex/order.html>http://www.winhex.com/winhex/order.html</a>
+<br><font color=red>เลือก Setup เพื่อติดตั้ง และเลือก Help, Register เพื่อลงทะเบียน
+<br>แล้ว copy License จาก .txt ไปใส่ในช่องที่เตรียมไว้ .. เป็นอันเรียบร้อย</font>
+</center>
+<td valign=top width=150>
+<b>เป้าหมายของการสอน</b>
+<br>- ดู Disk
+<br>- ดู แฟ้มใน Disk
+<br>- แก้ไขแฟ้ม
+<br>- เข้าใจ Dir และ Fat
+</td></table>
+<table width=760 align=center><td>
+<hr color=blue>
+<font size=6>ดูข้อมูล Drive C</font>
+<dd>- เลือก Tools, Disk Editor.., Drive C 
+<dd>- ? Used Space, Free Space, Bytes per Sector, Total Sectors
+<dd>- Click Access, Boot sector (template)
+<dd>- ? Bytes per Sector, Sector per Cluster, Total sectors, SystemID=NTFS
+<dd>- click Check Box หลัง Access เพื่อแสดงรายชื่อแฟ้ม หรือ Director
+<dd>- Double Click ที่ชื่อแฟ้มจะแสดง Cluster ที่แฟ้มนั้นครอบครอง
+<dd>- เลือก Tools, Ram Editor จะแสดงโปรแกรมที่ใช้ Ram อยู่
+<dd><img src=winhex.gif>
+<hr color=blue>
+<font size=6>Disk ที่ยังไม่ผ่านการ Defragment</font>
+<dd><img src=defragment.jpg>
+<hr color=blue>
+<font size=6>เปลี่ยนข้อมูลใน Application</font>
+<dd>ผมสร้างโปรแกรม testpassword.exe เก็บไว้ที่ <a href=../vb/testpassword.exe>http://www.thaiall.com/vb/testpassword.exe</a> แล้ว copy มาไว้ในเครื่องคอมพิวเตอร์เครื่องหนึ่ง
+จากนั้นก็ทดสอบใช้ พบว่าติดรหัสผ่าน จึงใช้โปรแกรม WinHex เข้าไปสำรวจโดยรวม และพบว่าสามารถแก้ไขข้อความต่าง ๆ เช่น Title ได้ หลังจากลองผิดลองถูกอยู่พักใหญ่
+ก็พบคำว่า a.b.c. ในตำแหน่ง 1D20 เมื่อทดสอบแก้ไขเป็น x.y.z แล้ว Save ผลการ run โปรแกรม testpassword.exe ก็พบว่ารหัสของโปรแกรมนี้เปลี่ยนได้จริง .. ท่านลองดูสิครับ
+<center>
+<img src=testpassword.jpg><br><br>
+<img src=testpassword.gif></center>
+</td></table>
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_winhex"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/winhex.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:42:10 GMT -->
+</html>

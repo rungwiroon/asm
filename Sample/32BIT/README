@@ -1,0 +1,43 @@
+/*  Here are Michael Abrash's XMODE routines, converted to 32 bit
+    protected mode, currently all tested for PMC extender.
+
+    The only functions not yet tested are
+        CopyScreenToScreenMaskedX
+        CreateAlignedMaskedImageX  (2)
+
+    Note that (2) uses memory allocation routines specified to PMC
+    and hence won't link with BC/WC ...  But the ASM code is
+    changeable and you can modify the allocation calls to
+    whatever you need and reassemble.
+
+    Also note that (2) was originally and someone compiled to asm
+    using BCC32 for me.  I will include the C file, with the header
+    for its use for anyone who needs them and prefers to make the
+    changes to the C code.
+
+    Note that I have added some palette functions, two in fact,
+    and also modified the ShowPage to work with smooth vertical
+    and horizontal scrolling.  In addition I moved some static data
+    to global space to save a few bytes of space.
+
+    In addition you must be using Tran's PMC/PMODE Dos Extender
+    for these functions since I haven't converted them for
+    DOS4GW yet.  I have not yet decided yet if I will or not
+    and will make no promises towards this cause. :)
+
+    Disclaimer: The conversion may not be the most optimal. Further
+    I will not be responsible for any damaging consequences of using
+    this, and I assume neither will Michael Abrash whose routines
+    they were before the conversion process.
+
+    This is released to FreeWare, and as such no cost is attached to
+    product.  Please mention appropriate copyrights when using these
+    routines and give credit to where it's due.
+
+    (c) 1994 Kumanan Yogaratnam, all changes made.
+
+    Note: If any of you out there is able to optimize this better,
+    then please let me know at kyogarat@chat.carleton.ca where
+    I will reside for atleast the next four years.
+*/
+

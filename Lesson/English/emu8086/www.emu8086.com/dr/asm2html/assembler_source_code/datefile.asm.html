@@ -1,0 +1,169 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/datefile.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> datefile.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; date and time functions and save to file using dos interrupts. </font>
+
+<font color=#008000>; this program prints the date and saves it to file when running from emu8086 the path is: </font>
+<font color=#008000>; c:\emu8086\vdrive\c\date.txt </font>
+<font color=#008000>; when running from dos prompt the path is: </font>
+<font color=#008000>; c:\date.txt </font>
+
+name <font color=#800080>"date"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>,2ah                  <font color=#008000>; get date  </font>
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>add</font> <font color=#C80000>al</font>,30h
+<font color=#0000FF>mov</font>  week,<font color=#C80000>al</font>                <font color=#008000>; 0=sunday  </font>
+<font color=#0000FF>add</font> <font color=#C80000>cx</font>,0f830h               <font color=#008000>; for years  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>,<font color=#C80000>cx</font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. year,<font color=#C80000>ax</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>dh</font>                   <font color=#008000>; month  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. mont,<font color=#C80000>ax</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>dl</font>                   <font color=#008000>; day  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. day,<font color=#C80000>ax</font>
+
+
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>,2ch                  <font color=#008000>; get time  </font>
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>ch</font>                   <font color=#008000>; hour  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. hour,<font color=#C80000>ax</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>cl</font>                   <font color=#008000>; minute  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. minu,<font color=#C80000>ax</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>dh</font>                   <font color=#008000>; second  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. seco,<font color=#C80000>ax</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>,<font color=#C80000>dl</font>                   <font color=#008000>; milisecond  </font>
+<font color=#0000FF>call</font> deci
+<font color=#0000FF>mov</font> w. cent,<font color=#C80000>ax</font>
+
+
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>,09
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>,<font color=#000064>offset</font> txt
+<font color=#0000FF>int</font> 21h
+
+
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0         <font color=#008000>; file attribute </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>,3c00h      <font color=#008000>; create new file  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> fildat
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>jb</font> error         <font color=#008000>; error </font>
+
+<font color=#0000FF>mov</font> w. handle, <font color=#C80000>ax</font>
+
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>,4200h
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, w. handle
+<font color=#0000FF>xor</font> <font color=#C80000>cx</font>,<font color=#C80000>cx</font>              <font color=#008000>; begin byte 0  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>,0001            <font color=#008000>; 1st byte modified is the second  </font>
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>jb</font> error
+
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>,40h             <font color=#008000>; write file  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, w. handle
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 22             <font color=#008000>; write 22 bytes  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>,<font color=#000064>offset</font> week
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>jb</font> error
+
+
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>,3eh             <font color=#008000>; close  </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, w. handle
+<font color=#0000FF>int</font> 21h
+
+
+
+<font color=#008000>; wait for any key press: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+error:                 <font color=#008000>; leave program (unconditionally). </font>
+
+<font color=#0000FF>int</font> 20h
+
+
+deci:                  <font color=#008000>; calculate in decimal  </font>
+<font color=#0000FF>push</font> <font color=#C80000>cx</font>
+<font color=#0000FF>xor</font> <font color=#C80000>ah</font>,<font color=#C80000>ah</font>
+<font color=#0000FF>mov</font> <font color=#C80000>cl</font>,10
+<font color=#0000FF>div</font> <font color=#C80000>cl</font>
+<font color=#0000FF>add</font> <font color=#C80000>ax</font>,3030h
+<font color=#0000FF>pop</font> <font color=#C80000>cx</font>
+<font color=#0000FF>ret</font>
+
+
+fildat <font color=#000064>db</font> <font color=#800080>"c:\date.txt"</font>,0        <font color=#008000>; save date ant time  </font>
+handle <font color=#000064>db</font> 0,0
+
+
+<font color=#008000>; here's data to display the date and time  </font>
+
+
+txt <font color=#000064>db</font> 0Dh,0Ah,0Ah,9,9          <font color=#008000>; jump line and go two tabs right  </font>
+week <font color=#000064>db</font> 0,9                     <font color=#008000>; put the day 1=monday   9 jump a colon (tab) </font>
+day <font color=#000064>db</font> 0,0,<font color=#800080>'-'</font>
+mont <font color=#000064>db</font> 0,0,<font color=#800080>'-'</font>
+year <font color=#000064>db</font> 0,0,9
+
+
+hour <font color=#000064>db</font> 0,0,<font color=#800080>':'</font>
+minu <font color=#000064>db</font> 0,0,9
+seco <font color=#000064>db</font> 0,0,<font color=#800080>'.'</font>
+cent <font color=#000064>db</font> 0,0,0Dh,0Ah,<font color=#800080>'$'</font>         <font color=#008000>; line feed   return   and  stop symbol (dollar).  </font>
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/datefile.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

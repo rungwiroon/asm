@@ -1,0 +1,354 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/mul.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:55 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>เรื่อง คำสั่ง MUL</title>
+</head>
+
+<body background="bg1.gif" bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="0">
+    <tr>
+        <td><img src="thailand.gif" width="68" height="50"></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><font color="#FF0080" size="7"><strong><u>MUL,IMUL.</u></strong></font></td>
+    </tr>
+</table>
+</center></div>
+
+<p align="center"><img src="../Picture/fpic5.html" width="1"
+height="1"></p>
+
+<p align="center"><img src="line2.gif" width="435" height="15"></p>
+
+<p align="left">&nbsp;</p>
+
+<p align="left"><font color="#FF0080" size="5"><strong><u>คำอธิบาย</u></strong></font><font
+size="4"><strong> </strong></font><font color="#8000FF" size="4"><strong>คำสั่ง
+Multiply, Unsigned (MUL) Integer Multiply Signed (IMUL)</strong></font></p>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#FF8040" size="4"><strong>คำสั่ง
+        MUL จะคูณเลขบวก
+        และคำสั่ง IMUL
+        จะคูณลขที่มีเครื่องหมาย
+        บวกหรือ
+        ลบทั้งคำสั่ง MUL และ MUL
+        สามารถคูณเลขเป็นไบต์หรือเวิร์ดก็ได้
+        Source เป็นรีจิสเตอร์หรือหน่วยความจำเป็นไบต์หรือเวิร์ด</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <table border="0">
+            <tr>
+                <td><font color="#FF0000" size="4"><strong>SYNTAX</strong></font></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#FF0000" size="4"><strong>MUL
+                source</strong></font></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><font color="#FF0000" size="4"><strong>IMUL
+                source</strong></font></td>
+            </tr>
+        </table>
+        <p align="center"><img src="anbird1.gif" width="62"
+        height="68"></p>
+        <hr>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <p>&nbsp;</p>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<p><font color="#FF0080" size="5"><strong><u>การปฏิบัติการ</u></strong></font></p>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คำสั่ง
+    MUL และ IMUL ใช้ accumulator AL
+    สำหรับการคูณเป็นไบต์
+    และ AX สำหรับการคูณเป็น
+    เวิร์ด
+    ผลลัพธ์จะมีความยาวเป็น
+    2 เท่าของ source
+    โดยที่การคูณเป็นไบต์ให้ผลลัพธ์เป็น
+    16 บิตใน accumulator AH และ AL
+    การคูณเป็นเวิร์ดให้ผลลัพธ์เป็น
+    32 บิต ในรีจิสเตอร์ DX (high)
+    และ AX (low) สำหรับคำสั่ง MUL
+    ถ้าแฟลก CF และ OF เป็น 0
+    ครึ่งบนของผลลัพธ์มีค่า
+    0 มิเช่นนั้น CF และ OF
+    จะมีค่า 1 สำหรับ IMUL
+    ถ้าครึ่งบนของผลลัพธ์เป็นค่า
+    sing-extension ของครึ่งล่างค่า
+    CF และ OF จะมีค่าเป็น 1</strong></font></p>
+</blockquote>
+
+<p><font color="#FF0080" size="5"><strong>ตัวอย่างของการใช้คำสั่ง
+MUL และ IMUL มีดังนี้</strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#800080" size="4"><strong>MUL</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>BX</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; unsign
+            multiply of BX times AX</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>MUL</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>MEM-BYTE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; unsign
+            multiply of memory times AL</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IMUL</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DL</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; sign
+            multiply of DL times AL</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IMUL</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>MEM-BYTE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; sign
+            multiply of memory times AL</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>MOV</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DX,10</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; sign
+            multiply AX</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IMUL</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DX</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>; by 10 </strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ลองตั้งค่า
+    DX,AX และ BX เป็น 007ch,4b12h และ 0100h
+    ตามลำดับซึ่งจะทำการหารค่า
+    1C4B12h ด้วย 0100h
+    ซึ่งถ้าหากเราหารด้วยมือจะได้ผลลัพธ์เป็น
+    7C4Bhและ เหลือ 12h เมื่อเราสั่งให้โปรแกรมทำคำสั่งหาร
+    จะได้ AX เป็น 7C4Bh และเศษ DX =
+    0012h ตามต้องการ</strong></font></p>
+</blockquote>
+
+<p><font color="#FF0000" size="5"><strong><u>ตัวอย่างการใช้คำสั่งคูณ</u></strong></font></p>
+
+<p><font color="#808040" size="4"><strong>1)
+การคูณที่มีเครื่องหมาย
+ระหว่างเลข 8 บิต กับเลข 16
+บิต</strong></font></p>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>Mov CX,MULTIPLIER</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>Mov CL,MULTIPLICAN</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>CBW</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>IMUL CX ; Extend
+    sign of into AH</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808040" size="4"><strong>; Word multiply
+        result</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808040" size="4"><strong>; In DX and AX</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<p><font color="#808040" size="4"><strong>2)
+การคูณเลขที่ไม่มีเครื่องหมาย
+ระหว่าง 8 บิต กับเลข 16 บิต</strong></font></p>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>MOV AX,MULCAND_16 ;load
+    16 multiplicand in AX</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>MOV CL,MULPLIER_8 ;load
+    8 multiplicand in CL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>MOV CH,0 ;Set upper
+    byte of CX to 0</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808040" size="4"><strong>MUL CX ;word
+    multiply result</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808040" size="4"><strong>;in DX and AX</strong></font></p>
+        <p align="center"><a href="Menu.html"><img src="Back.gif"
+        border="0" width="83" height="28"></a></p>
+        <hr>
+    </blockquote>
+</blockquote>
+
+<p align="center">&nbsp;</p>
+
+<p align="center"><font color="#FF0000" size="5"><strong><u>คำสั่ง
+ASCII adjust for multiplication (AAM)</u></strong></font></p>
+
+<p align="center"><font color="#FF0000" size="5"><strong><u><img
+src="post.gif" width="53" height="51"></u></strong></font></p>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คำสั่ง
+    AAM
+    จะเปลี่ยนค่าของผลลัพธ์ของการคูณค่าของเลข
+    8 บิต เป็นค่า unpacked BCD 2 ค่า
+    AAM
+    สมมุติว่าค่าผลลัพธ์อยู่ใน
+    accumulator AH และให้ค่า unpacked ใน AH
+    และ AL ในการใช้คำสั่งตัวตั่งและตัวคูณต้องเป็น
+    unpacked BCD ด้วย </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ในการปรับค่าผลลัพธ์
+    คำสั่ง AAM
+    หารรีจิสเตอร์ AL ด้วย 10 (0AH)
+    และเก็บไว้ใน AH ค่าเศษใน
+    AL สมมติว่า AL มีค่า 9 (00001001B)
+    และ BL มีค่า 7 (0000111B) เมื่อ
+    exectued คำสั่ง MUL BL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ผลลัพธ์การคูณ
+    AL กับ BL ได้ค่า 16 บิต
+    ได้ค่ารีจิสเตอร์ AH และ
+    AL ได้แก่ 0 ใน AH และ 00111111B ใน
+    AL เมื่อ execte คำสั่ง AAM</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>จำนวน
+    clock : (80286) 13-21,(803386)9-41</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ถูกกระทำ
+    : OF,CF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ไม่ต้องกำหนด
+    : AF,ZF,PF,SF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นในโหมด
+    Protected : ถ้าใช้เซกเมนต์ CS,DS
+    หรือ ES
+    เก็บค่าหน่วยความจำของโอเปอร์แรนต์ที่
+    effective address
+    จะเกิดการยกเว้นการ
+    protect ขึ้น
+    และถ้าใช้เซกเมนต์ SS
+    เก็บค่าหน่วยความจำหลัก
+    การยกเว้นความผิดพลาดของ
+    stack</strong></font><font color="#0000FF" size="4"
+    face="CordiaUPC"><strong> </strong></font><font
+    color="#0000FF" size="4"><strong>จะเกิดขึ้น
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นสำหรับโหมด
+    Real address :
+    เมื่อโอเปอร์แรนด์อยู่ที่ตำแหน่งออฟเซ็ต
+    OFFFH จะทำให้เกิด int 13</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>80386 note :
+    ใช้กับเวิร์ดขนาด 32 บิต
+    การคูณแบบ double ทำได้โดย
+    EAX ด้วยหน่วยความจำ
+    หรือรีจิสเตอร์ขนาด 32
+    บิต
+    และเก็บผลลัพธ์ขนาด 64
+    บิตไว้ในคู่รีจิสเตอร์
+    EDXEAX</strong></font></p>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><img src="Back.gif"
+border="0" width="83" height="28"></a></p>
+
+<p align="center"><img src="line2.gif" width="435" height="15"></p>
+
+<p align="center"><img src="c3.gif" width="146" height="39"></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/mul.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:56 GMT -->
+</html>

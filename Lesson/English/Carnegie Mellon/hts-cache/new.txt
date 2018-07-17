@@ -1,0 +1,3 @@
+date	size'/'remotesize	flags(request:Update,Range state:File response:Modified,Chunked,gZipped)	statuscode	status ('servermsg')	MIME	Etag|Date	URL	localfile	(from URL)
+12:48:10	11279/-1	---M--	200	added ('OK')	text/html	date:Mon,%2021%20Dec%202009%2005:48:10%20GMT	http://www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html	C:/My%20Web%20Sites/Assembly4/www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html	(from )
+12:48:11	63/63	---M--	200	added ('OK')	text/plain	etag:%228db9-3f-48edd934%22	http://www-2.cs.cmu.edu/robots.txt		(from )

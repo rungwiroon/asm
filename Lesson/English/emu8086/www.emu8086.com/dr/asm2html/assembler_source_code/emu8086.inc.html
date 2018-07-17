@@ -1,0 +1,687 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/emu8086.inc.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+<head>
+       <title>Assembler Source Code: emu8086.inc</title>
+       <meta name="description" content="Assembly Language Source Code - Open Source Library">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=10  rightmargin=0 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=2 face="Terminal"> emu8086.inc </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; emu8086.inc - macro definitions library for easy input/output </font>
+
+<font color=#008000>; Note, that some declarations of "emu8086.inc" are macro procedure declarations, and you </font>
+<font color=#008000>; have to use "DEFINE_..." macro somewhere in your program if you want to use these functions: </font>
+
+<font color=#008000>;   CALL SCAN_NUM </font>
+<font color=#008000>;   CALL PRINT_STRING </font>
+<font color=#008000>;   CALL PTHIS </font>
+<font color=#008000>;   CALL GET_STRING </font>
+<font color=#008000>;   CALL CLEAR_SCREEN </font>
+<font color=#008000>;   CALL PRINT_NUM </font>
+<font color=#008000>;   CALL PRINT_NUM_UNS </font>
+
+<font color=#008000>; You can define all these procedures in your source code, but compilation time may slow down </font>
+<font color=#008000>; sufficiently because of that, only declare functions that you plan to use: </font>
+
+
+<font color=#008000>;   DEFINE_SCAN_NUM </font>
+<font color=#008000>;   DEFINE_PRINT_STRING </font>
+<font color=#008000>;   DEFINE_PTHIS </font>
+<font color=#008000>;   DEFINE_GET_STRING </font>
+<font color=#008000>;   DEFINE_CLEAR_SCREEN </font>
+<font color=#008000>;   DEFINE_PRINT_NUM </font>
+<font color=#008000>;   DEFINE_PRINT_NUM_UNS </font>
+
+<font color=#008000>;  The above declarations should be made in  your code once only! Better somewhere </font>
+<font color=#008000>;  in the end of your file, but before "END"  directive. You can also declare them </font>
+<font color=#008000>;  in the beginning of the file, but it should  be after "ORG 100h" directive for COM files, </font>
+<font color=#008000>;  or inside the code segment for EXE files. </font>
+
+
+<font color=#008000>; this macro prints a char in AL and advances </font>
+<font color=#008000>; the current cursor position: </font>
+PUTC    <font color=#0000FF>MACRO</font>   char
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, char
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+ENDM
+
+
+<font color=#008000>; this macro prints a string that is given as a parameter, example: </font>
+<font color=#008000>; PRINT 'hello world!' </font>
+<font color=#008000>; new line is NOT added. </font>
+PRINT   <font color=#0000FF>MACRO</font>   sdat
+LOCAL   next_char, s_dcl, printed, skip_dcl
+
+<font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>SI</font>      <font color=#008000>; </font>
+
+<font color=#0000FF>JMP</font>     skip_dcl        <font color=#008000>; skip declaration. </font>
+        s_dcl <font color=#000064>DB</font> sdat, 0
+
+skip_dcl:
+        <font color=#0000FF>LEA</font>     <font color=#C80000>SI</font>, s_dcl
+
+next_char:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, <font color=#800000>CS</font>:<font color=#0064C8>[</font><font color=#C80000>SI</font><font color=#0064C8>]</font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 0
+        <font color=#0000FF>JZ</font>      printed
+        <font color=#0000FF>INC</font>     <font color=#C80000>SI</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>JMP</font>     next_char
+printed:
+
+<font color=#0000FF>POP</font>     <font color=#C80000>SI</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>POP</font>     <font color=#C80000>AX</font>      <font color=#008000>; </font>
+ENDM
+
+
+<font color=#008000>; this macro prints a string that is given as a parameter, example: </font>
+<font color=#008000>; PRINTN 'hello world!' </font>
+<font color=#008000>; the same as PRINT, but new line is automatically added. </font>
+PRINTN   <font color=#0000FF>MACRO</font>   sdat
+LOCAL   next_char, s_dcl, printed, skip_dcl
+
+<font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>SI</font>      <font color=#008000>; </font>
+
+<font color=#0000FF>JMP</font>     skip_dcl        <font color=#008000>; skip declaration. </font>
+        s_dcl <font color=#000064>DB</font> sdat, 13, 10, 0
+
+skip_dcl:
+        <font color=#0000FF>LEA</font>     <font color=#C80000>SI</font>, s_dcl
+
+next_char:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, <font color=#800000>CS</font>:<font color=#0064C8>[</font><font color=#C80000>SI</font><font color=#0064C8>]</font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 0
+        <font color=#0000FF>JZ</font>      printed
+        <font color=#0000FF>INC</font>     <font color=#C80000>SI</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>JMP</font>     next_char
+printed:
+
+<font color=#0000FF>POP</font>     <font color=#C80000>SI</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>POP</font>     <font color=#C80000>AX</font>      <font color=#008000>; </font>
+ENDM
+
+
+<font color=#008000>; turns off the cursor: </font>
+CURSOROFF       <font color=#0000FF>MACRO</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>CX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 1
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CH</font>, 28h
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CL</font>, 09h
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>POP</font>     <font color=#C80000>CX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+ENDM
+
+
+
+<font color=#008000>; turns on the cursor: </font>
+CURSORON        <font color=#0000FF>MACRO</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>CX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 1
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CH</font>, 08h
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CL</font>, 09h
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>POP</font>     <font color=#C80000>CX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+ENDM
+
+<font color=#008000>; sets current cursor </font>
+<font color=#008000>; position: </font>
+GOTOXY  <font color=#0000FF>MACRO</font>   col, row
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>BX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>DX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 02h
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DH</font>, row
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DL</font>, col
+        <font color=#0000FF>MOV</font>     <font color=#C80000>BH</font>, 0
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>POP</font>     <font color=#C80000>DX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>BX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+ENDM
+
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; This macro defines a procedure that gets the multi-digit SIGNED number from the keyboard, </font>
+<font color=#008000>; and stores the result in CX register: </font>
+DEFINE_SCAN_NUM         <font color=#0000FF>MACRO</font>
+LOCAL make_minus, ten, next_digit, set_minus
+LOCAL too_big, backspace_checked, too_big2
+LOCAL stop_input, not_minus, skip_proc_scan_num
+LOCAL remove_not_digit, ok_AE_0, ok_digit, not_cr
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_scan_num
+
+SCAN_NUM        <font color=#0000FF>PROC</font>    NEAR
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>DX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>SI</font>
+
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, 0
+
+        <font color=#008000>; reset flag: </font>
+        <font color=#0000FF>MOV</font>     <font color=#800000>CS</font>:make_minus, 0
+
+next_digit:
+
+        <font color=#008000>; get char from keyboard </font>
+        <font color=#008000>; into AL: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 00h
+        <font color=#0000FF>INT</font>     16h
+        <font color=#008000>; and print it: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh
+        <font color=#0000FF>INT</font>     10h
+
+        <font color=#008000>; check for MINUS: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, <font color=#800080>'-'</font>
+        <font color=#0000FF>JE</font>      set_minus
+
+        <font color=#008000>; check for ENTER key: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 13  <font color=#008000>; carriage return? </font>
+        <font color=#0000FF>JNE</font>     not_cr
+        <font color=#0000FF>JMP</font>     stop_input
+not_cr:
+
+
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 8                   <font color=#008000>; 'BACKSPACE' pressed? </font>
+        <font color=#0000FF>JNE</font>     backspace_checked
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DX</font>, 0                   <font color=#008000>; remove last digit by </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, <font color=#C80000>CX</font>                  <font color=#008000>; division: </font>
+        <font color=#0000FF>DIV</font>     <font color=#800000>CS</font>:ten                  <font color=#008000>; AX = DX:AX / 10 (DX-rem). </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, <font color=#C80000>AX</font>
+        PUTC    <font color=#800080>' '</font>                     <font color=#008000>; clear position. </font>
+        PUTC    8                       <font color=#008000>; backspace again. </font>
+        <font color=#0000FF>JMP</font>     next_digit
+backspace_checked:
+
+
+        <font color=#008000>; allow only digits: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, <font color=#800080>'0'</font>
+        <font color=#0000FF>JAE</font>     ok_AE_0
+        <font color=#0000FF>JMP</font>     remove_not_digit
+ok_AE_0:
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, <font color=#800080>'9'</font>
+        <font color=#0000FF>JBE</font>     ok_digit
+remove_not_digit:
+        PUTC    8       <font color=#008000>; backspace. </font>
+        PUTC    <font color=#800080>' '</font>     <font color=#008000>; clear last entered not digit. </font>
+        PUTC    8       <font color=#008000>; backspace again.         </font>
+        <font color=#0000FF>JMP</font>     next_digit <font color=#008000>; wait for next input.        </font>
+ok_digit:
+
+
+        <font color=#008000>; multiply CX by 10 (first time the result is zero) </font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, <font color=#C80000>CX</font>
+        <font color=#0000FF>MUL</font>     <font color=#800000>CS</font>:ten                  <font color=#008000>; DX:AX = AX*10 </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, <font color=#C80000>AX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+
+        <font color=#008000>; check if the number is too big </font>
+        <font color=#008000>; (result should be 16 bits) </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>DX</font>, 0
+        <font color=#0000FF>JNE</font>     too_big
+
+        <font color=#008000>; convert from ASCII code: </font>
+        <font color=#0000FF>SUB</font>     <font color=#C80000>AL</font>, 30h
+
+        <font color=#008000>; add AL to CX: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DX</font>, <font color=#C80000>CX</font>      <font color=#008000>; backup, in case the result will be too big. </font>
+        <font color=#0000FF>ADD</font>     <font color=#C80000>CX</font>, <font color=#C80000>AX</font>
+        <font color=#0000FF>JC</font>      too_big2    <font color=#008000>; jump if the number is too big. </font>
+
+        <font color=#0000FF>JMP</font>     next_digit
+
+set_minus:
+        <font color=#0000FF>MOV</font>     <font color=#800000>CS</font>:make_minus, 1
+        <font color=#0000FF>JMP</font>     next_digit
+
+too_big2:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, <font color=#C80000>DX</font>      <font color=#008000>; restore the backuped value before add. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DX</font>, 0       <font color=#008000>; DX was zero before backup! </font>
+too_big:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, <font color=#C80000>CX</font>
+        <font color=#0000FF>DIV</font>     <font color=#800000>CS</font>:ten  <font color=#008000>; reverse last DX:AX = AX*10, make AX = DX:AX / 10 </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, <font color=#C80000>AX</font>
+        PUTC    8       <font color=#008000>; backspace. </font>
+        PUTC    <font color=#800080>' '</font>     <font color=#008000>; clear last entered digit. </font>
+        PUTC    8       <font color=#008000>; backspace again.         </font>
+        <font color=#0000FF>JMP</font>     next_digit <font color=#008000>; wait for Enter/Backspace. </font>
+
+
+stop_input:
+        <font color=#008000>; check flag: </font>
+        <font color=#0000FF>CMP</font>     <font color=#800000>CS</font>:make_minus, 0
+        <font color=#0000FF>JE</font>      not_minus
+        <font color=#0000FF>NEG</font>     <font color=#C80000>CX</font>
+not_minus:
+
+        <font color=#0000FF>POP</font>     <font color=#C80000>SI</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>DX</font>
+        <font color=#0000FF>RET</font>
+make_minus      <font color=#000064>DB</font>      ?       <font color=#008000>; used as a flag. </font>
+ten             <font color=#000064>DW</font>      10      <font color=#008000>; used as multiplier. </font>
+SCAN_NUM        ENDP
+
+skip_proc_scan_num:
+
+DEFINE_SCAN_NUM         ENDM
+<font color=#008000>;*************************************************************** </font>
+
+
+<font color=#008000>;*************************************************************** </font>
+<font color=#008000>; this macro defines a procedure to print a null terminated </font>
+<font color=#008000>; string at current cursor position, receives address of string in DS:SI </font>
+DEFINE_PRINT_STRING     <font color=#0000FF>MACRO</font>
+LOCAL   next_char, printed, skip_proc_print_string
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_print_string
+
+PRINT_STRING <font color=#0000FF>PROC</font> NEAR
+<font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>SI</font>      <font color=#008000>; </font>
+
+next_char:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, <font color=#0064C8>[</font><font color=#C80000>SI</font><font color=#0064C8>]</font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 0
+        <font color=#0000FF>JZ</font>      printed
+        <font color=#0000FF>INC</font>     <font color=#C80000>SI</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>JMP</font>     next_char
+printed:
+
+<font color=#0000FF>POP</font>     <font color=#C80000>SI</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>POP</font>     <font color=#C80000>AX</font>      <font color=#008000>; </font>
+
+<font color=#0000FF>RET</font>
+PRINT_STRING ENDP
+
+skip_proc_print_string:
+
+DEFINE_PRINT_STRING     ENDM
+<font color=#008000>;*************************************************************** </font>
+
+
+<font color=#008000>;*************************************************************** </font>
+<font color=#008000>; This macro defines a procedure to print a null terminated </font>
+<font color=#008000>; string at current cursor position. </font>
+<font color=#008000>; The ZERO TERMINATED string should be defined just after the CALL. For example: </font>
+<font color=#008000>; </font>
+<font color=#008000>; CALL PTHIS </font>
+<font color=#008000>; db 'Hello World!', 0 </font>
+<font color=#008000>; </font>
+<font color=#008000>; Address of string is stored in the Stack as return address. </font>
+<font color=#008000>; Procedure updates value in the Stack to make return </font>
+<font color=#008000>; after string definition. </font>
+DEFINE_PTHIS     <font color=#0000FF>MACRO</font>
+LOCAL   next_char, printed, skip_proc_pthis, temp1
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_pthis
+
+PTHIS <font color=#0000FF>PROC</font> NEAR
+
+<font color=#0000FF>MOV</font>     <font color=#800000>CS</font>:temp1, <font color=#C80000>SI</font>  <font color=#008000>; store SI register. </font>
+
+<font color=#0000FF>POP</font>     <font color=#C80000>SI</font>            <font color=#008000>; get return address (IP). </font>
+
+<font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>            <font color=#008000>; store AX register. </font>
+
+next_char:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, <font color=#800000>CS</font>:<font color=#0064C8>[</font><font color=#C80000>SI</font><font color=#0064C8>]</font>
+        <font color=#0000FF>INC</font>     <font color=#C80000>SI</font>            <font color=#008000>; next byte. </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 0
+        <font color=#0000FF>JZ</font>      printed
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh       <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>JMP</font>     next_char     <font color=#008000>; loop. </font>
+printed:
+
+<font color=#0000FF>POP</font>     <font color=#C80000>AX</font>            <font color=#008000>; re-store AX register. </font>
+
+<font color=#008000>; SI should point to next command after </font>
+<font color=#008000>; the CALL instruction and string definition: </font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>SI</font>            <font color=#008000>; save new return address into the Stack. </font>
+
+<font color=#0000FF>MOV</font>     <font color=#C80000>SI</font>, <font color=#800000>CS</font>:temp1  <font color=#008000>; re-store SI register. </font>
+
+<font color=#0000FF>RET</font>
+temp1  <font color=#000064>DW</font>  ?    <font color=#008000>; variable to store original value of SI register. </font>
+PTHIS ENDP
+
+skip_proc_pthis:
+
+DEFINE_PTHIS     ENDM
+<font color=#008000>;*************************************************************** </font>
+
+
+<font color=#008000>;*************************************************************** </font>
+<font color=#008000>; This macro defines a procedure to get a null terminated </font>
+<font color=#008000>; string from user, the received string is written to buffer </font>
+<font color=#008000>; at DS:DI, buffer size should be in DX. </font>
+<font color=#008000>; Procedure stops the input when 'Enter' is pressed. </font>
+DEFINE_GET_STRING       <font color=#0000FF>MACRO</font>
+LOCAL   empty_buffer, wait_for_key, skip_proc_get_string
+LOCAL   exit, add_to_buffer
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_get_string
+
+GET_STRING      <font color=#0000FF>PROC</font>    NEAR
+<font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>CX</font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>DI</font>
+<font color=#0000FF>PUSH</font>    <font color=#C80000>DX</font>
+
+<font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, 0                   <font color=#008000>; char counter. </font>
+
+<font color=#0000FF>CMP</font>     <font color=#C80000>DX</font>, 1                   <font color=#008000>; buffer too small? </font>
+<font color=#0000FF>JBE</font>     empty_buffer            <font color=#008000>; </font>
+
+<font color=#0000FF>DEC</font>     <font color=#C80000>DX</font>                      <font color=#008000>; reserve space for last zero. </font>
+
+
+<font color=#008000>;============================ </font>
+<font color=#008000>; loop to get and processes key presses: </font>
+
+wait_for_key:
+
+<font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0                   <font color=#008000>; get pressed key. </font>
+<font color=#0000FF>INT</font>     16h
+
+<font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 13                  <font color=#008000>; 'RETURN' pressed? </font>
+<font color=#0000FF>JZ</font>      exit
+
+
+<font color=#0000FF>CMP</font>     <font color=#C80000>AL</font>, 8                   <font color=#008000>; 'BACKSPACE' pressed? </font>
+<font color=#0000FF>JNE</font>     add_to_buffer
+<font color=#0000FF>JCXZ</font>    wait_for_key            <font color=#008000>; nothing to remove! </font>
+<font color=#0000FF>DEC</font>     <font color=#C80000>CX</font>
+<font color=#0000FF>DEC</font>     <font color=#C80000>DI</font>
+PUTC    8                       <font color=#008000>; backspace. </font>
+PUTC    <font color=#800080>' '</font>                     <font color=#008000>; clear position. </font>
+PUTC    8                       <font color=#008000>; backspace again. </font>
+<font color=#0000FF>JMP</font>     wait_for_key
+
+add_to_buffer:
+
+        <font color=#0000FF>CMP</font>     <font color=#C80000>CX</font>, <font color=#C80000>DX</font>          <font color=#008000>; buffer is full? </font>
+        <font color=#0000FF>JAE</font>     wait_for_key    <font color=#008000>; if so wait for 'BACKSPACE' or 'RETURN'... </font>
+
+        <font color=#0000FF>MOV</font>     <font color=#0064C8>[</font><font color=#C80000>DI</font><font color=#0064C8>]</font>, <font color=#C80000>AL</font>
+        <font color=#0000FF>INC</font>     <font color=#C80000>DI</font>
+        <font color=#0000FF>INC</font>     <font color=#C80000>CX</font>
+
+        <font color=#008000>; print the key: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh
+        <font color=#0000FF>INT</font>     10h
+
+<font color=#0000FF>JMP</font>     wait_for_key
+<font color=#008000>;============================ </font>
+
+exit:
+
+<font color=#008000>; terminate by null: </font>
+<font color=#0000FF>MOV</font>     <font color=#0064C8>[</font><font color=#C80000>DI</font><font color=#0064C8>]</font>, 0
+
+empty_buffer:
+
+<font color=#0000FF>POP</font>     <font color=#C80000>DX</font>
+<font color=#0000FF>POP</font>     <font color=#C80000>DI</font>
+<font color=#0000FF>POP</font>     <font color=#C80000>CX</font>
+<font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+<font color=#0000FF>RET</font>
+GET_STRING      ENDP
+
+
+skip_proc_get_string:
+
+DEFINE_GET_STRING       ENDM
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>;*************************************************************** </font>
+<font color=#008000>; this macro defines procedure to clear the screen, </font>
+<font color=#008000>; (done by scrolling entire screen window), </font>
+<font color=#008000>; and set cursor position to top of it: </font>
+DEFINE_CLEAR_SCREEN     <font color=#0000FF>MACRO</font>
+LOCAL skip_proc_clear_screen
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_clear_screen
+
+CLEAR_SCREEN <font color=#0000FF>PROC</font> NEAR
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>      <font color=#008000>; store registers... </font>
+        <font color=#0000FF>PUSH</font>    <font color=#800000>DS</font>      <font color=#008000>; </font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>BX</font>      <font color=#008000>; </font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>CX</font>      <font color=#008000>; </font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>DI</font>      <font color=#008000>; </font>
+
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, 40h
+        <font color=#0000FF>MOV</font>     <font color=#800000>DS</font>, <font color=#C80000>AX</font>  <font color=#008000>; for getting screen parameters. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 06h <font color=#008000>; scroll up function id. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, 0   <font color=#008000>; scroll all lines! </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>BH</font>, 07  <font color=#008000>; attribute for new lines. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CH</font>, 0   <font color=#008000>; upper row. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CL</font>, 0   <font color=#008000>; upper col. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DI</font>, 84h <font color=#008000>; rows on screen -1, </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DH</font>, <font color=#0064C8>[</font><font color=#C80000>DI</font><font color=#0064C8>]</font> <font color=#008000>; lower row (byte). </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DI</font>, 4Ah <font color=#008000>; columns on screen, </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DL</font>, <font color=#0064C8>[</font><font color=#C80000>DI</font><font color=#0064C8>]</font>
+        <font color=#0000FF>DEC</font>     <font color=#C80000>DL</font>      <font color=#008000>; lower col. </font>
+        <font color=#0000FF>INT</font>     10h
+
+        <font color=#008000>; set cursor position to top </font>
+        <font color=#008000>; of the screen: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>BH</font>, 0   <font color=#008000>; current page. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DL</font>, 0   <font color=#008000>; col. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DH</font>, 0   <font color=#008000>; row. </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 02
+        <font color=#0000FF>INT</font>     10h
+
+        <font color=#0000FF>POP</font>     <font color=#C80000>DI</font>      <font color=#008000>; re-store registers... </font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>CX</font>      <font color=#008000>; </font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>BX</font>      <font color=#008000>; </font>
+        <font color=#0000FF>POP</font>     <font color=#800000>DS</font>      <font color=#008000>; </font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>      <font color=#008000>; </font>
+
+        <font color=#0000FF>RET</font>
+CLEAR_SCREEN ENDP
+
+skip_proc_clear_screen:
+
+DEFINE_CLEAR_SCREEN     ENDM
+<font color=#008000>;*************************************************************** </font>
+
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; This macro defines a procedure that prints number in AX, </font>
+<font color=#008000>; used with PRINT_NUM_UNS to print signed numbers: </font>
+<font color=#008000>; Requires DEFINE_PRINT_NUM_UNS !!! </font>
+DEFINE_PRINT_NUM        <font color=#0000FF>MACRO</font>
+LOCAL not_zero, positive, printed, skip_proc_print_num
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_print_num
+
+PRINT_NUM       <font color=#0000FF>PROC</font>    NEAR
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>DX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AX</font>, 0
+        <font color=#0000FF>JNZ</font>     not_zero
+
+        PUTC    <font color=#800080>'0'</font>
+        <font color=#0000FF>JMP</font>     printed
+
+not_zero:
+        <font color=#008000>; the check SIGN of AX, </font>
+        <font color=#008000>; make absolute if it's negative: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AX</font>, 0
+        <font color=#0000FF>JNS</font>     positive
+        <font color=#0000FF>NEG</font>     <font color=#C80000>AX</font>
+
+        PUTC    <font color=#800080>'-'</font>
+
+positive:
+        <font color=#0000FF>CALL</font>    PRINT_NUM_UNS
+printed:
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>DX</font>
+        <font color=#0000FF>RET</font>
+PRINT_NUM       ENDP
+
+skip_proc_print_num:
+
+DEFINE_PRINT_NUM        ENDM
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; This macro defines a procedure that prints out an unsigned </font>
+<font color=#008000>; number in AX (not just a single digit) </font>
+<font color=#008000>; allowed values from 0 to 65535 (0FFFFh) </font>
+DEFINE_PRINT_NUM_UNS    <font color=#0000FF>MACRO</font>
+LOCAL begin_print, calc, skip, print_zero, end_print, ten
+LOCAL skip_proc_print_num_uns
+
+<font color=#008000>; protect from wrong definition location: </font>
+<font color=#0000FF>JMP</font>     skip_proc_print_num_uns
+
+PRINT_NUM_UNS   <font color=#0000FF>PROC</font>    NEAR
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>BX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>CX</font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>DX</font>
+
+        <font color=#008000>; flag to prevent printing zeros before number: </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, 1
+
+        <font color=#008000>; (result of "/ 10000" is always less or equal to 9). </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>BX</font>, 10000       <font color=#008000>; 2710h - divider. </font>
+
+        <font color=#008000>; AX is zero? </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AX</font>, 0
+        <font color=#0000FF>JZ</font>      print_zero
+
+begin_print:
+
+        <font color=#008000>; check divider (if zero go to end_print): </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>BX</font>,0
+        <font color=#0000FF>JZ</font>      end_print
+
+        <font color=#008000>; avoid printing zeros before number: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>CX</font>, 0
+        <font color=#0000FF>JE</font>      calc
+        <font color=#008000>; if AX&lt;BX then result of DIV will be zero: </font>
+        <font color=#0000FF>CMP</font>     <font color=#C80000>AX</font>, <font color=#C80000>BX</font>
+        <font color=#0000FF>JB</font>      skip
+calc:
+        <font color=#0000FF>MOV</font>     <font color=#C80000>CX</font>, 0   <font color=#008000>; set flag. </font>
+
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DX</font>, 0
+        <font color=#0000FF>DIV</font>     <font color=#C80000>BX</font>      <font color=#008000>; AX = DX:AX / BX   (DX=remainder). </font>
+
+        <font color=#008000>; print last digit </font>
+        <font color=#008000>; AH is always ZERO, so it's ignored </font>
+        <font color=#0000FF>ADD</font>     <font color=#C80000>AL</font>, 30h    <font color=#008000>; convert to ASCII code. </font>
+        PUTC    <font color=#C80000>AL</font>
+
+
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, <font color=#C80000>DX</font>  <font color=#008000>; get remainder from last div. </font>
+
+skip:
+        <font color=#008000>; calculate BX=BX/10 </font>
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>DX</font>, 0
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AX</font>, <font color=#C80000>BX</font>
+        <font color=#0000FF>DIV</font>     <font color=#800000>CS</font>:ten  <font color=#008000>; AX = DX:AX / 10   (DX=remainder). </font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>BX</font>, <font color=#C80000>AX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+
+        <font color=#0000FF>JMP</font>     begin_print
+
+print_zero:
+        PUTC    <font color=#800080>'0'</font>
+
+end_print:
+
+        <font color=#0000FF>POP</font>     <font color=#C80000>DX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>CX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>BX</font>
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+        <font color=#0000FF>RET</font>
+ten             <font color=#000064>DW</font>      10      <font color=#008000>; used as divider.       </font>
+PRINT_NUM_UNS   ENDP
+
+skip_proc_print_num_uns:
+
+DEFINE_PRINT_NUM_UNS    ENDM
+<font color=#008000>;*************************************************************** </font>
+
+
+</font></pre>
+
+
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+
+
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xq    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/emu8086.inc.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

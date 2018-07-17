@@ -1,0 +1,5112 @@
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE1 - compare asciiz strings, use case, update registers
+
+ inputs:   DS:[SI] = address of string1, must end with a zero char.
+           ES:[DI] = address of string2
+ 
+ output:   if match  - si & di point at end of strings
+                     - flags are in "je" state
+           if different - si & di point one byte past the mismatch.
+                        - flags are in "jne" state
+* * * * * * * * * * * * * *
+Source File: COMPAR1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE2 - compare asciiz strings, use case, registers unchanged.
+
+ inputs:   DS:[SI] = address of string1, must end with zero char.
+           ES:[DI] = address of string2
+ 
+ output:   if match     - flags are in "je" state
+           if different - flags are in "jne" state
+* * * * * * * * * * * * * *
+Source File: COMPAR2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE3 - compare strings -cx- long, use case, update registers
+
+ inputs:   DS:[SI] = address of string1
+           ES:[DI] = address of string2
+               CX  = length of compare
+ 
+ output:   if match  - si & di point at end of strings
+                     - cx = zero
+                     - flags are in "je" state
+           if different - si & di point one byte past the mismatch.
+                        - cx = number of bytes remaining to compare
+                        - flags are in "jne" state
+
+* * * * * * * * * * * * * *
+Source File: COMPAR3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE4 - compare strings -cx- long, use case, registers unchanged
+
+ inputs:   DS:[SI] = address of string1
+           ES:[DI] = address of string2
+               cx  = length of compare in bytes
+ 
+ output:   if match     - flags are in "je" state
+           if different - flags are in "jne" state
+
+* * * * * * * * * * * * * *
+Source File: COMPAR4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE5 - compare asciiz strings, either case, update registers
+
+ inputs:   DS:[SI] = address of string1, must end with a zero char.
+           ES:[DI] = address of string2
+ 
+ output:   if match  - si & di point at end of strings
+                     - flags are in "je" state
+           if different - si & di point one byte past the mismatch.
+                        - flags are in "jne" state
+* * * * * * * * * * * * * *
+Source File: COMPAR5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE6 - compare asciiz strings, either case, registers unchanged
+
+ inputs:   DS:[SI] = address of string1
+           ES:[DI] = address of string2
+ 
+ output:   if compare ok,  flag "je" set
+           if compare bad, flag "jne" set
+* * * * * * * * * * * * * *
+Source File: COMPAR6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE7 - compare strings -cx- long, either case, registers updated
+
+ inputs:   DS:[SI] = address of string1
+           ES:[DI] = address of string2
+               cx  = length of compare
+ 
+ output:   if match  - si & di point at end of strings
+                     - cx = zero
+                     - flags are in "je" state
+           if different - si & di point one byte past the mismatch.
+                        - cx = number of bytes remaining to compare
+                        - flags are in "jne" state
+* * * * * * * * * * * * * *
+Source File: COMPAR7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE8 - compare strings -cx- long, either case, registers unchanged
+
+ inputs:   DS:[SI] = address of string1
+           ES:[DI] = address of string2
+               cx  = length of compare
+ 
+ output:   if match     - flags are in "je" state
+           if different - flags are in "jne" state
+
+* * * * * * * * * * * * * *
+Source File: COMPAR8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE9 - compares two characters, either case matches
+
+ inputs:   ah = character 1
+           al = character 2
+ 
+  output:    flag registers set for "je" "jne"
+             al = case of character may be changed.
+
+* * * * * * * * * * * * * *
+Source File: COMPAR9.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( COMPARE )
+COMPARE_FILES - compares two files
+
+ inputs:   DS:[SI] = address of file1 asciiz
+           DS:[DI] = address of file2 asciiz
+ 
+ output:  AX = 0 if successful compare
+* * * * * * * * * * * * * *
+Source File: COMPARF.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  CONFIG )
+GET_SETUP - read setup file from disk
+
+ inputs: ds:si = pointer to default setup block
+
+ ouptut:  AL = 0 (setup block is ok, input block updated if file found)
+               1 (setup block is bad)
+          AH = 0 (setup file was not found, so it was created using defaults)
+               1 (setup file read from disk)
+
+ processing: 0. allocate memory and copy default setup information.
+             1. build setup file name using executable plus ".CFG"
+             2. look for existing setup file & use if found
+             3. if setup not found write defaults to disk
+             4. parse setup block and build summary_table
+             5. feed color information to library
+
+ notes:  GET_SETUP establishes the setup data block for program and
+         library code.  Each variable in the setup block is placed under
+         a header and is described by a structure.  The header format
+         is "<<header text>>" followed by a zero character.  Up to
+         six headers can be definded.  The variable data is described
+         by a structure with the following format:
+
+           struc  variable
+             db    ?   ;data type 1=boolian,2=hex,3=decimal,4=color,5=string
+             db    ?   ;data length 1=byte,2=word,4=dword, or n for string len
+             xx    ?   ;minimum value,used for data types 1,2,3,4 (see note1)
+             xx    ?   ;maximum value,used for data types 1,2,3,4 (see note1)
+             xx    ?   ;default setting, all data types, strings end with zero
+             db    ?   ;description of this variable (string) ending with zero
+
+             note1 - the length of minimum value and maximum value fields
+                     depends upon the data types and data length.  It will
+                     be a byte for all types except 2 & 3.  For 2&3 the
+                     length will track the length field setting.
+
+         The setup block must have color descriptions in the first block
+         and these color descripitions must be in the order needed by
+         library functions.  A typical setup block consisting of two sections
+         would look like this:
+
+         setup_block   label   byte
+              db       "<<color settings>>",0
+              db       4,1,0,0ff,1bh,"menu bar text color",0
+              db       4,1,0,0ff,2bh,"menu bar select color",0
+                         .
+                         .
+              db       "<<setup block 2>>",0
+              db       1,1,0,1,0,"turn sound on",0              ;yes/no setup
+              db       2,1,0,0ff,0,"enter hex value",0          ;hex byte
+              db       3, 0,0, 8,0, 4,0, 'enter decimal word",0 ;decimal word
+              db       5,15,0,0,"default string",0,"enter string",0
+                         .
+              db       "<<end>>"
+
+              note2 - The length of strings include the zero byte at end.
+              note3 - For correct order and wording of color setup entries
+                      see sample file EDREC.ASM and EDREC.CFG.
+
+           
+* * * * * * * * * * * * * *
+Source File: CONFIG.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  CONFIG )
+CHANGE_SETUP - modify setup data in memory
+
+ inputs:  none
+ 
+ ouptut:  none
+ 
+ processing: 1. displaly setup block and accept user changes.
+             2. write setup block to disk only if user requests it.
+
+ Notes:  The input to this routine are the setup block which
+         has been processed by GET_SETUP.  CHANGE_SETUP can
+         not be called until GET_SETUP has set up the data it needs.
+
+* * * * * * * * * * * * * *
+Source File: CONFIG.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  CONFIG )
+WRITE_SETUP - write setup to disk
+
+ inputs:   ds:si = setup block ptr
+              cx = setup block length
+
+ ouptut:   no carry = success
+              carry = problem creating the file
+             register changed are:  bx,dx
+             
+* * * * * * * * * * * * * *
+Source File: CONFIG.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  CONFIG )
+SET_LIB_COLORS - set colors to be used by the library
+
+ inputs:  al = color attributes
+          bx = color number (position in table)
+
+            options available are:           defaults:
+              0 = menu bar text color          07h
+              1 = menu bar select color        70h
+              2 = menu bar hotkey color        0Fh         (1)
+              3 = submenu box color            0Fh
+              4 = submenu selection color
+              5 = msg text color
+              6 = msg_hyper_color
+              7 = pick color
+              8 = pick selection color
+
+ outputs: none
+ 
+* * * * * * * * * * * * * *
+Source File: CONFIG.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_DEC_STR - convert a long integer value to an ASCIIZ string
+
+ inputs:    DS:[SI] - pointing to a buffer space
+            DX:AX = long integer value
+            DWORD_TO_DEC_STR requires a 12-byte (or greater) buffer
+            
+ output:    ASCIIZ string at DS:[SI]; numerals are right-justified
+* * * * * * * * * * * * * *
+Source File: CONV03.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_DEC_STR - convert an integer value to an ASCIIZ string
+
+ inputs:    DS:[SI] pointing to a buffer space
+            (WORD_TO_DEC_STR) AX = integer value
+            WORD_TO_DEC_STR requires a 7-byte (or greater) buffer;
+            
+ output:    ASCIIZ string at DS:[SI]; numerals are right-justified
+            with spaces in front.  Conversion always creates 6 characters.
+            Storage area is cleared to spaces first.  End of string is
+            indicated by stuffing a zero hex char.  Negative numbers will
+            have a sign appended to the front
+* * * * * * * * * * * * * *
+Source File: CONV04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_DEC_STRL - convert an integer value to a left justified string
+
+ inputs:    DS:[SI] pointing to a buffer space
+             AX = integer value
+            
+ output:    string at DS:[SI]; numerals are left-justified
+            without any spaces in front or rear.
+            Storage area is not cleared before conversion.
+            String is not terminated with a zero.  All numbers are
+            assumed positive.
+            not handled.
+            SI - points past string
+* * * * * * * * * * * * * *
+Source File: CONV04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_DEC_CRT - convert word to decimal ascii and display
+
+ inputs:  ax = binary value
+          di = display offset
+          ch = color
+          
+ outputs: none
+
+ registers changed:  ax,dx
+* * * * * * * * * * * * * *
+Source File: CONV04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+HEX_STR_TO_BYTE - convert 2 hex ascii characters to 1 hex byte
+
+  inputs: ds:si points at hex data
+  
+  output: no carry - al = hex byte
+             carry - bad input data
+* * * * * * * * * * * * * *
+Source File: CONV05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+HEX_STR_TO_WORD - convert 4 hex ascii characters to 2 hex bytes
+
+  inputs: ds:si points at hex data
+  
+  output: no carry - al = hex word
+             carry - bad input data
+* * * * * * * * * * * * * *
+Source File: CONV05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+BYTE_TO_HEX_STR - convert hex byte to two ascii characters
+
+ inputs:    al = hex byte
+         ds:si = storage buffer for ascii
+         
+ output:    si = points past last store (bumped by 2)
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+BYTE_TO_HEX_CRT - convert hex byte to ascii and display
+
+ inputs:    al = hex byte
+         ds:si = storage buffer for ascii
+         
+ output:    si = points past last store (bumped by 2)
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_HEX_STR - convert hex word to four ascii characters
+
+ inputs:    ax = hex word
+         ds:si = storage for 4 ascii characters
+         
+ output:    si = pointer past last store (bumped by 4)
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_HEX_CRT - hex word to ascii and display it
+
+ inputs:    ax = hex word
+         ds:si = storage for 4 ascii characters
+         
+ output:    si = pointer past last store (bumped by 4)
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_HEX_STR - hex double word to ascii
+
+INPUTS: DX,AX = HEX
+
+OUTPUTS: si points past last byte stored
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_HEX_CRT - hex double word to ascii and display
+
+INPUTS: DX,AX = HEX
+
+OUTPUTS: NONE
+* * * * * * * * * * * * * *
+Source File: CONV06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_DEC_STRX - convert dword to decimal ascii with formating
+ inputs: dx,ax = binary dword, dx=high word, ax=low word
+         ds:di = pointer to end of storage buffer.
+ output:   di = pointer to start (left side) of decimal string.
+
+ note:  The storage buffer must be initialized with all spaces if
+        leading blanks are utilized.
+
+        This routine right justifies the decimal ascii in a buffer
+        and adds commas between each grouping of three digits.
+        Normally, this routine is used to display numbers in columns
+        with right edge lined up.
+
+        Beware, the input buffer pointer must point to the end of the
+        buffer and not the start.
+
+        This routine can be used to display numbers right justified or
+        left justified, depending upon whether the buffer start is used
+        or returned DI is used.
+* * * * * * * * * * * * * *
+Source File: CONV07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_DEC_CRTX - convert dword to decimal ascii and display
+ inputs: dx,ax = binary dword, dx=high word, ax=low word
+ output: none
+
+ note:  Display cursor should be at right end of area for decimal value.
+        The value is displayed from right to left and commas added to
+        separate every 3 characters.
+* * * * * * * * * * * * * *
+Source File: CONV07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR1_TO_WORD -  convert unsigned ascii string to binary word
+
+ inputs  ds:si points  at string ending with zero
+ 
+ output  bx = binary value
+          si = updated to point at end of value
+          al = 0 if success
+* * * * * * * * * * * * * *
+Source File: CONV10.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR2_TO_WORD -  convert unsigned ascii string to binary word
+
+ inputs  ds:si = string ptr
+            cx = string length
+ 
+ output  bx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV11.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR3_TO_WORD -  convert signed asciiz string to binary word
+
+ inputs  ds:si points  at string ending with zero
+ 
+ output  bx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV12.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR4_TO_WORD -  convert signed ascii string to binary word
+
+ inputs  ds:si = string pointer
+            cx = length of string
+ 
+ output  bx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV13.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR1_TO_DWORD -  convert unsigned ascii string to binary DWORD
+
+ inputs  ds:si points  at string ending with zero
+         direction flag = CLD state
+ 
+ output  bx,dx = binary value
+          si = updated to point at end of value
+          al = 0 if success
+* * * * * * * * * * * * * *
+Source File: CONV14.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR2_TO_DWORD -  convert unsigned ascii string to binary DWORD
+
+ inputs  ds:si = string ptr
+            cx = string length
+ 
+ output  bx,dx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR3_TO_DWORD -  convert signed asciiz string to binary DWORD
+
+ inputs  ds:si points  at string ending with zero
+ 
+ output  bx,dx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR4_TO_DWORD -  convert signed ascii string to DWORD
+
+ inputs  ds:si = string pointer
+            cx = length of string
+ 
+ output  bx,dx = binary value
+          si = updated to point at end of value
+          al = zero if success
+* * * * * * * * * * * * * *
+Source File: CONV17.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+SBYTE_TO_DEC_STDOUT - display short byte as decimal to stdout
+
+ inputs  al = byte with value of less than 128 
+ 
+ output  two digits displayed
+* * * * * * * * * * * * * *
+Source File: CONV20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+SBYTE_TO_DEC_STR - store short byte as decimal to memory
+
+ inputs  al = byte with value of less than 128 
+       ds:si = storage location
+ 
+ output  two digits
+* * * * * * * * * * * * * *
+Source File: CONV20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+BYTE_TO_DEC_STDOUT - display short byte as decimal to stdout
+
+ inputs  al = byte
+ 
+ output  three digits displayed
+* * * * * * * * * * * * * *
+Source File: CONV20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+BYTE_TO_DEC_STR - store short byte as decimal to memory
+
+ inputs  al = byte with value of less than 128 
+       ds:si = storage location
+ 
+ output  three digits
+* * * * * * * * * * * * * *
+Source File: CONV20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_DEC_STDOUT - display byte as decimal to stdout
+
+ inputs  ax = word
+ 
+ output  none
+* * * * * * * * * * * * * *
+Source File: CONV21.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_DEC_STDOUT - display dword as decimal to stdout
+
+ inputs  dx,ax = dword
+ 
+ output  dx.ax destroyed
+* * * * * * * * * * * * * *
+Source File: CONV22.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DWORD_TO_HEX_STDOUT - display byte as decimal to stdout
+
+ input:  dx,ax = binary value
+ output: ascii hex to stdout
+* * * * * * * * * * * * * *
+Source File: CONV23.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+WORD_TO_HEX_STDOUT - display word as decimal to stdout
+
+ input:     ax = binary value
+ output: ascii hex to stdout
+* * * * * * * * * * * * * *
+Source File: CONV23.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+BYTE_TO_HEX_STDOUT - display byte as decimal to stdout
+ display data byte as two hex ascii characters
+  inputs: al=data
+  output: registers ax,dx changed
+* * * * * * * * * * * * * *
+Source File: CONV23.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STRZ_TO_DWORD - convert numeric asciiz string to double word value
+
+inputs:  ds:si = string ptr (string ends with zero)
+
+output:  if no carry, dx,ax = number (ax is low word)
+         if carry, error occured
+* * * * * * * * * * * * * *
+Source File: CONV24.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR_TO_DWORD - convert string to double word
+
+inputs:  ds:si = string ptr
+            cx = string length
+            
+output:  if no carry, dx,ax = number (ax is low word)
+         if carry, error occured
+* * * * * * * * * * * * * *
+Source File: CONV24.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( CONVERT )
+DEC_STR_TO_WORD -  convert unsigned ascii string to binary word
+
+ inputs  ds:si points  at string ending with "space" or "return"
+ 
+ output  ax = binary value
+          si = updated to point at end of value
+          carry set if error
+* * * * * * * * * * * * * *
+Source File: CONV25.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+PUT_CRT_CHR - display single character
+             write character (ax) to display at row/column (dx)
+
+ inputs: ax = char & color
+         dx = address
+
+ outputs:es = display segment
+* * * * * * * * * * * * * *
+Source File: CRT1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+GET_CRT_CHR -  read character and attribute from text screen
+
+ inputs:    DH = screen row
+            DL = screen column
+
+ output:    AH = color atttribute
+            AL = ASCII character code
+
+* * * * * * * * * * * * * *
+Source File: CRT1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+REPEAT_PUT_CRT - displays a single char CX times.
+
+ inputs:  ax = char (ah=color attribute, al=ascii character)
+          dx = display location (dh=row, dl=column)
+          cx = count
+
+output:  none
+
+notes:  The character and color (ax) are displayed starting at
+        location (dx) until count (cx) is counted down to zero.
+* * * * * * * * * * * * * *
+Source File: CRT1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+PUT_CRT_BLK - copies a string to video memory buffer, with selected
+             color attribute;
+
+ inputs:         CX = maximum number of characters to print
+            DS:[SI] = pointer to first character of string
+            ES:[DI] = pointer to video buffer
+                 AH = color attribute
+                 DF = 0 (clear direction flag with CLD)
+            
+ output:    ES:[DI] = pointer to next video buffer display point
+            DS:[SI] = pointer to byte following last one displayed
+
+ notes:  registers changed = al,cx,di,si,flags
+
+* * * * * * * * * * * * * *
+Source File: CRT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+VERTICAL_REPEAT_CHR - repeat one or more columns of a character vertically
+
+ inputs: ax = char
+         dx = row/col
+         bx = increment to next repeat
+         cx = char repeat length
+         si = operation(rows) repeat count
+
+ output: registers changed = bx,si,di 
+* * * * * * * * * * * * * *
+Source File: CRT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+TABULAR_DRAW - Subroutine to draw using a table   tabular_draw
+
+   inputs:    ah = color
+           ds:bx = table ptr
+                   table =    db repeat count (negative for columns)
+                              db char
+                              db column
+                              db row
+                       above blocks are repeated until ( dw -1) is found.
+
+ output:  registers changed = ax,bx,cx,dx,si,di
+
+ notes:  Each table entry can draw a line either horizontally or
+         vertically.
+* * * * * * * * * * * * * *
+Source File: CRT3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+CLEAR_SCREEN - fill screen with specified character and color
+
+ inputs:    AH = color attribute
+            AL = fill character
+            
+ output:    nothing
+
+* * * * * * * * * * * * * *
+Source File: CRT4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DISPLAY_STRING - print string directly to video buffer.
+
+ inputs: DS:[SI] = pointer to the string
+            DH = screen row, DL = screen column
+            AH = color attribute
+            
+ output:    nothing
+
+ notes:  String must be terminated by a NUL character.
+         cr/lf characters are handled & wrap to original column.
+
+* * * * * * * * * * * * * *
+Source File: CRT4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DISPLAY_TEXT - print string directly to video buffer.
+
+ inputs: DS:[SI] = pointer to the string
+            DH = screen row, DL = screen column
+            AH = color attribute
+            CX = text length
+            
+ output:    nothing
+
+         cr/lf characters are no handled
+
+* * * * * * * * * * * * * *
+Source File: CRT4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DISPLAY_STRING_FILL - display string to screen at specified position.
+
+ inputs:   DS:[SI] = pointer to the string
+            cx = maximum length of display line including fill at end
+            DH = screen row, DL = screen column
+            AH = color attribute
+            
+  output:   nothing
+  
+  notes:   If string is shorter than the display line length (cx), then
+           the remainder of the line is cleared.
+
+* * * * * * * * * * * * * *
+Source File: CRT4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DISPLAY_STRING_LIST -  display a list of strings
+
+
+ inputs:  ds:bx points at table of offsets
+          ah= color
+
+ output: none
+
+ notes:  ds:bx points to a table of pointers.  The end of the table
+         is indicated by setting an entry to -1.  Each table entry
+         points to an asciiz string.
+* * * * * * * * * * * * * *
+Source File: CRT4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+CLEAR_WINDOW - fill area of screen
+
+ inputs:    dx = window position dh=row  dl=column
+            bx = window size   bh=rows in window  bl=columns in window
+            AH = color attribute
+            AL = fill character
+            
+  output:   nothing
+
+  notes:  The dx,bx registers define a box on the screen in standard
+          library format (see DRAW_BOX).
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DRAW_BOX -  draw a box on screen
+
+ inputs:    dx = box address   dh=row  dl=column
+            bx = box size   dh=rows in box  dl=columns in box
+            AH = color attribute
+            AL = box frame type  0=single line
+                                 1=double line
+ output: none
+
+ notes:  The center of the box is cleared as it is drawn.
+         Box parameters are not checked for illegal sizes so beware.
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+WINDOW_STRING -  display string in window.
+
+ inputs: DS:[SI] = pointer to the string
+              dx = starting row(dh)  starting column(dl)
+              bx = box total rows(bh)  box total columns(bl)
+              AH = color attribute
+              
+ outputs:   none
+
+ notes:  String must be terminated with null character.
+         Strings will wrap if cr/lf is found or edge of box is encountered.
+         Any area to right of string is cleared up to edge of box.
+         String which wrap will try not to split words.
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BOX_RIGHT - move box parameters right
+
+ inputs:  dx = box display address,  dh=row  dl=column
+          bx = box size,  bh=rows in box  bl=columns in box
+          
+ output:  dx = box row (dh) and box column (dl) moved one position
+          bx = box size, number of rows (bh), number of columns (bl)
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BOX_LEFT -  move box parameters left
+
+ inputs:  dx = box display address,  dh=row  dl=column
+          bx = box size,  bh=rows in box  bl=columns in box
+          
+ output:  dx = box row (dh) and box column (dl) moved one position
+          bx = box size, number of rows (bh), number of columns (bl)
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BOX_DOWN - move box parameters down one position
+
+ inputs:  dx = box display address,  dh=row  dl=column
+          bx = box size,  bh=rows in box  bl=columns in box
+          
+ output:  dx = box row (dh) and box column (dl) moved one position
+          bx = box size, number of rows (bh), number of columns (bl)
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BOX_EXPAND - expand box one position in all directions
+
+ inputs:  dx = box display address,  dh=row  dl=column
+          bx = box size,  bh=rows in box  bl=columns in box
+          
+ output:  if no carry
+          dx = box row (dh) and box column (dl) moved one position
+          bx = box size, number of rows (bh), number of columns (bl)
+          if carry, then error occured and data invalid
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BOX_SHRINK - shrink box parameters one position in all directions
+
+ inputs:  dx = box display address,  dh=row  dl=column
+          bx = box size,  bh=rows in box  bl=columns in box
+          
+ output:  if no carry
+          dx = box row (dh) and box column (dl) moved one position
+          bx = box size, number of rows (bh), number of columns (bl)
+          if carry, error occured, data invalid
+* * * * * * * * * * * * * *
+Source File: CRT5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+GET_ANSI_COLOR - get color attribute used by ANSI driver.
+
+ inputs:    none
+ output:    AH = color attribute
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+CURSOR_ - Move cursor and set size to standard underscore.
+
+ inputs:    DH = row
+            DL = column
+            
+ outputs:   register -ax- is modified
+ 
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+SHOW_CURSOR - move cursor to (row, col) and update cursor shape
+
+ inputs:    DH = row offset from top of screen
+            DL = column offset from left side
+
+ outputs:   register -ax- modified
+
+ notes:     Cursor shape is underscore if INSERT is off, large block
+            if INSERT is on.
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+HIDE_CURSOR - make hardware cursor invisible at present location
+
+ inputs:    none
+ outputs:   none
+
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BLINK_ON:  enable blinking attriutes
+
+ inputs: none
+ output: none
+
+ notes:  The opposite of blink is intenisified colors.  The normal default
+         is blink on.
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+BLINK_OFF:  disable blinking attriutes
+
+ inputs: none
+ output: none
+
+ note: Blink off turns intensified color selection on.  The default at
+       boot time is blink on.
+* * * * * * * * * * * * * *
+Source File: CRT6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+save_window - save area of display in memory buffer
+
+ inputs: dx=box left corner (dh=row,dl=column)
+         bh=rows in window
+         bl=columns in window
+         
+ output: carry set if error
+ 
+ processing: save up to three window areas which can be restored
+              with restore_window.  The memory manager is called
+              to allocate room to store windows saved.
+* * * * * * * * * * * * * *
+Source File: CRT7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+restore_window - restore a previously saved area of display
+
+ inputs: none
+ 
+ output: carry set if error
+         all registers are saved
+ 
+ processing: restore uses information in save_window to restore the last
+              window saved.  Up to three windows can be saved and then
+              restored in reverse order.
+* * * * * * * * * * * * * *
+Source File: CRT7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+DISK_TO_CRT - loads a screen image file saved by CRT_TO_DISK
+
+ inputs:    DS:[DX] = address of ASCIIZ filename
+ 
+ outputs:   if CF = 1, AX = MS-DOS file I/O error code
+            if CF = 0, no error
+            registers modified = AX            
+
+notes:     The input file is assumed to be closed when DISK_TO_CRT is
+           called, and is left closed upon exit.
+* * * * * * * * * * * * * *
+Source File: CRT8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( DISPLAY )
+CRT_TO_DISK - saves a screen image as a file
+
+ inputs:    DS:[DX] = address of ASCIIZ filename
+ 
+ outputs:   if CF = 1, AX = MS-DOS file I/O error code
+            if CF = 0, no error
+            registers modified = AX
+* * * * * * * * * * * * * *
+Source File: CRT8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+DBASE_INIT - open and initialize an existing or new database
+
+ inputs:  ds:dx = ptr to asciiz file name
+                  
+ output:  no carry + al = 0 (sucessfully opened an existing database)
+             carry + al = 1 (new data base created)
+             carry + al = 3 (insufficient memory to open database)
+             carry + al = 4 (disk error)
+            bx = selector needed to access database (segment)
+            cx = number of records read initially, if zero this is null file.
+            
+ processing: 1. allocate memory to handle database information
+             2. open the file or create it if necessary
+             3. initialize the data area
+             4. read the first block of data
+
+ Notes:  The database routines are usually called in the following
+         order:        1. DBASE_INIT
+                       2. database read/write routines
+                       3. dbase_close
+                                     
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+DBASE_READ - read specific record from the database.
+
+ inputs: es = selector from DBASE_INIT
+         dx = record# to read
+
+ output: no carry + al = 00 - if successful, cx=read amount
+            carry + al = 04 - record not here, could be no records are present
+            carry + al = 02 - selector bad or database corrupted.
+            carry + al = 07 - record was too big to fit in memory
+            carry + al = 08 - unknown error
+      es:si = ptr to record read (valid only if al=0)
+         cx = record length including separator character. (present if al=0)
+
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_read_next - read next sequential record.
+
+ inputs:    es = selector from DBASE_INIT
+
+ output: no carry or al = 00 - success
+            carry or al = 01 - record not here, could be no records are present
+            carry or al = 02 - selector bad or database corrupted.
+      es:si = ptr to record read (valid only if al=0)
+         cx = record length including separator character. (present if al=0)
+         dx = record number
+
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_read_prev - read previous record. (write operations do not affect)
+
+ inputs:     es = selector from DBASE_INIT
+
+ output: no carry or al = 00 - success
+            carry or al = 01 - record not here, could be no records are present
+            carry or al = 02 - selector bad or database corrupted.
+      es:si = ptr to record read (valid only if al=0)
+         cx = record length including separator character. (present if al=0)
+         dx = record number
+
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_append - append this record to end of databse
+
+ inputs:     es = selector from DBASE_INIT
+          ds:di = source data buffer
+             cx = length of record excluding the separator character
+             
+ output:  no carry,  al = 0 (success)
+            carry or al = 02 - selector bad or database corrupted.
+                     dx = record # assigned
+
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_insert - insert this record before specific record
+
+ inputs:      es = selector from DBASE_INIT
+           ds:di = source data buffer
+              cx = length of record excluding the separator char if present
+              dx = record number to insert before
+
+ output:  no carry,  al = 0 (success)
+            carry or al = 01 - record not here, could be no records are present
+            carry or al = 02 - selector bad or database corrupted.
+                     dx = record number assigned
+          
+ Note: Inserts are placed in front of the record number input. 
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_replace - replace data for a specific record
+
+ inputs:     es = selector from DBASE_INIT
+          ds:di = source data buffer
+             cx = length of record excluding the separator char if present
+             dx = record number to insert before
+
+ output:  no carry,  al = 0 (success)
+            carry or al = 01 - record not here, could be no records are present
+            carry or al = 02 - selector bad or database corrupted.
+
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+DBASE_REMOVE - delete specific record
+
+ inputs:      es = selector from DBASE_INIT
+              dx = record number to delete
+
+ output:  no carry,  al = 0 (success)
+            carry or al = 01 - record not here, could be no records are present
+             
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+dbase_close - close & write any pending data to file
+
+ inputs:      es = database selector returned by DBASE_INIT
+ 
+ output:  no carry,  al = 0 (success)
+            carry or al = 02 - selector bad or database corrupted.
+ 
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+DBASE_KILL - delete dbase file
+
+ inputs:       ds:dx = asciiz file name ptr
+ 
+ output:       carry set if error, error code from DOS function 41h
+* * * * * * * * * * * * * *
+Source File: DBASE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_INIT - open and initialize an existing or new database
+
+ inputs:  ds:dx = ptr to asciiz file name
+             ax = record size in bytes
+ output:  carry set = error, else
+             bx = selector needed to access database (segment)
+            ax = 0 if data found
+ processing: 1. allocate memory to handle database information
+             2. open the file or create it if necessary
+             3. initialize the data area
+             4. read the first block of data
+
+ Notes:  The database routines are usually called in the following
+         order:        1. FD_INIT
+                       2. database read/write routines
+                       3. FD_close
+                                     
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_READ - read specific record from the database.
+
+ inputs: es = selector from FD_INIT
+         bx = record# to read
+
+ output: no carry - if successful, cx=read amount
+            carry - unknown error
+      es:si = ptr to record read (valid if no carry)
+         
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_READ_NEXT - read next sequential record.
+
+ inputs:    es = selector from FD_INIT
+            bx = current rec#
+
+ output: no carry  =  success
+            carry  = end of data.
+      es:si = ptr to record read (valid if no carry)
+         bx = record number
+
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_READ_PREV - read previous record. (write operations do not affect)
+
+
+ inputs:    es = selector from FD_INIT
+            bx = current rec#, set to -1 if append
+
+ output: no carry  =  success
+            carry  = end of data.
+      es:si = ptr to record read (valid only no carry)
+         bx = record number
+
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_APPEND - append this record to end of databse
+
+ inputs:     es = selector from FD_INIT
+          ds:si = source data buffer
+             
+ output:  carry = error
+          no carry = bx - assigned record #
+
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_REPLACE - replace data for a specific record
+
+ inputs:     es = selector from FD_INIT
+             bx = record number modified
+
+ output:  no carry,   =  (success)
+            carry     = error
+
+ note:  It is assumed that the data has been modified and all we
+        need to do is set status flags and exit.
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_REMOVE - delete specific record
+
+ inputs:      es = selector from FD_INIT
+              bx = record number to delete
+
+ output:  no carry  (success)
+            carry  = error
+             
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+ FD_CLOSE - close & write any pending data to file
+
+ inputs:      es = database selector returned by DBASE_INIT
+ 
+ output:       none
+ 
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(DATABASE )
+FD_KILL - delete dbase file
+
+ inputs:       ds:dx = asciiz file name ptr
+ 
+ output:       carry set if error, error code from DOS function 41h
+* * * * * * * * * * * * * *
+Source File: DBASE2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_COPY - copy a file
+
+ inputs:    DS:[SI] = address of source filename
+            ES:[DI] = address of destination filename
+            Both filenames must be ASCIIZ strings.
+            
+ output:    if CF = 0, no problem
+            if CF = 1, AX = DOS error code (AX = -1 if insufficient memory)
+            All registers unchanged except for -AX-
+* * * * * * * * * * * * * *
+Source File: DISK1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_SIZE1 - find an open file's size
+
+ inputs:    BX = file handle
+ 
+ output:    if CF = 0, DX:AX = file size (low word in AX)
+            if CF = 1, AX = DOS error code
+            
+* * * * * * * * * * * * * *
+Source File: DISK2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_SIZE2 - find a closed file's size
+
+ inputs:    DS:DX = pointer to file name asciiz string
+ 
+ output:    if CF = 0, DX:AX = file size (low word in AX)
+            if CF = 1, AX = DOS error code
+            
+* * * * * * * * * * * * * *
+Source File: DISK2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_COUNT - counts the number of files matching an ASCIIZ filespec string.
+
+ inputs:    DS:[DX] pointing to filespec string
+            CX = file attributes
+            
+ output:    AX = number of files matching the filespec string
+
+ notes:     The filespec string may include the '*' and '?' wildcards.
+* * * * * * * * * * * * * *
+Source File: DISK3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_FLUSH - flushes the DOS output buffer for specified handle
+
+ inputs:    BX = file handle
+            flushing the buffer guards against data loss in case power
+            outages.
+            
+ output:    if CF = 0, no error; function successful
+            if CF = 1, AX = DOS error code
+* * * * * * * * * * * * * *
+Source File: DISK4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskRead_open - open disk file for buffer Read
+
+ inputs:  ds:dx = pointer to asciiz file name
+
+ output:  if no carry - file opened successfully
+                        BX = file handle
+                carry - error, either file can not be opened or
+                        file is already open.
+
+* * * * * * * * * * * * * *
+Source File: DISK6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskRead_block - open disk file for buffer Read
+
+ inputs:  ds:dx = buffer
+             cx = amount of data to Read (buffer must be big enough)
+             bx = handle of file open for read
+
+ output:  if no carry - file read successfully
+                carry - error, either file error, or file not open
+                        or at end of file.
+                      - If ax = zero then at end of file
+
+ note:  DiskRead_open must be called before this funciton can be
+        used.  Use DiskRead_close when done with file.
+* * * * * * * * * * * * * *
+Source File: DISK6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskRead_close - close disk file used for Read
+
+ inputs:  BX - file handle
+
+ output:  none
+
+* * * * * * * * * * * * * *
+Source File: DISK6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FileChar_open - open disk file for buffer Read
+
+ inputs:  ds:dx = pointer to asciiz file name
+
+ output:  if no carry - file opened successfully
+                carry - error, either file can not be opened or
+                        file is already open.
+
+ Note:  only one file can be open at a time if using the functions
+        FileChar_open, FileChar_close, FileChar_char
+* * * * * * * * * * * * * *
+Source File: disk7.asm
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FileChar_read - read next char
+
+ inputs:  none
+
+ output:  if no carry - char read successfully
+                      - al = char read
+                carry - error, either file error, or file not open
+                        or at end of file.
+                      - If ax = zero then at end of file
+
+ note:  FileChar_open must be called before this funciton can be
+        used.  Use FileChar_close when done with file.
+* * * * * * * * * * * * * *
+Source File: disk7.asm
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FileChar_close - close disk file used for Read
+
+ inputs:  BX - file handle
+
+ output:  none
+
+* * * * * * * * * * * * * *
+Source File: disk7.asm
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FILE_EXIST - determines if a file exists and can be opened
+
+ inputs:    DS:[DX] pointing to ASCIIZ filename
+ 
+ output:    if CF = 0, file exists
+            if CF = 1, AX = DOS error code
+* * * * * * * * * * * * * *
+Source File: DISK8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+EXPAND_FILENAME - Expand a file string to the full path including drive.
+                 This is useful for user entered data which needs to
+                 be made consistient for processing.  See DECODE_FILENAME.
+
+ inputs:    DS:[SI] pointing to a filename; the filename may contain
+                    drive specification and/or complete or partial path name.
+                    Drive specification and path name not required.
+                    Path string is terminated with a zero (null) character.
+                    
+ outputs:  if no carry then,
+            DS:[SI] pointing to the full DRIVESPEC:\PATH\FILENAME
+            CX = length of full filename
+           if carry is set then filename is bad
+
+ Note:  The file name is expanded and will overwrite the file name input.
+        Thus, the file name which is input needs to be in a buffer area
+        which will accomodate the expansion.       
+* * * * * * * * * * * * * *
+Source File: DISK9.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DECODE_FILENAME - return pointers to major portions of file name
+
+  inputs: ds:bx = pointer to file name, use EXPAND_FILENAME to format first
+  
+  output: if no carry then,
+           ds:si = pointer to path
+           ds:di = pointer to filename
+              cx = path length
+              dx = filename length
+              ah = drive letter
+              al = drive number
+          if carry, then filename is bad.
+
+ Note: The input string should be:  <drive letter>:/<path>/<filename>0
+* * * * * * * * * * * * * *
+Source File: DISKA.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+FIND_HOME_PATH - find the full path and filename of the executing program
+
+ inputs:    nothing
+ 
+ output:    ES:[DI] = pointer to the the name of the executing program
+                CX  = length of path string.
+
+  note:     The filename returned is an ASCIIZ string, and may be mixed
+            upper- and lower-case characters.
+            
+* * * * * * * * * * * * * *
+Source File: DISKB.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+GET_PATH - search enviornment for start of path information string
+
+ inputs:    nothing
+ 
+ output:     ES:DI = pointer to "PATH=" portion of path string.
+                CX = length of path
+
+ note:  The path string consists of "PATH=" followed by path entries.
+        Each path entry is separated with ";" and the last one is
+        followed by a null character (00h).  ES:DI points at
+        the start of "PATH=".                 
+* * * * * * * * * * * * * *
+Source File: DISKC.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+CHANGE_PATH - switch to new directory, but save current path first
+
+ inputs:  es:bx - points to new path
+ 
+ outputs: old_path has origional path
+           carry set if dos error
+* * * * * * * * * * * * * *
+Source File: DISKD.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+RESTORE_PATH - switch to directory saved by CHANGE_PATH
+
+ inputs: none
+ 
+ output: carry set if dos error
+* * * * * * * * * * * * * *
+Source File: DISKD.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+walk_path - compress data block
+
+ inputs:  ds:si = pointer to asciiz file mask
+          ax    = pointer to processing for each file match.
+                  This must be a FAR routine with same CS as calling
+                  program.
+          cx    = file attributes to match.
+                  0000 - match normal data files
+                  0001 - find read only files
+                  0002 - find hidden files
+                  0004 - find system files and directories
+                  0008 - find volume labels
+                  0010 - walk subdirectories also
+
+                  note: attributes may be combined in some cases.
+
+ output:  The feed proceedure is called with:  es:di = ptr to file found.
+          The file name found is fully quailfied and includes drive.
+          The current directory is where the match file was found.
+
+          After all files are processed walk_path exits with all regiseters
+          restored.
+
+ note:  The path walk starts with the current directory and includes each
+        subdirectory found.
+* * * * * * * * * * * * * *
+Source File: DISKE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskWrite_open - open disk file for buffer write
+
+ inputs:  ds:dx = pointer to asciiz file name
+
+ output:  if no carry - file opened successfully
+                carry - error, either file can not be opened or
+                        file is already open.
+
+* * * * * * * * * * * * * *
+Source File: DISKF.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskWrite_buffer - open disk file for buffer write
+
+ inputs:  ds:dx = pointer to write data
+             cx = amount of data to write
+
+ output:  if no carry - file written successfully
+                carry - error, either file error, or file not open
+                        or data block exceeds 32000 bytes.
+
+ note:  DiskWrite_open must be called before this funciton can be
+        used.  Use DiskWrite_close when done with file.
+        The largest data block which can be buffered is 32000 bytes.
+* * * * * * * * * * * * * *
+Source File: DISKF.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+DiskWrite_close - close disk file used for buffer write
+
+ inputs:  none
+
+ output:  none
+
+* * * * * * * * * * * * * *
+Source File: DISKF.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  DISK   )
+INSERT_HOME_PATH - find the full path and filename of the executing program
+
+ inputs:    ds:si = pointer to file name asciiz string.
+            es:di = pointer to buffer for constructed path.
+ output:    none 
+
+ note:      this function is useful to access files with are located
+            with an executable.  The path of the executable file is
+            inserted in front of the file name and placed in the buffer
+            provided.  If the disk drive letter is found, it is also
+            included.
+* * * * * * * * * * * * * *
+Source File: DISKG.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+LIB_ERROR_HANDLER1 - handle pre defined library errors
+
+ inputs:     al = error number (see error_index)
+             ah = flags 80h = fatal_error, abort after display
+                        40h = non_fatal1, return to retry
+                        20h = non_fatal2, return after any key press
+                        10h = fatal_return, fatal error but return after key
+                        08h = spare
+                        04h = spare
+                        02h = spare
+                        01h = spare
+
+ output:  displayed error message as follows:
+          1 - Incompatable display mode
+          2 - Code error, Contact program author for possible
+              problem resolution
+          3 - Disk read error, Press any key to contine
+          4 - Fatal disk error, Press any key
+          5 - Out of memory, Press any key to abort current operation
+          6 - Path change failed, Press any key
+          7 - insufficient DOS memory to run program,
+              Press any key to abort.
+          8 - Error in finding/reading quote file QUOTE.DAT
+          9 - Memory manager transfer error.  This is usually
+              a programming error.  Contact the author for assistance.
+         10 - Open of above file failed, possibly the file does not
+              exist or is not in correct directory.
+         11 - The program configuration (.CFG) file is missing an <end>
+              statement.   press any key to continue
+
+ note:  LIB_ERROR_HANDLER1 is intended for library use only, but can be
+        called from application.               
+* * * * * * * * * * * * * *
+Source File: ERROR1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_HANDLER1 - handle fatal errors
+
+ inputs:     ds:si = error text terminated with null character (00).
+                ah = flags 80h - fatal_error, abort after display
+                           40h - non_fatal1, return to retry
+                           20h - non_fatal2, return after any key press
+                           10h - fatal_return, fatal error but return after key
+                           08h - spare
+                           04h - spare
+                           02h - spare
+                           01h - spare
+
+ output:       ax = last keypress if a return was requested.
+
+ notes:  If the abort option is requested, the library will be closed and
+         the DOS return call executed.
+* * * * * * * * * * * * * *
+Source File: ERROR1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+error_prime - setup error handler with additional error information
+
+ inputs:  ds:bp = table of additional errors used by ERROR_TABLE_HANDLER
+          ds:di = ptr to file name for use by ERROR_FILE_HANDLER
+
+ output:  none
+
+ note:  If either ERROR_TABLE_HANDLER1 or ERROR_FILE_HANDLER1 are used
+        they must first be primed with the error information.  Error
+        files can be built with EDREC and the first record will be
+        error #1.  Similiarly a table can be built in memory which
+        consists of a list of pointers to text strings.         
+* * * * * * * * * * * * * *
+Source File: ERROR2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_TABLE_HANDLER1 - handle errors described in table provided by programmer
+
+ inputs:      al = error number
+              ah - flags 80h = fatal_error, abort after display
+                         40h = non_fatal1, return to retry
+                         20h = non_fatal2, return after any key press
+                         10h = fatal_return, fatal error but return after key
+                         08h = spare
+                         04h = spare
+                         02h = spare
+                         01h = spare
+
+ output:  none
+
+ Note: ERROR_PRIME must be caller before this routine is accessed
+* * * * * * * * * * * * * *
+Source File: ERROR2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_FILE_HANDLER1 - handle errors described in file provided by programmer
+ inputs:      al = error number (1+)
+              ah - flags 80h = fatal_error, abort after display
+                         40h = non_fatal1, return to retry
+                         20h = non_fatal2, return after any key press
+                         10h = fatal_return, fatal error but return after key
+                         08h = spare
+                         04h = spare
+                         02h = (future) error_text, ds:bp has message
+                         01h = (future) error_value, bp has error number
+
+ output:  none
+
+ Note: ERROR_PRIME must be called before this routine is accessed
+* * * * * * * * * * * * * *
+Source File: ERROR2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+LIB_ERROR_HANDLER2 - handle pre defined library errors
+
+ inputs:     al = error number (see error_index)
+             ah = flags 80h = fatal_error, abort after display
+                        40h = non_fatal1, return to retry
+                        20h = non_fatal2, return after any key press
+                        10h = fatal_return, fatal error but return after key
+                        08h = spare
+                        04h = spare
+                        02h = spare
+                        01h = spare
+
+ output:  displayed error message as follows:
+          1 - Incompatable display mode
+          2 - Code error, Contact program author for possible
+              problem resolution
+          3 - Disk read error, Press any key to contine
+          4 - Fatal disk error, Press any key
+          5 - Out of memory, Press any key to abort current operation
+          6 - Path change failed, Press any key
+          7 - insufficient DOS memory to run program,
+              Press any key to abort.
+          8 - Error in finding/reading quote file QUOTE.DAT
+          9 - Memory manager transfer error.  This is usually
+              a programming error.  Contact the author for assistance.
+         10 - Open of above file failed, possibly the file does not
+              exist or is not in correct directory.
+         11 - The program configuration (.CFG) file is missing an <end>
+              statement.   press any key to continue
+
+ note:  LIB_ERROR_HANDLER2 is intended for library use only, but can be
+        called from application.               
+* * * * * * * * * * * * * *
+Source File: ERROR3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_HANDLER2 - handle fatal errors
+
+ inputs:     ds:si = error text terminated with null character (00).
+                ah = flags 80h - fatal_error, abort after display
+                           40h - non_fatal1, return to retry
+                           20h - non_fatal2, return after any key press
+                           10h - fatal_return, fatal error but return after key
+                           08h - spare
+                           04h - spare
+                           02h - spare
+                           01h - spare
+
+ output:       ax = last keypress if a return was requested.
+
+ notes:  If the abort option is requested, the library will be closed and
+         the DOS return call executed.
+* * * * * * * * * * * * * *
+Source File: ERROR3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_PRIME2 - setup error handler with additional error information
+
+ inputs:  ds:bp = table of additional errors used by ERROR_TABLE_HANDLER
+
+ output:  none
+
+* * * * * * * * * * * * * *
+Source File: ERROR4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  ERROR  )
+ERROR_TABLE_HANDLER2 - handle errors described in table provided by programmer
+
+ inputs:      al = error number
+              ah - flags 80h = fatal_error, abort after display
+                         40h = non_fatal1, return to retry
+                         20h = non_fatal2, return after any key press
+                         10h = fatal_return, fatal error but return after key
+                         08h = spare
+                         04h = spare
+                         02h = spare
+                         01h = spare
+
+ output:  none
+
+ Note: ERROR_PRIME2 must be caller before this routine is accessed
+* * * * * * * * * * * * * *
+Source File: ERROR4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+FLOAT_OPEN - open the floating point module & hardware for use
+
+ INPUTS:  bx = number of tokens (variables) needed by program
+ 
+ OUTPUT:  carry set signals error ( no memory ).
+
+ notes:
+ 
+         Using this library is different than normal 8087 chip
+         programming.  All numbers (variables) are first assigned
+         to tokens, then they can be minipulated.  When all
+         calculations are finsihed the tokens can be extracted by
+         convert to binary or text.  Thus, the normal sequence of
+         operations is:
+
+         1. call library_setup to reserve space for variables (tokens)
+         2. input all tokens as binary values or text strings using
+            TEXT_IN,BINARY_IN calls.
+         3. perform all caluclations using add,sub,div,etc. calls.
+         4. extract results using TEXT_OUT,BINARY_OUT calls.
+
+         The FLOAT_OPEN and FLOAT_CLOSE are normally handled by
+         calls to LIBRARY_OPEN and LIBRARY_CLOSE.
+         
+* * * * * * * * * * * * * *
+Source File: FLOAT1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+FLOAT_CLOSE - release the memory allocated by FLOAT_OPEN
+
+  inputs:  none
+  outputs: none
+
+  note:  The FLOAT_OPEN and FLOAT_CLOSE are normally handled by
+         calls to LIBRARY_OPEN and LIBRARY_CLOSE.
+* * * * * * * * * * * * * *
+Source File: FLOAT1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+BINARY_IN - input a value to the floating point module
+
+ INPUTS:  dx,ax = signed 32 bit number
+          bx    = token number to use for this number. (0-x)
+          
+ OUTPUT:  none
+
+ NOTE:  The token number must be within the range of tokens reserved
+        by LIBRARY_OPEN or FLOAT_OPEN.  No error checking is performed.
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+BINARY_OUT - get a binary value from the floating point module
+
+ INPUTS:  bx = token number
+ 
+ OUTPUT:  dx,ax = signed 32 bit number
+          carry = overflow, number not valid
+
+ NOTE:  The token number must be within the range of tokens reserved
+        by LIBRARY_OPEN or FLOAT_OPEN.  No error checking is performed.
+          
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+FMOVE - move a floating value from one token to another
+
+ inputs:  ax = from token
+          bx = to token
+
+ output:  none
+
+ note:  The token number must be within the range of tokens reserved
+        by LIBRARY_OPEN or FLOAT_OPEN.  No error checking is performed.
+            
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+F_SUBTRACT - subtract two floating numbers
+
+ INPUTS:   token(ax) - token(bx) -> token(cx)
+           ax = token of operand1
+           bx = token of operand2
+           cx = token of accumulator (result)                      
+ 
+ OUTPUT:   token(cx) has result
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+F_ADDITION - add two floating numbers
+
+ INPUTS:   token(ax) + token(bx) -> token(cx)
+           ax = token of operand1
+           bx = token of operand2
+           cx = token of accumulator (result)                      
+ 
+ OUTPUT:   token(cx) has result
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+F_COMP - compare two floating point numbers
+
+ INPUTS:    token(ax) compared to token(bx)
+ 
+ OUTPUT:    ax -1 (ax bigger bx)
+                0 (ax = bx)
+                1 (ax less bx)
+                (also sets flags for JE,JNE,JG,JGE,JL,JLE)
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+F_MULTIPLY - multiply two tokens
+
+ INPUTS:   token(ax) x token(bx) -> token(cx)
+           ax = token of operand1
+           bx = token of operand2
+           cx = token of accumulator (result)                      
+
+ OUTPUT:   token(cx) has result
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+F_DIVIDE - divide one floating number by another
+
+ INPUTS:   token(ax) / token(bx) -> token(cx)
+           ax = token of operand1
+           bx = token of operand2
+           cx = token of accumulator (result)                      
+
+ OUTPUT:   token(cx) has result
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+ROUND - round floating number to nearest 1/100
+
+ INPUTS:  ax = token of number to be scalled
+ 
+ PROCESSING:  token * 100 -> integer /100
+
+ NOTE:  This function is intended for financial calculations which must
+        be rounded to nearest penny.  The round function will round up
+        if any value is greater than .xx5
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+TEXT_OUT - convert floating value to text string
+
+ INPUTS:    token(ax) of number to be converted.
+            cl = size of output buffer
+            ch = number of places to right of decimal
+            es:di = storage point
+            
+ OUTPUT:    es:di ponts at text
+
+ NOTE:  The size of the output buffer must be large enough to handle
+        the number and must be larger than the input value in register
+        ch.  If errors are found the output buffer is filled with
+        "#" characters to indicate that something is wrong.
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+TEXT_IN - convert a text string to floating point and assign token
+
+ INPUTS:    es:di = pointer to text string ending with null character.
+               ax = token number to assign to text (0-x)
+               
+ OUTPUT: errors in the text string will result in a value of zero being
+         entered.
+
+ NOTE:  Leading spaces or zeros are ignored in the input text string.
+        The number can have a sign of "+" or "-".
+        The number can have an exponent specified by using "E" and value
+        or putting a decimal point "." in the number.        
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  FLOAT  )
+FLOAT_SET - signal the presense of floating point hardware
+
+ INPUTS:  al = lib_info.math_chip setting  (0=no chip  1=chip here)
+ 
+ OUTPUT:  none
+ 
+ Note:  This function not used by library at present.
+* * * * * * * * * * * * * *
+Source File: FLOAT2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dmul_10_plus - multiply times ten and add update value
+  inputs:  dx,bx = current sum
+              ax = update value to add to new sum
+  output:  dx,bx = result of (dx,bx) * (10) + ax
+           carry set if overflow
+* * * * * * * * * * * * * *
+Source File: MATH01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_negate - negate dword in dx,ax
+  inputs:  dx,ax = number
+  optput:  dx,ax negated
+* * * * * * * * * * * * * *
+Source File: MATH02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_divide - divide dword values
+  inputs: dx,ax divided by bx
+  output: dx,ax = result
+* * * * * * * * * * * * * *
+Source File: MATH02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_add - add dword values
+  inputs:  dx,ax = value 1
+           cx,bx = value 2
+  output:  dx,ax = result
+           carry set if overflow
+* * * * * * * * * * * * * *
+Source File: MATH02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_sub - subtract dword values
+  inputs:  dx,ax = value 1
+           cx,bx = value 2
+  output:  dx,ax = dx,ax - cx,bx
+           carry set if overflow
+* * * * * * * * * * * * * *
+Source File: MATH02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_mul - multiply dword values
+   inputs:  dx,ax = value 1
+            cx,bx = value 2
+   output:  dx,cx,bx,ax = result
+* * * * * * * * * * * * * *
+Source File: MATH02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ dword_crc - compute 32 bit crc
+  inputs:  ds:si = buffer with data
+           dx,ax = starting crc value (normally 0)
+           cx    = buffer length
+
+  output:  dx,ax
+* * * * * * * * * * * * * *
+Source File: MATH03.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ word_sqroot - 
+  input:  ax = radicand
+  output: dl = root
+          ax = remainder
+
+* * * * * * * * * * * * * *
+Source File: MATH04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ DWORD_COMPARE - unsigned 32 bit number compare
+  inputs  ax,bx = first number
+          cx,dx = second number
+  outputs  zf (zero flag) = 1 if equal
+           if 1 greater than 2  zf=0 and carry=0
+           if 1 less than 2     zf=0 and carry=1
+           registers are unchanged
+
+* * * * * * * * * * * * * *
+Source File: MATH05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ QUAD_DIVIDE - divide quad value by dword
+   inputs:  dx,cx,bx,ax = divident
+                  si,di = divisor
+   output:  dx,ax = quotient
+            cx,bx = remainder
+
+* * * * * * * * * * * * * *
+Source File: MATH05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ QUAD_MULTIPLY1 - multiply two dwords
+   inputs: dx,ax = value 1
+           cx,bx = value 2
+   output: dx,cx,bx,ax = result
+
+* * * * * * * * * * * * * *
+Source File: MATH05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ QUAD_MULTIPLY2 - multiply two 32 bit unsigned numbers
+  inputs - cx,bx = value 1
+           dx,ax = value 2
+  outputs - product in dx,cx,bx,ax (high to low)
+
+* * * * * * * * * * * * * *
+Source File: MATH05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ BLOCK_ADD     Add two values in memory
+  inputs:  ds:si = pointer to value 1
+           es:di = pointer to value 2
+              cx = length of values
+  output:  es:di = pointer to result
+
+ note: values are stored low byte to high byte.  Thus, initially
+       -si- and -di- will point at the least significant byte.
+
+* * * * * * * * * * * * * *
+Source File: MATH06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ BLOCK_NEGATE - negate block in memory
+  inputs:  ds:si = pointer to value
+              cx = lenght of value in bytes
+  output:  ds:si = pointer to negated value
+* * * * * * * * * * * * * *
+Source File: MATH06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ BLOCK_SUBTRACT - subtract two data blocks in memory
+   inputs:  ds:si = pointer to value 1
+            es:di = pointer to value 2
+               cx = lenght of values in bytes
+   output:  es:di = pointer to value2 - value1
+
+* * * * * * * * * * * * * *
+Source File: MATH06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ BLOCK_DIVIDE - divide two variable blocks in memory
+  inputs:  ds/es:si = address of value 1
+           ds/es:di = address of value 2
+              cx = length of value 1 in bytes, value 2 length = (cx * 2)
+  output:  ds/es:di = result
+           ds/es:si = remainder
+
+* * * * * * * * * * * * * *
+Source File: MATH06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ BLOCK_MULTIPLY - multiply of two block in memory
+   inputs:  ds/es:si = pointer to value 1
+            es/es:di = pointer to value 2
+               cx = length of values
+   output:  es:di = pointer to result, length of (cx * 2) 
+
+* * * * * * * * * * * * * *
+Source File: MATH06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ WORD_CRC1 - undate CRC word sum for next byte
+  inputs:  bx = current value for crc
+           al = new byte to add to crc formation
+
+  output:  bx = updated crc sum
+
+  note:  WORD_CRC1 must be called to CRC each byte of a block of
+         data.  Is is a little slower than WORD_CRC2
+
+* * * * * * * * * * * * * *
+Source File: MATH07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MATH   )
+ WORD_CRC2 - fast 16bit CRC for a buffer of data
+  inputs:  ds:si = pointer to buffer
+              ax = starting CRC value
+              cx = length of buffer
+  output:     ax = computed CRC
+* * * * * * * * * * * * * *
+Source File: MATH07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_OPEN - interrogate memory and setup database.
+
+ inputs:  none
+
+ output:  no carry = success, ax=total 1k blocks allocated
+           carry = error/warning, if ax=7 DOS memory was not found.
+                                     ax=2 fatal programming error
+
+
+ processing: 1. determine memory available and setup database
+              2. allocate all available memory
+
+ Note: DOS memory is required for many library functions so
+       it must be available.  See sample programs for method
+       needed to make DOS memory available.
+
+       This function is called once at the start of a program.
+       The Library_setup function calls mem_open, so it should
+       not need to be called directly.
+
+       The following calls still need MEM_OPEN & MEM_CLOSE, but
+       allow the MEM_PUT & MEM_GET calls to be avoided.
+
+       DOS_MEM_ALLOCATE - returns segment for direct writes to
+                          allocated memory
+       DOS_MEM_RELEASE  - releases memory allocated with DOS_MEM_ALLOCATE
+
+       The memory manager utilizes DOS,XMS, and EMS memory and isolates
+       the caller from memory minipulation.  All interfaces with memory
+       can be handled through memory manager calls.
+
+       The mem_open,mem_allocate, and mem_close are required calls if any
+       part of the memory manager is utilized. For most efficient
+       memory allocation always let the memory manager decide where to
+       allocate memory from, and then use only the memory manager calls
+       to transfer data.  This strategy allows a program to work if any
+       of the three types of memory is available.
+
+       LIMITATIONS - The largest block which can be allocated for use
+                     is 64k
+                   - The maximum number of allocations active at once
+                     is set to 50.  Contact author to increase/decrease
+                   - The smallest allocation unit is 1 word
+                   - The maximum amount of memory which can be managed
+                     is about 32mega bytes
+
+      Before doing an exec call to DOS it is necessary to do a mem_close
+      to make memory available.  Then, do a mem_open upon return.  The
+      library function SPAWN_DOS is the only function that does an exec
+      call to DOS.  After the mem_close and mem_open sequence all previous
+      data is lost.
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_ALLOCATE - allocate a block of memory.
+
+ inputs:     dx,ax=number of bytes to allocate, dx=high word ax=low word
+             bx=allocation method, 0=normal allocation
+                                   1=only allocate DOS memory
+
+ outputs:   no carry  bx=memory mgr handle, use to read/write/release
+            carry     insufficient memory, or too many allocations active
+                      or -bx- not set correctly
+
+ note:   This function is called each time a new block of memory is needed.
+         If register BX is set to normal allocation, then the MEM_GET and
+         MEM_PUT calls must be used to access memory.
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_PUT - write to allocated memory area.
+
+ inputs:     bx = memory mgr handle
+          bp:si = ptr to data
+             di = put location (index from start of block) 0=start of blk
+             cx = length of bp:si data in words
+
+  output:   no carry = success
+               carry = error code in -ax- (from EMS/XMS driver)
+
+ note:  This function is called to transfer data to allocated memory.
+               
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_GET - read from allocated memory area.
+
+ inputs:      bx = memory mgr handle
+           bp:di = location to store data
+              si = get location (index from start of block)
+              cx = number of words to read
+
+ output:  no carry = success
+          carry    = error code in -ax- (from EMS/XMS driver)
+
+ processing: data is read from the start of block for -cx- bytes
+
+ note:  This function is called to transfer data from allocated memory.
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_RELEASE  - release allocated memory block.
+
+ inputs:     bx = memory mgr handle
+ 
+ output:     none
+ 
+ processing:  1. convert packet into free memory.
+              2. garbage collect on both sides of chain.
+
+ note:  This function releases blocks of memory which were allocated
+        by mem_allocate.
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MEM_CLOSE - close memory handler.
+
+ inputs:     none
+ output:     none
+ 
+ note:  This function is called just before the program exits
+        to return all memory back to the SYSTEM.  Normally,
+        this is accomplished in the LIBRARY_TERMINATE function.
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+DOS_MEM_ALLOCATE - allocate dos memory for direct writes
+
+ inputs:  dx,ax - number of bytes to allocate
+ 
+ output:   no carry  es = segment of memory allocated
+              carry     = failure allocating memory
+
+ note:  This function is used only if the program wants to read and
+        write memory directly.  Is is faster than MEM_GET and MEM_PUT
+        but is limited to DOS memory only.            
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+DOS_MEM_RELEASE - release memory allocated with DOS_MEM_ALLOCATE
+
+  inputs:  es = segment of memory to release
+  
+  output:  no carry = success
+              carry = bad segment
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CHECK_FOR_EMS:      detects EMS driver
+
+ inputs:  none
+
+ output:  if CF = 1, no Expanded Memory manager installed
+          if CF = 0, AH = EMM error code
+          if AH = 0, BX = page frame segment address
+          registers changed  AX,BX           
+* * * * * * * * * * * * * *
+Source File: MEMORY1.ASM
+
+  00h         Seconds
+  01h         Second Alarm
+  02h         Minutes
+  03h         Minute Alarm
+  04h         Hours
+  05h         Hour Alarm
+  06h         Day of the Week
+  07h         Day of the Month
+  08h         Month
+  09h         Year
+  0Ah         Status Register A
+  0Bh         Status Register B
+  0Ch         Status Register C
+  0Dh         Status Register D
+  0Eh         Diagnostic Status Byte
+  0Fh         Shutdown Status Byte
+  10h         Disk Drive Type for Drives A: and B:
+              The drive-type bytes use bits 0:3 for the first
+              drive and 4:7 for the other disk drive types.
+  00h         no drive present
+  01h         double sided 360k
+  02h         high capacity (1.2 meg)
+  03h-0Fh     reserved
+  11h         (AT):Reserved    (PS/2):drive type for hard disk C:
+  12h         (PS/2):drive type for hard disk D:
+              (AT, XT/286):hard disk type for drives C: and D:
+  Format of drive-type entry for AT, XT/286:
+  0       number of cyls in drive (0-1023 allowed)
+  2       number of heads per drive (0-15 allowed)
+  3       starting reduced write compensation (not used on AT)
+  5       starting cylinder for write compensation
+  7       max. ECC data burst length, XT only
+  8       control byte
+  Bit
+  7       disable disk-access retries
+  6       disable ECC retries
+  5-4     reserved, set to zero
+  3       more than 8 heads
+  2-0     drive option on XT (not used by AT)
+  9       timeout value for XT (not used by AT)
+  12      landing zone cylinder number
+  14      number of sectors per track (default 17, 0-17 allowed)
+  13h         Reserved
+  14h         Equipment Byte (corresponds to sw. 1 on PC and XT)
+  15h-16h     Base Memory Size      (low,high)
+  17h-18h     Expansion Memory Size (low,high)
+  19h-20h     Reserved
+          (PS/2) POS information Model 50 (60 and 80 use a 2k
+          CMOS RAM that is not accessible through software)
+  21h-2Dh     Reserved (not checksumed)
+  2Eh-2Fh     Checksum of Bytes 10 Through 20  (low,high)
+  30h-31h     Exp. Memory Size as Det. by POST (low,high)
+  32h         Date Century Byte
+  33h         Information Flags (set during power-on)
+  34h-3Fh     Reserved 
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_TYPE - check cmos type
+  inputs: none
+  outputs: dl = 0 standart AT cmos
+                1 ps/2 style cmos
+               0ffh cmos is bad, checksum fails
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_CHECKSUM - checksum a block of cmos memory
+  inputs:  dl = cmos type,  0(at) 1(ps/2)
+  outputs: bx = cmos crc calculation
+           al = 0 (checksum ok)  1 (checkusm bad)
+
+  note:  The computed checksum is compared to the one stored in
+         cmos and if bad the -al- register is set to 1.
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_READ_BYTE - read one char from cmos memory
+  inputs:  ah = address
+  outputs: al = cmos data read
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_READ_WORD - read one word from cmos memory
+  inputs:  ah = address
+  outputs: ax = cmos data read
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_READ_BLOCK - read block of data from cmos memory
+  inputs:  ah = starting cmos address
+         es:di = storage location
+            cx = number of bytes to read
+  outputs: none
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_WRITE_BYTE - write one char to cmos memory
+  inputs:  ah = address
+           al = data to write
+  outputs: none
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_WRITE_WORD - write one word to cmos memory
+  inputs:  bl = cmos address to write
+           ax = data to write
+  outputs: none
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CMOS_WRITE_BLOCK - write block of data to cmos memory
+  inputs:  ah = cmos address to start writing
+           ds:si = data to write
+           cx = length of write
+
+* * * * * * * * * * * * * *
+Source File: MEMORY2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MCB_FIND_FIRST - scan for start of MCB chain
+  inputs: none
+  outputs: if no carry, then   es:0 points at MCB chain
+           if carry then mcb chain is bad
+
+  note:  This routine scan for the MCB chain, rather than look in
+         the DOS database.  For some implementations of brain
+         damaged DOS, the scan works better.
+* * * * * * * * * * * * * *
+Source File: MEMORY3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MCB_FIND_NEXT - scan for next MCB entry
+  inputs: ES:0 points at current MCB
+           if no carry then, es:0 point at next mcb
+           if carry then this is last mcb
+
+* * * * * * * * * * * * * *
+Source File: MEMORY3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MCB_CHECK_NAME - compare current MCB name against list of names
+  inputs: ES:0 points at current MCB
+          DS:SI points at compare list, asciiz strings each terminated
+                with zero, the list is terminated with zero also.  Thus
+                end of list is two zeros in a row.
+  output: carry set if match, and ds:si point at match name
+
+* * * * * * * * * * * * * *
+Source File: MEMORY3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MCB_FIND_NAME - scan current mcb to see if name is present
+  inputs:  es:0 is mcb
+  output:  carry set if name found and es:di points at name
+
+* * * * * * * * * * * * * *
+Source File: MEMORY3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+MCB_DISPLAY_NAME - display program name if associated with current mcb
+  inputs: ES:DI - points at name in MCB
+  outputs: none
+
+ note: name is display at the cursor position.
+* * * * * * * * * * * * * *
+Source File: MEMORY3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+CHECK_DOS_MEMORY - check DOS memory size and amount available
+  inputs: ax = segment at end of program area (zseg)
+  outputs: ax = available blocks or paragraphs (16 bytes = 1 block)
+           bx = total memory size in blocks
+
+  note:  This routine scan for the MCB chain, rather than look in
+         the DOS database.  For some implementations of brain
+         damaged DOS, the scan works better.
+* * * * * * * * * * * * * *
+Source File: MEMORY4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_CHECK - check XMS memory size and amount available
+ check if XMS eXtended Memory Specification driver exists
+  inputs:  none
+  output:  es:bx = XMS control address if bx not equal zero
+              ax = size of largest block available in k-bytes
+              dx = total size of avail. memory in k-bytes
+              cx = A20 line state, 0=disabled & wraping, 1=enabled
+
+              bx = zero if no XMS driver found
+
+  note:  This function must be called before other XMS functions
+         to setup the internal control address
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_UMB_CHECK - check if UMB area allocated by XMS driver
+  inputs:  none
+  output:  if no carry
+              DX = size of largest UMB in paragraphs (16-bit blocks)
+           if carry, then function not available
+           
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_ALLOCATE - allocate xms memory
+  inputs: dx - size needed in k-bytes
+  output: ax = 0001 if block allocated ok
+          dx = handle for block allocated
+
+ note: the handle in -dx- is saved internally and is not needed.
+       xms_read and xms_write will use the stored handle.  This
+       means that only one xms block can be allocated at a time.
+     
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_READ - read XMS memory block
+   inputs:  bp:di = to address
+            dx,ax = index into memory block
+               cx = number of words to transfer
+
+  output:      ax = result code, 1 = success
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_WRITE - write block of data to XMS memory
+   inputs:  bp:si = from address
+               cx = number of words to transfer
+            dx,ax = index into segment
+
+  output: ax = result code, 1 = success
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+XMS_RELEASE - release current XMS memory block
+  inputs:
+* * * * * * * * * * * * * *
+Source File: MEMORY5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EMS_CHECK - check if EMS memory is present
+
+ inputs:  none
+
+ output:  if CF = 1, no Expanded Memory manager installed
+          if CF = 0, AH = EMM error code
+          if AH = 0, ES = page frame segment address
+                     BX = available pages, each page is 4k-bytes
+                     DX = total ems pages
+          registers changed  AX,BX,ES           
+
+ note:  The ems page frame is stored internally for use by
+        the ems read and write functions.
+* * * * * * * * * * * * * *
+Source File: MEMORY6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EMS_ALLOCATE - allocate EMS memory
+  inputs: bx - number of 4k pages to allocate
+  output:      if no carry, then success
+               carry = failure 
+     
+* * * * * * * * * * * * * *
+Source File: MEMORY6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EMS_PAGE - request page of ems memory
+   inputs:  bx = ems page needed
+
+  output:   no carry = success
+            carry = error, error code in -ah-
+* * * * * * * * * * * * * *
+Source File: MEMORY6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EMS_RELEASE - release allocated ems memory
+  inputs:  none
+  output:  none
+* * * * * * * * * * * * * *
+Source File: MEMORY6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EXT_CHECK - check if EXT memory is present
+ inputs:  none
+ output:  ax = size of available extended memory in 1k blocks
+          bx = total amount of extended memory installed
+          
+* * * * * * * * * * * * * *
+Source File: MEMORY7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EXT_READ - read block of ext memory
+  inputs: dx,ax = from address (extended memory) 1meg base assumed
+          es:di = to address (conventional memory)
+             cx = bytes to move
+   output - ah = error code, or zero if no error
+          
+* * * * * * * * * * * * * *
+Source File: MEMORY8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MEMORY )
+EXT_WRITE - write to EXT memory
+   inputs:  es:si = from address (conventional memory)
+            dx,ax = extended memory address, 1k offset assumed
+               cx = bytes to move
+  outputs - ah = error code, or zero if no errors
+
+          
+* * * * * * * * * * * * * *
+Source File: MEMORY8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ bit_count - count the number of bits in -al-
+  inputs:  al = input value
+  output:  ah = count of number of bits set in -al-
+           
+* * * * * * * * * * * * * *
+Source File: MISC1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ REGISTER_DUMP - unsigned 32 bit number compare
+  inputs  registers
+  outputs  registers displayed on stdout on one line
+           registers are unchanged
+
+  note:  This function is intended for debugging programs.
+* * * * * * * * * * * * * *
+Source File: MISC2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ STACK_DUMP - unsigned 32 bit number compare
+  inputs  registers
+  outputs  registers displayed on stdout on one line
+           registers are unchanged
+
+  note:  This function is intended for debugging programs.
+* * * * * * * * * * * * * *
+Source File: MISC2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ A20_CHECK - check if A20 line is active
+  inputs: none
+  outputs  ax = 0 a20 is wrapping (normal DOS state)
+           ax = 1 a20 is not wrapping
+
+* * * * * * * * * * * * * *
+Source File: MISC3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ A20_WRAP_OFF - check if A20 line is active
+  inputs: none
+  outputs  ax = 0 a20 is wrapping (normal DOS state)
+           ax = 1 a20 is not wrapping
+
+* * * * * * * * * * * * * *
+Source File: MISC3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ A20_WRAP_ON - check if A20 line is active
+  inputs: none
+  outputs  ax = 0 a20 is wrapping (normal DOS state)
+           ax = 1 a20 is not wrapping
+
+* * * * * * * * * * * * * *
+Source File: MISC3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC   )
+ SEG_TO_ABS - convert segment:offset to absolute address
+  inputs: ax:bx = segment offset
+  outputs dx,ax = absolute adderss
+
+* * * * * * * * * * * * * *
+Source File: MISC3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+IS_ALPHA - check if key returned by KEY_READ is a letter from A-Z or a-z.
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    if CF = 0, keycode is a character from A-Z or a-z
+            if CF = 1, keycode is not a character from A-Z or a-z
+* * * * * * * * * * * * * *
+Source File: MKEY01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+IS_DIGIT - check if key returned by KEY_READ is the ASCII from 0-9
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    if CF = 0, keycode is a character from 0-9
+            if CF = 1, keycode is not a character from 0-9
+* * * * * * * * * * * * * *
+Source File: MKEY02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+IS_LOWER - check if key returned by KEY_READ is lower case
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    if CF = 1, keycode is not a character from a-z
+* * * * * * * * * * * * * *
+Source File: MKEY03.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+IS_UPPER - check if key returned by KEY_READ is upper case
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+
+ output:   if CF = 1, keycode is not a character from A-Z
+* * * * * * * * * * * * * *
+Source File: MKEY04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+TO_UPPER - converts ascii character to upper case
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    AL = upper case ascii
+* * * * * * * * * * * * * *
+Source File: MKEY05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+TO_LOWER - converts ascii character lower case
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    AL = lower case ascii
+* * * * * * * * * * * * * *
+Source File: MKEY06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+CAPS_ON - Turn the keyboard CAPS LOCK key on
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+NUMLOCK_ON - Turn the keyboard NUM LOCK key on
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+SCROLL_ON - Turn the keyboard SCROLL LOCK key on
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+INSERT_OFF - Turn the keyboard INS key off
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+CAPS_OFF - Turn the keyboard CAPS LOCK key off
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+NUMLOCK_OFF - Turn the keyboard NUM LOCK key off
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+SCROLL_OFF - Turn the keyboard SCROLL LOCK key off
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: MKEY07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+YES_OR_NO - wait for yes or no user response
+
+  inputs: al - 0=wait for Yes/NO/abort key, and ignore all others
+               1=wait for Yes/No/abort key, and return others also
+               
+  outputs: no carry - al = Yes/No ascii character in upper case
+              carry - al = 03 if abort, and others also if requested
+* * * * * * * * * * * * * *
+Source File: MKEY08.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+FLUSH_KEYBOARD - clears the keyboard's 'type-ahead' buffer
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY09.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_CHECK - check if a key is waiting in the keyboard buffer.
+
+ inputs:    none
+ 
+ output:    AX = 0 if no key waiting
+            AX = 1 if key waiting
+            
+ note:      if key is found in buffer it is left there and the AX register
+            is set to one.
+* * * * * * * * * * * * * *
+Source File: MKEY09.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_READ - returns next key pressed
+
+ inputs:  none
+ output:    if AH = 0  AL = ASCII key code
+            if AH = 1  AL = scan code
+* * * * * * * * * * * * * *
+Source File: MKEY09.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_PUT - put key back into BIOS buffer
+
+ inputs:  ax = key
+ output:  none
+ 
+ Note: If keyboard buffer is full then the key will be ignored.
+* * * * * * * * * * * * * *
+Source File: MKEY10.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_IF_READY - get next key waiting from keyboard
+
+ inputs:    none
+ 
+ output:    AX = 0 if no key waiting
+            AX = keycode
+* * * * * * * * * * * * * *
+Source File: MKEY11.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+SETUP_MOUSE -  initializes mouse driver if mouse present
+
+ inputs:    none
+ 
+ output:    no carry - mouse is initialized
+               carry - mouse was not found
+* * * * * * * * * * * * * *
+Source File: MKEY12.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+MOUSE_PARMS - determine mouse position & buttons pressed
+
+ inputs:    none
+ 
+ output:    if ZF = 1, no buttons are pressed
+            if ZF = 0, BX = button code
+             BX bit 0 if set = left button is down
+             BX bit 1 if set = right button is down
+             BX bit 2 if set = center button is down
+            CX = horizontal (x) coordinate
+            DX = vertical (y) coordinate
+            
+ Note that mouse positions are expressed as a pixel location
+* * * * * * * * * * * * * *
+Source File: MKEY12.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_OR_MOUSE - waits for first keypress or mouse button click
+
+ inputs:    none
+
+ output:    AX = keycode, BX = mouse button
+
+ note:  If a keycode is found it is returned and the mouse status
+        is not checked.
+* * * * * * * * * * * * * *
+Source File: MKEY13.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+MOVE_MOUSE - sets the mouse's position
+
+ inputs:  dh = text mode row#
+          dl = text mode column#
+          
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY14.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+BOX_THE_MOUSE - limits mouse's range of motion
+
+ inputs:    dx = box upper left corner (dh=row, dl=column)
+            bx = box size (bh = number of rows,  bl = number of columns)
+
+ output:   none
+* * * * * * * * * * * * * *
+Source File: MKEY15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+MOUSE_CURSOR_ON - Enable the mouse cursor display
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+MOUSE_CURSOR_OFF - Disable the mouse cursor display
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: MKEY15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+GET_STRING - read string from the keyboard.
+
+inputs: es:di - point at buffer for string.  Buffer can be preloaded
+                with default display.  pad rest with zeros or spaces.
+           ah - color for edit line
+           al - color for edit line at exit time
+           ch - length of buffer
+           cl - length of window
+           dh - window row
+           dl - window column (starting)
+           bl - flag 01=numbers only 02h=upper case 04=lower case 08=filename
+             gs_numbers   equ  01h  ;get numbers only
+             gs_upper     equ  02h  ;get upper case characters
+             gs_lower     equ  04h  ;get lower case characters
+             gs_file      equ  08h  ;get filename characters only
+             gs_init      equ  10h  ;initialize (do once per string entry)
+             gs_key_wait  equ  20h  ;input keys till done or unknown key found
+             gs_key_check equ  40h  ;input key only if it is ready
+             gs_close     equ  80h  ;remove cursor and deselect string 
+
+ output:   cx - size of string entered (-1=unknown key in -ax-)
+           ax - last key code if  cx=-1
+              - zero if gs_key_check and all keys processed ok
+
+  Note: The buffer length must be equal or greater than the window length
+
+        get_string is designed to operate in two modes.  The first mode
+        stays in get_string until the string is entered.  This mode requires
+        the flags: ( gs_init,gs_key_wait,gs_close) and all parameters.
+        The second mode allows get_string to poll the keyboard along with
+        other functions.  This mode can be used as follows:
+         1. call with gs_init flag and all parameters.
+         2. call with gs_key_check until string entered or abort key
+         3. call with gs_close to remove the cursor and delselect.
+        Steps 2&3 above only require the flag information in -bl- along
+        with the get_string call.
+* * * * * * * * * * * * * *
+Source File: MKEY16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+KEY_DECODE - scan for special keys, determine key type and process flags.
+
+ inputs: ah=key scan code
+         al=key ascii code
+      ds:si=pointer to decode table
+      key_flags - set to type of decode needed
+      
+ output: if cx = 0 then,
+            al = key ascii code
+            ah = extended/nomal key flag
+            bx = processing offset (set to normal key if not in table and ah=0)
+         if cx=-1 then ax = illegal key
+
+ note:   All keys not in table which have extended flag set are ignored.
+         Normal keys are processed using control flag supplied by user.
+* * * * * * * * * * * * * *
+Source File: MKEY16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+QGET_STRING - Quick call to get string & return when done
+
+ inputs: cl = max string length (buffer length)
+         dx = display location (dh=row,dl=column)
+         es:di = pointer to buffer for data storage
+         
+ output: cx = size of string entered, if -1 then illegal key (ax has key)
+         ax = if cx = -1 then cx=illegal key code
+              
+ notes: This routine calls GET_STRING with some standard settings.
+        For full control use GET_STRING instead.         
+* * * * * * * * * * * * * *
+Source File: MKEY16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+WINDOW_EDIT - edit text within window
+
+  inputs:  bx = window frame size (bh-rows bl=columns)
+           dx = window position (dh=row dl=column)
+        ds:si = data for window
+           cx = size of data buffer (must be larger than window by 20%)
+           
+  outputs:     ah = -1 (abort key pressed)
+               al = last key press if normal exit
+               carry set = changes make to buffer
+              
+  processing:  1. display window data with cursor, then respond
+                  to edit keys:  ctrl-c  = abort
+                                 Enter   = break this line
+                                 ESC     = exit edit mode
+                                 right   = cursor right
+                                 left    = cursor left
+                                 up      = cursor up
+                                 down    = cursor down
+                                 home    = cursor to left edge
+                                 end     = cursor to right edge
+                                 del     = delete char. under cursor
+                                 back    = delete & move back
+                                 F1      = hyper word select
+
+ note:  Normal ascii characters are entered into the buffer and
+        the buffer updated.  The state of INS key determines
+        if characters are inserted or overtype occurs.  Illegal
+        key cause a beep and are ignored.
+* * * * * * * * * * * * * *
+Source File: MKEY17.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+WINDOW_CSTRING - display text with hyper formating
+
+ inputs:    DS:[SI] pointing to the string
+            ds:[di] points to cursor posn in buffer
+             dx = starting row(dh)  starting column(dl)
+             bx = box total rows(bh)  box total columns(bl)
+            AH = color attribute (must be msg_text_color)
+            
+ outputs:   table line_table is prepared.
+            cursor information is updated.
+
+ note:     WINDOW_CSTRING was written to be used by WINDOW_EDIT to
+           display in a window and handle hyper words.  It does word
+           wrap and handles cr/lf characters.  The window text is
+           assumed to be terminated with a null character.
+
+           Unused portions of the window are cleared.
+           
+           HYPER triggers are imbedded into the text as two bytes which are
+           encoded as follows: 
+                                first byte   1fh         <-character
+                                second byte  (record #)  <-binary value
+
+           HYPER words must begin and end with a space with the HYPER
+           trigger after the first space.  The EDREC utility program
+           is an easy way to create HYPER entires.
+           
+           The text must be in a buffer larger than the window to allow
+           for inserts.  It is possible for the text to overflow the
+           buffer slightly and not show on the display.
+           
+         The line_info table is built from text scan and is
+         available as output to callers.  Its intended use is
+         to speed processing of hyper trigger words.  The format
+         of the line_table is:
+
+         line_struc    struc
+          line_start   dw      ?       ;ptr to first char. of line
+          line_end     dw      ?       ;ptr to last char, 0=end of data 0d=cr/lf at end
+                                       ;                  n=wrap occured
+          chars                db      ?       ;number of chars (minus hyper triggers, cr/lf)
+          line_no      db      ?       ;line number in range 0-24
+         line_struc    ends
+
+         line_tbl_size equ     25
+
+         line_table    label   byte
+               line_struc<?,?,?,0>
+               line_struc<?,?,?,01>
+               line_struc<?,?,?,02>
+               line_struc<?,?,?,03>
+               line_struc<?,?,?,04>
+               line_struc<?,?,?,05>
+               line_struc<?,?,?,06>
+               line_struc<?,?,?,07>
+               line_struc<?,?,?,08>
+               line_struc<?,?,?,09>
+               line_struc<?,?,?,10>
+               line_struc<?,?,?,11>
+               line_struc<?,?,?,12>
+               line_struc<?,?,?,13>
+               line_struc<?,?,?,14>
+               line_struc<?,?,?,15>
+               line_struc<?,?,?,16>
+               line_struc<?,?,?,17>
+               line_struc<?,?,?,18>
+               line_struc<?,?,?,19>
+               line_struc<?,?,?,20>
+               line_struc<?,?,?,21>
+               line_struc<?,?,?,22>
+               line_struc<?,?,?,23>
+               line_struc<?,?,?,24>
+* * * * * * * * * * * * * *
+Source File: MKEY17.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+IS_TEXT - check if key returned by KEY_READ is 20H-7EH or tab
+
+ inputs:    AX = keycode returned by KEY_READ or AH=0, AL=ascii
+ 
+ output:    if CF = 0, keycode is text
+            if CF = 1, keycode is not text
+* * * * * * * * * * * * * *
+Source File: MKEY18.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(MOUSE/KEY)
+is_stdout_console - check if stdout redirected to file.
+
+ inputs:    none
+ 
+ output:    al =  2  stdout is console
+                  0  stdout is file, printer, or other
+* * * * * * * * * * * * * *
+Source File: MKEY19.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( MESSAGE )
+message - boxed message display
+
+ inputs:
+            bh = rows in box         (if flag msg_disp)
+            bl = columns in box      (if flag msg_disp)
+            cx = record #            (if flag msg_disp & not msg_rand)
+            dx = box upper left loc  (if flag msg_disp)
+         ds:si = ptr to file name    (if flag msg_open and not msg_ram)
+         ds:si = ptr to msg text     (if flag msg_ram and msg_open)
+            bp = flags, see equates
+            es = file selector       (if not flag msg_open)
+
+ outputs:   no carry
+              es = file selector  (if no msg_close flag)
+              al = yes/no response (if msg_yesno flag was set)
+            carry
+              ax = error code    xx02 = code error, flag bits in -bp- wrong
+                                 xx03 = disk read error
+                                   10(decimal) = open error or file not found
+
+ note:   This function displays a boxed message in various
+         formats.  All messages are found in memory or a file
+         which uses the database format for variable length ascii
+         records.  A specific message is selected by record #
+         using the database library routines.
+
+         The Hyper text mode uses a special file which is
+         formated with records compatable with the database
+         variable lenght record format.  Each record is
+         terminated with a zero.  The record can contain hyper
+         triggers to point to other topics(records).  The hyper
+         triggers consist of the following:
+
+          byte 0    space  <- the trigger word must start with a space
+          byte 1    1fh    <- the special character signals start of hyper
+          byte 2     n     <- binary number which is record# 1-255
+          byte 3+   ...    <- string which is to be highlighted trigger word
+          byte n    space  <- trigger word is ended with a space
+* * * * * * * * * * * * * *
+Source File: MSG1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( MESSAGE )
+QMESSAGE - Quick message display in box & wait for keypress (msg in file)
+
+ inputs:     cx = record # to display.
+ 
+ output:  carry set if error reading file on disk. File must be in current
+          default directory.
+          
+ note:    The display location, colors, and box size is calculated.
+          The message is obtained from the standard error file, See
+          ERROR_PRIME for selecting file to use.  The message is placed
+          in a box 10 rows long and 40 columns wide.  It waits for any
+          key before preceeding.
+* * * * * * * * * * * * * *
+Source File: MSG3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( MESSAGE )
+QWARN - Quick message display in box & wait for keypress (msg in mem)
+
+ inputs:  ds:si = pointer to message text, zero at end.
+ 
+ output:  none
+ 
+ note:    The display location, colors, and box size is calculated.
+* * * * * * * * * * * * * *
+Source File: MSG3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  PARSE  )
+PARSE_FIRST - parse first arguement from command line
+
+ inputs: es:di = location to store parsed string
+ 
+ output: es:di = (unchanged) parsed string ptr
+             cx = length of parsed string (0=no more parameters available)
+       bh,dx,ax   are set as specified by the flag value in -bh-
+             bh = 0 - end of parameters
+                 1 - single alpha parameter was found of form "\x". The
+                     "x" character was placed in register -bl-
+                2 - single numeric parameter was found of form "\n". The
+                     "n" binary value was placed in register -bl-
+                3 - compound alpha parameter of form "\x:yyyy" was found.
+                     register -bl- has "x" character.
+                 4 - compound numeric parameter of form "\x:nnnn" was found.
+                     register -bl- has "x" character, dx,ax has value of nnnn
+                 5 - found alpha string of form "\xxxxx"
+                 6 - found value of form "\nnnn".  The decimal value of
+                      nnnn was placed in registers dx,ax
+                 7 - found alpha string of form "xxxx"
+                 8 - found numeric string of form "nnnn".  The decimal
+                      value of nnnn was placed in registers dx,ax
+
+* * * * * * * * * * * * * *
+Source File: PARSE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  PARSE  )
+PARSE_NEXT - parse next command line parameter
+
+ inputs:  (see PARSE_FIRST)
+ 
+ outputs: (see PARSE_FIRST)
+* * * * * * * * * * * * * *
+Source File: PARSE.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MENU   )
+MENU_SYSTEM - Menu bar display and decode of user selection
+
+ inputs:  ds:bx - pointer to info structure see COMMON.INC
+             ah - control flags (see below)
+    bar_save           equ     80h     ;save display data under bar
+    bar_restore        equ     40h     ;restore display data under bar before exit
+    bar_display        equ     20h     ;display the menu bar
+    wait_valid_key     equ     10h     ;wait forever till valid key found
+    return_bad_key     equ     08h     ;wait for key and return unknown keys
+    no_mouse_sim       equ     04h     ;do not simulate mouse with arrow keys
+
+ output:  cl=0   ax=don't care (none key process occurred)
+          cl=1   ax=process ptr
+          cl=2   ax=key (unknown key press)
+          cl=3   ax=click row/column (unknown mouse click)
+          cl=4   ax=key (abort key pressed)
+* * * * * * * * * * * * * *
+Source File: PULDOWN1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MENU   )
+ key_mouse_wait - wait for key or mouse input
+   inputs:  ds:bx - points at menu structure
+   output:  if no carry then dh=row  dl=column of mouse click
+            if carry   ax=keyboard info.
+                       dx=cursor location
+            if carry and ax=0 then breakflag is set
+ processing:  1. check the break_flag and exit if set
+              2. put mouse cursor on screen.
+              3. track mouse movements
+              4. return any keypresses or mouse clicks found.
+              5. remove the mouse cursor at exit
+-------------------
+Source File: PULDOWN1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MENU   )
+ get_menu_cursor - return current cursor position
+  inputs: none
+  output: dx = cursor posn
+
+Source File: PULDOWN1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MENU   )
+ set_menu_cursor - return current cursor position
+  inputs: dx = cursor position
+  output: none
+
+Source File: PULDOWN1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MENU   )
+QMENU_SYSTEM - Quick pulldown menu bar
+
+  inputs:  ds:bx = pointer to list of names.  (See list format below)
+  
+  output:  ah = main menu index, 0=first item, 1=second, etc. -1=abort key
+           al = sub menu item if present
+
+  note: The menu list is displayed on the top line of the screen and is
+        built as follows:
+               db   'main option1',0
+               db     'sub option1',0
+               db     'sub option2',0
+               db      0                       ;end of main option1
+               db   'main option2',0
+               db      0                       ;end of main option2
+                  .
+                  .
+               db      0                       ;end of all options.
+
+         One zero between strings is a sub menu separation.
+         two zeros between strings is a new main menu item start
+         three zeros is end of all strings.
+* * * * * * * * * * * * * *
+Source File: PULDOWN2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+random_word1 - generate random word value, using method 1
+
+  inputs: bx = minimum value of random range
+          bp = maximum value of random range
+          
+  output: ax = random number
+          all registers are restored except for -ax-
+* * * * * * * * * * * * * *
+Source File: RANDOM1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_WORD2 -  generate random word value, using method 2
+
+ inputs: (ds:bx)  struc
+                   rs1   dw  (random seed 1)
+                   rs2   dw  (random seed 2)
+                   range dw  mask to truncate number, normally a power
+                             of 2 is used.  Example  1fh, 1ffh, 3ffh, etc.
+                   
+ output:  ax = random number
+
+ note:  RANDOM_WORD2 is designed for applications which need to keep several
+        random number sequences going indepently.  The input structure
+        (ds:bx) can use a different set of data for each random sequence.
+        
+* * * * * * * * * * * * * *
+Source File: RANDOM2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RAMDOM  )
+random_byte1 - generate random number
+  inputs:   none
+  output:   al = random number
+* * * * * * * * * * * * * *
+Source File: RANDOM3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_DWORD1 - generate random dword value
+
+  inputs:  none
+  output:  dx,ax = random value
+         
+* * * * * * * * * * * * * *
+Source File: RANDOM4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_WORD3 - generate random word value, using method 3
+
+  inputs:  AX = range of random numbers -1
+  output:  AX = random number
+         
+* * * * * * * * * * * * * *
+Source File: RANDOM5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_WORD4 - generate random word value, method 4
+   inputs:  none
+   output:  ax = random value
+* * * * * * * * * * * * * *
+Source File: RANDOM6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_WORD4_SCALED - Generates a random number within a specific range
+  inputs:  ax = max value +1 of random number desired
+  output:  ax = random value
+* * * * * * * * * * * * * *
+Source File: RANDOM6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_WORD5 - generate random word value, method 5
+  inputs:  none
+  output:  ax = random value
+         
+* * * * * * * * * * * * * *
+Source File: RANDOM7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+RANDOM_SEED - get low clock value for us as random number
+  inputs:  none
+  output:  ax = low value of clock
+* * * * * * * * * * * * * *
+Source File: RANDOM8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( RANDOM  )
+SCALE_WORD - scale a word value to be within specified range
+  inputs:  bx = low value of range
+           bp = high value of range
+           ax = number to scale
+  output:  ax = scaled number
+
+  note:  The number is scaled using the formula
+
+          input value              x
+          ----------- =  -----------------------
+           0ffffh        (high range - low range)
+
+           scaled number = x + low range
+
+   note:  parameters are not checked for errors and must be correct.
+  
+* * * * * * * * * * * * * *
+Source File: RANDOM9.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK_TINY1 - scan sequential buffers for string, case match
+  inputs:  es:bx   =   compare string start (string terminated with zero)
+           es:si   =   compare string current location
+           ds:di   =   buffer current location
+              cx   =   buffer size (remaining byte count)
+           direction flag = CLD state
+
+  output:  registers di,si,cx are updated
+           if al=0 then a match was found ds:si points at match end.
+                 use -si- ,-di- and -cx- as returned to continue searching
+                 in current buffer.  
+
+           if cx=0 then no match was found, check if bx=di to determine
+                   if a partial match is in process at buffer end.
+
+  Note:  If a partial match fails and the partial match was split
+         accross two buffers, then extra processing may be needed
+         by the caller to restart the compare in the first buffer.
+         Partial matches are detected by checking if -si- points
+         at start of compare string when end of buffer was reached.
+         If not at start, then partial match is in progress.
+
+         This routine is 46 bytes long and fast if searching for
+         short strings.
+
+                            code size   speed
+         SCAN_BLOCK_TINY1    46 bytes    2.36 (small is faster)
+         SCAN_BLOCK_TINY2    69 bytes   13.35 (matches ether case)
+         SCAN_BLOCK1         43 bytes    2.36
+         SCAN_BLOCK2        152 bytes    6.37 (matches either case)
+         SCAN_BLOCK_FAST    466 bytes    1.42 
+
+* * * * * * * * * * * * * *
+Source File: SCAN01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK_TINY2 - scan sequential buffers for string, matching either case
+  inputs:  es:bx   =   compare string start (string terminated with zero)
+           es:di   =   compare string current location
+           ds:si   =   buffer current location
+              cx   =   buffer size (remaining byte count)
+           direction flag = CLD state
+
+  output:  registers di,si,cx are updated
+           if ah=0 then a match was found ds:si points at match end.
+                 use -si- and -cx- as returned to continue searching
+                 in current buffer.
+
+           if cx=0 then no match was found, check if bx=di to determine
+                   if a partial match is in process at buffer end.
+
+  Note:  If a partial match fails and the partial match was split
+         accross two buffers, then extra processing may be needed
+         by the caller to restart the compare in the first buffer.
+
+                            code size   speed
+         SCAN_BLOCK_TINY1    46 bytes    2.36 (small is faster)
+         SCAN_BLOCK_TINY2    69 bytes   13.35 (matches ether case)
+         SCAN_BLOCK1         43 bytes    2.36
+         SCAN_BLOCK2        152 bytes    6.37 (matches either case)
+         SCAN_BLOCK_FAST    466 bytes    1.42 
+
+* * * * * * * * * * * * * *
+Source File: SCAN02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK1 - scan sequential buffers for string, match case
+  inputs:  ds:bx   =   compare string start (string terminated with zero)
+           ds:si   =   compare string current location
+           es:di   =   buffer current location
+              cx   =   buffer size (remaining byte count)
+           direction flag = CLD state
+
+  output:  registers di,si,cx are updated
+           if flags set for "je" then es:di points past match
+                 if bx not equal to si then partial match is in progress
+                 at end of buffer.  CX should also be zero at this point.
+                 use -si- ,-di- and -cx- as returned to continue searching
+                 in current buffer.  
+
+           if flags set for "jne" then no match was found
+
+  Note:  If a partial match fails and the partial match was split
+         accross two buffers, then extra processing may be needed
+         by the caller to restart the compare in the first buffer.
+         Partial matches are detected by checking if -si- points
+         at start of compare string when end of buffer was reached.
+         If not at start, then partial match is in progress.
+
+         This routine is 43 bytes long and fast if searching for
+         long strings which are very similiar.
+
+                            code size   speed
+         SCAN_BLOCK_TINY1    46 bytes    2.36 (small is faster)
+         SCAN_BLOCK_TINY2    69 bytes   13.35 (matches ether case)
+         SCAN_BLOCK1         43 bytes    2.36
+         SCAN_BLOCK2        152 bytes    6.37 (matches either case)
+         SCAN_BLOCK_FAST    466 bytes    1.42 
+
+* * * * * * * * * * * * * *
+Source File: SCAN03.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK2 - scan sequential buffers for string, match either case
+  inputs:  es:bx   =   compare string start (string terminated with zero)
+           es:di   =   compare string current location
+           ds:si   =   buffer current location
+              cx   =   buffer size (remaining byte count)
+           direction flag = CLD state
+
+  output:  registers di,si,cx are updated
+           if ah=0 then a match was found ds:si points at match end.
+                 use -si- and -cx- as returned to continue searching
+                 in current buffer.
+
+           if cx=0 then no match was found, check if bx=di to determine
+                   if a partial match is in process at buffer end.
+
+  Note:  If a partial match fails and the partial match was split
+         accross two buffers, then extra processing may be needed
+         by the caller to restart the compare in the first buffer.
+
+                            code size   speed
+         SCAN_BLOCK_TINY1    46 bytes    2.36 (small is faster)
+         SCAN_BLOCK_TINY2    69 bytes   13.35 (matches ether case)
+         SCAN_BLOCK1         43 bytes    2.36
+         SCAN_BLOCK2        152 bytes    6.37 (matches either case)
+         SCAN_BLOCK_FAST    466 bytes    1.42 
+
+* * * * * * * * * * * * * *
+Source File: SCAN04.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK_FOPEN - initialize fast scan of sequential buffers
+  input:  ds:si = points at string to search for (max length 254)
+             dl = 0 for match case, 20h for match either case
+
+  output:    ax = 0 if sucessful,  1 if error
+             possible errors are: - string length too long or zero bytes.
+                                  - insufficient memory
+
+  Note:  The fast block scan functions need to be called as follows:
+            SCAN_BLOCK_FOPEN  - allocate memory, initialize tables for scan
+            SCAN_BLOCK_FAST   - actual scan operation, call repeatedly
+            SCAN_BLOCK_FCLOSE - release memory allocated by SCAN_BLOCK_FOPEN
+
+         See SCAN_BLOCK_FAST and SCAN_BLOCK_FCLOSE
+* * * * * * * * * * * * * *
+Source File: SCAN05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK_FCLOSE - terminate fast scan sequential buffers
+  inputs:  none
+  outputs: none
+ 
+  See SCAN_BLOCK_FOPEN and SCAN_BLOCK_FAST
+* * * * * * * * * * * * * *
+Source File: SCAN05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_BLOCK_FAST - fast scan of sequential buffers for string
+  inputs:  ds:si = points at block of data to be scanned
+              cx = block length (byte count)
+
+  output:  ds:si = points at remaining data to be scanned
+              cx = number of bytes remaining to be scanned
+              ax = 0 for match found (may be match split between two blocks)
+                   1 for end of block, no match.
+
+  note:  SCAN_BLOCK_FAST can find multiple matches in a buffer, and
+         automatically sets up inputs to be re-entered.  Matches split
+         across two buffers (blocks) are also handled.
+
+         SCAN_BLOCK_FAST can be called repeatedly as long as the compare
+         string is not changed.  If the compare string changes, then
+         SCAN_BLOCK_FCLOSE must be called, followed by SCAN_BLOCK_FOPEN.
+
+                            code size   speed
+         SCAN_BLOCK_TINY1    46 bytes    2.36 (small is faster)
+         SCAN_BLOCK_TINY2    69 bytes   13.35 (matches ether case)
+         SCAN_BLOCK1         43 bytes    2.36
+         SCAN_BLOCK2        152 bytes    6.37 (matches either case)
+         SCAN_BLOCK_FAST    466 bytes    1.42 
+
+         See also SCAN_BLOCK_FOPEN and SCAN_BLOCK_FCLOSE
+
+  Example:      mov   ds, seg pattern
+                mov   si, offset pattern
+                mov   dl, 20h
+                call  SCAN_BLOCK_FOPEN
+                test  ax, ax
+                jnz   error
+
+                 mov   ds, seg target
+        read_loop:
+                 mov   si, offset target
+                 (setup ds,si,cx here for SCAN_BLOCK_FAST call)
+                 (if last buffer then goto to done)
+        search_loop:
+                 call  SCAN_BLOCK_FAST
+                 test  ax, ax
+                 jz    read_loop
+                 (process match found here, ds:si point at end of match)
+                 jcxz  read_loop
+                 jmp   search_loop
+
+          done:  call   SCAN_BLOCK_FCLOSE
+
+ Credits:  This code origionally provided by Mike Levis and modified
+           by Jeff Owens
+* * * * * * * * * * * * * *
+Source File: SCAN05.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_CHAR1 - scan asciiz buffer for character, case match
+  inputs:    al = character
+          es:di = string buffer, terminated with zero char.
+           
+  output: if flag set to "je" then match found
+                  es:di = pointer one char past match point
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  es:di = pointer past end of buffer
+                     cx = zero
+* * * * * * * * * * * * * *
+Source File: SCAN06.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_CHAR2 - scan asciiz buffer for character, match either case
+  inputs:    dl = character
+          ds:si = string buffer, terminated with zero char.
+           
+  output: if flag set to "je" then match found
+                  ds:si = pointer one char past match point
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  ds:si = pointer past end of buffer
+                     cx = zero
+           register -ax- modified
+* * * * * * * * * * * * * *
+Source File: SCAN07.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_CHAR3 - scan  buffer for character, case match
+  inputs:    al = character
+          es:di = string buffer, terminated with zero char.
+             cx = buffer length
+           
+  output: if flag set to "je" then match found
+                  es:di = pointer one char past match point
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  es:di = pointer past end of buffer
+                     cx = zero
+* * * * * * * * * * * * * *
+Source File: SCAN08.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_CHAR4 - scan buffer for character, match either case
+  inputs:    dl = character
+          ds:si = string buffer, terminated with zero char.
+             cx = buffer length
+           
+  output: if flag set to "je" then match found
+                  ds:si = pointer one char past match point
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  ds:si = pointer past end of buffer
+                     cx = zero
+           register -ax- modified
+* * * * * * * * * * * * * *
+Source File: SCAN09.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_LAST_CHAR1 - scan asciiz string for last match, case match
+  inputs: es:di = asciiz string
+             al = character to search for
+
+  output:  registers di,cx are updated
+           if flags in "je" state then match was found at es:[di+1]
+
+           if flags in 'jne' state then no match was found
+                  cx=0 and es:di point at start of buffer
+           direction flag = CLD state
+
+* * * * * * * * * * * * * *
+Source File: SCAN10.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_LAST_CHAR2 - scan asciiz buffer for last occurance of character
+                  match either case
+  inputs:    dl = character
+          ds:si = string buffer, terminated with zero char.
+           
+  output: if flag set to "je" then match found
+                  ds:[si+1] = pointer to match char
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  ds:si = pointer to beginning of buffer
+                     cx = zero
+           register -ax- modified
+* * * * * * * * * * * * * *
+Source File: SCAN11.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_LAST_CHAR3 - scan  buffer for last char match, case match
+  inputs: es:di = asciiz string
+             al = character to search for
+             cx = buffer length
+
+  output:  registers di,cx are updated
+           if flags in "je" state then match was found at es:[di]
+
+           if flags in 'jne' state then no match was found
+                  cx=0 and es:di point at start of buffer
+           direction flag = CLD state
+* * * * * * * * * * * * * *
+Source File: SCAN12.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_LAST_CHAR4 - scan buffer for last char match, match either case
+  inputs:    dl = character
+          ds:si = string buffer, terminated with zero char.
+             cx = buffer length
+           
+  output: if flag set to "je" then match found
+                  ds:si = pointer one char past match point
+                     cx = amount of data remaining to be searched
+          if flag set to "jne" then no match found
+                  ds:si = pointer past end of buffer
+                     cx = zero
+           register -ax- modified
+* * * * * * * * * * * * * *
+Source File: SCAN13.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+SCAN_LAST_STR1 -  find last match of string in buffer, case match
+
+ inputs:    ES:[DI] pointing to area to be searched
+                CX  length of search area
+            DS:[SI] pointing to asciiz match string.
+            
+ output:    if flags set to "je"  ES:[DI+1] = offset of match
+            if carry - no match
+            registers cx,si modified
+            
+ note:      case of strings must also match.
+* * * * * * * * * * * * * *
+Source File: SCAN14.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+LAST_CHAR - find the last byte in a string matching register AL
+
+ inputs:    DS:[BX] pointing to the first character of the string
+            AL = byte to find
+            
+ output:    if CF = 1, no match
+            if CF = 0, AX = offset from DS:[BX] of the last matching byte
+* * * * * * * * * * * * * *
+Source File: SCAN15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+LAST_CHARC - find the last byte in n bytes matching AL
+
+ inputs:    DS:[BX] pointing to the first character of the string
+            AL = byte to find
+            CX = number of bytes to search
+            
+ output:    if CF = 1, no match
+            if CF = 0, AX = offset from DS:[BX] of the last matching byte
+* * * * * * * * * * * * * *
+Source File: SCAN15.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+BUFFER_SEARCH - search string1 for the first occurance of string2
+
+ inputs:    ES:[DI] pointing to string1
+            DS:[SI] pointing to string2
+            
+ output:    if no carry - DI = offset of target in source string.
+            if carry -  no match
+
+ note:  case is ignored.  Strings must end with null character (zero).
+* * * * * * * * * * * * * *
+Source File: SCAN16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SEARCH  )
+BUFFER_SEACHC - search a buffer for the first occurance of a string
+                     
+ inputs:    ES:[DI] pointing to buffer
+            DS:[SI] pointing to match-string.
+                cx = length of buffer
+
+ output:    if no carry - DI = offset of target in source string.
+            if carry    - no match
+
+ note:  case is ignored.  Match string in DS:SI must end with zero.
+* * * * * * * * * * * * * *
+Source File: SCAN16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(COMPRESS )
+shrink - compress data block
+
+ inputs:  es:si = feed proceedure ptr
+          es:di = store proceedure ptr
+          dx,ax = size of block of data to be compressed
+
+ output:  The feed proceedure is called with:  ds:dx = buffer area
+                                                  ax = request byte count
+          The feed proceedure returns:  ax = byte count of data placed in
+                                             buffer.
+
+          The store proceedure is called with:  ds:dx = buffer pointer
+                                                   ax = buffer size
+
+ note:  The feed proceedure is called whenever the compress module runs
+        out of data.  The store module is called whenever more data is
+        needed.  Normally, the feed and store data uses a disk file, but
+        if room it could be placed in memory.
+
+ note:  compress and decompress work together and the functions
+        shrink and expand work together.  Compress and decompress
+        are much faster and smaller code, but do not produce quite
+        as good compression.
+
+                       execution time          code size
+                       ---------------         ----------
+        compress            1.75                  430
+        decompress           .87                  381
+
+        shrink             10.05                  1447
+        expand              1.54                  1447       
+* * * * * * * * * * * * * *
+Source File: SHRINK1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(COMPRESS )
+expand - expand compressed data back to origional state
+
+  inputs:  es:si  = feed proceedure (provides compressed data)
+           es:di  = store proceedure
+
+ output:  The feed proceedure is called with:  ds:dx = buffer area
+                                                  ax = request byte count
+          The feed proceedure returns:  ax = byte count of data placed in
+                                             buffer.
+
+          The store proceedure is called with:  ds:dx = buffer pointer
+                                                   ax = buffer size
+
+ note:  The feed proceedure is called whenever the expand module runs
+        out of data.  The store module is called whenever more data is
+        needed.  Normally, the feed and store data uses a disk file, but
+        if room it could be placed in memory.
+
+ note:  compress and decompress work together and the functions
+        shrink and expand work together.  Compress and decompress
+        are much faster and smaller code, but do not produce quite
+        as good compression.
+
+                       execution time          code size
+                       ---------------         ----------
+        compress            1.75                  430
+        decompress           .87                  381
+
+        shrink             10.05                  1447
+        expand              1.54                  1447       
+* * * * * * * * * * * * * *
+Source File: SHRINK1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(COMPRESS )
+compress - compress data block using limpel-ziev algorithm
+  inputs:  es:si = feed function ptr
+           es:di = store function ptr
+
+  output:  feed function is called when data to be compressed is
+           needed. Feed uses the following parameters:
+           in: ds:dx = buffer ptr of size (BUFFER_SIZE)
+                  ax = requested amount
+           out:   ax = number of bytes placed in buffer, 0=end of input
+          
+           store function is called when a block of compressed data
+           is prepared. Store uses the following parameters:
+           in:  ds:dx = buffer ptr
+                   ax = amount of data present in buffer
+           out:  none
+
+ note:  The feed proceedure is called whenever the compress module runs
+        out of data.  The store module is called whenever more data is
+        needed.  Normally, the feed and store data uses a disk file, but
+        if room it could be placed in memory.
+        The feed and store modules must restore any registers they
+        modify.  Specifically, si,di,bp,ds,es
+
+ note:  compress and decompress work together and the functions
+        shrink and expand work together.  Compress and decompress
+        are much faster and smaller code, but do not produce quite
+        as good compression.
+
+                       execution time          code size
+                       ---------------         ----------
+        compress            1.75                  430
+        decompress           .87                  381
+
+        shrink             10.05                  1447
+        expand              1.54                  1447       
+* * * * * * * * * * * * * *
+Source File: SHRINK2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(COMPRESS )
+decompress - decompress data block using limpel-ziev algorithm
+
+ inputs:  es:si = feed proceedure ptr
+          es:di = store proceedure ptr
+          dx,ax = size of block of data to be compressed
+
+ output:  If carry returned then, insufficent
+          Normal operation is results in:
+
+          The feed proceedure is called with:  ds:dx = buffer area
+                                                  ax = request byte count
+          The feed proceedure returns:  ax = byte count of data placed in
+                                             buffer.
+
+          The store proceedure is called with:  ds:dx = buffer pointer
+                                                   ax = buffer size
+
+ note:  The feed proceedure is called whenever the compress module runs
+        out of data.  The store module is called whenever more data is
+        needed.  Normally, the feed and store data uses a disk file, but
+        if room it could be placed in memory.
+        The feed and store modules must restore any registers they
+        modify.  Specifically, si,di,bp,ds,es
+
+ note:  compress and decompress work together and the functions
+        shrink and expand work together.  Compress and decompress
+        are much faster and smaller code, but do not produce quite
+        as good compression.
+
+                       execution time          code size
+                       ---------------         ----------
+        compress            1.75                  430
+        decompress           .87                  381
+
+        shrink             10.05                  1447
+        expand              1.54                  1447       
+* * * * * * * * * * * * * *
+Source File: SHRINK3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ buffer sort, allocate memory for index.
+  inputs:  es:di = pointer to buffer, or asciiz if file
+              cx = buffer length, or zero if file
+              bx = record length if fixed length, else zero if variable len.
+              al = record terminator for variable lenght records. else zero
+   output: carry set if insufficient memory
+           no carry - cx = partial record size
+
+* * * * * * * * * * * * * *
+Source File: SORT01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ file sort, read file into buffers and sort them.
+            use merge sort to combine files.
+
+  inputs:  es:di = pointer to buffer, or asciiz if file
+              cx = buffer length, or zero if file
+              bx = record length if fixed length, else zero if variable len.
+              al = record terminator for variable lenght records. else zero
+
+   output:   carry set if insufficient memory, or disk error
+
+* * * * * * * * * * * * * *
+Source File: SORT02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ make_index - make index for sort routines
+  inputs:  es:di = pointer to buffer
+              cx = buffer length
+              bx = record length if fixed length, else zero if variable len.
+              al = record terminator for variable lenght records. else zero
+           ds:0  = ptr to buffer for index creation
+
+  Output:  ds:0  - ptr to index struc. <word buf_ptr>, <word record_length>
+                   Last entry contains -1 to indicate end of index.
+              di - ptr to partial record at end of buffer if -cx- non zero
+* * * * * * * * * * * * * *
+Source File: SORT03.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+SELECTION_SORT_BUFFER - selection sort of buffer in memory
+
+ inputs:  es:di = ptr to buffer with data to be sorted
+             cx = length of buffer in bytes
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:    carry set if insufficient memory to do sort  
+          
+* * * * * * * * * * * * * *
+Source File: SORT10.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+SELECTION_SORT_FILE - selection sort of file
+
+ inputs:  es:di = ptr to asciiz file name string      
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:   carry set if insufficient memory to do sort
+           
+* * * * * * * * * * * * * *
+Source File: SORT11.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ selection_sort - sort indexed buffer. 
+  inputs:  ds:0  - ptr to index struc. <word buf_ptr>, <word record_length>
+           es:   - buffer seg,(index has offsets)
+              sort_field_len - length of sort field
+              dx - starting column of sort field
+
+  Output:  index structure is sorted in decending order
+
+  Notes:   The index must have at least one entry.
+           Short or empty records are placed at top of index without
+           attempting to sort.
+
+*********************
+Source File: SORT12.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+selection_sort_arrayw  - sort word array (integers)
+  inputs:  ds/es:si - ptr to array of words
+                 dx - number of items in array (range 0-32767)
+           direction flag is in CLD state.
+
+  Output:  array is sorted in decending order
+           Registers  ax,bx,cx,dx,si,di are modified
+
+  Note:   code size is 29 bytes.
+*********************
+Source File: SORT13.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+MERGE_SORT_BUFFER - merge sort of buffer in memory
+
+ inputs:  es:di = ptr to buffer with data to be sorted
+             cx = length of buffer in bytes
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:    carry set if insufficient memory to do sort  
+          
+* * * * * * * * * * * * * *
+Source File: SORT20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+MERGE_SORT_FILE - merge sort of file
+
+ inputs:  es:di = ptr to asciiz file name string      
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:   carry set if insufficient memory to do sort
+           
+* * * * * * * * * * * * * *
+Source File: SORT21.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ merge_sort - sort indexed buffer. 
+  inputs:  ds:0 - ptr to index struc. <word buf_ptr>, <word record_length>
+           es:   - buffer seg,(index has offsets)
+              cx - length of sort field
+           cs:sort_column - starting column of sort field
+
+  Output:  index structure is sorted in decending order
+
+  Notes:   The index must have at least one entry.
+           Short or empty records are placed at top of index without
+           attempting to sort.
+
+****************************
+Source File: SORT22.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ merge_sort_arrayw - sort array of words. 
+  inputs:  ds:0 - ptr to word array
+              cx - number of elements in array (range 2-16383)
+
+  Output:  if no carry array is sorted in decending order
+           carry = insufficient memory
+           
+  Note:  merge_sort_arrayw uses 290 bytes for code and allocates
+         memory to hold array being sorted.
+ 
+  Psuedo code:
+
+int array2sort[n]; /* array with indexes from 0 to n-1 as in C */
+                   /* replace int with whatever datatype you want to sort */
+int l;          /* length of sorted sets */
+int first;      /* first element to be sorted */
+  l=1;
+  while (l<n)
+  {
+    first=0;
+    while (first+l<n)
+    {
+      merge(array2sort[first..first+l-1], array2sort[first+l..first+2*l-1]);
+      first= first + 2 * l;
+    }
+    l= 2*l; /* We now have sorted sets of length 2*l */
+  }
+****************************
+Source File: SORT23.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ merge_sort_arrayd - sort array of dwords.
+  inputs:  ds:0 - ptr to dword array
+              cx - number of elements in array
+
+  Output:  if no carry array is sorted in decending order
+           carry = insufficient memory
+           
+  Note:  merge_sort_arrayw uses 316 bytes for code and allocates
+         memory to hold array being sorted.
+****************************
+Source File: SORT24.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+BUBBLE_SORT_BUFFER - bubble sort of buffer in memory
+
+ inputs:  es:di = ptr to buffer with data to be sorted
+             cx = length of buffer in bytes
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:    carry set if insufficient memory to do sort  
+          
+* * * * * * * * * * * * * *
+Source File: SORT30.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+BUBBLE_SORT_FILE - bubble sort of file
+
+ inputs:  es:di = ptr to asciiz file name string      
+             bx = record length if fixed, else zero if variable length record
+             al = variable lenght record separator, else zero if fixed record
+             dx = starting column for sort
+             ah = length of sort field
+ 
+ output:   carry set if insufficient memory to do sort
+           
+* * * * * * * * * * * * * *
+Source File: SORT31.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ bubble_sort - sort indexed buffer. 
+  inputs:  ds:0  - ptr to index struc. <word buf_ptr>, <word record_length>
+           es:   - buffer seg,(index has offsets)
+              sort_field_len - length of sort field
+              dx - starting column of sort field
+
+  Output:  index structure is sorted in decending order
+
+  Notes:   The index must have at least one entry.
+           Short or empty records are placed at top of index without
+           attempting to sort.
+
+*********************
+Source File: SORT32.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ bubble_sort_arrayw - bubble sort array of words
+  inputs:  ds:di - ptr to word array
+              dx - number of elements in array
+
+  Output:  array is sorted in decending order
+           
+  Note:  bubble_sort_arrayw uses 43 bytes for code
+*********************
+Source File: SORT33.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SORT   )
+ bubble_sort_arrayd - bubble sort array of dwords
+  inputs:  ds:di - ptr to word array
+              dx - number of elements in array
+
+  Output:  if no carry array is sorted in decending order
+           carry = insufficient memory
+           
+  Note:  bubble_sort_arrayw uses 290 bytes for code
+*********************
+Source File: SORT34.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SOUND  )
+SOUND_ON - Enable sounds from BEEP and ONE_BEEP
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: SOUND1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SOUND  )
+SOUND_OFF - Disable sounds from BEEP and ONE_BEEP
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: SOUND1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SOUND  )
+ONE_BEEP - beep once at 200hz for fraction of a second
+
+ inputs: none
+ output: none
+* * * * * * * * * * * * * *
+Source File: SOUND2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  SOUND  )
+make_sound - make sound for number of milliseconds.
+
+ inputs:  bx = frequency in HZ
+          dx = timer ticks
+ outputs: none
+
+ note:  Each timer tick is about 1/5 of a second.
+* * * * * * * * * * * * * *
+Source File: SOUND3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC  )
+ stdout_char - display character to stdout
+  inputs: al = char.
+
+Source File: STDOUT01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC  )
+ stdout_string - put string to stdout
+ inputs ds:si point at string terminated with a zero
+ output:ds:si point at end of string
+
+Source File: STDOUT01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC  )
+ stdout_crlf - sends cr/lf to stdout one time
+   inputs:  none
+   output:  ax modified
+
+Source File: STDOUT01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC  )
+  stdout_spaces - put one or more spaces to stdout
+    inputs:  ah = space count
+    output:  ax modified
+
+Source File: STDOUT01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  MISC  )
+ stdout_puts - display string to stdout
+  inputs:  The string to be displayed is placed after the CALL to
+           stdout_puts and is terminated with a zero char.
+
+           Example:      call   stdout_puts
+                         db     'This is a test message',0
+                         (execution continues here at first instruction
+                          past the text string)
+
+  ouptput:  none, all registers unchanged.
+
+  note:  This function can be used inside a simple macro to create
+         a one line display function.  The macro could automatically
+         add a carriage return and the zero character at the end.
+
+  note:  This function was contributed by Terje Mathisen
+Source File: STDOUT02.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STRLEN1 - finds length of a ASCII string at DS:SI
+
+ inputs:    DS:[SI] = address of the string
+ 
+ output:    CX = length of string excluding the terminating NUL
+* * * * * * * * * * * * * *
+Source File: STR01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STRLEN2 - finds length of a ASCII string at DS:DI
+
+ inputs:    DS:[DI] = address of the string
+ 
+ output:    CX = length of string excluding the terminating NUL
+* * * * * * * * * * * * * *
+Source File: STR01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STRLEN3 - finds length of a ASCII string at DS:BX
+
+ inputs:    DS:[BX] = address of the string
+ 
+ output:    CX = length of string excluding the terminating NUL
+* * * * * * * * * * * * * *
+Source File: STR01.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+LEGAL_CHAR_CHECK - scan target string for legal characters
+
+ inputs:  ds:si = target string ptr
+             bx = length of string
+          es:di = legal character list
+             dx = length of legal char list
+            
+ output: carry set if invalid character found. ds:si points at character
+
+* * * * * * * * * * * * * *
+Source File: STR08.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+ILLEGAL_CHAR_CHECK - scan string for illegal characters
+
+ inputs: ds:si = target string
+            bx = length of target string
+         es:di = list of illegal/check characters
+            dx = length of check list
+           
+ output: carry set if illegal/check character found.  DS:SI point at match.
+* * * * * * * * * * * * * *
+Source File: STR09.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_UPPER - changes string to upper case
+
+ inputs:    DS:[SI] pointing to string
+ 
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: STR16.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_UPPERC:  changes n-length string to upper case
+
+ inputs:    DS:[SI] pointing to string
+            CX = number of bytes in string
+            
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: STR17.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_LOWER - changes bytes of a string to lower case
+
+ inputs:    DS:[SI] = address of an ASCIIZ string
+ 
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: STR19.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_LOWERC -  changes n bytes of a string to lower case
+
+ inputs:    DS:[SI] = address of an ASCIIZ string
+            CX = number of bytes
+            
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: STR20.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_CENTER - centers string1 in a string2
+
+ inputs:    ES:[DI] = address of string2
+            DS:[SI] = address of string1
+            
+ output:    CF = 0 if no error
+            CF = 1 if string was truncated to fit in the field
+
+ Note:  The length of string2 is determined, then string2 is cleared
+        to all spaces.  String1 is then centered within string2.
+        Both strings must be null terminated.
+* * * * * * * * * * * * * *
+Source File: STR21.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_LEFT - left-justifies string1 in string2
+
+ inputs:    ES:[DI] = address of string2
+            DS:[SI] = address of string1
+            
+ output:    CF = 0 if no error
+            CF = 1 if string was truncated to fit in the field
+
+ note:  string2 is first filled with spaces, then string1 is moved
+        into string2.  Both strings must be null terminated.         
+* * * * * * * * * * * * * *
+Source File: STR22.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_RIGHT - right-justifies a string1 in string2
+
+ inputs:    ES:[DI] = address of string2
+            DS:[SI] = address of string1
+            
+ output:    CF = 0 if no error
+            CF = 1 if string was truncated to fit in the field
+
+ note:  string2 is first filled with spaces, then string1 is moved
+        into string2.  Both strings must be null terminated.
+* * * * * * * * * * * * * *
+Source File: STR23.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_CLEANL - remove leading blanks from an ASCIIZ string
+
+ inputs:    DS:[SI] pointing to string
+ 
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR24.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_CLEANR - removes trailing blanks from string
+
+ inputs:    DS:[SI] pointing to string
+ 
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR25.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_REMOVE - remove all occurances of a character from string.
+
+ inputs:    DS:[SI] = string address
+            AL = character to remove from the string
+            
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR26.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_CHAR_DEL - deletes a character from a string
+
+ inputs:    DS:[SI] points to string
+            AX = offset from DS:[BX] to character to delete
+            
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR27.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_CHAR_DELC - deletes a character from a string of n-length
+
+ inputs:    DS:[SI] pointing to an ASCIIZ string
+            CX = current string length
+            AX = offset from DS:[BX] to character to delete
+            
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR27.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_REVERSE - reverses all characters in a string
+
+ inputs:    DS:[SI] pointing to the first character of the string
+            
+ output:    CX = string length
+
+* * * * * * * * * * * * * *
+Source File: STR28.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_REVERSEC - reverses n characters in a string
+
+ inputs:    DS:[SI] pointing to the first character of the string
+            CX = number of bytes in string to reverse
+            
+ output:    CX = string length
+* * * * * * * * * * * * * *
+Source File: STR28.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_SWAP - swaps portions of two strings
+
+ inputs:    DS:[SI] points to string1
+            ES:[DI] points to string2
+            CX = number of bytes to swap
+            
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: STR29.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_SET - sets all bytes of string to a specified character
+
+ inputs:    DS:[SI] pointing to a string
+            AL = character
+            
+ output:    none
+* * * * * * * * * * * * * *
+Source File: STR30.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_SETC - sets n bytes of string to a specified character
+
+ inputs:    DS:[SI] points to string
+            AL = character
+            CX = number of bytes to set
+            
+ output:    none
+* * * * * * * * * * * * * *
+Source File: STR30.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_JOIN -  appends string2 at end of string1
+
+ inputs:    es:[dI] = address of first string
+                bx  = length of string 1
+             ds:si  = address of second string
+                dx  = length of string 2     
+                
+ output:  es:di = new string ptr (unchanged from input es:di)
+             cx = length of joined string at es:di
+* * * * * * * * * * * * * *
+Source File: STR31.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_INSERT - inserts string1 in string2 at specified offset.
+
+ inputs:    DS:[SI] pointing to string1
+            ES:[DI] pointing to string2
+            AX = offset in string2 to insert string1
+            
+ output:  none
+
+ note:  The buffer containing string2 must be large enough for
+        expansion to the size of string1 plus string2.
+* * * * * * * * * * * * * *
+Source File: STR32.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_INSERTC - inserts string1 in string2 at specified offset.
+
+ inputs:    DS:[SI] pointing to string1
+            ES:[DI] pointing to string2
+            AX = offset in string2 to insert string1
+            CX = length of string1
+            
+ output:  none
+
+ note:  The buffer containing string2 must be large enough for
+        expansion to the size of string1 plus string2.
+* * * * * * * * * * * * * *
+Source File: STR32.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( STRING  )
+STR_COPY - copy a string to existing buffer
+
+ inputs:    DS:[SI] pointing to string
+            ES:[DI] pointing to destination buffer
+            
+ output:    CX = string length
+
+ note:      The string's terminating NUL byte is also copied.
+* * * * * * * * * * * * * *
+Source File: STR33.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  STRING )
+STR_COPYC - copy CX bytes to an existing buffer
+
+ inputs:    DS:[SI] pointing to ASCII string
+            ES:[DI] pointing to destination buffer
+            CX = number of bytes to copy
+
+ output:    nothing
+
+ note:      The string's terminating NUL byte is NOT copied.
+* * * * * * * * * * * * * *
+Source File: STR33.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+LIBRARY_SETUP - setup library for use
+
+  inputs:  ax = psp segment
+           bx = number of floating variables needed
+           
+  output:  es:si = pointer to library info structure
+            carry = error, library unusable
+
+      info     struc
+       cpu_type        db      ?       ;0=88 1=186 2=286 3=386 4=486
+       math_chip       db      ?       ;0=none 1=8087 2=287 3=387 4=487
+       mouse_present   db      ?       ;0=no n=yes
+       crt_type        db      ?       ;
+       crt_mode        db      ?
+       mono_flag       db      ?
+       ansi_present    db      ?       ;0=no 1=yes
+       users_color     db      ?
+       crt_seg dw      ?       ;segment of crt buffer
+       crt_rows        db      ?       ;
+       crt_columns     db      ?       ;
+       key_type        db      ?       ;0=old style 1=enhanced
+       psp_seg dw      ?
+      info     ends
+            
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+LIBRARY_TERMINATE - close out library for program exit
+
+  inputs:  ax = 0 clear screen at exit
+           ax = 1 do not clear screen
+           
+  output:  none
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+FIND_CPU_TYPE - detects cpu type
+
+ inputs:  none
+ 
+ output:    AX = 0 if 8086/8088
+            AX = 1 if 80186/80188
+            AX = 2 if 80286
+            AX = 3 if 386 (SX or DX)
+            AX = 4 if 486 (SX or DX)
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+MATH_HARDWARE - determines if 80x87 math coprocessor is installed
+
+ inputs:    none
+ 
+ output:    AX = code for 80x87 model
+            0 = not installed
+            1 = 8087
+            2 = 287
+            3 = 387 (DX or SX)
+            4 = 487 (486DX or 487SX)
+            If the coprocessor is present, it is initilaized by MATH_HARDWARE.
+            
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+keyboard_setup - determine type of keyboard attached
+
+ inputs: none
+ 
+ output: al = 0(old style bios)  1(enhanced bios)
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+FIND_MOUSE - determines if a mouse is installed
+
+ inputs:    none
+ 
+ output:    AX = number of mouse buttons
+            AX = 0 if no mouse or mouse driver installed
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+CHECK_ANSI - check if ANSI active
+
+ inputs:    none
+ 
+ output:    CF = 1 if no ANSI driver active
+            CF = 0 if ANSI active
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+DISPLAY_INFO - determine display information
+
+ inputs:    none
+            
+ output:    AL = screen rows
+            CH = screen columns
+            BX:[SI] = video buffer address
+            register DX is modified
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+DETECTVID -  determine display type
+
+  inputs: none
+  
+  outputs:  ax = 0  no display
+                 1  monochrome
+                 2  hercules 
+                 3  cga digital (mono)
+                 4  cga analog  (mono)
+                 5  cga analog (color)
+                 6  ega mono
+                 7  ega color 64k
+                 8  ega color 64k+
+                 9  cga compatable
+                10  vga mono
+                11  vga color 
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+FIND_DISPLAY_SEGMENT  -  scan for current display buffer segment
+
+  inputs:   display mode 3 or 7 must be set and display page must = 0
+  
+  output:   display_segment is set
+
+* * * * * * * * * * * * * *
+Source File: SYS1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+SPAWN_DOS - execute a second copy DOS
+
+ inputs:    DS:[SI] points to command tail
+            See DOS function 4bh for more information on command tail.
+            
+            if DS:[SI] points to a nul byte, control is transfered
+            to the second copy of COMMAND.COM and you get a DOS prompt.
+            control is passed back to the calling program when EXIT is
+            entered at the DOS prompt.
+
+            if DS:[SI] points to a program name string, the program
+            will be executed, and control will pass back to the calling
+            program at the termination of the second program.
+            
+ output:    nothing
+
+* * * * * * * * * * * * * *
+Source File: SYS2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+COUNT_FLOP_DRIVES - count the number of floppy disk drives intalled
+
+ inputs:    no parameters
+ 
+ output:    AX = number of floppy drives
+ 
+* * * * * * * * * * * * * *
+Source File: SYS3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+GET_DRV_TYPE - determine drive type
+
+ inputs:    DL = drive number (0 = drive A:)
+ 
+ output:    AX = floppy drive type
+             0 = invalid drive number
+             1 = 360k
+             2 = 1.2M
+             3 = 720k
+             4 = 1.44M
+* * * * * * * * * * * * * *
+Source File: SYS3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+BREAK_KEY_INTERCEPT - grab keyboard abort keys
+
+ inputs:  none
+ output:  none
+
+ note:      BREAK_KEY_INTERCEPT traps Ctrl+Break, Ctrl+C and
+            Ctrl-Alt-Del key sequences.  When one of these
+            key combinations is pressed, the inforation is passed
+            to KEY_READ, KEY_IF_READY, KEY_OR_MOUSE.
+* * * * * * * * * * * * * *
+Source File: SYS4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+BREAK_KEY_RESTORE - release keyboard abort keys
+
+ inputs:    no parameters
+ output:    nothing
+* * * * * * * * * * * * * *
+Source File: SYS4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+BREAK_CHECK -  check if break key pressed
+
+ inputs:  none
+ output:  flags set for je or jz if not set
+* * * * * * * * * * * * * *
+Source File: SYS4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -( SYSTEM  )
+BREAK_CLEAR -  clear the break flag
+
+ inputs:  none
+ output:  none
+* * * * * * * * * * * * * *
+Source File: SYS4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+DAYS_TO_DATE - build date for the number of days since Jan 1, 1980.
+
+ input:  AX =  days elapsed since January 1, 1980 ("numdays")
+
+ output: DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+
+* * * * * * * * * * * * * *
+Source File: TIME1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+MONTH_DAYS - return number of days in a month
+
+ input:  BX =  month number 01=january
+         AX =  year
+
+ output: BX =  days in month
+
+* * * * * * * * * * * * * *
+Source File: TIME1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+IS_LEAP - check if leap year
+
+ input:  AX =  year (binary)
+ output: carry set if leap year
+
+* * * * * * * * * * * * * *
+Source File: TIME1.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+MONTH_TO_ASCII - get ASCII string for specified month
+
+ inputs:    CX = month (1 - 12, January = 1)
+ 
+ output:    ES:[DI] = pointer to month name string
+            CX = length of month string
+
+ Note: the day name string is not zero-terminated
+* * * * * * * * * * * * * *
+Source File: TIME2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+DAY_TO_ASCII - get string for specified day of the week
+
+ inputs:    CX = day of week (1 - 7, Sunday = 1)
+ 
+ output:    ES:[DI] = pointer to day name string
+            CX = length of new string
+            
+ Note: the day name string is not zero-terminated
+* * * * * * * * * * * * * *
+Source File: TIME2.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+GET_TIME - Returns the current SYSTEM time.
+
+ input:  None
+
+ output: DH            hours (0-23)
+         DL            minutes (0-59)
+         AH            seconds (0-59)
+         AL            hundredths of seconds (0-99)
+* * * * * * * * * * * * * *
+Source File: TIME3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+ASC_TIME - Creates a time string of the form HH:MM Xm.
+
+ input: DS:SI          destination string ("string")
+       Time in dword format ("time"):
+         DH            hours (0-23)
+         DL            minutes (0-59)
+         
+ output: SI points past last store point         
+* * * * * * * * * * * * * *
+Source File: TIME3.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+GET_DATE - Returns the current SYSTEM date and day of the week.
+
+ input:  None
+ 
+ output: Current SYSTEM date, in dword format:
+         DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+         CL            day-of-the-week (number of days since Sunday)
+* * * * * * * * * * * * * *
+Source File: TIME4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+GET_DAY - Returns the day of the week for a given date.
+
+ input: Date for which day of week should be determined, in dword
+         DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+
+ output: CL            day of the week (0-6)
+* * * * * * * * * * * * * *
+Source File: TIME4.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+ASC_DATE - Creates a date string of the form MM/DD/YY.
+
+ input:  DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+       DS:SI           destination string ("string")
+
+ output: si points past last character stored.         
+* * * * * * * * * * * * * *
+Source File: TIME5.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+DATE_TO_DAYS - get number of days between Jan 1, 1980 and a date.
+
+ input:  DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+
+ output: AX            days elapsed since January 1, 1980
+* * * * * * * * * * * * * *
+Source File: TIME6.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME   )
+START_TIMER - start high resolution timer
+  inputs:  none
+  output:  none
+ 
+ note:  the maximum time which can be measured is one hour.  code
+        fragments can be timed accuratly up to 55ms.  Programs
+        can be timed for longer periods, but interrupts have to
+        be enabled.  It is usually best to disable interrupts
+        while timing short code fragments.  For program timing
+        the reported time will include the time required to
+        service interrupts.
+
+ note:  The timer functions are usually called in the following order
+           call  calibrate_timer
+           call  start_timer
+           (timed program or code here)
+           call  read_timer
+           call  convert_timer
+           call  display_timer
+
+ note:  See sample program TIMER.ASM for usage hints.
+* * * * * * * * * * * * * *
+Source File: TIME7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME   )
+read_timer - read high resolution timer
+  inputs:  none
+  output:  dx,ax = total 8253 timer ticks at rate of 1,193,182 per second
+           
+* * * * * * * * * * * * * *
+Source File: TIME7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME   )
+CONVERT_TIMER - convert timer ticks to seconds and microseconds
+  inputs:  dx,ax = total 8253 timer ticks at rate of 1,193,182 per second
+  output:  ax = seconds
+           cx,bx = microseconds
+
+* * * * * * * * * * * * * *
+Source File: TIME7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME   )
+DISPLAY_TIMER - display timer values to stdout
+  inputs:   ax = seconds
+          cx,bx = microseconds
+  output:  none
+           
+* * * * * * * * * * * * * *
+Source File: TIME7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME   )
+CALIBRATE_TIMER - calibrate timer
+  inputs:  none
+  output:  none
+ 
+ note:  This function computes the overhead needed to call
+        START_TIMER and read_timer on current computer and
+        calibrates the time calculation so that it will
+        compute zero if nothing is being timed.           
+
+ note:  This function only needs to be called once.  It saves
+        a calibration factor which is used by read_timer as
+        long as read_timer is in memory.
+* * * * * * * * * * * * * *
+Source File: TIME7.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+ASC2_TO_DATE - get number of days between Jan 1, 1980 and a date.
+
+ input:  ES:DI         "yyyy/mm/dd" ascii string
+
+ output: DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+
+ Notes:  This routine does not check for errors in the input data.
+         It assumes the year is 1000 or later.
+
+* * * * * * * * * * * * * *
+Source File: TIME8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+ASC2_TO_BIN - get number of days between Jan 1, 1980 and a date.
+
+ input:  ES:DI         "yyyy/mm/dd" ascii string
+
+ output: AX            days elapsed since January 1, 1980
+* * * * * * * * * * * * * *
+Source File: TIME8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+ASC2_TO_BYTE - convert two ascii digets to binary byte
+
+ input:  ES:DI         "nn" ascii string
+
+ output: AL            days elapsed since January 1, 1980
+* * * * * * * * * * * * * *
+Source File: TIME8.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+DATE_TO_ASC2 - DATE (DX,AH,AL) to ascii string
+
+ input:  DX            year (1980-2099)
+         AH            month (1-12)
+         AL            day (1-31)
+         ES:DI         storage buffer for ascii
+
+ output: ES:DI         "yyyy/mm/dd" ascii string
+
+
+* * * * * * * * * * * * * *
+Source File: TIME9.ASM
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -(  TIME  )
+BIN_DATE_TO_ASC2 - binary date to ascii
+
+ input:  AX            days elapsed since January 1, 1980
+         ES:DI         storage point for ascii (yyyy/mm/dd)
+
+ output: ES:DI         "yyyy/mm/dd" ascii string
+
+* * * * * * * * * * * * * *
+Source File: TIME9.ASM

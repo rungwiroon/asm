@@ -1,0 +1,13 @@
+code_segment  segment
+assume  cs:code_segment
+       ORG 100h
+ main1  proc  near
+ mov  ax,2000h
+ mov  bh,'Y'
+ mov  bl,'Z'\
+ int  20h
+ main1  endp
+ code_segment  ends
+ end  main1
+
+

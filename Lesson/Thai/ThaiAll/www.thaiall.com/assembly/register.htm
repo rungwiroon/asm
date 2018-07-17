@@ -1,0 +1,195 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/register.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:42:10 GMT -->
+<head><title>รีจิสเตอร์ (Register)</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="Register,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="รีจิสเตอร์ เป็นส่วนประกอบหนึ่งใน Microprocessor ทำหน้าที่ในการเก็บข้อมูลชั่วคราว">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+รีจิสเตอร์ (Register)</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2551-06-06 (เพิ่มความหมาย)
+<br> 
+
+<ul><font size=6><b>รีจิสเตอร์ (Register)</b></font>
+<br><font size=4><b>ความหมาย (Meaning)</b>
+<dd>#1 เป็นส่วนประกอบหนึ่งใน Microprocessor ทำหน้าที่ในการเก็บข้อมูลชั่วคราว
+<dd>#2 หน่วยความจำขนายย่อยที่เก็บผลจากการคำนวณ โดยแยกพื้นที่ส่วนหนึ่งของหน่วยความจำภายในไมโครโปรเซสเซอร์มาใช้ นั่นคือ Register เป็นหน่วยความจำส่วนหนึ่งใน CPU
+</font>
+<br><b>แนะนำเว็บ (Web Guides)</b>
+<br>- Assembly turorial : <a href=http://www.xs4all.nl/~smit/asm01001.htm>http://www.xs4all.nl/~smit/asm01001.htm</a>
+<br>- <a href=http://www.school.net.th/library/snet1/hardware/z8086/cpu8086.html>http://www.school.net.th/library/snet1/hardware/z8086/cpu8086.html</a>
+</ul>
+
+<table width=95% align=center><td bgcolor=black><font color=white>
+<b>ตัวอย่างการดู Register ด้วยโปรแกรม debug</b>
+<ul><pre><font face="courier new">C:\MASM611\BIN>debug
+-r
+AX=0000  BX=0000  CX=0000  DX=0000  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=119B  ES=119B  SS=119B  CS=119B  IP=0100   NV UP EI PL NZ NA PO NC
+119B:0100 C8            DB      C8
+-r SS
+SS 119B
+:                    <font color=yellow>เปลี่ยนค่าของ Register ได้ตามต้องการ</font>
+-d
+119B:0100  C8 C6 06 71 E1 03 BA A4-83 F9 C3 3C 01 01 00 00   ...q.......<....
+119B:0110  B2 00 00 00 22 00 12 2F-BD FC 46 36 99 00 8A 11   ...."../..F6....
+119B:0120  2E 74 16 3C 5B 74 12 3C-5D 74 0E 3C 2B 74 0A 3C   .t.<[t.<]t.<+t.<
+119B:0130  2C 74 06 3C 3B 74 02 3C-3D C3 3A C0 C3 3C 20 74   ,t.<;t.<=.:..< t
+119B:0140  02 3C 09 C3 06 57 0E 07-E8 13 00 86 F2 89 0E 90   .<...W..........
+119B:0150  84 89 16 92 84 BA 7E 84-E8 24 24 5F 07 C3 BF B2   ......~..$$_....
+119B:0160  E8 B4 2A CD 21 98 51 52-8B F0 D1 E6 03 F0 8B CE   ..*.!.QR........
+119B:0170  A1 12 83 B6 03 57 E8 A9-25 5F 03 F1 B9 03 00 F3   .....W..%_......
+-q
+C:\MASM611\BIN>
+</pre></ul>
+</td></table>
+<center>
+<a href=register8086.gif><img src=register8086.gif width=300></a>
+<a href=registerpentium.gif><img src=registerpentium.gif width=300></a>
+<br><a href=register.xls>register.xls</a>
+</center>
+<ol>
+<li><b>Register แบ่งได้ 4 กลุ่ม</b>
+<dd>1. รีจิสเตอร์ทั่วไป (General Register)
+<dd>2. รีจิสเตอร์เซกเมนต์ (Segment Register)
+<dd>3. รีจิสเตอร์ Pointer และ Index (Pointer and Index Register)
+<dd>4. รีจิสเตอร์แฟลก (Flag Register)
+<li><b>รีจิสเตอร์ที่ควรรู้จักตัวแรก ๆ มีอะไรบ้าง</b>
+<dd>แต่ละรีจิสเตอร์มีขนาด 1 word หรือ 1 word = 2 byte
+<dd>จากตัวอย่างนี้จะแสดง Register 4 ตัวแรก คือ รีจิสเตอร์ทั่วไป (general purpose Register) กลุ่มข้อมูล อันประกอบด้วย AX, BX, CX และ DX โดยรีจิสเตอร์ที่เหลือคือ SP, BP, SI, DI, DS, ES, SS, CS และ IP ซึ่งเรียกรีจิสเตอร์เหล่านี้ว่า รีจิสเตอร์เฉพาะ(Special Register)
+<dd>รีจิสเตอร์แต่ละตัวเก็บตัวเลขได้ 4 หลัก ทำให้เก็บค่าเลขในแต่ละตัวได้สูงสุดเพียง 65536 หรือ 256 * 256 นั่นเอง และ 256 ก็คือ เลขฐาน 16 จำนวน 2 หลัก ดังนั้น 0000 จึงสามารถเก็บได้ตั้งแต่ <b>0 ถึง 65536 หรือ 64 KB</b> นั่นเอง
+<ul><pre>http://www.ik.ku.lt/lessons/konspekt/kti/12_files/Assembler%20Tutorial.htm
+<b>1. รีจิสเตอร์ทั่วไป (General Register)</b>	
+มีหน้าที่เก็บข้อมูล หรือผลลัพธ์จากการคำนวณ 
+  AX : Accumulator Register (สำหรับการอ้างอิงแบบ 16 Bit)
+  BX : Base Register
+  CX : Counting Register
+  DX : Data Register
+  ถ้าเป็น EAX, EBX, ECX, EDX จะเป็น Register สำหรับ 32 Bit
+
+<b>2. รีจิสเตอร์เซกเมนต์ (Segment Register)</b>
+มีหน้าที่อ้างอิงตำแหน่งในหน่วยความจำเมื่อต้องการอ่าน หรือเขียนข้อมูล
+  CS : Code Segment Register
+  DS : Data Segment Register
+  ES : Extra Segment Register
+  SS : Stack segment Register
+
+<b>3. รีจิสเตอร์ Pointer และ Index (Pointer and Index Register)</b>
+มีหน้าที่ในการชี้ตำแหน่งต่าง ๆ ในหน่วยความจำที่ต้องการติดต่อ
+  BP : Base Pointers Register
+  SP : Stack Pointer Register
+  SI : Source Index Register
+  DI : Destination Index Register
+
+<b>4. รีจิสเตอร์แฟลก (Flag Register)</b>
+ทำหน้าที่เก็บสถานะการประมวลผลจากบางคำสั่ง เช่น CMP, TEST เป็นต้น
+ส่วน IP คือ Instruction Pointer Register
+
+</pre></ul>
+
+<li><b>อะไรคือ เซกเมนต์(Segment) : ออฟเซต(Offset)</b>
+<dd>เซกเมนต์เก็บอยู่ใน CS(Code segment) ส่วนออฟเซตเก็บใน IP(Instruction pointer)
+<dd>เพราะคอมพิวเตอร์มีหน่วยความจำมากกว่า 64 KB เมื่อใช้ debug และกดปุ่ม d ทุกครั้งจะกระทำการกับพื้นที่ในหน่วยความจำที่แตกต่างกัน จึงต้องใช้ เซกเมนต์และออฟเซต อ้างถึงหน่วยความจำโดยใช้ Register 2 ตัวนี้ เป็นผลให้อ้างอิงข้อมูลในหน่วยความจำได้สูงสุดถึง 4 GB หรือ (256*256)*(256*256) นั่นเอง จากตัวอย่างเมื่อใช้โปรแกรม debug ท่านจะเห็นเลข 119B และ 0100 นั่นคือ Register 2 ตัว โดย CS คือ Segment และ IP คือ Offset นั่นเอง เมื่อท่านออกจากโปรแกรม Debug ค่าของ segment จะเปลี่ยนไป แต่ IP ยังเริ่มต้นที่ 0100 เท่าเดิม
+
+<li><b>อะไรคือ ความแตกต่างของ AX, AH และ AL</b>
+<dd>เมื่อ AX ประกอบด้วย 1 word หรือ 2 byte แต่การแบ่งนั้นยังแบ่งได้อีกว่า 1 byte แรกของ AX ให้เรียกว่า AH(high byte) และ 1 byte หลังเรียกว่า AL(Low byte) ทดสอบเรื่อง AH และ AL ด้วยการใช้โปรแกรม debug เพิ่มค่า AL เข้าไปใน AH ค่าเริ่มต้น AX = 1234 นั่นคือ AH = 12 และ AL = 34 ผลการบวกจะทำให้ AH = 46 หรือ AX = 4634 นั่นเอง
+<table width=90% align=center><td bgcolor=black><font color=white>
+<b>ตัวอย่างแสดงการใช้ AX, AH และ AL ผ่านคำสั่ง ADD</b>
+<ul><pre><font face="courier new">C:\MASM611\BIN>debug
+-r
+AX=0000  BX=0000  CX=0000  DX=0000  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=119B  ES=119B  SS=119B  CS=119B  IP=0100   NV UP EI PL NZ NA PO NC
+119B:0100 00C4          ADD     AH,AL
+-r ax
+AX 0000
+:1234
+-a
+119B:0100 add ah,al
+119B:0102
+-r
+AX=1234  BX=0000  CX=0000  DX=0000  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=119B  ES=119B  SS=119B  CS=119B  IP=0100   NV UP EI PL NZ NA PO NC
+119B:0100 00C4          ADD     AH,AL
+-t =cs:100
+AX=4634  BX=0000  CX=0000  DX=0000  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=119B  ES=119B  SS=119B  CS=119B  IP=0102   NV UP EI PL NZ NA PO NC
+119B:0102 00C4          ADD     AH,AL
+-
+</pre></ul>
+</td></table>
+
+<li><b>การคูณ และหารจะเกี่ยวกับ DX อย่างไร</b>
+<dd>MUL BX หมายถึง นำ AX คูณกับ BX หลักการนี้เหมือน DIV
+<dd>นำ AX คูณ BX เก็บ 16 Bit บนใน DX และ 16 Bit ล่างใน AX เช่น AX มีค่า 9001 และ BX มีค่า 0002 ผลการคูณจะได้ 00012002 จึงเก็บ 0001 ไว้ที่ DX และ 2002 ไว้ที่ AX
+<table width=90% align=center><td bgcolor=black><font color=white>
+<b>ตัวอย่างแสดงการคูณ AX และ BX เก็บลง DX และ AX</b>
+<ul><pre><font face="courier new">C:\>debug
+-r ax
+AX 0000
+:9001
+-r bx
+BX 0000
+:0002
+-a 100
+106F:0100 mul bx
+106F:0102
+-t =cs:100
+AX=2002  BX=0002  CX=0000  DX=0001  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=106F  ES=106F  SS=106F  CS=106F  IP=0102   OV UP EI PL NZ NA PO CY
+106F:0102 DB8B740903C6  ESC     19,[BP+DI+0974]TBYTE PTR [BP+DI+C603]SS:C603=E1C
+0
+-
+</pre></ul>
+</td></table>
+
+<li><b>SP, BP, SI, DI และ IP คืออะไร</b>
+<dd>รีจิสเตอร์ทั่วไปเหมือน AX, BX, CX และ DX แต่อยู่ในกลุ่มตัวชี้ และอินเด็กซ์
+<dd>SP : Stack pointer
+<dd>BP : Base pointer
+<dd>SI : Source index
+<dd>DI : Destination index
+<dd>IP : Instruction pointer
+
+<li><b>CS, DS, SS และ ES คืออะไร</b>
+<dd>รีจิสเตอร์กำหนดเซกเมนต์ เพราะโปรแกรมหนึ่ง ๆ จะประกอบด้วยส่วนสำคัญ 4 ส่วน แต่ละส่วนแยกออกจากกันอย่างชัดเจน แต่โปรแกรมทุกโปรแกรมมิได้ใช้ทุก segment เสมอไป
+<dd>CS : Code segment
+<dd>DS : Data segment
+<dd>SS : Stack segment
+<dd>ES : Extra segment
+
+</ol>
+
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_Register"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/register.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:42:12 GMT -->
+</html>

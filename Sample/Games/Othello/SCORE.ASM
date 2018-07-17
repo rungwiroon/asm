@@ -1,0 +1,159 @@
+;/////////////////////////////////////////////////////////////
+;/////////////////////////////////////////////////////////////
+_SCORE	PROC
+	
+	PUSH_R
+	XOR	BX,BX		;BX = poiter offset table
+;	XOR	CX,CX		;CH = count white ,CL = count black
+	MOV	WHITE_POINT,0
+	MOV	BLACK_POINT,0
+
+COUNT_POINT :
+
+	CMP	[TABLE+BX],0
+	JE	_NEXT_TABLE
+
+	CMP	[TABLE+BX],1
+	JE	_WHITE_POINT
+
+_BLACK_POINT :
+
+	INC	BLACK_POINT		;count black
+	JMP	_NEXT_TABLE
+
+_WHITE_POINT :
+
+	INC	WHITE_POINT		;count white
+
+_NEXT_TABLE :
+
+	INC	BX
+
+	CMP	BX,63
+	JLE	COUNT_POINT
+;--------------------------------------------------------
+	GOTO_XY 0,13		;POSITION WHITE POINT
+	MOV	AH,09H
+	LEA	DX,MSG_BLANK
+	INT	21H
+
+	GOTO_XY 3,13		;POSITION WHITE POINT
+	XOR	AX,AX
+	MOV	AL,WHITE_POINT
+	CALL	OUTDEC		
+
+	MOV	AH,09H
+	LEA	DX,MSG_PT
+	INT	21H
+
+	CMP	WHITE_POINT,0
+	JE	END_GAME	;WHITE POINT
+;--------------------------------------------------------
+
+	GOTO_XY	34,13		;POSITION BLACK POINT
+	MOV	AH,09H
+	LEA	DX,MSG_BLANK
+	INT	21H
+
+	GOTO_XY	34,13		;POSITION BLACK POINT
+	XOR	AX,AX
+	MOV	AL,BLACK_POINT
+	CALL	OUTDEC
+
+	MOV	AH,09H
+	LEA	DX,MSG_PT
+	INT	21H
+
+	CMP	BLACK_POINT,0		;BLACK POINT
+	JE	END_GAME
+;--------------------------------------------------------
+	POP_R
+	RET
+_SCORE	ENDP
+;/////////////////////////////////////////////////////////////
+;/////////////////////////////////////////////////////////////
+WIN_SCORE	PROC
+
+	PUSH_R
+
+	MOV	AL,WHITE_POINT
+	MOV	AH,BLACK_POINT
+	CMP	AL,AH
+	JE	DREW_GAME
+	JG	WHITE_WIN
+	JL	BLACK_WIN
+
+DREW_GAME :
+
+	GOTO_XY 3,23
+	DISP_STR  'DREW GAME'
+
+	GOTO_XY 30,23
+	DISP_STR  'DREW GAME'
+
+	MOV	WIN_POINT,0
+	JMP	SHOW_MAK
+
+WHITE_WIN :
+
+	GOTO_XY 3,23
+	DISP_STR  'PL1 WIN'	
+	MOV	AL,WHITE_POINT
+	MOV	AH,BLACK_POINT
+	SUB	AL,AH
+	MOV	WIN_POINT,AL
+	JMP	SHOW_MAK
+
+BLACK_WIN :
+
+	GOTO_XY 30,23
+	DISP_STR  'PL2 WIN'
+	MOV	AL,WHITE_POINT
+	MOV	AH,BLACK_POINT
+	SUB	AH,AL
+	MOV	WIN_POINT,AH
+
+SHOW_MAK :
+
+	MOV	AX,02H		;HIDE MOUSE
+	INT	33H 
+
+	PIC_LOCATE     71,27,PIC_TABLE    ;blank table for start game
+	MOV	POSITION,0
+
+WHITE_:
+	CMP	WHITE_POINT,0
+	JLE	BLACK_
+
+	CALL	TO_PIXEL
+	PIC_LOCATE	X_PIXEL,Y_PIXEL,WHITE
+	INC	POSITION
+	DEC	WHITE_POINT
+	JMP	WHITE_
+
+BLACK_ :
+
+	CMP	BLACK_POINT,0
+	JLE	END_WIN_SCORE
+
+	CALL	TO_PIXEL
+	PIC_LOCATE	X_PIXEL,Y_PIXEL,BLACK
+	INC	POSITION
+	DEC	BLACK_POINT
+	JMP	BLACK_
+
+END_WIN_SCORE :
+
+	CMP	WIN_POINT,0
+	JNE	EXIT_WIN_SCORE
+	WAITCLICK
+	CALL	START_GAME
+	RET
+
+EXIT_WIN_SCORE :
+	SHOW_MOUSE
+	POP_R
+	RET
+WIN_SCORE	ENDP
+;/////////////////////////////////////////////////////////////
+;/////////////////////////////////////////////////////////////

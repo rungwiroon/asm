@@ -1,0 +1,31 @@
+DPMI.DOC
+
+
+The STARTDP startup code switches the system into 32-bit protected mode
+and calls your main program MAIN32.  Your program should be written using
+my MODEL.INC, CODESEG.INC and DATASEG.INC include files as shown in my
+dumb example HELLO32.ASM.  Most DOS functions work, the common BIOS functions
+work too, with 32-bit addresses used in place of 16-bit addresses.
+
+Memory allocation is most easily done with the GetMemNear, RelMemNear and
+ResMemNear subroutines which Allocate, Free and Re-size near memory blocks,
+respectively.  You will find these subroutines in the DPMI32.ASM source
+code.
+
+If you need to re-assemble the STARTDP source code, use TASM (NOT MASM)
+and use the /m2 command-line switch.
+
+Assemble your source code by copying or renaming the DPMI.INC file to
+MODEL.INC and assemble normally with MASM 5.0 or newer, or TASM 2.0 or
+newer.
+
+Linking your program is simple:
+
+TLINK /3 STARTDP+main32;
+
+-or-
+
+LINK STARTDP+main32;
+
+A program made with STARTDP requires a DPMI host, such as Windows,
+OS/2, 386MAX version 7 or newer, or QDPMI.

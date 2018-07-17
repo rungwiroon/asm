@@ -1,0 +1,8 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 01678H 01679H _TEXT                  CODE
+ 0167AH 01F8BH 00912H _DATA                  DATA
+ 01F90H 0208FH 00100H STACK                  STACK
+
+ Origin   Group
+ 0167:0   DGROUP

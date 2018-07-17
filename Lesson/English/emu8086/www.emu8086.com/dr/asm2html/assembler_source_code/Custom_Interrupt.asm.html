@@ -1,0 +1,146 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/Custom_Interrupt.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> Custom_Interrupt.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+
+<font color=#008000>; interrupt vector (memory from 00000h to 00400h) </font>
+<font color=#008000>; keeps addresses of all interrupts (from 00h to 0ffh). </font>
+<font color=#008000>; you can add new interrupt or modify existing interrupts. </font>
+<font color=#008000>; address of interrupt M is stored in vector at offset M * 4, </font>
+<font color=#008000>; for example: interrupt 10h is stored at offset 10h * 4. </font>
+<font color=#008000>; first goes the offset, then segment (total of 2 bytes). </font>
+
+<font color=#008000>; for more information refer to "global memory table" in c:\emu8086\documentation. </font>
+
+<font color=#008000>; note: this is simplified example, it is not recommended to make changes to it </font>
+<font color=#008000>; and run it on the real computer, especially it is not recommended to replace disk </font>
+<font color=#008000>; processing interrupts because this may cause data loss and other instability problems. </font>
+
+
+name <font color=#800080>"custint"</font>
+
+
+<font color=#000064>org</font> 100h
+
+start:
+
+<font color=#008000>; set video mode to 3 - 16 color 80x25 </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 3
+<font color=#0000FF>int</font> 10h
+
+
+<font color=#008000>; set es to "0000": </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0
+<font color=#0000FF>mov</font> <font color=#800000>es</font>, <font color=#C80000>ax</font>
+<font color=#008000>; calculate vector address for interrupt 90h: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 90h
+<font color=#008000>; multiply 90h by 4, store result in ax: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bl</font>, 4h
+<font color=#0000FF>mul</font> <font color=#C80000>bl</font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, <font color=#C80000>ax</font>
+<font color=#008000>; copy offset into interrupt vector: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>si</font>, <font color=#000064>offset</font> <font color=#0064C8>[</font>test1<font color=#0064C8>]</font>
+<font color=#0000FF>mov</font> <font color=#800000>es</font>:<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>, <font color=#C80000>si</font>
+<font color=#0000FF>add</font> <font color=#C80000>bx</font>, 2
+<font color=#008000>; copy segment into interrupt vector:     </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#800000>cs</font>
+<font color=#0000FF>mov</font> <font color=#800000>es</font>:<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>, <font color=#C80000>ax</font>
+
+
+<font color=#0000FF>int</font> 90h    <font color=#008000>; test newly created interrupt. </font>
+
+<font color=#008000>; wait for any key press: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+
+<font color=#0000FF>int</font> 20h     <font color=#008000>; halt execution. </font>
+
+
+
+
+
+<font color=#008000>; interrupt 90h starts here: </font>
+test1: <font color=#0000FF>pusha</font>  <font color=#008000>; store all registers. </font>
+
+<font color=#008000>; make sure data segment is code segment: </font>
+       <font color=#0000FF>push</font> <font color=#800000>cs</font>
+       <font color=#0000FF>pop</font> <font color=#800000>ds</font>
+
+<font color=#008000>; set segment register to video memory: </font>
+       <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 0b800h
+       <font color=#0000FF>mov</font>     <font color=#800000>es</font>, <font color=#C80000>ax</font>
+
+<font color=#008000>; print message, each character is written as </font>
+<font color=#008000>; a word, high byte is color and low byte is </font>
+<font color=#008000>; ascii code: </font>
+      <font color=#0000FF>lea</font> <font color=#C80000>si</font>, msg      <font color=#008000>; load offset of msg to si. </font>
+      <font color=#0000FF>mov</font> <font color=#C80000>di</font>, 0        <font color=#008000>; point to start of the screen. </font>
+print:
+      <font color=#0000FF>cmp</font> <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>, 0      <font color=#008000>; if "0" then stop. </font>
+      <font color=#0000FF>je</font> stop
+      <font color=#0000FF>mov</font> <font color=#C80000>bl</font>,  <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>    <font color=#008000>; read ascii code from msg. </font>
+      <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0f1h     <font color=#008000>; set colors: white background, blue text. </font>
+      <font color=#0000FF>mov</font> <font color=#800000>es</font>:<font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#C80000>bx</font>  <font color=#008000>; write to vidio memory. </font>
+      <font color=#0000FF>add</font> <font color=#C80000>di</font>, 2        <font color=#008000>; go to next position on screen. </font>
+      <font color=#0000FF>inc</font> <font color=#C80000>si</font>           <font color=#008000>; next char. </font>
+      <font color=#0000FF>jmp</font> print
+stop:
+      <font color=#0000FF>popa</font>  <font color=#008000>; re-store all registers. </font>
+      <font color=#0000FF>iret</font>  <font color=#008000>; return from interrupt. </font>
+
+msg <font color=#000064>db</font> <font color=#800080>"test of custom interrupt!"</font>, 0
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/Custom_Interrupt.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

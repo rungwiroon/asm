@@ -1,0 +1,1195 @@
+                The Assembly Wizard's Library            page 1
+                          Version 2.0
+
+     AsmWiz  Copyright (c) 1990-1994  Thomas G. Hanlin III
+
+
+
+This is AsmWiz, a library of assembly language routines for
+assembly language programmers. It is copyrighted and may be
+distributed only under the following conditions:
+
+   All AsmWiz files must be distributed together as a unit in
+   unmodified form. No files may be left out or added.
+
+YOU USE THIS LIBRARY AT YOUR OWN RISK. I have tested it on my
+own computer, but I will not assume responsibility for any
+problems which AsmWiz may cause you.
+
+It is expected that if you find AsmWiz useful, you will register
+your copy. You may not use AsmWiz routines in programs intended
+for distribution unless you have registered.
+
+Registration gets you the latest version of AsmWiz, complete
+with full source code. The source code is designed for the MASM
+6.0 and may require modifications to work with other assemblers.
+
+The AsmWiz library was designed for use with small assembly
+programs and is compatible with the creation of COM files. All
+CALLs are of the NEAR variety. A FAR model will be created if
+there is sufficient interest.
+
+For an example of how to set up your program to access the
+AsmWiz library, how to LINK the routines, and so forth, see the
+EXAMPLE.ASM, EXAMPLE.COM, and ?CREATE.BAT files. The file
+PACKING.LST tells you which ?CREATE batch file to use with which
+assembler. There are versions for A86, MASM, OPTASM, QuickASM,
+and TASM.
+
+Note that DOS-dependent services expect DOS 2.0 or higher
+versions unless otherwise specified.
+
+                       Table of Contents                 page 2
+
+
+
+ Overview and Legal Info ................................... 1
+
+ Base Conversions .......................................... 3
+
+ Exception Handling ........................................ 4
+
+ Delays and Countdowns ..................................... 5
+
+ File Handling ............................................. 6
+
+ Filename Manipulation ..................................... 8
+
+ Keyboard Services ......................................... 9
+
+ Long Integer Math ........................................ 10
+
+ Memory Services .......................................... 11
+
+ Mouse Services ........................................... 12
+
+ Sound and Music .......................................... 13
+
+ String Services .......................................... 14
+
+ Telecommunications ....................................... 16
+
+ Time and Date ............................................ 17
+
+ Video Services ........................................... 18
+
+ Miscellaneous Services ................................... 27
+
+ Error Codes .............................................. 28
+
+                       Base Conversions                  page 3
+
+
+
+The Base Conversion Services provide the ability to convert back
+and forth between a number and its ASCIIZ representation. Any
+base from 2-36 may be employed, so these routines encompass
+binary, decimal, hex and octal conversions. Services are
+provided for integers and long integers, both signed and
+unsigned.
+
+
+The following services are available:
+
+   BC_ASC2INT    convert ASCIIZ string to unsigned integer
+                       BL <-- base from which to convert
+                    DS:SI <-- ptr to string
+                    -------
+                       AX = unsigned integer
+
+   BC_ASC2LONG   convert ASCIIZ string to unsigned long int
+                       BL <-- base from which to convert
+                    DS:SI <-- ptr to string
+                    -------
+                    DX,AX = unsigned long integer
+
+   BC_ASC2SINT   convert ASCIIZ string to signed integer
+                       BL <-- base from which to convert
+                    DS:SI <-- ptr to string
+                    -------
+                       AX = signed integer
+
+   BC_ASC2SLONG  convert ASCIIZ string to signed long integer
+                       BL <-- base from which to convert
+                    DS:SI <-- ptr to string
+                    -------
+                    DX,AX = signed long integer
+
+   BC_INT2ASC    convert unsigned integer to ASCIIZ string
+                       AX <-- unsigned integer
+                       BL <-- base to which to convert
+                    ES:DI <-- ptr to string buffer (17 bytes)
+
+   BC_LONG2ASC   convert unsigned long int to ASCIIZ string
+                    DX,AX <-- unsigned long integer
+                       BL <-- base to which to convert
+                    ES:DI <-- ptr to string buffer (33 bytes)
+
+   BC_SINT2ASC   convert signed integer to ASCIIZ string
+                       AX <-- signed integer
+                       BL <-- base to which to convert
+                    ES:DI <-- ptr to string buffer (18 bytes)
+
+   BC_SLONG2ASC  convert signed long integer to ASCIIZ string
+                    DX,AX <-- signed long integer
+                       BL <-- base to which to convert
+                    ES:DI <-- ptr to string buffer (34 bytes)
+
+                      Exception Handling                 page 4
+
+
+
+The Exception Handling Services allow your program to take
+control over exception conditions. This covers critical errors
+and Control-Break / Control-C handling.
+
+The critical error handler gives you the ability to recover from
+critical errors, which would otherwise cause the infamous
+"R>etry, I>gnore, F>ail, A>bort?" prompt.
+
+The break handler allows your program to ignore the Control-C
+and Control-Break keys or to process them in an orderly manner.
+This is vital if you are using any of the AsmWiz services which
+need to be shut down before the program terminates. Up to eight
+procedures can be called when ^Break or ^C are used (they will
+be ignored if you turn off ^Break / ^C).
+
+
+The following services are available:
+
+
+   EH_INITCRIT   initialize the critical error handler
+
+   EH_CRITERR    check for a critical error
+
+   EH_CRITDONE   terminates the critical error handler
+
+   EH_INITBREAK  initialize the ^C / ^Break handler
+
+   EH_ADDBREAK   add a procedure to be called on ^C / ^Break
+                       DX <-- procedure offset (CS-relative)
+
+   EH_SETBREAK   allow or ignore ^C and ^Break
+                       AL <-- 0 to ignore, 1 to allow
+
+   EH_SUBBREAK   remove a procedure to be called on ^C / ^Break
+                       DX <-- procedure offset (CS-relative)
+
+                     Delays and Countdowns               page 5
+
+
+
+The Delay Services are for those times when you want the
+computer to sit around doing nothing for a while. Delays of
+various timing resolution are available for anything from small
+to large waits.
+
+Notes on the 100th-second delay and countdown services:
+
+Since MD_DONE must be called before the program terminates, you
+should use the EH_ADDBREAK service to insure that MD_DONE is
+called if Control-Break or Control-C are permitted to abort the
+program.
+
+Timers 0-1 may be used by AsmWiz itself for various services.
+
+See ASMWIZ.MAN for more details on the 100th-second delay
+services.
+
+
+The following services are available:
+
+
+   MD_DELAY      delay for a number of 100ths of seconds
+                       CX <-- delay (0-32767)
+
+   MD_DONE       terminate 100th-second delay handler
+
+   MD_GETTIMER   get a delay count
+                       AL <-- timer number (0-7)
+                    -------
+                       CX = delay * 2 (0-65534)
+
+   MD_INIT       initialize 100th-second delay handler
+
+   MD_SETTIMER   set a delay count
+                       AL <-- timer number (0-7)
+                       CX <-- delay (0-32767)
+
+   MD_TICK       delay for a number of clock ticks (18ths of seconds)
+                       CX <-- delay (0-65535)
+
+                        File Handling                    page 6
+
+
+
+The File Handling Services provide a comprehensive and powerful
+set of routines for file handling. The usual open file,
+read/write, file pointer manipulation, and close file operations
+are supported, of course. New conveniences include automatic
+network support (file sharing is used if the DOS version is high
+enough), optional input buffering for extra speed, and special
+support for text files. Critical error handling is supported via
+the Exception Handling Services.
+
+These services return with the carry flag set if there is an
+error. In that case, the AX register returns the error code.
+Note that, unlike most other services, the file services are
+allowed to change the AX register regardless of whether an error
+occurred.
+
+
+The following services are available:
+
+   DF_CLOSE      close a file
+                       BX <-- (virtual) file handle
+
+   DF_DONE       terminate the File Handling Services
+                 (closes all open files)
+
+   DF_FLUSH      flush a file to disk (updates disk directory)
+                       BX <-- (virtual) file handle
+
+   DF_GETTIME    get file time/date stamp
+                       BX <-- (virtual) file handle
+                    -------
+                       AX = time
+                       DX = date
+
+   DF_HANDLE     get DOS file handle given virtual file handle
+                       BX <-- (virtual) file handle
+                    -------
+                       BX = (DOS) file handle
+
+   DF_INIT       initialize the File Handling Services
+                       DX <-- 0
+
+   DF_LOCATE     set file read/write pointer
+                       BX <-- (virtual) file handle
+                       CL <-- 0 for offset from start
+                              1 for offset from current posn
+                              2 for offset from end of file
+                    DX,AX <-- offset
+
+                        File Handling                    page 7
+
+
+
+   DF_OPEN       open a file for access
+                       AX <-- set bit 0 for read
+                                  bit 1 for write
+                                  bit 2 for create
+                                  bit 3 for text file
+                                  bits 4-15 zero
+                    DS:DX <-- pointer to ASCIIZ filename
+                       CX <-- length of input buffer (0: none)
+                    ES:SI <-- pointer to input buffer, if any
+                    -------
+                       BX = (virtual) file handle
+
+   DF_READ       read from a file
+                       BX <-- (virtual) file handle
+                       CX <-- bytes to read
+                              (for text files, is max bytes)
+                    DS:DX <-- pointer to read buffer
+                    -------
+                       AX = bytes actually read
+                            (if NC and not text mode)
+
+   DF_TIME       set file time/date stamp
+                       BX <-- (virtual) file handle
+                       AX <-- time
+                       DX <-- date
+
+   DF_WHERE      get file read/write pointer
+                       BX <-- (virtual) file handle
+                    -------
+                    DX,AX = offset
+
+   DF_WRITE      write to a file
+                       BX <-- (virtual) file handle
+                       CX <-- bytes to write
+                              (for text files, is ignored)
+                    DS:DX <-- pointer to write buffer
+
+                    Filename Manipulation                page 8
+
+
+
+The Filename Manipulation Services allow various operations on
+filenames which make it possible to duplicate the capabilities
+of the DOS command shell. This includes finding a file which
+matches a specified pattern, forcing a filename to match a given
+pattern, splitting a filespec into its component parts, and
+completing a (possibly partial) filespec.
+
+
+The following services are available:
+
+   FI_COMPLETE   complete a filespec from a partial spec
+                    DS:SI <-- filename (may have drive,
+                                 dir, "." or "..", etc)
+                    DS:BX <-- default extension to be added
+                                 (without ".")
+                    ES:DI <-- 80-byte buffer for result
+                    -------
+                    Flags = CY if the filespec is not valid
+                            NC if it went ok
+
+   FI_MATCH      see if a filename matches a specified pattern
+                    DS:SI <-- pattern (may contain wildcards)
+                    ES:DI <-- filename (may not contain drive
+                                 or path specs)
+                    -------
+                    Flags = ZF if the filename matches
+                            NZ if the filename doesn't match
+
+   FI_PATTERN    push a filename through a pattern spec
+                    DS:SI <-- filename (no drive or
+                                 directory allowed)
+                    DS:BX <-- pattern
+                    ES:DI <-- 13-byte buffer for results
+                    -------
+                    Flags = CY for some filename/pattern errors
+                            NC if it went ok
+
+   FI_SPLIT      split a path specification into drive,
+                 directory, filename
+                    DS:SI <-- path spec
+                    ES:DI <-- 80-byte buffer for results
+
+                       Keyboard Services                 page 9
+
+
+
+The Keyboard Services provide access to the keyboard. They let
+you get and set the Caps Lock and Num Lock states, or get a key
+in a variety of ways. Both DOS and BIOS keyboard access is
+provided, so support for input redirection is optional.
+
+Microsoft and IBM seemed to find it curiously difficult to
+provide a simple set of keyboard functions. These routines hide
+most of the quirks from you. However, there are still things to
+keep in mind. There is no BIOS or DOS support for setting Caps
+Lock or Num Lock, so it is done directly. This means that the
+keyboard status lights for these keys may be incorrect on older
+machines if you set the key states from your program. DOS does
+not usually support "enhanced" keyboards (101-key or more), so
+if you need to access enhanced keys (like F11 and F12), you
+can't use the DOS services or support input redirection. With
+the BIOS services, you must choose between compatibility (old
+keyboard handling, ignores F11, F12, etc if present) and full
+enhanced mode support (doesn't work on older machines).
+
+The prefix for the keyboard routine is based on the way keyboard
+access is done:
+
+   MK_    machine-level keyboard access (direct to hardware)
+   BKO_   old BIOS keyboard access (compatible with everything)
+   BK_    new BIOS keyboard access (only for "enhanced" kbd)
+   DK_    DOS keyboard access (supports input redirection)
+
+
+Background info aside, these routines are really quite simple:
+
+   BKO_GETKEY    get a key from the keyboard (bit flags: set
+   BK_GETKEY      bit 0 to wait for key, 1 to screen extended
+   DK_GETKEY      keys, 2 to capitalize, 3 to clear kbd buffer)
+                         AL <-- bit flags
+                    -------
+                         AX = key (- ext'ded., 0 none, + ASCII)
+                         Flags = NZ if got a key, ZF if no key
+
+   BKO_GETCAPS   get state of Caps Lock (compatible)
+   BK_GETCAPS    get state of Caps Lock (enhanced kbd only)
+                    -------
+                         AX = 0 if off, 0FFFFh if on
+
+   BKO_GETNUM    get state of Num Lock (compatible)
+   BK_GETNUM     get state of Num Lock (enhanced kbd only)
+                    -------
+                         AX = 0 if off, 0FFFFh if on
+
+   MK_SETCAPS    set state of Caps Lock
+                         AX <-- 0 to turn off, non-0 to turn on
+
+   MK_SETNUM     set state of Num Lock
+                         AX <-- 0 to turn off, non-0 to turn on
+
+                       Long Integer Math                page 10
+
+
+
+The Long Integer Math Services provide support for the basic
+arithmetic operations on unsigned long integers. They allow you
+to add two 32-bit integers, subtract one 32-bit integer from
+another, multiply two 32-bit integers (giving a 64-bit result),
+and divide a 63-bit integer by a 32-bit integer (giving a 32-bit
+result and 32-bit remainder).
+
+Since 32-bit integers are rather unwieldy unless you're using an
+80386 or above (in which case you don't need these services
+anyway), the numbers are passed back and forth through a buffer
+in memory.
+
+
+The following services are available:
+
+   MA_ADD32      add two unsigned long integers
+                    DS:SI   <-- first operand
+                    DS:SI+4 <-- second operand
+                    -------
+                    DS:SI+8 = result
+
+   MA_DIV32      divide an unsigned 63-bit integer by an
+                 unsigned long integer
+                    DS:SI   <-- dividend (64 bits: high bit=0)
+                    DS:SI+8 <-- divisor (unsigned long int)
+                    -------
+                    DS:SI+12 = quotient (unsigned long int)
+                    DS:SI+16 = remainder (unsigned long int)
+
+   MA_MUL32      multiply two unsigned long integers
+                    DS:SI   <-- first operand
+                    DS:SI+4 <-- second operand
+                    -------
+                    DS:SI+8 = result (unsigned very long
+                                 integer: 64 bits)
+
+   MA_SUB32      subtract one unsigned long int from another
+                    DS:SI   <-- first operand
+                    DS:SI+4 <-- second operand
+                    -------
+                    DS:SI+8 = result
+
+                        Memory Services                 page 11
+
+
+
+The Memory Services provide low-level routines for memory
+manipulation. They allow you to manipulate addresses, provide a
+"smart" block move service that automatically handles overlaps
+between source and destination areas, and allows you to save or
+restore blocks of memory in BASIC's BSAVE format.
+
+Among the address manipulation services are routines to convert
+an address to have the smallest possible segment and highest
+possible offset (or vice versa) to allow REP operations to
+always handle up to 65,519 bytes without wrapping within the
+segment. This can also be useful in file operations.
+
+
+The following services are available:
+
+   ME_BINFO      get information about a BSAVE-format file
+                    DS:DX <-- pointer to ASCIIZ filename
+                    -------
+                    ES:SI = segment:offset
+                       CX = image size (bytes)
+                    Flags = CY if unable to load file
+                            if CY, AX is error code
+
+   ME_BLOAD      load a BSAVE-format file into memory
+                    DS:DX <-- pointer to ASCIIZ filename
+                    -------
+                    Flags = CY if unable to load file
+                            if CY, AX is error code
+
+   ME_BSAVE      save a block of memory to a BSAVE-format file
+                    DS:DX <-- pointer to ASCIIZ filename
+                    ES:SI = segment:offset
+                       CX = image size (bytes)
+                    -------
+                    Flags = CY if unable to save memory
+                            if CY, AX is error code
+
+   ME_HIGHOFS    convert an address to have the lowest segment
+                 & highest offset
+                    DX:AX <-- segment:offset
+                    -------
+                    DX:AX = converted segment:offset
+
+   ME_LOWOFS     convert an address to have the highest segment
+                 & lowest offset
+                    DX:AX <-- segment:offset
+                    -------
+                    DX:AX = converted segment:offset
+
+   ME_MOVE       move a block of memory w/o overlap conflicts
+                    DS:SI <-- source segment:offset
+                    ES:DI <-- destination segment:offset
+                       CX <-- bytes to move (0 - 65,519)
+
+                        Mouse Services                  page 12
+
+
+
+The Mouse Services provide a simple set of functions for dealing
+with Microsoft-compatible mouse devices. You may see if a mouse
+exists, control the mouse cursor, and get information about the
+mouse buttons.
+
+
+The following services are available:
+
+   MO_GLOCATE    set the mouse cursor location (graphics)
+                       CX = X coordinate (0-MaxX)
+                       DX = Y coordinate (0-MaxY)
+
+   MO_GWHERE     get the mouse cursor location & button states
+                       AL = left button (1: pressed, 0: not)
+                       AH = right button (1: pressed, 0: not)
+                       CX = X coordinate (0-MaxX)
+                       DX = Y coordinate (0-MaxY)
+
+   MO_HIDECURSOR hide the mouse cursor
+
+   MO_INIT       see if a mouse is installed
+                    -------
+                       AL = number of mouse buttons
+                            (0 if no mouse)
+
+   MO_LOCATE     set the mouse cursor location (text)
+                       DH <-- row (1-25)
+                       DL <-- column (1-80)
+
+   MO_RANGE      set the mouse cursor range (text)
+                       CH <-- top row (1-25)
+                       CL <-- leftmost column (1-80)
+                       DH <-- bottom row (1-25)
+                       DL <-- rightmost column (1-80)
+
+   MO_SHOWCURSOR show the mouse cursor
+
+   MO_WHERE      get the mouse cursor location & button states
+                    -------
+                       AL = left button (1: pressed, 0: not)
+                       AH = right button (1: pressed, 0: not)
+                       DH = row (1-25)
+                       DL = column (1-80)
+
+                        Sound and Music                 page 13
+
+
+
+The Sound and Music Services provide the ability to generate
+sound effects and music. The current service is rather on the
+primitive side. It will be supplemented by a background
+(interrupt-driven) music command language in a future version of
+AsmWiz.
+
+
+The following services are available:
+
+   MU_SOUND      produce a sound of a specified duration
+                 and frequency
+                    AX <-- frequency (Hertz or cycles/second:
+                              about 50-4000 is useful)
+                    DX <-- duration  (18ths of seconds)
+
+                   String Services (ASCIIZ)             page 14
+
+
+
+The ASCIIZ String Services provide an assortment of services for
+dealing with NUL-terminated strings.
+
+Note that, although many of the string services are designed to
+place the result of processing a first string into a second
+string, it is not actually necessary to use two string buffers.
+The services are designed so that you can place the results back
+into the original string buffer by using the same address for
+both strings.
+
+
+The following routines are included amongst the ASCIIZ String
+Services:
+
+   S0_COMPARE    compare two strings
+                    DS:SI <-- first string
+                    ES:DI <-- second string
+                    -------
+                    Flags = ZF if equal, NZ if not equal
+                            CY if first < second
+                            NC if first >= second
+
+   S0_DUPE       form a string by duplicating a character
+                    ES:DI <-- result string
+                       AL <-- character to duplicate
+                       CX <-- number of times to repeat
+
+   S0_FIND       search for a substring within a string
+                    DS:SI <-- substring
+                    ES:DI <-- string
+                    -------
+                       AX = position of substring in string
+                         (0 if not found; ZF set accordingly)
+
+   S0_LEFT       copy a specified section from the left of
+                 a string
+                    DS:SI <-- source string
+                       CX <-- number of characters to copy
+                    ES:DI <-- result string
+
+   S0_LENGTH     get the length of a string (excluding the
+                 null terminator)
+                    DS:SI <-- string
+                    -------
+                       CX = string length
+
+   S0_LOCASE     convert a string to lowercase (international)
+                    DS:SI <-- source string
+                    ES:DI <-- result string
+
+   S0_LOCASES    convert a string to lowercase (American)
+                    DS:SI <-- source string
+                    ES:DI <-- result string
+
+                   String Services (ASCIIZ)             page 15
+
+
+
+   S0_MID        copy a specified section of a string
+                    DS:SI <-- source string
+                       DX <-- where to start copying from (1-xx)
+                       CX <-- how many characters to copy
+                    ES:DI <-- result string
+
+   S0_RIGHT      copy a specified section from the right side
+                 of a string
+                    DS:SI <-- source string
+                       CX <-- number of characters to copy
+                    ES:DI <-- result string
+
+   S0_TRIM       trim the "white space" (blanks and control
+                 codes) from either or both sides of a string
+                    DS:SI <-- source string
+                       AL <-- set bit 0 to trim the left
+                                  bit 1 to trim the right
+                    ES:DI <-- result string
+
+   S0_UPCASE     convert a string to uppercase (international)
+                    DS:SI <-- source string
+                    ES:DI <-- result string
+
+   S0_UPCASES    convert a string to uppercase (American)
+                    DS:SI <-- source string
+                    ES:DI <-- result string
+
+                      Telecommunications                page 16
+
+
+
+The Telecommunications Services provide functions that are
+useful for telecommunications. At the moment, this is limited to
+services that aid in performing file transfers and similar
+functions.
+
+
+The following routines are included amongst the
+Telecommunications Services:
+
+   TC_CHKSUM     calculate the checksum for a block of data
+                    DS:SI <-- pointer to a data block
+                       CX <-- length of data block (in bytes)
+                    -------
+                       AX = checksum
+
+   TC_CRC        calculate the 16-bit CRC of a block of data
+                    DS:SI <-- pointer to a data block
+                       CX <-- length of data block (in bytes)
+                    -------
+                       AX = resulting CRC
+
+                    Time and Date Services              page 17
+
+
+
+The Time and Date Services provide international time and date
+handling. Based on the country code given it by DOS, these
+services return strings that represent the current time or date
+in the appropriate format for that country.
+
+These services provide a simple way to make your software work
+properly on any computer anywhere, across the world.
+
+See the COUNTRY entry under CONFIG.SYS in your DOS manual for
+more details. Note that DOS version 3.0 or greater is required
+to ensure that the date and time delimiters are appropriate.
+Otherwise, the date and time formats will still be correct, but
+the delimiters used will be assumed to be "-" for the date and
+":" for the time. With DOS versions before 3.0, the time will be
+presented in 12-hour (am/pm) format.
+
+
+The following routines are included amongst the Time and Date
+Services:
+
+   TD_GETDATE    get the current date as an ASCIIZ string
+                 DS:DX <-- pointer to a buffer (11 bytes)
+                    AL <-- 0 for 2-digit year
+                           1 for 4-digit year
+
+   TD_GETTIME    get the current time as an ASCIIZ string
+                 DS:DX <-- pointer to a buffer (8 bytes)
+
+                        Video Services                  page 18
+
+
+
+Displaying text is something that almost every program will do.
+The AsmWiz library contains numerous sets of video services
+which make it easy to use the display in a consistent manner.
+
+The display services are divided into five sets of routines,
+each of which provides similar capabilities:
+
+   DV    DOS-level services
+   BV    BIOS-level services
+   MV    Machine-level services for text modes
+   CG    Machine-level services for CGA graphics modes
+   HG    Machine-level services for Hercules graphics mode
+
+The DOS services provide the maximum level of compatibility.
+They are also the slowest of the video services and the least
+flexible. The main practical advantage of using DOS services is
+that they allow redirection, so the output of your program can
+be sent to a file, a printer, or a serial port as well as to the
+display. Since DOS itself has only minimal video support, you
+will need to make sure an ANSI driver is installed before using
+these services. See your DOS manual on ANSI.SYS for more
+information if you need it.
+
+The BIOS services provide a very good level of compatibility.
+They are faster and more flexible than the DOS services. Like
+the DOS services, these routines are quite likely to work on
+nonstandard displays.
+
+The machine-level services are the least compatible. They will
+work on any standard PC clone, but not on semi-compatible
+hardware or with nonstandard display devices. In return for this
+disadvantage, these services are much faster than the other
+services and provide a great deal more flexibility. Only the
+machine-level services support Hercules graphics mode.
+
+                        Video Services                  page 19
+                     Text Display Speeds
+
+
+
+Speed tests were conducted on an 8088 machine with a Phoenix
+BIOS, running MS-DOS 3.30. "Your mileage may differ". The tests
+were conducted on how quickly strings could be printed to the
+display.
+
+Speeds are listed relative to the slowest display method (DOS
+services).
+
+
+
+             +-----------+-----------+-----------+-----------+
+             | DV_STROUT | BV_STROUT | MV_STROUT | CG_STROUT |
++------------+-----------+-----------+-----------+-----------+
+| Mode 3     |           |           |           |           |
+| text mode  |    100%   |    162%   |    572%   |    n/a    |
++------------+-----------+-----------+-----------+-----------+
+| Mode 4     |           |           |           |           |
+| CGA lo-res |    100%   |    114%   |    n/a    |    180%   |
++------------+-----------+-----------+-----------+-----------+
+| Mode 6     |           |           |           |           |
+| CGA hi-res |    100%   |    122%   |    n/a    |    204%   |
++------------+-----------+-----------+-----------+-----------+
+
+
+
+From this chart, you can see that using BIOS display services is
+14% - 62% faster than using DOS services. Using machine-level
+services is 80% - 472% faster than using DOS services, and about
+60% - 250% faster than using BIOS services.
+
+If system compatibility is a major concern, then note that the
+DOS services are most compatible, followed by the BIOS services
+and then the machine-level services. The price you pay for
+compatibility is speed and flexibility. The machine-level
+services are the fastest and most flexible, followed by the BIOS
+services and then the DOS services.
+
+It must be noted that almost all machines these days are 100%
+compatible and will run any of these routines with no problem.
+
+                        Video Services                  page 20
+                   General Video Information
+          (not applicable to Hercules graphics mode)
+
+
+
+For all text routines, color/attributes are encoded as a single
+byte value:
+
+bit:    7   6   5   4   3   2   1   0
+      +---+---+---+---+---+---+---+---+
+      | B |  backgnd  | I |  foregnd  |
+      +---+---+---+---+---+---+---+---+
+
+B:  "blink".  Set if the color is blinking.
+
+I:  "intense".  Set if the foreground color is intense
+    (bright or light).
+
+backgnd, foregnd:  the actual foreground and background
+   colors.  The bits specify the red, green, and blue
+   components of the color, giving the following color list:
+
+       0    black     (if intense, usually displayed as gray)
+       1    blue
+       2    green
+       3    cyan
+       4    red
+       5    magenta
+       6    brown     (if intense, usually displayed as yellow)
+       7    white
+
+
+Text in CGA graphics modes is different. If you use BIOS or DOS
+services, you may only specify a foreground color, which may be
+0-3. If you use the CGA machine-level services, you may specify
+a background color as well as a foreground color. Color encoding
+is the same as for text mode, with the exception that there are
+no "blinking" or "intense" bits, and the color range is 0-3
+instead of 0-7. The 0-3 range does not follow the above color
+list; instead, the colors depend on which CGA palette is in use.
+
+                        Video Services                  page 21
+                   General Video Information
+
+
+
+Screen modes are specified as a single byte, as follows:
+
+     Mode  Resolu.  Type  Colr  Use      Adapter   Services
+
+       0   40x25    b&w     16  text       CGA     MV, BV, DV
+       1   40x25    color   16  text       CGA     MV, BV, DV
+       2   80x25    b&w     16  text       CGA     MV, BV, DV
+ def-  3   80x25    color   16  text       CGA     MV, BV, DV
+       4   320x200  color    4  graphics   CGA     CG, BV, DV
+       5   320x200  b&w      4  graphics   CGA     CG, BV, DV
+       6   640x200  color    2  graphics   CGA     CG, BV, DV
+ mda-  7   80x25    b&w      -  text       MDA     BV
+      13   320x200  color   16  graphics   EGA     BV
+      14   640x200  color   16  graphics   EGA     BV
+      15   640x350  mono     -  graphics   EGA     BV
+      16   640x350  color   16  graphics   EGA     BV
+      17   640x480  color    2  graphics   VGA     BV
+      18   640x480  color   16  graphics   VGA     BV
+      19   320x200  color  256  graphics   VGA     BV
+
+BV = BIOS video services
+DV = DOS video services
+MV = Machine-level text services
+CG = Machine-level CGA graphics services
+
+                        Video Services                  page 22
+
+
+
+All of the video services share a common nomenclature and
+calling procedure. For many of the services, you will have a
+choice of whether to use DOS, BIOS, Machine-level (text modes),
+Machine-level (CGA graphics modes), or Machine-level (Hercules
+graphics mode). The level is specified as a two-letter code
+prefix to the routine name, where the codes are as follows:
+
+    DV    DOS Video
+    BV    BIOS Video
+    MV    Machine-level (text mode) Video
+    CG    Machine-level (CGA graphics mode) Video
+    HG    Machine-level (Hercules graphics mode) Video
+
+For instance, the routine to display a string using DOS is
+called DV_STROUT (DOS Video service, String Output). Note that
+it usually isn't a good idea to "mix and match" video services
+of different types at the same time.
+
+
+The following services are available:
+
+
+    CHROUT      display a character
+                BV,DV,MV,CG,HG
+                   AL <-- character
+
+    CLS         clear the screen and home the cursor
+                BV,DV,MV,CG,HG
+
+    COLOR       set the text color
+                BV,DV,MV,CG,HG
+                   AL <-- color/attribute
+
+    CRLF        display a carriage return and a linefeed
+                BV,DV,MV,CG,HG
+
+    CLEOLN      clear from the cursor to the end of the line
+                BV,DV,MV,CG,HG
+
+    DELCHR      delete the character at the cursor
+                MV
+
+    DELLINE     delete the current line
+                BV,dv,MV
+
+    GETCOLOR    get the text color
+                BV,MV,CG,HG
+                   -------
+                   AL = color/attribute
+
+                        Video Services                  page 23
+
+
+
+    GETMODE     get the current screen mode
+                BV,MV
+                   -------
+                   AL = mode
+
+    FIXCOLOR    whether to convert colors to monochrome
+                BV,DV,MV
+                   AL <-- whether to convert (0 no, 1 yes)
+
+    FRAME       display a window frame
+                MV
+                   CH,CL <-- upper left corner (row, column)
+                   DH,DL <-- lower right corner (row, column)
+                   DS:SI <-- frame char list (-1 to -9 special)
+
+    HIDECURSOR  hide the cursor
+                BV,MV
+
+    INIT        initialize the video service routines
+                MV,CG
+
+    INSCHR      insert a space at the cursor
+                MV
+
+    INSLINE     insert a row at the current line
+                BV,dv,MV
+
+    LOCATE      set the cursor position
+                BV,DV,MV,CG,HG
+                   DH <-- row (1-25/43)
+                   DL <-- column (1-40/80/90)
+
+    MODE        set the screen mode
+                BV,DV,MV,CG,HG
+                   AL <-- mode (see General Video Info)
+
+    POPUP       display a pop-up window
+                BV,MV
+                   DS:DX <-- parameter pointer
+
+    SAVESIZE    calculate bytes needed to save a screen area
+                MV
+                   -------
+                   AL = bytes
+
+                        Video Services                  page 24
+
+
+
+    SCRREST     restore a saved screen area from a buffer
+                MV
+                   DS:SI <-- buffer pointer
+                   DH,DL <-- upper left corner (row, column)
+
+    SCRSAVE     save a screen area into a buffer
+                MV
+                   ES:DI <-- buffer pointer
+                   CH,CL <-- upper left corner (row, column)
+                   DH,DL <-- lower right corner (row, column)
+                   -------
+                      AX = bytes used to save screen area
+
+    SHOWCURSOR  show the cursor
+                BV,MV
+
+    STROUT      display a string
+                BV,DV,MV,CG,HG
+                   DS:DX <-- pointer to ASCIIZ string
+
+    WHERE       get the current cursor position
+                BV,MV,CG,HG
+                   DH <-- row (1-25/43)
+                   DL <-- column (1-40/80/90)
+
+                        Video Services                  page 25
+
+
+
+The ability to display graphics was once limited and very
+expensive, but this is no longer true. PC-class computers have a
+wide variety of graphics standards to choose from. This is
+useful whether you are interested in games, business charts,
+computer-aided design, icon-based mouse interfaces, or any
+number of other applications. The AsmWiz library provides
+numerous sets of graphics services which allow easy access to
+the capabilities of whatever display is installed.
+
+The graphics services are divided into sets of routines, with
+each set of routines handling a specific video mode or modes.
+This makes it possible to support just the modes you want,
+without extraneous code being linked in.
+
+All graphics services are machine-level and demand hardware
+compatibility of both your computer and video adapter. This is
+necessary because DOS doesn't support graphics at all, and the
+BIOS only supports very slow single-pixel handling. If you are
+able to run standard graphics programs on your computer,
+however, you should experience no problems with these services.
+
+All of the graphics services share a common nomenclature and
+calling procedure. The video mode is specified as a two-letter
+code prefix to the routine name, where the codes are as follows:
+
+   Prefix     Mode(s)     Adapter     Resolution(s)     Colors
+   ------    --------     -------    ----------------   ------
+     G13        13h         VGA           320x200         256
+     G4        4, 5         CGA           320x200           4
+     G6          6          CGA           640x200           2
+     GD         0Dh         EGA           320x200          16
+     GE         0Eh         EGA           640x200          16
+     GE         10h         EGA           640x350          16
+     GE         11h         VGA           640x480           2
+     GE         12h         VGA           640x480          16
+     GH      Hercules       HGA           720x348           2
+
+The service to display a line in Mode 6, for example, is named
+G6_LINE.  Note that GE_ covers most EGA and VGA modes.
+
+                        Video Services                  page 26
+
+
+
+The following graphics services are available:
+
+
+    BOX         draw a box
+                GH,G4,G6,GD,GE,G13
+                   CX <-- left X coordinate
+                   DX <-- top Y coordinate
+                   SI <-- right X coordinate
+                   DI <-- bottom Y coordinate
+                   AH <-- whether to fill box (0 no, 1 yes)
+                   AL <-- color
+
+    GETPEL      get the current color of a point
+                GH,G4,G6,G13
+                   CX <-- X coordinate
+                   DX <-- Y coordinate
+                   -------
+                   AL = color
+
+    LINE        draw a line
+                GH,G4,G6,GD,GE,G13
+                   CX <-- left X coordinate
+                   DX <-- top Y coordinate
+                   SI <-- right X coordinate
+                   DI <-- bottom Y coordinate
+                   AL <-- color
+
+    PLOT        plot a point
+                GH,G4,G6,GD,GE,G13
+                   CX <-- X coordinate
+                   DX <-- Y coordinate
+                   AL <-- color
+
+                    Miscellaneous Services              page 27
+
+
+
+The Miscellaneous Services provide a number of services for
+various purposes, such as parsing the command line, determining
+the active video adapter, scanning the environment for a
+parameter, and generating pseudo-random numbers. They eliminate
+much of the tedium of these common chores.
+
+
+The following services are available:
+
+   MI_BOOT       reboot the computer (warm boot)
+
+   MI_GETSCREEN  see what type of display is active
+                    -------
+                       AH = adapter type (1-6:
+                               MDA, Herc, CGA, EGA, MCGA, VGA)
+                       AL = color flag (0 color, 1 mono)
+
+   MI_PARSE      parse a command line into filespecs & options
+                    DS:SI <-- ptr to command line
+                                 (for COM files, = CS:0080h)
+                    ES:DI <-- ptr to filename buffer (128b)
+                    ES:BX <-- ptr to option buffer (128 bytes)
+                       AL <-- switch character (normally "/")
+                    -------
+                       AH = number of options
+                       AL = number of filenames
+
+   MI_RANDOM     generate a pseudo-random number
+                       DX <-- random number range (1-4000)
+                    -------
+                       AX = random number (0 to DX - 1)
+
+   MI_RANDOMIZE  initialize the pseudo-random number generator
+                       AX <-- random number seed
+                                 (use 0FFFFh for auto-seeding)
+
+   MI_SCANENV    scan the DOS environment for a parameter
+                    DS:SI <-- ptr to the DOS environment
+                                 or similar table
+                    ES:DI <-- ptr to the parm to search for
+                    -------
+                       CY if not found
+                       NC if match found
+                          if NC, DS:SI points to parm value
+
+                         Error Codes                    page 28
+
+
+
+DOS error codes are returned by various of the DOS services,
+particularly the file and disk services. The code is returned in
+the AL register. This is a list of some of the possible errors.
+
+
+      2      file not found
+      3      path not found
+      4      too many open files (no handle available)
+      5      access denied
+      6      invalid handle
+      8      insufficient memory
+     15      invalid drive specified
+     16      tried to remove current directory
+     18      no more files
+
+
+
+
+Critical error codes are returned by the EH_CRITERR service in
+the AH register. This is a list of the possible errors.
+
+
+      0      no critical error (if CY, it was a DOS error)
+      1      write-protected disk
+      2      unknown unit
+      3      drive not ready
+      4      unknown command
+      5      data/CRC error
+      6      bad request structure length
+      7      seek error
+      8      unknown media type
+      9      sector not found
+     10      printer out of paper
+     11      write fault
+     12      read fault
+     13      general failure
+     16      invalid disk change (only used by DOS 3+)
+

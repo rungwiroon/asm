@@ -1,0 +1,237 @@
+ TITLE MAIN:MAIN PROC
+; EXTRN	OPEN_ERROR:NEAR ,EXIT:NEAR,OUTDEC:NEAR
+ ;PUBLIC	OPENERR,ERRCODE,HANDLE
+ .MODEL SMALL 
+
+  RANDOM MACRO MIN,MAX 
+   MOV	BL,MAX
+   MOV	BH,MIN
+   INC	BL
+   SUB	BL,BH
+   MOV	AH,2CH
+   INT	21H
+   MOV	AL,DL
+   XOR	AH,AH
+   DIV	BL
+   MOV	AL,AH
+   XOR	AH,AH
+   ADD	AL,MIN
+ENDM
+
+ENTER MACRO  COU
+	PUSH	AX
+	PUSH	CX
+	MOV	AH,2
+	MOV	CX,COU
+    ENTER1:
+	MOV	DL,0DH
+	INT		21H
+	MOV	DL,0AH
+	INT		21H
+	LOOP	ENTER1
+	POP		CX
+	POP		AX
+ENDM
+
+ .STACK	100H                                       
+ .DATA                                                   
+                   
+ FILENAME1    DB		'D:FILE1.TXT',0     
+ FILENAME2    DB		'D:FILE2.TXT',0    
+ BUFFER  	 DB		512 DUP (0)                             
+ HANDLE  	 DW		?                                       
+ OPENERR  	 DB		0DH,0AH,'OPEN ERROR - CODE'
+ ERRCODE	 DB		30H,'$'        
+ COUNT		 DW		0
+ 
+
+ MSG1		DB		0AH,0DH,' RANDOM : $'
+ MSG2		DB		'END OF FILE PLEASE  ( Esc )',0AH,0DH,'$'
+
+ .CODE                                                   
+ MAIN   PROC                                            
+       	MOV	AX,@DATA
+	MOV	DS,AX			
+	MOV	ES,AX			
+
+;[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ OPEN FILE1 ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]	
+ 	LEA		DX,FILENAME1	;DX = FILEMANE  
+ 	MOV	AH,3DH			
+	MOV	AL,0				
+	INT		21H				        
+ 	JNC		NOT_ERROR1	
+	CALL	OPEN_ERROR
+ NOT_ERROR1:
+ 	MOV	HANDLE,AX		
+	
+;[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ READ FILE1 ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]		
+ READ_LOOP:                                              
+ 	LEA		DX,BUFFER		
+ 	MOV	BX,HANDLE		      
+ 	CALL	READ			
+ 	OR		AX,AX			        
+ 	JE		OUT_READ		               
+ 	MOV	CX,AX			
+ 	CALL	DISPLAY			           
+ 	JMP		READ_LOOP		     
+OUT_READ:	
+	MOV	BX,HANDLE		
+	CALL	CLOSE			
+
+;[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ RANDOM ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]	
+	MOV	AH,9
+	LEA		DX,MSG1
+	INT		21H
+	RANDOM	1,100		;RANDOM NUMBER
+	CALL	OUTDEC
+	ENTER	2
+	
+
+;[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ OPEN FILE2 ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]	
+	MOV	AH,9
+	LEA		DX,MSG2
+	INT		21H
+	LEA		DX,FILENAME2		;DX = FILENAME
+	MOV	AH,3CH	
+	MOV	CL,1
+	INT		21H
+	JNC		NOT_ERROR2	
+	CALL	OPEN_ERROR
+ NOT_ERROR2:
+ 	MOV	HANDLE,AX	
+	
+;[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ WRITE FILE2 ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]		
+READ_LOOP2:			
+	
+	CALL	GET_NAME	
+	CMP	COUNT,1
+	JE		EXITT
+	MOV	BX,HANDLE     
+	MOV	CX,1		
+	LEA		DX,BUFFER	
+	CALL	WRITE		
+	JMP		READ_LOOP2	
+
+ EXITT:                                                   
+ 	CALL	EXIT 
+ MAIN   ENDP                                            
+
+ READ    PROC    NEAR                                                
+	PUSH	CX			
+	MOV     AH,3FH          ;read file fcn           
+ 	MOV     CX,512          ;512 bytes                 
+ 	INT     21H             ;read file into buffer    
+ 	POP	CX
+	RET                                                
+ READ    ENDP                                            
+
+ DISPLAY PROC    NEAR                                                         
+	PUSH	BX
+ 	MOV     AH,40H          ;write file fcn            
+ 	MOV     BX,1            ;handle for screen         
+ 	INT     21H             ;display file              
+ 	POP	BX
+	RET                                                
+ DISPLAY ENDP                                            
+ 
+CLOSE   PROC    NEAR                                                   
+ 	MOV	AH,3EH          ;close file fcn           
+ 	INT		21H             ;close file                
+ 	RET                                                
+CLOSE   ENDP    
+
+GET_NAME	PROC	NEAR
+	MOV	COUNT,0
+	MOV	AH,1		;read char function	
+READ_NAME:
+	INT		21H		
+	CMP	AL,1BH		;end of data?
+	JNE		NO		
+	MOV	COUNT,1
+	RET			;and return	
+NO:	
+	CMP	AL,0DH
+	JNE		NO2
+	
+	MOV	AH,2
+	MOV	DL,0AH
+	INT	21H
+	MOV	BUFFER,0DH
+	MOV	BX,HANDLE     
+	MOV	CX,1		
+	LEA		DX,BUFFER	
+	CALL	WRITE	
+	MOV	BUFFER,0AH
+	MOV	BX,HANDLE     
+	MOV	CX,1		
+	LEA		DX,BUFFER	
+	CALL	WRITE	
+	RET		
+
+NO2:
+	MOV	BUFFER,AL
+	RET
+GET_NAME	ENDP
+
+WRITE	PROC	NEAR
+	MOV	AH,40H		;WRITE FILE FCN
+	INT		21H             ;WRITE FILE
+	RET
+WRITE	ENDP
+
+OPEN_ERROR  PROC    NEAR                                                                 
+ 	LEA		DX,OPENERR		;get error message         
+ 	ADD	ERRCODE,AL		 ;convert error code to ASCII
+ 	MOV	AH,9                                       
+ 	INT		21H				 ;display error message   
+	MOV	AH,4CH
+	INT		21H
+	RET                                     
+ OPEN_ERROR	ENDP
+
+ EXIT  PROC    NEAR                                                   
+ 	MOV	BX,HANDLE       ;get handle                
+ 	MOV	AH,3EH          ;close file fcn           
+ 	INT		21H             ;close file                    
+ 	MOV	AH,4CH                                     
+ 	INT		21H             ;dos exit      
+ EXIT   ENDP
+
+ OUTDEC  PROC
+            PUSH    AX              
+            PUSH    BX
+            PUSH    CX
+            PUSH    DX              
+            OR      AX,AX           
+            JGE     @END_IF1      
+            PUSH    AX              
+            MOV     DL,'-'         
+            MOV     AH,2           
+            INT     21H             
+            POP     AX              
+            NEG     AX              
+    @END_IF1: 
+            XOR     CX,CX                
+            MOV     BX,10D         
+    @REPEAT1:
+            XOR     DX,DX         
+            DIV     BX           
+            PUSH    DX            
+            INC     CX            
+            OR      AX,AX          
+            JNE     @REPEAT1        
+            MOV     AH,2           
+    @PRINT_LOOP:
+            POP     DX              
+            OR      DL,30H       
+            INT     21H             
+            LOOP    @PRINT_LOOP    
+            POP     DX             
+            POP     CX
+            POP     BX
+            POP     AX
+            RET
+    OUTDEC  ENDP
+	END	
+
+END     MAIN                                            

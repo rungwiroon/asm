@@ -1,0 +1,109 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/int10_13.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> int10_13.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this is an example of bios function: int 10h / ah=13h. </font>
+<font color=#008000>; refer to short list of dos interrupts for more info: </font>
+<font color=#008000>; c:\emu8086\documentation\ </font>
+
+name <font color=#800080>"int10h"</font>
+
+<font color=#000064>org</font>     100h
+
+
+<font color=#008000>; set es (just in case): </font>
+<font color=#0000FF>push</font>    <font color=#800000>cs</font>
+<font color=#0000FF>pop</font>     <font color=#800000>es</font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>bh</font>, 0    <font color=#008000>; page. </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>bp</font>, msg  <font color=#008000>; offset. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>bl</font>, 0f3h <font color=#008000>; default attribute. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 12   <font color=#008000>; char number. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, 2    <font color=#008000>; col. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dh</font>, 1    <font color=#008000>; row. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 13h  <font color=#008000>; function. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 1    <font color=#008000>; sub-function. </font>
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; show current cursor position: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>'&lt;'</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+<font color=#0000FF>int</font>     10h
+
+<font color=#0000FF>mov</font>     <font color=#C80000>bh</font>, 0    <font color=#008000>; page. </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>bp</font>, cmsg <font color=#008000>; offset of string with attributes. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>bl</font>, 0f3h <font color=#008000>; default attribute (not used when al=3). </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 12   <font color=#008000>; char number. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, 2    <font color=#008000>; col. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dh</font>, 3    <font color=#008000>; row. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 13h  <font color=#008000>; function. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 3    <font color=#008000>; sub-function. </font>
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; show current cursor position: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>'&lt;'</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; wait for any key press.... </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font>     16h
+
+<font color=#0000FF>ret</font>  <font color=#008000>; return control to the operating system. </font>
+
+msg <font color=#000064>db</font> <font color=#800080>'hello world!'</font>
+
+cmsg <font color=#000064>db</font> <font color=#800080>'h'</font>, 0cfh, <font color=#800080>'e'</font>, 8bh, <font color=#800080>'l'</font>, 0f0h, <font color=#800080>'l'</font>, 5fh, <font color=#800080>'o'</font>, 3ch, <font color=#800080>' '</font>, 0e0h
+     <font color=#000064>db</font> <font color=#800080>'w'</font>, 0b3h, <font color=#800080>'o'</font>, 2eh, <font color=#800080>'r'</font>, 0cah, <font color=#800080>'l'</font>, 1ah, <font color=#800080>'d'</font>, 0ach, <font color=#800080>'!'</font>, 2fh
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/int10_13.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

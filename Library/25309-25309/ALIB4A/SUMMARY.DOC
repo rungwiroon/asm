@@ -1,0 +1,397 @@
+Compare Functions
+  COMPARE1 - compare asciiz strings, use case, update registers
+  COMPARE2 - compare asciiz strings, use case, registers unchanged.
+  COMPARE3 - compare strings -cx- long, use case, update registers
+  COMPARE4 - compare strings -cx- long, use case, registers unchanged
+  COMPARE5 - compare asciiz strings, either case, update registers
+  COMPARE6 - compare asciiz strings, either case, registers unchanged
+  COMPARE7 - compare strings -cx- long, either case, registers updated
+  COMPARE8 - compare strings -cx- long, either case, registers unchanged
+  COMPARE9 - compares two characters, either case matches
+  COMPARE_FILES - compares two files
+Config Functions
+  GET_SETUP - read setup file from disk
+  CHANGE_SETUP - modify setup data in memory
+  WRITE_SETUP - write setup to disk
+  SET_LIB_COLORS - set colors to be used by the library
+Convert Functions
+  DWORD_TO_DEC_STR - convert a long integer value to an ASCIIZ string
+  WORD_TO_DEC_STR - convert an integer value to an ASCIIZ string
+  WORD_TO_DEC_STRL - convert an integer value to a left justified string
+  WORD_TO_DEC_CRT - convert word to decimal ascii and display
+  HEX_STR_TO_BYTE - convert 2 hex ascii characters to 1 hex byte
+  HEX_STR_TO_WORD - convert 4 hex ascii characters to 2 hex bytes
+  BYTE_TO_HEX_STR - convert hex byte to two ascii characters
+  BYTE_TO_HEX_CRT - convert hex byte to ascii and display
+  WORD_TO_HEX_STR - convert hex word to four ascii characters
+  WORD_TO_HEX_CRT - hex word to ascii and display it
+  DWORD_TO_HEX_STR - hex double word to ascii
+  DWORD_TO_HEX_CRT - hex double word to ascii and display
+  DWORD_TO_DEC_STRX - convert dword to decimal ascii with formating
+  DWORD_TO_DEC_CRTX - convert dword to decimal ascii and display
+  DEC_STR1_TO_WORD -  convert unsigned ascii string to binary word
+  DEC_STR2_TO_WORD -  convert unsigned ascii string to binary word
+  DEC_STR3_TO_WORD -  convert signed asciiz string to binary word
+  DEC_STR4_TO_WORD -  convert signed ascii string to binary word
+  DEC_STR1_TO_DWORD -  convert unsigned ascii string to binary DWORD
+  DEC_STR2_TO_DWORD -  convert unsigned ascii string to binary DWORD
+  DEC_STR3_TO_DWORD -  convert signed asciiz string to binary DWORD
+  DEC_STR4_TO_DWORD -  convert signed ascii string to DWORD
+  SBYTE_TO_DEC_STDOUT - display short byte as decimal to stdout
+  SBYTE_TO_DEC_STR - store short byte as decimal to memory
+  BYTE_TO_DEC_STDOUT - display short byte as decimal to stdout
+  BYTE_TO_DEC_STR - store short byte as decimal to memory
+  WORD_TO_DEC_STDOUT - display byte as decimal to stdout
+  DWORD_TO_DEC_STDOUT - display dword as decimal to stdout
+  DWORD_TO_HEX_STDOUT - display byte as decimal to stdout
+  WORD_TO_HEX_STDOUT - display word as decimal to stdout
+  BYTE_TO_HEX_STDOUT - display byte as decimal to stdout
+  DEC_STRZ_TO_DWORD - convert numeric asciiz string to double word value
+  DEC_STR_TO_DWORD - convert string to double word
+  DEC_STR_TO_WORD -  convert unsigned ascii string to binary word
+CRT (display) Functions
+  PUT_CRT_CHR - display single character
+  GET_CRT_CHR -  read character and attribute from text screen
+  REPEAT_PUT_CRT - displays a single char CX times.
+  PUT_CRT_BLK - copies a string to video memory buffer, with selected
+  VERTICAL_REPEAT_CHR - repeat one or more columns of a character vertically
+  TABULAR_DRAW - Subroutine to draw using a table   tabular_draw
+  CLEAR_SCREEN - fill screen with specified character and color
+  DISPLAY_STRING - print string directly to video buffer.
+  DISPLAY_TEXT - print string directly to video buffer.
+  DISPLAY_STRING_FILL - display string to screen at specified position.
+  DISPLAY_STRING_LIST -  display a list of strings
+  CLEAR_WINDOW - fill area of screen
+  DRAW_BOX -  draw a box on screen
+  WINDOW_STRING -  display string in window.
+  BOX_RIGHT - move box parameters right
+  BOX_LEFT -  move box parameters left
+  BOX_DOWN - move box parameters down one position
+  BOX_EXPAND - expand box one position in all directions
+  BOX_SHRINK - shrink box parameters one position in all directions
+  GET_ANSI_COLOR - get color attribute used by ANSI driver.
+  CURSOR_ - Move cursor and set size to standard underscore.
+  SHOW_CURSOR - move cursor to (row, col) and update cursor shape
+  HIDE_CURSOR - make hardware cursor invisible at present location
+  BLINK_ON:  enable blinking attriutes
+  BLINK_OFF:  disable blinking attriutes
+  save_window - save area of display in memory buffer
+  restore_window - restore a previously saved area of display
+  DISK_TO_CRT - loads a screen image file saved by CRT_TO_DISK
+  CRT_TO_DISK - saves a screen image as a file
+Database Functions
+  DBASE_INIT - open and initialize an existing or new database
+  DBASE_READ - read specific record from the database.
+  dbase_read_next - read next sequential record.
+  dbase_read_prev - read previous record. (write operations do not affect)
+  dbase_append - append this record to end of databse
+  dbase_insert - insert this record before specific record
+  dbase_replace - replace data for a specific record
+  DBASE_REMOVE - delete specific record
+  dbase_close - close & write any pending data to file
+  DBASE_KILL - delete dbase file
+  FD_INIT - open and initialize an existing or new database
+  FD_READ - read specific record from the database.
+  FD_READ_NEXT - read next sequential record.
+  FD_READ_PREV - read previous record. (write operations do not affect)
+  FD_APPEND - append this record to end of databse
+  FD_REPLACE - replace data for a specific record
+  FD_REMOVE - delete specific record
+  FD_CLOSE - close & write any pending data to file
+  FD_KILL - delete dbase file
+Disk and File Functions
+  FILE_COPY - copy a file
+  FILE_SIZE1 - find an open file's size
+  FILE_SIZE2 - find a closed file's size
+  FILE_COUNT - counts the number of files matching an ASCIIZ filespec string.
+  FILE_FLUSH - flushes the DOS output buffer for specified handle
+  DiskRead_open - open disk file for buffer Read
+  DiskRead_block - open disk file for buffer Read
+  DiskRead_close - close disk file used for Read
+  FileChar_open - open disk file for buffer Read
+  FileChar_read - read next char
+  FileChar_close - close disk file used for Read
+  FILE_EXIST - determines if a file exists and can be opened
+  EXPAND_FILENAME - Expand a file string to the full path including drive.
+  DECODE_FILENAME - return pointers to major portions of file name
+  FIND_HOME_PATH - find the full path and filename of the executing program
+  GET_PATH - search enviornment for start of path information string
+  CHANGE_PATH - switch to new directory, but save current path first
+  RESTORE_PATH - switch to directory saved by CHANGE_PATH
+  walk_path - compress data block
+  DiskWrite_open - open disk file for buffer write
+  DiskWrite_buffer - open disk file for buffer write
+  DiskWrite_close - close disk file used for buffer write
+  INSERT_HOME_PATH - find the full path and filename of the executing program
+Error Handlers
+  LIB_ERROR_HANDLER1 - handle pre defined library errors
+  ERROR_HANDLER1 - handle fatal errors
+  error_prime - setup error handler with additional error information
+  ERROR_TABLE_HANDLER1 - handle errors described in table provided by programmer
+  ERROR_FILE_HANDLER1 - handle errors described in file provided by programmer
+  LIB_ERROR_HANDLER2 - handle pre defined library errors
+  ERROR_HANDLER2 - handle fatal errors
+  ERROR_PRIME2 - setup error handler with additional error information
+  ERROR_TABLE_HANDLER2 - handle errors described in table provided by programmer
+Floating Point Emulation
+  FLOAT_OPEN - open the floating point module & hardware for use
+  FLOAT_CLOSE - release the memory allocated by FLOAT_OPEN
+  BINARY_IN - input a value to the floating point module
+  BINARY_OUT - get a binary value from the floating point module
+  FMOVE - move a floating value from one token to another
+  F_SUBTRACT - subtract two floating numbers
+  F_ADDITION - add two floating numbers
+  F_COMP - compare two floating point numbers
+  F_MULTIPLY - multiply two tokens
+  F_DIVIDE - divide one floating number by another
+  ROUND - round floating number to nearest 1/100
+  TEXT_OUT - convert floating value to text string
+  TEXT_IN - convert a text string to floating point and assign token
+  FLOAT_SET - signal the presense of floating point hardware
+Math (fixed point) Functions
+  dmul_10_plus - multiply times ten and add update value
+  dword_negate - negate dword in dx,ax
+  dword_divide - divide dword values
+  dword_add - add dword values
+  dword_sub - subtract dword values
+  dword_mul - multiply dword values
+  dword_crc - compute 32 bit crc
+  word_sqroot - square root (word)
+  DWORD_COMPARE - unsigned 32 bit number compare
+  QUAD_DIVIDE - divide quad value by dword
+  QUAD_MULTIPLY1 - multiply two dwords
+  QUAD_MULTIPLY2 - multiply two 32 bit unsigned numbers
+  BLOCK_ADD     Add two values in memory
+  BLOCK_NEGATE - negate block in memory
+  BLOCK_SUBTRACT - subtract two data blocks in memory
+  BLOCK_DIVIDE - divide two variable blocks in memory
+  BLOCK_MULTIPLY - multiply of two block in memory
+  WORD_CRC1 - undate CRC word sum for next byte
+  WORD_CRC2 - fast 16bit CRC for a buffer of data
+Memory Functions
+  MEM_OPEN - interrogate memory and setup database.
+  MEM_ALLOCATE - allocate a block of memory.
+  MEM_PUT - write to allocated memory area.
+  MEM_GET - read from allocated memory area.
+  MEM_RELEASE  - release allocated memory block.
+  MEM_CLOSE - close memory handler.
+  DOS_MEM_ALLOCATE - allocate dos memory for direct writes
+  DOS_MEM_RELEASE - release memory allocated with DOS_MEM_ALLOCATE
+  CHECK_FOR_EMS:      detects EMS driver
+  CMOS_TYPE - check cmos type
+  CMOS_CHECKSUM - checksum a block of cmos memory
+  CMOS_READ_BYTE - read one char from cmos memory
+  CMOS_READ_WORD - read one word from cmos memory
+  CMOS_READ_BLOCK - read block of data from cmos memory
+  CMOS_WRITE_BYTE - write one char to cmos memory
+  CMOS_WRITE_WORD - write one word to cmos memory
+  CMOS_WRITE_BLOCK - write block of data to cmos memory
+  MCB_FIND_FIRST - scan for start of MCB chain
+  MCB_FIND_NEXT - scan for next MCB entry
+  MCB_CHECK_NAME - compare current MCB name against list of names
+  MCB_FIND_NAME - scan current mcb to see if name is present
+  MCB_DISPLAY_NAME - display program name if associated with current mcb
+  CHECK_DOS_MEMORY - check DOS memory size and amount available
+  XMS_CHECK - check XMS memory size and amount available
+  XMS_UMB_CHECK - check if UMB area allocated by XMS driver
+  XMS_ALLOCATE - allocate xms memory
+  XMS_READ - read XMS memory block
+  XMS_WRITE - write block of data to XMS memory
+  XMS_RELEASE - release current XMS memory block
+  EMS_CHECK - check if EMS memory is present
+  EMS_ALLOCATE - allocate EMS memory
+  EMS_PAGE - request page of ems memory
+  EMS_RELEASE - release allocated ems memory
+  EXT_CHECK - check if EXT memory is present
+  EXT_READ - read block of ext memory
+  EXT_WRITE - write to EXT memory
+Misc Functions
+  bit_count - count the number of bits in -al-
+  REGISTER_DUMP - unsigned 32 bit number compare
+  STACK_DUMP - unsigned 32 bit number compare
+  A20_CHECK - check if A20 line is active
+  A20_WRAP_OFF - check if A20 line is active
+  A20_WRAP_ON - check if A20 line is active
+  SEG_TO_ABS - convert segment:offset to absolute address
+Mouse/Keyboard Functions
+  IS_ALPHA - check if key returned by KEY_READ is a letter from A-Z or a-z.
+  IS_DIGIT - check if key returned by KEY_READ is the ASCII from 0-9
+  IS_LOWER - check if key returned by KEY_READ is lower case
+  IS_UPPER - check if key returned by KEY_READ is upper case
+  TO_UPPER - converts ascii character to upper case
+  TO_LOWER - converts ascii character lower case
+  CAPS_ON - Turn the keyboard CAPS LOCK key on
+  NUMLOCK_ON - Turn the keyboard NUM LOCK key on
+  SCROLL_ON - Turn the keyboard SCROLL LOCK key on
+  INSERT_OFF - Turn the keyboard INS key off
+  CAPS_OFF - Turn the keyboard CAPS LOCK key off
+  NUMLOCK_OFF - Turn the keyboard NUM LOCK key off
+  SCROLL_OFF - Turn the keyboard SCROLL LOCK key off
+  YES_OR_NO - wait for yes or no user response
+  FLUSH_KEYBOARD - clears the keyboard's 'type-ahead' buffer
+  KEY_CHECK - check if a key is waiting in the keyboard buffer.
+  KEY_READ - returns next key pressed
+  KEY_PUT - put key back into BIOS buffer
+  KEY_IF_READY - get next key waiting from keyboard
+  SETUP_MOUSE -  initializes mouse driver if mouse present
+  MOUSE_PARMS - determine mouse position & buttons pressed
+  KEY_OR_MOUSE - waits for first keypress or mouse button click
+  MOVE_MOUSE - sets the mouse's position
+  BOX_THE_MOUSE - limits mouse's range of motion
+  MOUSE_CURSOR_ON - Enable the mouse cursor display
+  MOUSE_CURSOR_OFF - Disable the mouse cursor display
+  GET_STRING - read string from the keyboard.
+  KEY_DECODE - scan for special keys, determine key type and process flags.
+  QGET_STRING - Quick call to get string & return when done
+  WINDOW_EDIT - edit text within window
+  WINDOW_CSTRING - display text with hyper formating
+  IS_TEXT - check if key returned by KEY_READ is 20H-7EH or tab
+  is_stdout_console - check if stdout redirected to file.
+Message Window
+  message - boxed message display
+  QMESSAGE - Quick message display in box & wait for keypress (msg in file)
+  QWARN - Quick message display in box & wait for keypress (msg in mem)
+Parse Functions
+  PARSE_FIRST - parse first arguement from command line
+  PARSE_NEXT - parse next command line parameter
+Menu Functions
+  MENU_SYSTEM - Menu bar display and decode of user selection
+  key_mouse_wait - wait for key or mouse input
+  get_menu_cursor - return current cursor position
+  set_menu_cursor - return current cursor position
+  QMENU_SYSTEM - Quick pulldown menu bar
+Random Number Functions
+  random_word1 - generate random word value, using method 1
+  RANDOM_WORD2 -  generate random word value, using method 2
+  random_byte1 - generate random number
+  RANDOM_DWORD1 - generate random dword value
+  RANDOM_WORD3 - generate random word value, using method 3
+  RANDOM_WORD4 - generate random word value, method 4
+  RANDOM_WORD4_SCALED - Generates a random number within a specific range
+  RANDOM_WORD5 - generate random word value, method 5
+  RANDOM_SEED - get low clock value for us as random number
+  SCALE_WORD - scale a word value to be within specified range
+Search Functions
+  SCAN_BLOCK_TINY1 - scan sequential buffers for string, case match
+  SCAN_BLOCK_TINY2 - scan sequential buffers for string, matching either case
+  SCAN_BLOCK1 - scan sequential buffers for string, match case
+  SCAN_BLOCK2 - scan sequential buffers for string, match either case
+  SCAN_BLOCK_FOPEN - initialize fast scan of sequential buffers
+  SCAN_BLOCK_FCLOSE - terminate fast scan sequential buffers
+  SCAN_BLOCK_FAST - fast scan of sequential buffers for string
+  SCAN_CHAR1 - scan asciiz buffer for character, case match
+  SCAN_CHAR2 - scan asciiz buffer for character, match either case
+  SCAN_CHAR3 - scan  buffer for character, case match
+  SCAN_CHAR4 - scan buffer for character, match either case
+  SCAN_LAST_CHAR1 - scan asciiz string for last match, case match
+  SCAN_LAST_CHAR2 - scan asciiz buffer for last occurance of character
+  SCAN_LAST_CHAR3 - scan  buffer for last char match, case match
+  SCAN_LAST_CHAR4 - scan buffer for last char match, match either case
+  SCAN_LAST_STR1 -  find last match of string in buffer, case match
+  LAST_CHAR - find the last byte in a string matching register AL
+  LAST_CHARC - find the last byte in n bytes matching AL
+  BUFFER_SEARCH - search string1 for the first occurance of string2
+  BUFFER_SEACHC - search a buffer for the first occurance of a string
+Compress Functions
+  shrink - compress data block
+  expand - expand compressed data back to origional state
+  compress - compress data block using limpel-ziev algorithm
+  decompress - decompress data block using limpel-ziev algorithm
+Sort functions
+  buffer sort, allocate memory for index.
+  file sort, read file into buffers and sort them.
+  make_index - make index for sort routines
+  SELECTION_SORT_BUFFER - selection sort of buffer in memory
+  SELECTION_SORT_FILE - selection sort of file
+  selection_sort - sort indexed buffer. 
+  selection_sort_arrayw  - sort word array (integers)
+  MERGE_SORT_BUFFER - merge sort of buffer in memory
+  MERGE_SORT_FILE - merge sort of file
+  merge_sort - sort indexed buffer. 
+  merge_sort_arrayw - sort array of words. 
+  merge_sort_arrayd - sort array of dwords.
+  BUBBLE_SORT_BUFFER - bubble sort of buffer in memory
+  BUBBLE_SORT_FILE - bubble sort of file
+  bubble_sort - sort indexed buffer. 
+  bubble_sort_arrayw - bubble sort array of words
+  bubble_sort_arrayd - bubble sort array of dwords
+Sound Functions
+  SOUND_ON - Enable sounds from BEEP and ONE_BEEP
+  SOUND_OFF - Disable sounds from BEEP and ONE_BEEP
+  ONE_BEEP - beep once at 200hz for fraction of a second
+  make_sound - make sound for number of milliseconds.
+Stdout Functions
+  stdout_char - display character to stdout
+  stdout_string - put string to stdout
+  stdout_crlf - sends cr/lf to stdout one time
+  stdout_spaces - put one or more spaces to stdout
+  stdout_puts - display string to stdout
+String Functions
+  STRLEN1 - finds length of a ASCII string at DS:SI
+  STRLEN2 - finds length of a ASCII string at DS:DI
+  STRLEN3 - finds length of a ASCII string at DS:BX
+  LEGAL_CHAR_CHECK - scan target string for legal characters
+  ILLEGAL_CHAR_CHECK - scan string for illegal characters
+  STR_UPPER - changes string to upper case
+  STR_UPPERC:  changes n-length string to upper case
+  STR_LOWER - changes bytes of a string to lower case
+  STR_LOWERC -  changes n bytes of a string to lower case
+  STR_CENTER - centers string1 in a string2
+  STR_LEFT - left-justifies string1 in string2
+  STR_RIGHT - right-justifies a string1 in string2
+  STR_CLEANL - remove leading blanks from an ASCIIZ string
+  STR_CLEANR - removes trailing blanks from string
+  STR_REMOVE - remove all occurances of a character from string.
+  STR_CHAR_DEL - deletes a character from a string
+  STR_CHAR_DELC - deletes a character from a string of n-length
+  STR_REVERSE - reverses all characters in a string
+  STR_REVERSEC - reverses n characters in a string
+  STR_SWAP - swaps portions of two strings
+  STR_SET - sets all bytes of string to a specified character
+  STR_SETC - sets n bytes of string to a specified character
+  STR_JOIN -  appends string2 at end of string1
+  STR_INSERT - inserts string1 in string2 at specified offset.
+  STR_INSERTC - inserts string1 in string2 at specified offset.
+  STR_COPY - copy a string to existing buffer
+  STR_COPYC - copy CX bytes to an existing buffer
+System Functions
+  LIBRARY_SETUP - setup library for use
+  LIBRARY_TERMINATE - close out library for program exit
+  FIND_CPU_TYPE - detects cpu type
+  MATH_HARDWARE - determines if 80x87 math coprocessor is installed
+  keyboard_setup - determine type of keyboard attached
+  FIND_MOUSE - determines if a mouse is installed
+  CHECK_ANSI - check if ANSI active
+  DISPLAY_INFO - determine display information
+  DETECTVID -  determine display type
+  FIND_DISPLAY_SEGMENT  -  scan for current display buffer segment
+  SPAWN_DOS - execute a second copy DOS
+  COUNT_FLOP_DRIVES - count the number of floppy disk drives intalled
+  GET_DRV_TYPE - determine drive type
+  BREAK_KEY_INTERCEPT - grab keyboard abort keys
+  BREAK_KEY_RESTORE - release keyboard abort keys
+  BREAK_CHECK -  check if break key pressed
+  BREAK_CLEAR -  clear the break flag
+Time and Date Functions
+  DAYS_TO_DATE - build date for the number of days since Jan 1, 1980.
+  MONTH_DAYS - return number of days in a month
+  IS_LEAP - check if leap year
+  MONTH_TO_ASCII - get ASCII string for specified month
+  DAY_TO_ASCII - get string for specified day of the week
+  GET_TIME - Returns the current SYSTEM time.
+  ASC_TIME - Creates a time string of the form HH:MM Xm.
+  GET_DATE - Returns the current SYSTEM date and day of the week.
+  GET_DAY - Returns the day of the week for a given date.
+  ASC_DATE - Creates a date string of the form MM/DD/YY.
+  DATE_TO_DAYS - get number of days between Jan 1, 1980 and a date.
+  START_TIMER - start high resolution timer
+  read_timer - read high resolution timer
+  CONVERT_TIMER - convert timer ticks to seconds and microseconds
+  DISPLAY_TIMER - display timer values to stdout
+  CALIBRATE_TIMER - calibrate timer
+  ASC2_TO_DATE - get number of days between Jan 1, 1980 and a date.
+  ASC2_TO_BIN - get number of days between Jan 1, 1980 and a date.
+  ASC2_TO_BYTE - convert two ascii digets to binary byte
+  DATE_TO_ASC2 - DATE (DX,AH,AL) to ascii string
+  BIN_DATE_TO_ASC2 - binary date to ascii
+  

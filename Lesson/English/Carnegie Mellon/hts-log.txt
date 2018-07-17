@@ -1,0 +1,12 @@
+HTTrack3.43-7+htsswf+htsjava launched on Mon, 21 Dec 2009 12:48:09 at http://www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.asm
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2008], %s -->" -%l "en, en, *" http://www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html -O1 "C:\My Web Sites\Assembly4" +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.asm )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+12:48:11	Warning: 	Link www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html not scanned (follow robots meta tag)
+
+HTTrack Website Copier/3.43-7 mirror complete in 2 seconds : 2 links scanned, 1 files written (11279 bytes overall) [12072 bytes received at 6036 bytes/sec]
+(No errors, 1 warnings, 0 messages)

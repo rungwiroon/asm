@@ -1,0 +1,131 @@
+LESSON3 - INTERRUPTS LABELS AND DB
+
+know, if we want to, let say do a program thats just run, the struc
+I showed you before is not complete because, it will not exit,
+we must tell dos we want to exit, then how will we do it :
+simply by using the operator "int" which calls to interrupt
+(0..0FFH) and instruct him what to do, so lets detailt of some int's :
+
+009h - the keyboard interrupt
+010h - the screen interrupt
+013h - the sectors, (format, read, write) interrupt
+016h - the keyboard interrupt
+017h - the printer interrupt
+021h - the main dos command
+
+know each interrupt got many command and each one needs difrrent parameters
+(if you want to know get the complete int list from your local BBS)
+
+INT 21 - TERMINATE
+
+ah - 4ch
+al - errorlevel
+
+so in order to initiate this interrupt we will do :
+
+mov ah,4ch
+mov al,0        ; if you want it can every value
+int 21h         ; and then the program will exit to dos
+
+but how will the compiler know where to start, well we have to tell
+him, the compiler will know to start excatly in the first, label -
+label is a name which you can jump to him, the label will be like :
+Name : - "start :", "now :", "rt :" all of those are labels, so this is
+a basic (working) assembly program :
+
+Sseg segment  
+  db 10 dup (?)  ; will be disscused late
+ends          
+
+Dseg segment
+ends
+
+Cseg segment
+assume cs:cseg,ds:dseg,ss:sseg
+
+start :              ; the compiler will start here
+
+      mov ah,4ch
+      mov al,0
+      int 21h        ; terminate
+ends                 ; the segment must finish before the label
+end start            ; close the label
+end                  ; tell compiler script ends here
+
+that was easy, it's the main assembly struc, but it can be much more complexed
+now in the sseg (stack) there was "db" now what is that, well if (most
+of the times) assembly registers are not enough so you (like pascal,c) can
+define variables, how ????
+well you have to operators - db,dw,dd,dt :
+DB - define byte, the var will be 1 byte (8 bit)
+DW - define word, the var will be 2 bytes (word, 16 bit)
+DD - define double, the var will be 4 bytes (double word,32 bit)
+DT - define ten, then var will be 10 bytes (not used)
+
+the decleration goes like this :
+name type [number] value.
+examples : try db 1 - it will define "try" as 1 byte with starting value 1
+           tru dw 4 - it will define "tru" as 2 byte with starting value 4
+           ytu dw ? - it will define "ytu" as 2 byte with unknown starting
+                      value
+now lets say that you want to define an array (like pascal : a:array[1..10]of
+                                               like c      : int c[100])
+you do as follow : name type number dup(value).
+lets say : gvr db 10 dup(2) - it will define "gvr" as 10 byte which each one
+                              has value of 2.
+but what if I want to define a messege or multiple values then what ??
+then it should be like :
+
+messege - mes db "this is a messege",10,13,"$"
+
+now the numbers after the second """ are optional, it's needed only
+for some interrupt.
+multiple values (vectors, etc.) then :
+
+vec db 23,54,76,34,234,14,23,123,245
+    db 124,34,245,23,52,34,52,43,13
+    db 213,213,123,123
+
+the db can be dw,dd or dt, and you can do it for how much you want
+but you must not pass the 64k limit.
+
+but what if you want to write a messege then ???
+you will search the int which do that :
+
+int 21h - write string
+
+ah - 9
+ds:dx points to string (in the end "$" for termination)
+
+so how will we do it ???
+
+Sseg segment  
+  db 10 dup (?)
+ends
+
+Dseg segment
+  msg db "dr. encryption",10,13,"$" ; for termination
+ends
+
+Cseg segment
+assume cs:cseg,ds:dseg,ss:sseg
+
+start :              ; the compiler will start here
+
+      mov dx,offset msg  ; ds is already pointing to dseg
+      mov ah,9
+      int 21h            ; whop there he is
+
+      mov ah,4ch
+      mov al,0
+      int 21h        ; terminate
+ends                 ; the segment must finish before the label
+end start            ; close the label
+end                  ; tell compiler script ends here
+
+now what offset is, well offset will return the offset of the argument
+so if you write : mov dx,offset msg then dx will be the offset of the msg
+(offset is 16bit and so is segment ,so "mov al,offset ..." will be wrong)
+the operator seg will return the segment of the argument, but if you change
+ds and not return his original value the system will hang.
+so then the stack comes to buisness.

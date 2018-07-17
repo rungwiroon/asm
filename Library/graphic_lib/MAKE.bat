@@ -1,0 +1,10 @@
+@echo off
+
+MASM TEST;
+pause
+MASM GRAPHIC;
+PAUSE
+LINK TEST+GRAPHIC;
+pause
+0240.exe
+

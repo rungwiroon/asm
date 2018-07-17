@@ -1,0 +1,746 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/div.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:58 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>คำสั่ง DIV</title>
+</head>
+
+<body background="Cotton.gif" bgcolor="#FFFFFF">
+
+<table border="0" width="100%">
+    <tr>
+        <td><table border="5">
+            <tr>
+                <td align="center"><img src="all1.gif"
+                width="190" height="150"></td>
+            </tr>
+        </table>
+        </td>
+        <td>&nbsp;</td>
+        <td><p align="center"><img src="thailand.gif" width="68"
+        height="50"></p>
+        <p><font color="#FF0000" size="7"><strong><u>คำสั่ง
+        DIV,IDIV</u></strong></font></p>
+        </td>
+        <td>&nbsp;</td>
+        <td><table border="5">
+            <tr>
+                <td align="center"><img src="all1.gif"
+                width="190" height="150"></td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+
+<p align="center">&nbsp;</p>
+
+<p align="center"><img src="link1.gif" width="100" height="17"><img
+src="link1.gif" width="100" height="17"><img src="link1.gif"
+width="100" height="17"><img src="link1.gif" width="100"
+height="17"><img src="link1.gif" width="100" height="17"></p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0000" size="5"><strong><u>คำอธิบาย</u></strong></font><font
+            size="4"><strong> </strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#8000FF" size="4"><strong>คำสั่ง
+            Divide,Unsigned(DIV) และ IntegerDivide&lt;Signed(IDIV)</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF" size="4"><strong>คำสั่ง
+            DIV
+            จะทำให้การหารไม่มีเครื่องหมาย
+            และคำสั่ง IDIV</strong></font><font
+            color="#8000FF" size="4" face="CordiaUPC"><strong> </strong></font><font
+            color="#8000FF" size="4"><strong>จะทำการหารเลขที่มีเครื่อง</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF"><strong></strong></font>&nbsp;</td>
+            <td><font color="#8000FF" size="4"><strong>หมายบวก
+            หรือลบ คำสั่ง DIV และ
+            IDIV สามารถหารเลข 8 บิต
+            หรือ 16 บิต ก็ได้</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0080" size="4"><strong>SYNTAX</strong></font></td>
+            <td><font color="#FF0080"></font>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#FF0080" size="4"><strong></strong></font>&nbsp;</td>
+            <td><font color="#FF0080" size="4"><strong>DIV source</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#FF0080"></font>&nbsp;</td>
+            <td><font color="#FF0080"></font>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#FF0080" size="4"><strong>IDIV
+            source (source เป็นตัวหาร) </strong></font></td>
+        </tr>
+    </table>
+    <p align="center">&nbsp;</p>
+    <p align="center"><img src="line2.gif" width="435"
+    height="15"></p>
+    <p align="center">&nbsp;</p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="5"><strong><u>การปฏิบัติการ
+    </u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>DIV,IDIV
+    ซึ่งเป็นรีจิสเตอร์หรือหน่วยความจำ
+    สำหรับการหารเลข 8 บิต
+    ตัวตั้งคือ
+    ค่ารีจิสเตอร์ AHและ AL
+    และสำหรับการหารเลข 16
+    บิต
+    การตั้งค่าในรีจิสเตอร์
+    DX และ AX ผลลัพธ์การหารเป็นดังนี้
+    สำหรับเลข 8 บิต
+    ค่าจำนวนเต็มอยู่ในรีจิสเตอร์
+    AL
+    และเศษอยู่ในรีจิสเตอร์
+    AH สำหรับการหารเลข 16 บิต
+    ค่าจำนวนเต็มอยู่ในรีจิสเตอร์
+    AX
+    และเศษอยู่ในรีจิสเตอร์
+    DX ถ้าผลของการหารได้ค่าจำนวนเต็มที่ใหญ่กว่าที่รีจิสเตอร์
+    AL หรือ AX จะเก็บค่าได้ใน
+    8088 จะทำให้เกิดการ interrupt
+    ชนิด 0 ซึ่งถ้าใช้ DOS
+    ก็จะเห็นข้อความว่า Divide
+    Overflow บนจอภาพ </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="4"><strong>ตัวอย่างคำสั่ง
+    DIV และ IDIV เช่น</strong></font></p>
+    <table border="0">
+        <tr>
+            <td><font color="#800080" size="4"><strong>DIV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>BX</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide DX:AX
+            by BX,unsigned</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>DIV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>MEM-BYTE</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide AH:AL
+            memmory,unsigned</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IDIV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DL</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide AH:AL
+            by DL,signed</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IDIV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>MEM-WORD</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide DX:AX
+            by memory,signed</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>MOV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DX,10</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IDIV</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>DX</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide DX:AX
+            by 10</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="5"><strong><u>ตัวอย่างการใช้คำสั่งหาร</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>1.
+        การที่มีเครื่องหมายระหว่างเลข
+        8 บิต กับเลข 16 บิต</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <table border="0">
+                <tr>
+                    <td><font color="#008080" size="4"><strong>;AX
+                    = 03ABH</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>=
+                    939 decimal</strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080" size="4"><strong>;BL
+                    = D3H</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>=
+                    45 decimal</strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080" size="4"><strong>IDIV
+                    BL</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>;quotient
+                    in AL OECH = -20 decimal </strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>;remainder
+                    in AH = 27H = 39 decimal</strong></font></td>
+                </tr>
+            </table>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>2.
+        การหารเลขที่ไม่มีเครื่องหมาย
+        ระหว่างเลข 8 บิต
+        กับเลข 16 บิต</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <table border="0">
+                <tr>
+                    <td><font color="#008080" size="4"><strong>;AX
+                    = 37D7H</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>=
+                    14295 decimal </strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080" size="4"><strong>;BL
+                    = 97 H</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>=
+                    151 decimal </strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080" size="4"><strong>IDIVI
+                    BL</strong></font></td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>;quotient
+                    in AL = 5EH = 94 decimal </strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080"></font>&nbsp;</td>
+                    <td><font color="#008080" size="4"><strong>;remainder
+                    in AH=65H=101 decimal </strong></font></td>
+                </tr>
+            </table>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<p align="center"><font size="4"><strong></strong></font>&nbsp;</p>
+
+<p align="center"><a href="Menu.html"><font size="4"><strong><img
+src="Back.gif" border="0" width="83" height="28"></strong></font></a></p>
+
+<p align="center"><font size="4"><strong><img src="line2.gif"
+width="435" height="15"></strong></font></p>
+
+<p align="center"><font size="4"><strong></strong></font>&nbsp;</p>
+
+<p align="center"><font size="4"><strong></strong></font>&nbsp;</p>
+
+<blockquote>
+    <p><font color="#FF0000" size="5"><strong><u>คำสั่ง
+    ASCII Adjust for Division (AAD)</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คำสั่ง
+    AAD
+    จะปรับค่าของตัวตั้งในการหารให้เป็นเลขฐานสอง
+    ในรีจิสเตอร์ AL
+    ซึ่งทำการโดยการคูณส่วนบนของตัวตั้งหรือค่าในรีจิสเตอร์
+    AH ด้วย 10
+    และบวกผลลัพธ์กับส่วนล่างของตัวตั้งหรือค่าในรีจิสเตอร์
+    AL และจะทำให้ค่าใน AH
+    เป็น 0 คำสั่ง AAD
+    จะต้องถูกเรียกใช้ก่อนการหาร
+    ดังตัวอย่าง</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ADD ;adjust
+            the unpacked divide in AH:AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>DIV BL ;then
+            perform the division</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="4"><strong>ตัวอย่างการใช้
+    AAD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>;AX=0000 0011 0000
+    0111 unpacked BCD for 37 dicimal </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>;CL 0000 0101
+    unpacked BCD for 5 decimal </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ADD ;adjust to
+    binary before division</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>;AX = 0025 H = 37</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>DIV CL ;divied AX
+    by CL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>;AL = quotient = 07
+    unpacked BCD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>;AH = remainder =
+    02 unpacked BCD </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p align="center"><font size="4"><strong></strong></font>&nbsp;</p>
+    <p align="center"><a href="Menu.html"><font size="4"><strong><img
+    src="Back.gif" border="0" width="83" height="28"></strong></font></a></p>
+    <p align="center"><font size="4"><strong><img src="line2.gif"
+    width="435" height="15"></strong></font></p>
+    <p align="center"><font size="4"><strong></strong></font>&nbsp;</p>
+    <p><font color="#FF0000" size="5"><strong>คำสั่ง
+    Sign – Extension CWN และ CBW</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>คำสั่ง Covert Byte to
+    word (CBW)
+    เป็นคำสั่งที่ลอกค่าของบิต
+    7 ในรีจิสเตอร์ AL
+    ไปใส่ในรีจิสเตอร์ AH</strong></font><font
+    size="4" face="CordiaUPC"><strong> </strong></font><font
+    size="4"><strong>ทำให้สามารถบวกค่า
+    8 บิต กับ 16 บิต
+    หรือลบค่า 16 บิต จาก 8
+    บิต ได้คำสั่ง Convert Word to
+    Doubleword (CWD)
+    เป็นคำสั่งที่ลอกค่าของบติ
+    15 ในรีจิสเตอร์ AX
+    ไปใส่ในรีจิสเตอร์ DX
+    ทำให้สามารถหารเลข 16
+    บิต ได้
+    ตัวอย่างการใช้คำสั่ง
+    CWD และ CBW เช่น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#800080" size="4"><strong>CBW</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;add a
+            byte in AL to a word in BX</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>ADD</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>AX,BX</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>CBW</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;multiply
+            a byte in AL by a word</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IMUL BX</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;in BX</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>CWD</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;divide a
+            word in AX by</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#800080" size="4"><strong>IDIV BX</strong></font></td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080"></font>&nbsp;</td>
+            <td><font color="#800080" size="4"><strong>;a word in
+            bx</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>จำนวน clock: (80286) 14-25,(80386)14-41</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>แฟลกที่ถูกระทำ
+    : ไม่มี</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>แฟลกที่ไม่ต้องกำหนด
+    : AF,OF,CF,PF,SF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8080FF" size="4"><strong>ข้อยกเว้นในโหมด
+    protected : ถ้าจำนวนหารเป็น 0
+    หรือ ถ้าผลหารมี
+    ค่ามากเกินกว่าที่จะเก็บในรีจิสเตอร์
+    (AX หรือ AL) int 0
+    จะเกิดขึ้นและถ้าโอเปอร์แรนต์ถูกเก็บในเซกเมนต์
+    CS,DS หรือ ES
+    จะเกิดการยกเว้นการ
+    protect
+    และถ้าโอเปอร์แรนด์ถูกเก็บในเซกเมนต์
+    SS จะเกิดความผิดพลาดของ
+    stack ขึ้น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8080FF" size="4"><strong>ข้อยกเว้นสำหรับโหมด
+    real address : ถ้าจำนวนหารเป็น
+    0
+    หรือถ้าผลหารมีค่ามากกินกว่าที่จะเก็บในรีจิสเตอร์
+    (AX หรือ SL) int 0 จะเกิดขึ้น
+    ถ้าโอเปอร์แรนด์อยู่ที่ออฟเซ็ต
+    OFFFH จะทำให้เกิด int13เกิดขึ้นสำหรับจำนวนตั้งหารขนาด
+    64 บิตใน EDX:EAX
+    โดยมีจำนวนหารขนาด 32
+    บิตผลลัพธ์เก็บใน EAX</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="4"><strong>ตัวอย่างโปรแกรม
+    การหาค่าเฉลี่ย ของค่า
+    2 ค่า</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>; Pgm_5_9.asm 8086/8088</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>; average two
+    values</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>atack_seg segment</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>db 64 dup(?)</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>stack_seg ends</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>;</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>data_seg segment</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>val1 db 95h ;first
+    value</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>val2 db 45h ;second
+    value</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>avg db ? ;aerage
+    value</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>data_seg ends</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>;</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>code_seg segment</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>assume ds:data_seg,Cs:code_seg,SS:stacd_seg</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>;Set up stack to
+    contain proper values </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Begin : Push ds</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>Mov ax,0</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>Push ax</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>:Initialize data
+    segment</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov ax,data_seg</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov dx,ax</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov al,val1
+            ; get first value in AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>add al,bal2
+            ; add second value</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov ah,ooH
+            ; clear AH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>adc ah,ooH
+            ; put carry in lsb of AH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov bl,02H
+            ; load divisor in BL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>div bl ;
+            divide AX by BL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>; quoticent
+            in AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>; remainder
+            in AH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>mov avg,al
+            ; copy result in memory</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>code_seg ends</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>end Begin</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><font size="4"><strong><img
+src="Back.gif" border="0" width="83" height="28"></strong></font></a></p>
+
+<p align="center"><font size="4"><strong><img src="line2.gif"
+width="435" height="15"></strong></font></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/div.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:58 GMT -->
+</html>

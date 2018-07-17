@@ -1,0 +1,960 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/index.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+<center>
+
+
+<CENTER>
+
+<IMG SRC="../../../banner_emu8086.gif" WIDTH=468 HEIGHT=60 BORDER=0 alt="free source code">
+
+</CENTER>
+
+
+
+
+&nbsp; &nbsp; <font color=#FFFFFF> ;</font> <h3><font face="verdana"> Assembly Language Source Codes </font></h2>
+
+<font size=1 face=courier>
+Assembler Source Code for emu8086 microprocessor emulator and compatible assemblers  (16 bit)
+<br>
+To copy codes to a text editor just press Ctrl+A (simultaneously), then press Ctrl+C and in the editor press Ctrl+V
+</font>
+<br><br><br>
+
+
+
+<!-- START AUTOMATIC INDEX GENERATION -->
+<ul><font size=3 face="Terminal">
+
+
+
+<li>
+<a href="bin2dec.asm.html" target="_top">bin2dec.asm</a>
+       <br><br>
+Input 8 bit binary number and print out its decimal equivalent.
+       <br><br>
+</li>
+
+
+
+
+
+<LI>
+<A HREF="zip/emu8086_tutorial_make_your_own_micro-os.zip"><B>Make your own Micro Operating System<BR><FONT SIZE=1>(source with tutorial)</FONT></B></A><BR>
+ This is a very basic example
+ of a tiny OS. Your own Operating System that runs from floppy drive - easy!
+<BR><BR>
+</LI>
+
+
+<li>
+<a href="0_sample_add_huge_numbers.asm.html" target="_top">0_sample_add_huge_numbers.asm</a>
+       <br><br>
+ This example shows how to add
+ huge unpacked BCD numbers
+       <br><br>
+</li>
+
+
+
+<li>
+<a href="0_sample_vga_graphics.asm.html" target="_top">0_sample_vga_graphics.asm</a>
+       <br><br>
+And this program draws a tiny geometrical figure in VGA mode.
+       <br><br>
+</li>
+
+
+<li>
+<a href="1_sample.asm.html" target="_top">1_sample.asm</a>
+       <br><br>
+			<B>Another "Hello World!" example</B><BR>This example prints out
+			  "HELLO WORLD!"			 by writing directly to the
+			 video memory.
+       <br><br>
+</li>
+
+
+<li>
+<a href="2_sample.asm.html" target="_top">2_sample.asm</a>
+       <br><br>
+Simple Add/Subtract
+       <br><br>
+</li>
+
+
+<li>
+<a href="3_sample.asm.html" target="_top">3_sample.asm</a>
+       <br><br>
+<B>Calculate the sum</B></A><BR>
+ Calculate the sum
+ of elements in V1 array,
+ store result in V2.
+       <br><br>
+</li>
+
+
+<li>
+<a href="4_sample.asm.html" target="_top">4_sample.asm</a>
+       <br><br>
+<B>How CMP instruction sets the flags.</B><BR>
+ Usually CMP instruction
+ is followed by any relative
+ jump instruction such as:
+ JE, JA, JL, JAE...
+ It is recommended to open:
+ "Lexical Flag Analyzer"
+ and "Flags"
+ from emulator's "View"
+ menu before running
+ this code.
+       <br><br>
+</li>
+
+
+<li>
+<a href="5_sample.asm.html" target="_top">5_sample.asm</a>
+       <br><br>
+<B>Octal, Binary and Decimal</B></A><BR>
+See how to operate with Octal, Binary and Decimal values.
+       <br><br>
+</li>
+
+
+<li>
+<a href="add_two_arrays.asm.html" target="_top">add_two_arrays.asm</a>
+       <br><br>
+This example calculates the sum of one array with another and saves result in third array.
+In <A HREF="http://www.emu8086.com/" TARGET="_blank"><B>emu8086</B></A> you can see the result in "<B>View</B>" -&gt; "<B>Variables</B>" menu. (set Elements for SEG1, SEG2 and SEG3 to 4 and
+  Show as "<B>SIGNED</B>"). Not only variables but arrays can be seen in memory. It's required to set correct data type (size) and number of elements in that array:<BR><BR>
+  <IMG SRC="img/sum_of_2_arrays.gif" ALT="assembler sum array">
+       <br><br>
+</li>
+
+
+<li>
+<a href="attrib.asm.html" target="_top">attrib.asm</a>
+       <br><br>
+Learn how to set and get file attributes, in other words how to make file Read Only or Hidden.
+       <br><br>
+</li>
+
+
+<li>
+<a href="bcd_aaa.asm.html" target="_top">bcd_aaa.asm</a>
+       <br><br>
+<B>BCD - AAA instruction example - bcd_aaa.asm</B><BR>
+ This example shows the use
+ of AAA instruction (ASCII
+ Adjust after Addition).
+ It is used to add huge
+ BCD numbers.
+       <br><br>
+</li>
+
+
+<li>
+<a href="bcd_aas.asm.html" target="_top">bcd_aas.asm</a>
+       <br><br>
+<B>BCD - AAS instruction example - bcd_aas.asm</B><BR>
+ This is an example of AAS
+ instruction, it is used to
+ subtract huge BCD numbers.
+       <br><br>
+</li>
+
+
+<li>
+<a href="bintest.asm.html" target="_top">bintest.asm</a>
+       <br><br>
+<B>Bin file - bintest.asm</B><BR>
+ This is an example of how to
+ make a ".BIN" file.
+       <br><br>
+</li>
+
+
+<li>
+<a href="calc.asm.html" target="_top">calc.asm</a>
+       <br><br>
+<B>Simple Calculator - calc.asm</B><BR>
+ This sample gets two numbers
+ from the user, calculates the
+ sum of these numbers,
+ and prints it out.
+       <br><br>
+</li>
+
+
+<li>
+<a href="Calculator.asm.html" target="_top">Calculator.asm</a>
+       <br><br>
+Command prompt based simple calculator (+,-,*,/) for 8086.
+       <br><br>
+</li>
+
+
+<li>
+<a href="cmpsb.asm.html" target="_top">cmpsb.asm</a>
+       <br><br>
+<B>How to use CMPSB instruction - cmpsb.asm</B><BR>
+ This sample shows how
+ to use CMPSB instruction
+ to compare strings.
+       <br><br>
+</li>
+
+
+<li>
+<a href="cmpsw.asm.html" target="_top">cmpsw.asm</a>
+       <br><br>
+<B>How to use CMPSW instruction - cmpsw.asm</B><BR>
+ This sample shows how
+ to use CMPSW instruction
+ to compare strings.
+       <br><br>
+</li>
+
+
+<li>
+<a href="colors.asm.html" target="_top">colors.asm</a>
+       <br><br>
+<B>16x16 color map example - color.asm</B><BR>
+ This sample prints 16x16 color map,
+ it uses all possible colors.
+       <br><br>
+</li>
+
+
+<li>
+<a href="convert_string_number_to_binary.asm.html" target="_top">convert_string_number_to_binary.asm</a>
+       <br><br>
+This program written in 8086 Assembly Language to convert string value to binary form.
+When I run this program on <A HREF="http://www.emu8086.com/" TARGET="_blank"><B>emu8086</B></A> it proves that '<B>-1234</B>' is actually <B>0FB2Eh</B> in hexadecimal (or binary: <B>1111101100101110b</B>). This code supports both positive and negative numbers as input. Based on original (much more complicated) input routine taken from <B>emu8086.inc</B> <BR><BR>
+  <IMG SRC="img/convert_string_number_to_binary.gif" ALT="Convert string number to binary in assembly language">
+       <br><br>
+</li>
+
+
+<li>
+<a href="convert_string_to_packed_bcd.asm.html" target="_top">convert_string_to_packed_bcd.asm</a>
+       <br><br>
+ This program uses a subroutine written in 8086 assembly language
+ that can be used for converting a string of number
+ (Max of 4 ASCII digit) to equivalent packed BCD digits.
+ (BCD is "Binary Coded Decimal Numbers"). As seen in <B>emu8086</B> variables window:
+ <BR><BR>
+   <IMG SRC="img/convert_string_to_packed_bcd.gif" ALT="packed BCD digits">
+       <br><br>
+</li>
+
+
+<li>
+<a href="convert_to_upper_case.asm.html" target="_top">convert_to_upper_case.asm</a>
+       <br><br>
+ This is a program in 8086 assembly language that
+ accepts a character string from keyboard input
+ stores it in an array. The program then converts
+ all the lower case characters in the
+ string to upper case.  If the string is empty (null),
+ it does not do anything. Done as part of my school assignment.
+       <br><br>
+</li>
+
+
+<li>
+<a href="count_chars.asm.html" target="_top">count_chars.asm</a>
+       <br><br>
+<B>counter_chars.asm</B><BR>
+This source code shows how we can count the number of letters in some statment without using string instructions,
+ that means by using the loop and READING ONE CHARACTER in each  time of loop ...
+       <br><br>
+</li>
+
+
+<li>
+<a href="Count_Key_Presses.asm.html" target="_top">Count_Key_Presses.asm</a>
+       <br><br>
+<B>Count number of key presses - Count_Key_Presses.asm</B><BR>
+ Counts number of key presses, and stores the result is in BX register. You need to open "User Screen" to type.
+       <br><br>
+</li>
+
+
+<li>
+<a href="Custom_Interrupt.asm.html" target="_top">Custom_Interrupt.asm</a>
+       <br><br>
+<B>Make your own interrupts - Custom_Interrupt.asm</B><BR>
+This examples shows how to modify Interrupt Vector and create your own custom interrupts.
+       <br><br>
+</li>
+
+
+<li>
+<a href="datefile.asm.html" target="_top">datefile.asm</a>
+       <br><br>
+This code prints out current date and time and saves it to a file.<br>
+Emulator saves this file to emulated file system.
+       <br><br>
+</li>
+
+
+<li>
+<a href="encrypt_subrotine.asm.html" target="_top">encrypt_subrotine.asm</a>
+       <br><br>
+<B>Encryption in Assembly Language</B></A><BR>8086 subroutine to encrypt only lower
+ case alphabets of a string using XLAT and also decrypt the same. The main principle behind
+ this algorithm is because
+ tables are precoded manually to decode one another.
+ for example if first table sets letter 'a' to be 'k',
+ the second table does the reverse, it sets letter
+ 'k' to be 'a'... etc.... only lower case letters are encoded (but this program can be improved to convert full abc if required).
+       <br><br>
+</li>
+
+
+<li>
+<a href="exetest.asm.html" target="_top">exetest.asm</a>
+       <br><br>
+			<B>Another "Hello, World!" example - exetest.asm</B><BR>
+			"Hello World", this time as an EXE file.
+       <br><br>
+</li>
+
+
+<li>
+<a href="factorial.asm.html" target="_top">factorial.asm</a>
+       <br><br>
+<B>Factorial - factorial.asm</B><BR>
+ This sample gets the number
+ from the user, and calculates
+ factorial for it.
+ Supported input from 0 to 8
+ inclusive!
+       <br><br>
+</li>
+
+
+<li>
+<a href="fahrenheit.asm.html" target="_top">fahrenheit.asm</a>
+       <br><br>
+<B>Centigrade (Celsius) to Fahrenheit
+calculation and vice-versa. - fahrenheit.asm</B><BR>
+Not very accurate, since using
+integer divide, it may not work
+for some values as well....
+This program has no input/output from
+ the user, so in order to see the result
+ it maybe useful to select "Variables"
+ from "View" menu of the emulator.
+ Another way to see the output is to
+ use PRINT_NUM procedure from "emu8086.inc",
+ see "Part 5" in tutorials.
+ (since we get result in AL, you should use
+ CBW instruction before printing out,
+ because PRINT_NUM prints a signed number
+ in AX register).
+       <br><br>
+</li>
+
+
+<li>
+<a href="far_call.asm.html" target="_top">far_call.asm</a>
+       <br><br>
+Call a procedure from another segment or interrupt.
+       <br><br>
+</li>
+
+
+<li>
+<a href="far_call_advanced.asm.html" target="_top">far_call_advanced.asm</a>
+       <br><br>
+A more detailed example, it's interesting to see what happens with the stack when it runs slowly.
+If you run it to fast you may not see anything.
+       <br><br>
+</li>
+
+
+<li>
+<a href="far_call-2.asm.html" target="_top">far_call-2.asm</a>
+       <br><br>
+A far procedure that prints out "hello" using a very tricky way.
+It knows where to search for characters because it knows who called it.
+It gets all the information from the stack.
+       <br><br>
+</li>
+
+
+<li>
+<a href="file-operations.asm.html" target="_top">file-operations.asm</a>
+       <br><br>
+See how file system operates. Open existing file, create file and subdirectory, rename subdirectory, delete file and subdirectory.
+You can run it in step-by-step mode and explore the virtual file system.<br>
+<u>C:\emu8086\vdrive\C<br>
+C:\emu8086\MyBuild</u>
+<br>
+This little program does some mess by creating subdirectory and file, and then it cleans for itself by deleting everything. If it runs fast you won't even notice a thing. If you stop the program in the middle you shall notice that it writes into <u>C:\emu8086\vdrive\C\test1\</u> this text "lazy dog jumps over red fox", then it renames the file, creates another files, does some more things, and deletes everything very quickly.
+       <br><br>
+</li>
+
+
+<li>
+<a href="float.asm.html" target="_top">float.asm</a>
+       <br><br>
+<B>Float on 8086! - float.asm</B><BR>
+ This program calculates
+ linear equation: ax + b = 0
+ The result is printed with
+ floating point.<BR>
+ For example: a = 7, b = 2<BR>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <B>x = -0.28571428....</B>
+       <br><br>
+</li>
+
+
+<li>
+<a href="hello.asm.html" target="_top">hello.asm</a>
+       <br><br>
+			<B>Yet another, "Hello World" example - hello.asm</B><BR>
+			This example prints "Hello, World!" into the screen, char by char using INT 10h.
+       <br><br>
+</li>
+
+
+<li>
+<a href="HelloWorld.asm.html" target="_top">HelloWorld.asm</a>
+       <br><br>
+ <B>Basic "Hello World!" example in Assembly Language</B></A><BR>This example prints out
+ The easiest and the fastest way to print "Hello World!" using DOS INT 21h (still works under Windows XP in Dos prompt).
+ <BR><BR>
+  <IMG SRC="img/hello_world_assembler.gif" ALT="Assembler Hello World">
+       <br><br>
+</li>
+
+
+<li>
+<a href="HexConvertor.asm.html" target="_top">HexConvertor.asm</a>
+       <br><br>
+ This example converts 2 digit Hex value
+ into numeric value and decimal string representation (so that it can be easily printed if required).
+       <br><br>
+</li>
+
+
+<li>
+<a href="include.asm.html" target="_top">include.asm</a>
+       <br><br>
+<B>How to use emu8086.inc lib - include.asm</B><BR>
+ This sample shows
+ the correct use of "emu8086.inc"
+ library of predefined
+ macros and procedures.
+       <br><br>
+</li>
+
+
+<li>
+<a href="int10_13.asm.html" target="_top">int10_13.asm</a>
+       <br><br>
+			<B>Print "Hello world" in color - int10_13.asm</B><BR>
+			 This is an example of INT 10h / AH=13h
+			 function.
+       <br><br>
+</li>
+
+
+<li>
+<a href="int21.asm.html" target="_top">int21.asm</a>
+       <br><br>
+ example of int 21h functions.
+       <br><br>
+</li>
+
+
+<li>
+<a href="keybrd.asm.html" target="_top">keybrd.asm</a>
+       <br><br>
+<B>Keyboard example - keybrd.asm</B><BR>
+This sample shows the
+use of keyboard functions.
+Try typing something to
+"User Screen".
+ When "step delay" is too
+ long, keyboard buffer
+ is used.
+ Try setting "step delay"
+ to 1, for more realistic
+ emulation.
+ This code will loop until
+ you press ESC key, other
+ keys will be printed.
+       <br><br>
+</li>
+
+
+<li>
+<a href="LED_display_test.asm.html" target="_top">LED_display_test.asm</a>
+       <br><br>
+ This sample shows how to access
+ virtual ports (000F to FFFF).
+ This new technology allows
+ to make external add-on devices
+ for emu8086, such as led displays,
+ thermostat, stepper-motor, etc...
+ "DEVICES" folder contains sample
+ device that works with this sample.
+        <br><br>
+</li>
+
+
+<li>
+<a href="loops.asm.html" target="_top">loops.asm</a>
+       <br><br>
+just a few simple loops
+       <br><br>
+</li>
+
+
+<li>
+<a href="matrix.asm.html" target="_top">matrix.asm</a>
+       <br><br>
+<B>Matrix - matrix.asm</B><BR>
+ Matrix transpose sample
+ (reverse rows with columns).
+       <br><br>
+</li>
+
+
+<li>
+<a href="micro-os_kernel.asm.html" target="_top">micro-os_kernel.asm</a>
+       <br><br>
+<B>OS Kernel module - micro-os_kernel.asm</B><BR>
+ This is a very basic example
+ of a tiny operating system.
+ This is Kernel module!
+ It is assumed that this machine
+ code is loaded by 'micro-os_loader.asm'
+ from floppy drive from:
+   cylinder: 0
+   sector: 2
+   head: 0
+       <br><br>
+</li>
+
+
+<li>
+<a href="micro-os_loader.asm.html" target="_top">micro-os_loader.asm</a>
+       <br><br>
+<B>OS loader example - micro-os_loader.asm</B><BR>
+ This is a very basic example
+ of a tiny Operating System.
+ This is an OS loader only!
+       <br><br>
+</li>
+
+
+<li>
+<a href="mouse.asm.html" target="_top">mouse.asm</a>
+       <br><br>
+simple mouse code
+       <br><br>
+</li>
+
+
+<li>
+<a href="mouse2.asm.html" target="_top">mouse2.asm</a>
+       <br><br>
+drawing program
+       <br><br>
+</li>
+
+
+<li>
+<a href="no-close.asm.html" target="_top">no-close.asm</a>
+       <br><br>
+windows users may need it.
+       <br><br>
+</li>
+
+
+<li>
+<a href="pages.asm.html" target="_top">pages.asm</a>
+       <br><br>
+<B>Video buffering example - pages.asm</B><BR>
+ This example demonstrates
+ the use of pages (double-buffering).
+ This program uses first 4 pages of
+ video memory by setting some data
+ on them, and waits for any key,
+ pressing any key will show all
+ pages one after another.
+       <br><br>
+</li>
+
+
+<li>
+<a href="palindrome.asm.html" target="_top">palindrome.asm</a>
+       <br><br>
+<B>Palindrome - palindrome.asm</B><BR>
+ This sample checks if string
+ is a palindrome.
+       <br><br>
+</li>
+
+
+<li>
+<a href="param.asm.html" target="_top">param.asm</a>
+       <br><br>
+<B>Command line parameters example - param.asm</B><BR>
+ This sample prints out the command
+ line parameters.
+ In DOS you simply add this line
+ after an executable:
+ <I>param.com my parameters</I>
+ In emulator you should set
+ them by selecting "Set command line paramters"
+ from "File" menu of emulator window.
+       <br><br>
+</li>
+
+
+<li>
+<a href="paramexe.asm.html" target="_top">paramexe.asm</a>
+       <br><br>
+<B>Command line parameters for EXE file - paramexe.asm</B><BR>
+ This sample prints out the command
+ line parameters.
+ In DOS you simply add this line
+ after an executable:
+ <I>paramexe.exe my parameters</I>
+       <br><br>
+</li>
+
+
+<li>
+<a href="pixel.asm.html" target="_top">pixel.asm</a>
+       <br><br>
+<B>How to show single pixel on screen using assembly language.</B></A><BR>
+Everything that you see on screen is actually a lot of single dots called pixels, all high level languages and DirectX eventually use this or similar method to draw anything on the screen. 13h video mode is just 320x200 pixels, but it does not require any special graphics card and works on all computers and VGA compatible graphic cards (even the very old ones).
+       <br><br>
+</li>
+
+
+<li>
+<a href="print.asm.html" target="_top">print.asm</a>
+       <br><br>
+<B>Cool Print Method - print.asm</B><BR>
+ This sample shows how
+ to print string defined
+ just after the CALL
+ instruction without
+ using 'emu8086.inc' library.
+       <br><br>
+</li>
+
+
+<li>
+<a href="print_al.asm.html" target="_top">print_al.asm</a>
+       <br><br>
+the code prints out a decimal value out of AL
+       <br><br>
+</li>
+
+
+<li>
+<a href="print_char_by_char.asm.html" target="_top">print_char_by_char.asm</a>
+       <br><br>
+the code prints out as many chars from top to bottom as you enter from left to right.
+       <br><br>
+</li>
+
+
+<li>
+<a href="print_hex_digit.asm.html" target="_top">print_hex_digit.asm</a>
+       <br><br>
+<B>Print HEX digit - print_hex_digit.asm</B></A><BR>
+ This sample prints out a hex
+ value of DL register.
+       <br><br>
+</li>
+
+
+<li>
+<a href="PrinterDemo.asm.html" target="_top">PrinterDemo.asm</a>
+       <br><br>
+<B>Printer Demo - PrinterDemo.asm</B></A><BR>
+ PrinterDemo.asm - <I>Andrew Nelis</I>.
+ Simple demonstration of the printer.
+       <br><br>
+</li>
+
+
+<li>
+<a href="reverse.asm.html" target="_top">reverse.asm</a>
+       <br><br>
+ 8086 assembly language program to reverse a string.
+       <br><br>
+</li>
+
+
+<li>
+<a href="robot.asm.html" target="_top">robot.asm</a>
+       <br><br>
+<B>Robot example - robot.asm</B><BR>
+This is an example of controlling
+the robot attached to a computer.
+ This code randomly moves the robot
+and makes it to switch on/off the
+ lamps.
+ Keep in mind that robot is a
+ mechanical creature and it takes
+ some time for it to complete
+ a task.
+       <br><br>
+</li>
+
+
+<li>
+<a href="scasb.asm.html" target="_top">scasb.asm</a>
+       <br><br>
+<B>SCASB example - scasb.asm</B><BR>
+ This sample shows how
+ to use SCASB instruction
+ to find a symbol.
+       <br><br>
+</li>
+
+
+<li>
+<a href="scasw.asm.html" target="_top">scasw.asm</a>
+       <br><br>
+<B>SCASW example - scasw.asm</B><BR>
+ This sample shows how
+ to use SCASW instruction
+ to find a WORD (2 bytes).
+       <br><br>
+</li>
+
+
+<li>
+<a href="scroll.asm.html" target="_top">scroll.asm</a>
+       <br><br>
+<B>Scroll Example - scroll.asm</B><BR>
+ This example shows the used of
+ scrolling functions.
+ It prints some test strings,
+ and scrolls up/down the
+ window at (1,1)-(8,5).
+       <br><br>
+</li>
+
+
+<li>
+<a href="simple_io.asm.html" target="_top">simple_io.asm</a>
+       <br><br>
+<B>Simple I/O - simple_io.asm</B><BR>
+ This sample shows how to access
+ virtual ports (00000Fh to 0FFFFh).
+       <br><br>
+</li>
+
+
+<li>
+<a href="simplest.asm.html" target="_top">simplest.asm</a>
+       <br><br>
+Demonstration of a virtual device in assembly language.
+       <br><br>
+</li>
+
+
+<li>
+<a href="snake.asm.html" target="_top">snake.asm</a>
+       <br><br>
+<B>Snake game in Assembler - snake.asm</B><BR>
+ This is the snake game...
+ It's better to set the
+ "step delay" to "0" before
+ running, it requires fast
+ processing.
+ You can control the snake
+ using arrow keys on your
+ keyboard.
+ All other keys will stop
+ the snake.
+ Press ESC to exit.
+       <br><br>
+</li>
+
+
+<li>
+<a href="sort.asm.html" target="_top">sort.asm</a>
+       <br><br>
+<B>Simple Sort - sort.asm</B><BR>
+This program inputs 3 numbers and
+ sorts them from largest to smallest.
+       <br><br>
+</li>
+
+
+<li>
+<a href="stack.asm.html" target="_top">stack.asm</a>
+       <br><br>
+<B>Stack - stack.asm</B><BR>
+ This sample shows how the
+ stack works. Click "Stack"
+ button in emulator to see
+ the contents of the stack.
+       <br><br>
+</li>
+
+
+<li>
+<a href="stepper_motor.asm.html" target="_top">stepper_motor.asm</a>
+       <br><br>
+<B>Stepper Motor - stepper_motor.asm</B><BR>
+ This is a sample of OUT instruction.
+ It writes values to virtual I/O port
+ that controls the stepper-motor.
+ Try using datCCW, datCW_FS or datCCW_FS
+ instead of datCW to get different
+ behavior of the motor.
+       <br><br>
+</li>
+
+
+<li>
+<a href="string.asm.html" target="_top">string.asm</a>
+       <br><br>
+<B>Input and output string - string.asm</B><BR>
+ This sample shows the use
+ of input and output string
+ functions of emu8086.inc
+       <br><br>
+</li>
+
+
+<li>
+<a href="thermometer.asm.html" target="_top">thermometer.asm</a>
+       <br><br>
+Temperature Control - This short program for emu8086 shows
+ how to keep constant temperature using
+ heater and thermometer (between 60 F to 80 F),
+ it is assumed that air temperature is lower 60 F.
+ the emulator is required to run this example.
+       <br><br>
+</li>
+
+
+<li>
+<a href="timer.asm.html" target="_top">timer.asm</a>
+       <br><br>
+<B>Timer - timer.asm</B>><BR>
+ This sample shows the
+ use of a timer function
+ (INT 15h / 86h)
+ This code prints some chars
+ with 1 second delay.
+       <br><br>
+</li>
+
+
+<li>
+<a href="ToBin.asm.html" target="_top">ToBin.asm</a>
+       <br><br>
+ <B>Convert to bin - ToBin.asm</B><BR>
+  This program inputs a decimal number
+  and prints out its binary equivalent.
+  Convertion is done by CONVERT_TO_BIN
+  procedure, all other stuff is just
+ for input/output.
+       <br><br>
+</li>
+
+
+<li>
+<a href="traffic_lights.asm.html" target="_top">traffic_lights.asm</a>
+       <br><br>
+<B>Traffic Lights Intersection - traffic_lights.asm</B><BR>
+ This is a sample of OUT instruction.
+ It writes values to virtual I/O port
+ of Traffic Lights Intersection, by
+ setting bits we can turn all
+ the lights on and off.
+       <br><br>
+</li>
+
+
+<li>
+<a href="traffic_lights2.asm.html" target="_top">traffic_lights2.asm</a>
+       <br><br>
+Semaphores....  demonstration of turning the lights only.
+Unlike the previous example this code is the cause of far more traffic accidents.
+       <br><br>
+</li>
+
+
+<li>
+<a href="writebin.asm.html" target="_top">writebin.asm</a>
+       <br><br>
+A very handy code that can be assembled into a very tiny utility to make floppy boot records and tiny operating systems.
+       <br><br>
+</li>
+
+
+<li>
+<a href="emu8086.inc.html" target="_top">emu8086.inc</a>
+       <br><br>
+This file is an open source include library that allows to print and input strings and numbers using simple predefined macro functions for <B>8086 assembler</B>. Procedures to input and output numeric values and strings, clear screen. All macros and procedures avoid using MS-DOS interrupts (it is useful for designing your own independent operating systems).
+       <br><br>
+</li>
+
+
+<li>
+<a href="fasm_compatibility.asm.html" target="_top">fasm_compatibility.asm</a>
+       <br><br>
+Compatibility issues of MASM/TASM (emu8086) and FASM assembler syntax.
+       <br><br>
+</li>
+
+
+
+
+
+
+
+</ul></font>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- generated by emu8086  -->
+<!-- STOP INDEX  -->
+
+
+
+
+
+</center>
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/index.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

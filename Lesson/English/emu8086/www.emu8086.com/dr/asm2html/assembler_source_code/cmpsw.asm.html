@@ -1,0 +1,109 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/cmpsw.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> cmpsw.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+
+<font color=#008000>; how to use cmpsw instruction to compare word strings. </font>
+
+name <font color=#800080>"cmpsw"</font>
+
+<font color=#000064>org</font>     100h
+
+<font color=#008000>; set forward direction: </font>
+        <font color=#0000FF>cld</font>
+
+<font color=#008000>; load source into ds:si, </font>
+<font color=#008000>; load target into es:di: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#800000>cs</font>
+        <font color=#0000FF>mov</font>     <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#800000>es</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>lea</font>     <font color=#C80000>si</font>, dat1
+        <font color=#0000FF>lea</font>     <font color=#C80000>di</font>, dat2
+
+<font color=#008000>; set counter to data length in words: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, size
+
+<font color=#008000>; compare until equal: </font>
+        <font color=#0000FF>repe</font>    <font color=#0000FF>cmpsw</font>
+        <font color=#0000FF>jnz</font>     not_equal
+
+<font color=#008000>; "yes" - equal! </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>'y'</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+        <font color=#0000FF>int</font>     10h
+
+        <font color=#0000FF>jmp</font>     exit_here
+
+not_equal:
+
+<font color=#008000>; "no" - not equal! </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800080>'n'</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+        <font color=#0000FF>int</font>     10h
+
+exit_here:
+
+	<font color=#008000>; wait for any key press: </font>
+	<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+	<font color=#0000FF>int</font> 16h
+
+        <font color=#0000FF>ret</font>
+
+<font color=#008000>; data vectors must have equal lengths: </font>
+x1:
+dat1 <font color=#000064>dw</font> 1234h, 5678h, 9012h, 3456h
+dat2 <font color=#000064>dw</font> 1234h, 5678h, 9012h, 3456h
+size = ($ <font color=#0064C8>-</font> x1) <font color=#0064C8>/</font> 4
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/cmpsw.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,2361 @@
+Microsoft (R) Macro Assembler Version 6.11		    02/17/07 14:50:54
+0208.ASM						     Page 1 - 1
+
+
+				.MODEL	SMALL
+				.386
+				.STACK	100H
+
+				INCLUDE	MACRO.ASM
+			      C 
+			      C 
+			      C PASTEBMP	MACRO	X,Y,PICNAME
+			      C 	PUSH	X
+			      C 	POP	BMP_X
+			      C 	PUSH	Y
+			      C 	POP	BMP_Y
+			      C 	LEA		SI,PICNAME
+			      C 	MOV		BMP_MODE,0
+			      C 	CALL	LOADBMP
+			      C 
+			      C ENDM
+			      C 
+			      C TPASTEBMP	MACRO	X,Y,TRANS,PICNAME
+			      C 	
+			      C 	PUSH	X
+			      C 	POP	BMP_X
+			      C 	PUSH	Y
+			      C 	POP	BMP_Y
+			      C 	LEA		SI,PICNAME
+			      C 	MOV		TRANSPARENT,TRANS
+			      C 	MOV		BMP_MODE,2
+			      C 	CALL	LOADBMP
+			      C ENDM
+			      C 
+			      C DELAY MACRO TIME
+			      C 	LOCAL TIME,EATTIME
+			      C 	PUSH AX
+			      C 	PUSH BX
+			      C 	PUSH CX
+			      C 	PUSH DX
+			      C 
+			      C 	MOV AX,0
+			      C 	MOV BX,0
+			      C 	MOV CX,0
+			      C 
+			      C EATTIME :
+			      C 	INC AX
+			      C 	CMP AX,1000
+			      C 	JLE EATTIME
+			      C 	INC BX
+			      C 	CMP BX,32766
+			      C 	JLE EATTIME
+			      C 	INC CX
+			      C 	CMP CX,TIME
+			      C 	JLE EATTIME
+			      C 
+			      C 	POP DX
+			      C 	POP CX
+			      C 	POP BX
+			      C 	POP AX
+			      C ENDM
+			      C 
+			      C ;============================================
+			      C ;Go to define  x,y in screen
+			      C ;============================================
+			      C GOTOXY MACRO X,Y
+			      C 	PUSH AX
+			      C 	PUSH BX
+			      C 	PUSH DX
+			      C 	
+			      C 	MOV AH,02H
+			      C 	XOR BX,BX
+			      C 	MOV DH,Y
+			      C 	MOV DL,X
+			      C 	INT 10H
+			      C 
+			      C 	POP DX
+			      C 	POP BX
+			      C 	POP AX
+			      C ENDM
+			      C 
+			      C ;=========================================
+			      C ;Write Charecter in teletype Mode
+			      C ;Input:	AH	= 0EH
+			      C ;		AL	= Charecter
+			      C ;		BH	= page
+			      C ;		BL	= color
+			      C ;Output:	none
+			      C ;=========================================
+			      C WRITE_CHAR	MACRO CHAR,COLOR
+			      C 	PUSH	AX
+			      C 	PUSH	BX
+			      C 	
+			      C 	MOV	AH,0EH
+			      C 	MOV	AL,CHAR
+			      C 	XOR	BH,BH		;SELECT PAGE 0
+			      C 	MOV	BL,COLOR
+			      C 	INT	10H
+			      C 	
+			      C 	POP	BX
+			      C 	POP	AX
+			      C ENDM
+			      C 
+			      C ;===========================================
+			      C 
+			      C RGOTOXY MACRO X,BYT
+			      C 	PUSH AX
+			      C 	PUSH BX
+			      C 	PUSH DX
+			      C 	
+			      C 	MOV AH,02H
+			      C 	XOR BX,BX
+			      C 	MOV DH,BYT
+			      C 	MOV DL,X
+			      C 	INT 10H
+			      C 
+			      C 	POP DX
+			      C 	POP BX
+			      C 	POP AX
+			      C ENDM
+			      C ;===============================================
+			      C 
+			      C OPENFILE        MACRO
+			      C         MOV     AH,3DH
+			      C         LEA     DX,FILESCORE
+			      C         MOV     AL,2
+			      C         INT     21H
+			      C         MOV     WHAT,AX
+			      C ENDM
+			      C 
+			      C CLOSEFILE       MACRO
+			      C         MOV     AH,3EH
+			      C         MOV     BX,WHAT
+			      C         INT     21H
+			      C ENDM
+			      C 
+			      C PUSHR	MACRO
+			      C 	PUSH	AX
+			      C         PUSH    BX
+			      C         PUSH    CX
+			      C         PUSH    DX
+			      C ENDM
+			      C 
+			      C POPR    MACRO
+			      C         POP     DX
+			      C         POP     CX
+			      C         POP     BX
+			      C         POP     AX
+			      C ENDM
+			      C 
+			      C DISP_STR MACRO STRING
+			      C 	LOCAL START,MSG
+			      C 
+			      C 	PUSH AX
+			      C 	PUSH DX
+			      C 	PUSH DS
+			      C 	JMP START
+			      C MSG DB STRING,'$'
+			      C START:
+			      C 	MOV AX,CS
+			      C 	MOV DS,AX
+			      C 	MOV AH,9
+			      C 	LEA DX,MSG
+			      C 	INT 21H
+			      C 
+			      C 	POP DS
+			      C 	POP DX
+			      C 	POP AX
+			      C ENDM
+			      C 
+
+				;==============================================
+				;EXTRA SEGMENT TO USE SAVE SCREEN
+ 0000				vbufferseg	segment	
+ 0000  FA00 [				vbuffer db	64000	dup (0)
+        00
+       ]
+ FA00				vbufferseg	ends
+				;==============================================
+
+ 0000				.DATA
+				;LOADBMP
+ 0000 0000				BMP_WIDTH	DW	?     
+ 0002 0000				BMP_HEIGHT	DW	?
+ 0004 0000				BMP_HANDLE	DW	?
+ 0006  0400 [				BMP_BUFFER 	DB  1024 DUP(?)
+        00
+       ]
+ 0406 0000				BMP_X		DW	?     
+ 0408 0000				BMP_Y		DW	?
+ 040A 0000				BMP_X2		DW	?
+ 040C 0000				BMP_Y2		DW	?
+ 040E 0000				BMP_BLANK	DW	0
+ 0410 01				TRANSPARENT	DB	01H
+ 0411 00				BMP_MODE	DB	0
+ 0412 00				COUNTCOLOR	DB	0
+ 0413 0000				BMP_COUNT	DW	0
+
+				;PICTURE	
+ 0415 50 49 43 5C 4D 45			MENUPLAY	DB	'PIC\MENUPLAY.BMP',0
+       4E 55 50 4C 41 59
+       2E 42 4D 50 00
+ 0426 50 49 43 5C 4D 45			MENUHIGH	DB	'PIC\MENUHIGH.BMP',0
+       4E 55 48 49 47 48
+       2E 42 4D 50 00
+ 0437 50 49 43 5C 4D 45			MENUHOW		DB	'PIC\MENUHOW.BMP',0
+       4E 55 48 4F 57 2E
+       42 4D 50 00
+ 0447 50 49 43 5C 4D 45			MENUEXIT	DB	'PIC\MENUEXIT.BMP',0
+       4E 55 45 58 49 54
+       2E 42 4D 50 00
+ 0458 50 49 43 5C 48 4F			HOW1		DB	'PIC\HOW1.BMP',0
+       57 31 2E 42 4D 50
+       00
+ 0465 50 49 43 5C 48 4F			HOW2		DB	'PIC\HOW2.BMP',0
+       57 32 2E 42 4D 50
+       00
+ 0472 50 49 43 5C 48 4F			HOW3		DB	'PIC\HOW3.BMP',0
+       57 33 2E 42 4D 50
+       00
+ 047F 50 49 43 5C 54 52			READY		DB	'PIC\TRACK\READY.BMP',0
+       41 43 4B 5C 52 45
+       41 44 59 2E 42 4D
+       50 00
+ 0493 50 49 43 5C 54 52			GO			DB	'PIC\TRACK\GO.BMP',0
+       41 43 4B 5C 47 4F
+       2E 42 4D 50 00
+ 04A4 50 49 43 5C 54 52			FIRST		DB	'PIC\TRACK\FIRST1.BMP',0
+       41 43 4B 5C 46 49
+       52 53 54 31 2E 42
+       4D 50 00
+ 04B9 50 49 43 5C 54 52			SECOND		DB	'PIC\TRACK\SECOND1.BMP',0
+       41 43 4B 5C 53 45
+       43 4F 4E 44 31 2E
+       42 4D 50 00
+ 04CF 50 49 43 5C 54 52			FINISH		DB	'PIC\TRACK\FINISH1.BMP',0
+       41 43 4B 5C 46 49
+       4E 49 53 48 31 2E
+       42 4D 50 00
+ 04E5 50 49 43 5C 4F 56			OVER		DB	'PIC\OVER.BMP',0
+       45 52 2E 42 4D 50
+       00
+ 04F2 50 49 43 5C 48 49			POINT_BG    DB	'PIC\HI_SCORE.BMP',0
+       5F 53 43 4F 52 45
+       2E 42 4D 50 00
+ 0503 50 49 43 5C 54 52			YEAH		DB	'PIC\TRACK\YEAH.BMP',0
+       41 43 4B 5C 59 45
+       41 48 2E 42 4D 50
+       00
+ 0516 50 49 43 5C 47 55			GUN			DB	'PIC\GUN.BMP',0
+       4E 2E 42 4D 50 00
+ 0522 50 49 43 5C 48 55			RUN			DB	'PIC\HUMAN\MAN1.BMP',0
+       4D 41 4E 5C 4D 41
+       4E 31 2E 42 4D 50
+       00
+ 0535 50 49 43 5C 48 55			JUMP_UP		DB	'PIC\HUMAN\JUMP1.BMP',0
+       4D 41 4E 5C 4A 55
+       4D 50 31 2E 42 4D
+       50 00
+ 0549 50 49 43 5C 48 55			JUMP_DOWN	DB	'PIC\HUMAN\JUMP3.BMP',0
+       4D 41 4E 5C 4A 55
+       4D 50 33 2E 42 4D
+       50 00
+ 055D 50 49 43 5C 48 41			OBJECT		DB	'PIC\HANDLE.BMP',0
+       4E 44 4C 45 2E 42
+       4D 50 00
+ 056C 50 49 43 5C 48 41			OBJECT2		DB	'PIC\HANDLE2.BMP',0
+       4E 44 4C 45 32 2E
+       42 4D 50 00
+ 057C 50 49 43 5C 4C 49			LINE		DB	'PIC\LINE.BMP',0
+       4E 45 2E 42 4D 50
+       00
+ 0589 50 49 43 5C 5C 48			CRASH		DB	'PIC\\HUMAN\CRASH.BMP',0
+       55 4D 41 4E 5C 43
+       52 41 53 48 2E 42
+       4D 50 00
+ 059E 50 49 43 5C 4E 41			ENTER_NAME	DB	'PIC\NAME.BMP',0	
+       4D 45 2E 42 4D 50
+       00
+
+				;VARIABLE
+ 05AB 01				CHOICE		DB	1
+ 05AC 0000				OBJ_X1		DW	?
+ 05AE 0000				LINE_X		DW	?
+ 05B0 0000				MAN_X		DW	?
+ 05B2 0000				MAN_Y		DW	?
+ 05B4 0000				MAN_YY		DW	?
+ 05B6 00				COUNT		DB	?
+					
+ 05B7 00				NCRASH		DB	?
+ 05B8 00				RETURN		DB	?
+ 05B9 0000				POINT		DW	0
+
+ 05BB 0A 00				NAME1		DB	10,0,10 DUP(0FFH)
+       000A [
+        FF
+       ]
+ 05C7  000A [				NAME2		DB      10 DUP(0),'$'
+        00
+       ] 24
+ 05D2  000B [				NAME_REC        DB      11 DUP(10 DUP(0))
+        000A [
+	 00
+	]
+       ]
+ 0640  000B [			    SCORE_REC       DW      11 DUP(0)
+        0000
+       ]
+ 0656 0000				NUM             DW      0
+ 0658 0000			    NUM2            DW      0
+ 065A 53 43 4F 52 45 2E			FILESCORE       DB      'SCORE.BIN',0
+       42 49 4E 00
+
+					
+						
+
+ 0000				.CODE
+
+ 0000					MAIN	PROC	
+					
+ 0000  B8 ---- R			MOV	AX,@DATA
+ 0003  8E D8				MOV	DS,AX
+ 0005  8E C0				MOV	ES,AX
+					
+ 0007  B4 00				MOV	AH,00H			;MODE 0 FUNCTION 13
+ 0009  B0 13				MOV	AL,13H			;GRAPHIC MODE 13H 320*200 256 COLOR
+ 000B  CD 10				INT	10H
+
+ 000D				MENU:	
+ 000D  33 C0				XOR	AX,AX
+ 000F  E8 02A8				CALL	SHOWMENU
+ 0012  C6 06 05B8 R 00			MOV	RETURN,0
+ 0017  C6 06 05B7 R 00			MOV	NCRASH,0
+ 001C  C7 06 05B9 R 0000		MOV	POINT,0
+					
+ 0022  80 3E 05AB R 01			CMP	CHOICE,1
+ 0027  74 15				JE	CALL_PLAY
+ 0029  80 3E 05AB R 02			CMP	CHOICE,2
+ 002E  74 18				JE	CALL_HIGH
+ 0030  80 3E 05AB R 03			CMP	CHOICE,3
+ 0035  74 1B				JE	HOW_TO_PLAY
+ 0037  80 3E 05AB R 04			CMP	CHOICE,4
+ 003C  74 17				JE 	EXIT
+
+					
+ 003E				CALL_PLAY:
+ 003E  E8 0388				CALL	PLAY_GAME
+ 0041  C6 06 05AB R 01			MOV	CHOICE,1
+ 0046  EB C5				JMP	MENU
+					
+ 0048				CALL_HIGH:
+ 0048  E8 0A5B				CALL	HIGH_SCORE
+ 004B  C6 06 05AB R 01			MOV	CHOICE,1
+ 0050  EB BB				JMP	MENU
+					
+ 0052				HOW_TO_PLAY:
+ 0052  E8 0003				CALL	MANUAL
+ 0055					EXIT:
+ 0055  E8 00C9				CALL	EXIT_GAME
+					
+					
+					
+
+ 0058					MAIN	ENDP
+					
+				;====================================================
+ 0058					MANUAL	PROC
+
+ 0058				HOW_TO_PLAY1:	
+					PASTEBMP	0,0,HOW1
+ 0058  6A 00		     1		PUSH	0
+ 005A  8F 06 0406 R	     1		POP	BMP_X
+ 005E  6A 00		     1		PUSH	0
+ 0060  8F 06 0408 R	     1		POP	BMP_Y
+ 0064  8D 36 0458 R	     1		LEA		SI,HOW1
+ 0068  C6 06 0411 R 00	     1		MOV		BMP_MODE,0
+ 006D  E8 00BB		     1		CALL	LOADBMP
+					DELAY	1000
+ 0070  50		     1		PUSH AX
+ 0071  53		     1		PUSH BX
+ 0072  51		     1		PUSH CX
+ 0073  52		     1		PUSH DX
+ 0074  B8 0000		     1		MOV AX,0
+ 0077  BB 0000		     1		MOV BX,0
+ 007A  B9 0000		     1		MOV CX,0
+ 007D			     1	??0001 :
+ 007D  40		     1		INC AX
+ 007E  3D 03E8		     1		CMP AX,1000
+ 0081  7E FA		     1		JLE ??0001
+ 0083  43		     1		INC BX
+ 0084  81 FB 7FFE	     1		CMP BX,32766
+ 0088  7E F3		     1		JLE ??0001
+ 008A  41		     1		INC CX
+ 008B  81 F9 03E8	     1		CMP CX,1000
+ 008F  7E EC		     1		JLE ??0001
+ 0091  5A		     1		POP DX
+ 0092  59		     1		POP CX
+ 0093  5B		     1		POP BX
+ 0094  58		     1		POP AX
+					
+					PASTEBMP	0,0,HOW2
+ 0095  6A 00		     1		PUSH	0
+ 0097  8F 06 0406 R	     1		POP	BMP_X
+ 009B  6A 00		     1		PUSH	0
+ 009D  8F 06 0408 R	     1		POP	BMP_Y
+ 00A1  8D 36 0465 R	     1		LEA		SI,HOW2
+ 00A5  C6 06 0411 R 00	     1		MOV		BMP_MODE,0
+ 00AA  E8 007E		     1		CALL	LOADBMP
+					DELAY	1000
+ 00AD  50		     1		PUSH AX
+ 00AE  53		     1		PUSH BX
+ 00AF  51		     1		PUSH CX
+ 00B0  52		     1		PUSH DX
+ 00B1  B8 0000		     1		MOV AX,0
+ 00B4  BB 0000		     1		MOV BX,0
+ 00B7  B9 0000		     1		MOV CX,0
+ 00BA			     1	??0003 :
+ 00BA  40		     1		INC AX
+ 00BB  3D 03E8		     1		CMP AX,1000
+ 00BE  7E FA		     1		JLE ??0003
+ 00C0  43		     1		INC BX
+ 00C1  81 FB 7FFE	     1		CMP BX,32766
+ 00C5  7E F3		     1		JLE ??0003
+ 00C7  41		     1		INC CX
+ 00C8  81 F9 03E8	     1		CMP CX,1000
+ 00CC  7E EC		     1		JLE ??0003
+ 00CE  5A		     1		POP DX
+ 00CF  59		     1		POP CX
+ 00D0  5B		     1		POP BX
+ 00D1  58		     1		POP AX
+					
+					PASTEBMP	0,0,HOW3
+ 00D2  6A 00		     1		PUSH	0
+ 00D4  8F 06 0406 R	     1		POP	BMP_X
+ 00D8  6A 00		     1		PUSH	0
+ 00DA  8F 06 0408 R	     1		POP	BMP_Y
+ 00DE  8D 36 0472 R	     1		LEA		SI,HOW3
+ 00E2  C6 06 0411 R 00	     1		MOV		BMP_MODE,0
+ 00E7  E8 0041		     1		CALL	LOADBMP
+					DELAY	1000
+ 00EA  50		     1		PUSH AX
+ 00EB  53		     1		PUSH BX
+ 00EC  51		     1		PUSH CX
+ 00ED  52		     1		PUSH DX
+ 00EE  B8 0000		     1		MOV AX,0
+ 00F1  BB 0000		     1		MOV BX,0
+ 00F4  B9 0000		     1		MOV CX,0
+ 00F7			     1	??0005 :
+ 00F7  40		     1		INC AX
+ 00F8  3D 03E8		     1		CMP AX,1000
+ 00FB  7E FA		     1		JLE ??0005
+ 00FD  43		     1		INC BX
+ 00FE  81 FB 7FFE	     1		CMP BX,32766
+ 0102  7E F3		     1		JLE ??0005
+ 0104  41		     1		INC CX
+ 0105  81 F9 03E8	     1		CMP CX,1000
+ 0109  7E EC		     1		JLE ??0005
+ 010B  5A		     1		POP DX
+ 010C  59		     1		POP CX
+ 010D  5B		     1		POP BX
+ 010E  58		     1		POP AX
+ 010F  B4 01				MOV	AH,01
+ 0111  CD 16				INT	16H
+ 0113  80 FC 01				CMP	AH,01
+ 0116  0F 85 FF3E			JNE	HOW_TO_PLAY1
+ 011A  3C 0D				CMP	AL,13
+ 011C  0F 84 FF38			JE  HOW_TO_PLAY1
+
+ 0120  C3				RET
+					
+ 0121					MANUAL	ENDP
+				;====================================================
+					
+ 0121					EXIT_GAME	PROC
+					
+
+					
+ 0121  B4 00				MOV	AH,00H
+ 0123  B0 03				MOV	AL,03H			;TEXT MODE 80COL 25ROW
+ 0125  CD 21				INT	21H
+					
+ 0127  B4 4C				MOV	AH,4CH
+ 0129  CD 21				INT	21H
+					
+
+
+					
+ 012B					EXIT_GAME	ENDP
+					
+
+				;============================================================
+					
+				INCLUDE LOADBMP.ASM
+			      C ;==========================================================================================
+			      C ;PROC FOR SHOW PICTURE(.BMP) 
+			      C ;===================================================================================================================================
+			      C ;MODIFIER CODE TO  VERSION 7 BY RUNG CSs13 KMIT'NB
+			      C ;
+			      C ;WHAT'S NEW
+			      C ;1. ENHANCE SPEED FOR DISPLAY PICTURE
+			      C ;2. REDUCE SET COLOR REGISTER LOOP
+			      C ;2. ADD 4 MODE FOR USE TO DISPLAY PICTURE
+			      C ;	BMP_MODE = 0	NORMAL MODE, SAME AS ORIGINAL LOADBMP
+			      C ;	BMP_MODE = 1	ENHANCE DISPLAY SPEED BY NOT LOAD COLOR TABLE
+			      C ;	BMP_MODE = 2	TRANSPARENT MODE, DISPLAY PICTURE BY USE TRANSPARENT COLOR
+			      C ;	BMP_MODE = 3	SET COLOR REGISTER MODE, THIS MODE NOT DISPLAY PICTURE BUT IT LOAD COLOR TABLE TO COLOR REGISTER
+			      C ;
+			      C ;KNOW BUGS!!!!!!!
+			      C ;1. SOME POSITION OF PICTURE DISPLAY INCORRECT <------PLEASE FIXED IT!
+			      C ;===================================================================================================================================
+			      C ;ïïïTHIS PROC IS FOR 320 * 200(MODE 13H) IN 256 COLORS ONLYïïï
+			      C ;INPUT:	BMP_FILENAME(LEA SI,FILENAME)
+			      C ;	BMP_WIDTH	DW 	?	;DON'T CARE
+			      C ;	BMP_HEIGHT	DW	?	;DON'T CARE
+			      C ;MODIFIER FOLLOWING MEMORY VARIABLE
+			      C ;	BMP_HANDLE	DW	?	;DON'T CARE
+			      C ;	BMP_BUFFER  	DB 	1024 DUP(?)	;DON'T CARE
+			      C ;	BMP_X		DW	?	;X POSITION OF BMP 
+			      C ;	BMP_Y		DW	?	;Y POSITION OF BMP
+			      C ;	BMP_BLANK		DW	0	;DON'T CARE
+			      C ;	BMP_X2		DW	?	;DON'T CARE
+			      C ;	BMP_Y2		DW	?	;DON'T CARE
+			      C ;	BMP_MODE		DB	0	;IF YOU DON'T WANT TO USE MODE LEAVE IT ZERO
+			      C ;	TRANSPARENT	DB	???	;IF YOU WANT TO USE TRANSPARENT COLOR YOU CAN SET IT
+			      C ;OUTPUT:	NONE
+			      C ;=============================================================================================
+ 012B			      C LOADBMP PROC
+ 012B  60		      C 	PUSHA				;PUSH ALL GENERAL REGISTER
+ 012C  06		      C 	PUSH	ES
+			      C 		
+			      C ;OPEN BMP FILE
+ 012D  8B D6		      C 	MOV	DX,SI
+ 012F  B8 3D00		      C 	MOV	AX,3D00H
+ 0132  CD 21		      C 	INT	21H
+ 0134  72 42		      C 	JC	ERROR1
+			      C ;SAVE_HANDLE	
+ 0136  A3 0004 R	      C 	MOV	BMP_HANDLE,AX
+			      C 
+ 0139			      C MODE_0:					;NORMAL MODE
+ 0139  80 3E 0411 R 00	      C 	CMP	BMP_MODE,0
+ 013E  75 0B		      C 	JNE	MODE_1_2
+ 0140  E8 003D		      C 	CALL	READBMP		;READ HIEGHT AND WIDTH
+ 0143  E8 0075		      C 	CALL	SETCOLOR	;SET COLOR REGISTER
+ 0146  E8 00B5		      C 	CALL	SHOWBMP		;DISPLAY PICTURE
+ 0149  EB 2A		      C 	JMP	EXIT_BMP
+			      C 
+ 014B			      C MODE_1_2:				;FAST OR TRANSPARENT MODE
+ 014B  80 3E 0411 R 01	      C 	CMP	BMP_MODE,1
+ 0150  72 19		      C 	JB	MODE_3
+ 0152  80 3E 0411 R 02	      C 	CMP	BMP_MODE,2
+ 0157  77 12		      C 	JA	MODE_3
+ 0159  E8 0024		      C 	CALL	READBMP		;READ HIEGHT AND WIDTH
+			      C ;SEEK TO COLOR
+ 015C  B8 4200		      C 	MOV	AX,4200H
+			      C 	;MOV	BX,FILE_HANDLE
+ 015F  33 C9		      C 	XOR	CX,CX
+ 0161  BA 0436		      C 	MOV	DX,1078D		; start at byte 1078
+ 0164  CD 21		      C 	INT	21H
+ 0166  E8 0095		      C 	CALL	SHOWBMP
+ 0169  EB 0A		      C 	JMP	EXIT_BMP
+			      C 	
+ 016B			      C MODE_3:					;SET COLOR REGISTER ONLY MODE
+ 016B  80 3E 0411 R 03	      C 	CMP	BMP_MODE,3
+ 0170  75 03		      C 	JNE	EXIT_BMP
+ 0172  E8 0046		      C 	CALL	SETCOLOR
+			      C 	
+ 0175			      C EXIT_BMP:
+ 0175  07		      C 	POP	ES
+ 0176  61		      C 	POPA				;POP ALL GENERAL REGISTER
+ 0177  C3		      C 	RET
+			      C 	
+			      C ;CAN'T LOAD PIC!
+ 0178			      C ERROR1:
+ 0178  B2 45		      C 	MOV DL,'E'
+ 017A  B4 02		      C 	MOV AH,2
+ 017C  CD 21		      C 	INT 21H	
+ 017E  EB F5		      C 	JMP	EXIT_BMP
+			      C 	
+ 0180			      C LOADBMP	ENDP
+			      C 
+			      C ;==================================================
+			      C ;READ BMP READ WIDTH AND HEIGHT
+			      C ;==================================================	
+ 0180			      C READBMP	PROC
+			      C 	
+			      C ;SEEK TO WIDTH
+ 0180  B8 4200		      C 	MOV	AX,4200H
+ 0183  8B 1E 0004 R	      C 	MOV	BX,BMP_HANDLE
+ 0187  33 C9		      C 	XOR	CX,CX
+ 0189  BA 0012		      C 	MOV	DX,18D			; start at byte 18
+ 018C  CD 21		      C 	INT	21H
+			      C ;READ WIDTH TO BUFFER AND SAVE TO BMP_WIDTH
+ 018E  B4 3F		      C 	MOV	AH,3FH
+			      C 	;MOV	BX,BMP_HANDLE
+ 0190  B9 0002		      C 	MOV	CX,2
+ 0193  8D 16 0006 R	      C 	LEA	DX,BMP_BUFFER
+ 0197  CD 21		      C 	INT	21H
+ 0199  A1 0006 R	      C 	MOV	AX,WORD PTR BMP_BUFFER
+ 019C  A3 0000 R	      C 	MOV	BMP_WIDTH,AX
+			      C 	
+			      C ;SEEK TO HEIGHT
+ 019F  B8 4200		      C 	MOV	AX,4200H
+			      C 	;MOV	BX,BMP_HANDLE
+ 01A2  33 C9		      C 	XOR	CX,CX
+ 01A4  BA 0016		      C 	MOV	DX,22D			; start at byte 22
+ 01A7  CD 21		      C 	INT	21H
+			      C ;READ HEIGHT TO BUFFER AND SAVE TO BMP_HEIGHT
+ 01A9  B4 3F		      C 	MOV	AH,3FH
+			      C 	;MOV	BX,BMP_HANDLE
+ 01AB  B9 0002		      C 	MOV	CX,2
+ 01AE  8D 16 0006 R	      C 	LEA	DX,BMP_BUFFER
+ 01B2  CD 21		      C 	INT	21H
+ 01B4  A1 0006 R	      C 	MOV	AX,WORD PTR BMP_BUFFER
+ 01B7  A3 0002 R	      C 	MOV	BMP_HEIGHT,AX
+			      C 	
+ 01BA  C3		      C 	RET
+			      C 
+ 01BB			      C READBMP	ENDP
+			      C 	
+			      C ;===========================================================
+			      C ; READING IN THE COLOR PALETTE
+			      C ;THIS CODE USE EFFECTIVE METHOD TO SET COLOR REGISTER
+			      C ;BY NOT USE BIOS INTERRUPT BECAUSE IS VERY SLOW
+			      C ;CHANGE TO USE OUT PORT DIRECTLY
+			      C ;AND CALCULATE COLOR VALUE BY SHIFT BIT
+			      C ;===========================================================
+ 01BB			      C SETCOLOR	PROC
+			      C ;SEEK TO COLOR
+ 01BB  B8 4200		      C 	MOV	AX,4200H
+ 01BE  8B 1E 0004 R	      C 	MOV	BX,BMP_HANDLE
+ 01C2  33 C9		      C 	XOR	CX,CX
+ 01C4  BA 0036		      C 	MOV	DX,54D			; start at byte 54 
+ 01C7  CD 21		      C 	INT	21H
+			      C 				
+			      C ;READ 4 BYTES FROM BMP FILE TO BUFFER
+ 01C9  B4 3F		      C 	MOV	AH,3FH
+			      C 	;MOV	BX,BMP_HANDLE
+ 01CB  B9 0400		      C 	MOV	CX,1024
+ 01CE  8D 16 0006 R	      C 	LEA	DX,BMP_BUFFER
+ 01D2  CD 21		      C 	INT	21H
+			      C 		
+ 01D4  B0 00		      C 	MOV	AL,0				
+ 01D6  BA 03C8		      C 	MOV	DX,3C8H				;SAVE PORT NUMBER IN DX
+ 01D9  EE		      C 	OUT	DX,AL				;SEND START COLOR CODE
+			      C 	
+ 01DA  8D 36 0006 R	      C 	LEA	SI,BMP_BUFFER
+ 01DE  BA 03C9		      C 	MOV	DX,3C9H
+ 01E1  B9 0100		      C 	MOV	CX,256
+ 01E4			      C COLOR_LOOP:
+ 01E4  8A 44 02		      C 	MOV	AL,[SI + 2]
+ 01E7  C0 E8 02		      C 	SHR	AL,2				;DIVIDE AL BY 2*2
+ 01EA  EE		      C 	OUT	DX,AL
+ 01EB  8A 44 01		      C 	MOV	AL,[SI + 1]
+ 01EE  C0 E8 02		      C 	SHR	AL,2				;DIVIDE AL BY 2*2
+ 01F1  EE		      C 	OUT	DX,AL
+ 01F2  8A 04		      C 	MOV	AL,[SI + 0]
+ 01F4  C0 E8 02		      C 	SHR	AL,2				;DIVIDE AL BY 2*2
+ 01F7  EE		      C 	OUT	DX,AL
+ 01F8  83 C6 04		      C 	ADD	SI,4
+ 01FB  E2 E7		      C 	LOOP	COLOR_LOOP		
+			      C ; PALETTE READ END	
+ 01FD  C3		      C 	RET
+			      C 	
+ 01FE			      C SETCOLOR	ENDP
+			      C 
+			      C ;===========================================================================
+			      C ;CALCULATE POSITION FOR POINT TO START DRAW PICTURE 
+			      C ;AND CHECK FOR BLANK PIXEL FOR DISPLAY PICTURE CORRECTLY
+			      C ;===========================================================================
+ 01FE			      C SHOWBMP	PROC	
+ 01FE  B8 A000		      C 	MOV	AX, 0A000h		;START ADDRESS OF VGA BUFFER MEMORY
+ 0201  8E C0		      C 	MOV	ES, AX			;ES PONIT TO SCREEN SEGMENT
+			      C 	
+ 0203  A1 0408 R	      C 	MOV	AX,BMP_Y
+ 0206  03 06 0002 R	      C 	ADD AX,BMP_HEIGHT
+ 020A  A3 040C R	      C 	MOV	BMP_Y2,AX			;DRAW PIC FROM BOTTOM
+			      C 		
+			      C ;COMPUTE BLANK PIXEL
+ 020D  A1 0000 R	      C 	MOV	AX,BMP_WIDTH
+ 0210  83 E0 03		      C 	AND	AX,03H			;AX MOD 4
+ 0213  83 F8 00		      C 	CMP	AX,0			;MOD 4 = 0?
+ 0216  75 08		      C 	JNE	SET_BMP_BLANK	;NO
+ 0218  C7 06 040E R 0000      C 	MOV	BMP_BLANK,0		;YES, SKIP WIDTH = 0
+ 021E  EB 0D		      C 	JMP	SHOW_LOOP
+ 0220			      C SET_BMP_BLANK:
+ 0220  A3 040E R	      C 	MOV	BMP_BLANK,AX	
+ 0223  B8 0004		      C 	MOV AX,4			
+ 0226  2B 06 040E R	      C 	SUB AX,BMP_BLANK	;HOW MANY BYTES TO SKIP?
+ 022A  A3 040E R	      C 	MOV BMP_BLANK,AX	;SAVE IT
+			      C 
+			      C ;===========================================================
+			      C ;LOAD COLUMN OF PICTURE AND PUT TO SCREEN
+			      C ;READ ALL PIXEL IN 1 LINE OF PIC FOR FAST DISPLAY
+			      C ;===========================================================
+ 022D			      C SHOW_LOOP:
+ 022D  B4 3F		      C 	MOV	AH,3FH
+ 022F  8B 1E 0004 R	      C 	MOV	BX,BMP_HANDLE
+ 0233  8D 16 0006 R	      C 	LEA	DX,BMP_BUFFER
+ 0237  8B 0E 0000 R	      C 	MOV	CX,BMP_WIDTH	;READ 1 LINE OF PIC
+ 023B  CD 21		      C 	INT	21H
+ 023D  8D 36 0006 R	      C 	LEA	SI,BMP_BUFFER	;SI POINT TO BMP_BUFFER
+			      C 	
+			      C ;CALCULATE SCREEN OFFSET
+ 0241  B8 0140		      C 	MOV	AX, 320			;CALCULATE ROW
+ 0244  F7 26 040C R	      C 	MUL	BMP_Y2			;MUL AX BY Y,RESULT HIGH WORD IN DX,LOW WORD IN AX
+ 0248  03 06 0406 R	      C 	ADD	AX,BMP_X		;ADD X  CORDINATE
+ 024C  8B F8		      C 	MOV	DI,AX			;DI POINT TO SCREEN OFFSET
+			      C 	
+ 024E			      C BMP_TRANSPARENT:	
+ 024E  80 3E 0411 R 02	      C 	CMP	BMP_MODE,2
+ 0253  75 05		      C 	JNE	BMP_FAST
+ 0255  E8 004F		      C 	CALL	PUTPIXEL_TRAN
+ 0258  EB 11		      C 	JMP	NEXT_LINE
+			      C 	
+ 025A			      C BMP_FAST:	
+ 025A  83 3E 040E R 00	      C 	CMP	BMP_BLANK,0
+ 025F  75 05		      C 	JNE	BMP_NORM
+ 0261  E8 0037		      C 	CALL	PUTPIXEL_FAST
+ 0264  EB 17		      C 	JMP	NO_BLANK
+			      C 	
+ 0266			      C BMP_NORM:
+ 0266  E8 002A		      C 	CALL	PUTPIXEL_NORM
+ 0269  EB 00		      C 	JMP	NEXT_LINE
+			      C 
+ 026B			      C NEXT_LINE:
+ 026B  83 3E 040E R 00	      C 	CMP	BMP_BLANK,0
+ 0270  74 0B		      C 	JE	NO_BLANK
+ 0272  B8 4201		      C 	MOV AX,4201H
+ 0275  33 C9		      C 	XOR CX,CX
+ 0277  8B 16 040E R	      C 	MOV DX,BMP_BLANK
+ 027B  CD 21		      C 	INT	21H
+ 027D			      C NO_BLANK:	
+ 027D  FF 0E 040C R	      C 	DEC	BMP_Y2			;DISPLAY UPPER LINE	
+ 0281  A1 040C R	      C 	MOV	AX,BMP_Y2
+ 0284  3B 06 0408 R	      C 	CMP	AX,BMP_Y		;TOP LINE?
+ 0288  77 A3		      C 	JA	SHOW_LOOP		;NO SHOW NEXT LINE
+			      C 	
+			      C ;====================================================
+			      C ;DISPLAY PICTURE COMPLETE!
+			      C ;====================================================
+			      C ;CLOSE BMP FILE
+ 028A  B4 3E		      C 	MOV	AH,3EH
+ 028C  8B 1E 0004 R	      C 	MOV	BX,BMP_HANDLE
+ 0290  CD 21		      C 	INT	21H
+			      C 	
+ 0292  C3		      C 	RET
+			      C 	
+ 0293			      C SHOWBMP	ENDP
+			      C 
+			      C ;==========================================================================================
+			      C ;Normal putpixel to scrren by load 1 byte from BMP_BUFFER to VGA segment
+			      C ;==========================================================================================
+ 0293			      C PUTPIXEL_NORM	PROC
+ 0293  FC		      C 	CLD					;CLEAR DIRECTION FLAG FOR SET TO INC DI,SI
+ 0294  8B 0E 0000 R	      C 	MOV	CX,BMP_WIDTH
+ 0298  F3/ A4		      C 	REP MOVSB			;REPEAT MOV ES:[DI],DS:[SI] AND INC SI,DI
+			      C 						;DISPLAY 1 LINE COMPLETE
+ 029A  C3		      C 	RET
+			      C 	
+ 029B			      C PUTPIXEL_NORM	ENDP
+			      C 
+			      C ;==========================================================================================
+			      C ;Fast putpixel to scrren by load 1 Double word from BMP_BUFFER to VGA segment
+			      C ;==========================================================================================
+ 029B			      C PUTPIXEL_FAST	PROC
+ 029B  FC		      C 	CLD
+ 029C  8B 0E 0000 R	      C 	MOV	CX,BMP_WIDTH
+ 02A0  C1 E9 02		      C 	SHR	CX,2				;DIVIDE CX BY 4
+ 02A3  F3/ 66| A5	      C 	REP	MOVSD				;MOV ES:[DI],AL AND INC DI
+			      C 							;DISPLAY 1 LINE COMPLETE
+ 02A6  C3		      C 	RET
+			      C 	
+ 02A7			      C PUTPIXEL_FAST	ENDP
+			      C 
+			      C ;======================================================================================================
+			      C ;Fast putpixel to scrren by load 1 Byte from BMP_BUFFER and check transparent for skip put to VGA segment
+			      C ;======================================================================================================
+ 02A7			      C PUTPIXEL_TRAN	PROC
+ 02A7  FC		      C 	CLD
+ 02A8  8B 0E 0000 R	      C 	MOV	CX,BMP_WIDTH	;SET CX FOR LOOP BMP_BUFFER
+			      C 			
+ 02AC			      C PUT_LOOP:
+ 02AC  AC		      C 	LODSB				;MOV AL,BYTE PTR DS:[SI] AND INC SI
+ 02AD  3A 06 0410 R	      C 	CMP	AL,TRANSPARENT	;IT TRANSPARENT COLOR?
+ 02B1  75 03		      C 	JNE	PUTPIXEL_T		;NO,PUTPIXEL!
+ 02B3  47		      C 	INC	DI				;IF SKIP COLOR MANUAL INC DI
+ 02B4  EB 01		      C 	JMP	SKIP_COLOR
+			      C 	
+ 02B6			      C PUTPIXEL_T:
+ 02B6  AA		      C 	STOSB				;MOV ES:[DI],AL AND INC DI
+			      C 
+ 02B7			      C SKIP_COLOR:
+ 02B7  E2 F3		      C 	LOOP	PUT_LOOP	;NO SHOW NEXT PIXEL OF LINE
+			      C 						;DISPLAY 1 LINE COMPLETE
+ 02B9  C3		      C 	RET
+			      C 	
+ 02BA			      C PUTPIXEL_TRAN	ENDP
+			      C 
+				INCLUDE	SHOWMENU.ASM
+			      C ;=============================================================================	
+ 02BA			      C 	SHOWMENU	PROC		;MENU
+			      C 	
+			      C 	;PUSHA
+			      C 	
+ 02BA  C7 06 0406 R 0000      C 	MOV	BMP_X,0
+ 02C0  C7 06 0408 R 0000      C 	MOV	BMP_Y,0
+			      C 	PASTEBMP	0,0,MENUPLAY
+ 02C6  6A 00		     1C 	PUSH	0
+ 02C8  8F 06 0406 R	     1C 	POP	BMP_X
+ 02CC  6A 00		     1C 	PUSH	0
+ 02CE  8F 06 0408 R	     1C 	POP	BMP_Y
+ 02D2  8D 36 0415 R	     1C 	LEA		SI,MENUPLAY
+ 02D6  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 02DB  E8 FE4D		     1C 	CALL	LOADBMP
+			      C 	
+ 02DE			      C MENU_LOOP:
+ 02DE  B4 08		      C 	MOV	AH,08			;WAITING FOR KEY
+ 02E0  CD 21		      C 	INT	21H		
+ 02E2  3C 48		      C 	CMP	AL,72			;CHECK KEY UP ARROW
+ 02E4  74 0C		      C 	JE	UP_ARROW
+ 02E6  3C 50		      C 	CMP	AL,80			;CHECK KEY DOWN ARROW
+ 02E8  74 2A		      C 	JE	DOWN_ARROW
+ 02EA  3C 0D		      C 	CMP	AL,13			;CHECK KEY ENTER
+ 02EC  0F 84 00D8	      C 	JE	ENTER_MENU
+ 02F0  EB EC		      C 	JMP	MENU_LOOP		; LOOP MENU_LOOP
+			      C 	
+ 02F2			      C UP_ARROW:				;LOOP	UP ARROW
+ 02F2  FE 0E 05AB R	      C 	DEC	CHOICE			;DECREASE CHOICE
+ 02F6  80 3E 05AB R 01	      C 	CMP	CHOICE,1		;CHECK CHOICE
+ 02FB  7E 37		      C 	JLE	MENU_PLAY
+ 02FD  80 3E 05AB R 02	      C 	CMP	CHOICE,2
+ 0302  74 56		      C 	JE	MENU_HIGH
+ 0304  80 3E 05AB R 03	      C 	CMP	CHOICE,3
+ 0309  74 71		      C 	JE	MENU_HOW
+ 030B  80 3E 05AB R 04	      C 	CMP	CHOICE,4
+ 0310  0F 84 008A	      C 	JE	MENU_EXIT
+			      C 	
+ 0314			      C DOWN_ARROW:				;LOOP DOWN ARROW
+ 0314  FE 06 05AB R	      C 	INC	CHOICE			;INCREASE CHOICE
+ 0318  80 3E 05AB R 01	      C 	CMP	CHOICE,1		;CHECK CHOICE
+ 031D  74 15		      C 	JE	MENU_PLAY
+ 031F  80 3E 05AB R 02	      C 	CMP	CHOICE,2
+ 0324  74 34		      C 	JE	MENU_HIGH
+ 0326  80 3E 05AB R 03	      C 	CMP	CHOICE,3
+ 032B  74 4F		      C 	JE	MENU_HOW
+ 032D  80 3E 05AB R 04	      C 	CMP	CHOICE,4
+ 0332  7D 6A		      C 	JGE	MENU_EXIT
+			      C 	
+ 0334			      C MENU_PLAY:
+ 0334  80 3E 05AB R 01	      C 	CMP	CHOICE,1		;CHOICE = 1 DISPLAY MENUPLAY
+ 0339  7C 1A		      C 	JL	CHOICE_LESS
+			      C 	PASTEBMP	0,0,MENUPLAY
+ 033B  6A 00		     1C 	PUSH	0
+ 033D  8F 06 0406 R	     1C 	POP	BMP_X
+ 0341  6A 00		     1C 	PUSH	0
+ 0343  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0347  8D 36 0415 R	     1C 	LEA		SI,MENUPLAY
+ 034B  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0350  E8 FDD8		     1C 	CALL	LOADBMP
+ 0353  EB 89		      C 	JMP	MENU_LOOP
+			      C 	
+ 0355			      C CHOICE_LESS:
+ 0355  C6 06 05AB R 04	      C 	MOV	CHOICE,4
+			      C 	
+ 035A			      C MENU_HIGH:
+ 035A  80 3E 05AB R 02	      C 	CMP	CHOICE,2		;CHOICE = 2 DISPLAY MENUHIGH
+ 035F  75 1B		      C 	JNE	MENU_HOW
+			      C 	PASTEBMP	0,0,MENUHIGH
+ 0361  6A 00		     1C 	PUSH	0
+ 0363  8F 06 0406 R	     1C 	POP	BMP_X
+ 0367  6A 00		     1C 	PUSH	0
+ 0369  8F 06 0408 R	     1C 	POP	BMP_Y
+ 036D  8D 36 0426 R	     1C 	LEA		SI,MENUHIGH
+ 0371  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0376  E8 FDB2		     1C 	CALL	LOADBMP
+ 0379  E9 FF62		      C 	JMP	MENU_LOOP	
+			      C 	
+ 037C			      C MENU_HOW:
+ 037C  80 3E 05AB R 03	      C 	CMP	CHOICE,3		;CHOICE = 3 DISPLAY MENUHOW
+ 0381  75 1B		      C 	JNE	MENU_EXIT
+			      C 	PASTEBMP	0,0,MENUHOW
+ 0383  6A 00		     1C 	PUSH	0
+ 0385  8F 06 0406 R	     1C 	POP	BMP_X
+ 0389  6A 00		     1C 	PUSH	0
+ 038B  8F 06 0408 R	     1C 	POP	BMP_Y
+ 038F  8D 36 0437 R	     1C 	LEA		SI,MENUHOW
+ 0393  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0398  E8 FD90		     1C 	CALL	LOADBMP
+ 039B  E9 FF40		      C 	JMP	MENU_LOOP
+			      C 	
+ 039E			      C MENU_EXIT:
+ 039E  80 3E 05AB R 04	      C 	CMP	CHOICE,4
+ 03A3  7F 1B		      C 	JG	CHOICE_MORE
+			      C 	PASTEBMP	0,0,MENUEXIT
+ 03A5  6A 00		     1C 	PUSH	0
+ 03A7  8F 06 0406 R	     1C 	POP	BMP_X
+ 03AB  6A 00		     1C 	PUSH	0
+ 03AD  8F 06 0408 R	     1C 	POP	BMP_Y
+ 03B1  8D 36 0447 R	     1C 	LEA		SI,MENUEXIT
+ 03B5  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 03BA  E8 FD6E		     1C 	CALL	LOADBMP
+ 03BD  E9 FF1E		      C 	JMP	MENU_LOOP
+			      C 	
+ 03C0			      C CHOICE_MORE:
+ 03C0  C6 06 05AB R 01	      C 	MOV	CHOICE,1
+ 03C5  E9 FF6C		      C 	JMP	MENU_PLAY
+			      C 	
+ 03C8			      C ENTER_MENU:		;ENTER FOR RETURN
+			      C 	;POPA
+ 03C8  C3		      C 	RET
+			      C 
+ 03C9			      C 	SHOWMENU	ENDP
+			      C ;=========================================================================================================================	
+			      C 
+				INCLUDE	PLAY_GAME.ASM
+ 03C9			      C PLAY_GAME	PROC
+			      C 	
+ 03C9  60		      C 	PUSHA
+			      C 	
+			      C 	
+			      C 	
+			      C 	
+			      C 	PASTEBMP	0,0,READY
+ 03CA  6A 00		     1C 	PUSH	0
+ 03CC  8F 06 0406 R	     1C 	POP	BMP_X
+ 03D0  6A 00		     1C 	PUSH	0
+ 03D2  8F 06 0408 R	     1C 	POP	BMP_Y
+ 03D6  8D 36 047F R	     1C 	LEA		SI,READY
+ 03DA  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 03DF  E8 FD49		     1C 	CALL	LOADBMP
+ 03E2  E8 0656		      C 	CALL	SCORE
+			      C 	TPASTEBMP	240,90,5CH,RUN
+ 03E5  68 00F0		     1C 	PUSH	240
+ 03E8  8F 06 0406 R	     1C 	POP	BMP_X
+ 03EC  6A 5A		     1C 	PUSH	90
+ 03EE  8F 06 0408 R	     1C 	POP	BMP_Y
+ 03F2  8D 36 0522 R	     1C 	LEA		SI,RUN
+ 03F6  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,5CH
+ 03FB  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 0400  E8 FD28		     1C 	CALL	LOADBMP
+			      C 	TPASTEBMP		 20,120,05CH,OBJECT
+ 0403  6A 14		     1C 	PUSH	20
+ 0405  8F 06 0406 R	     1C 	POP	BMP_X
+ 0409  6A 78		     1C 	PUSH	120
+ 040B  8F 06 0408 R	     1C 	POP	BMP_Y
+ 040F  8D 36 055D R	     1C 	LEA		SI,OBJECT
+ 0413  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0418  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 041D  E8 FD0B		     1C 	CALL	LOADBMP
+			      C 	DELAY	8000
+ 0420  50		     1C 	PUSH AX
+ 0421  53		     1C 	PUSH BX
+ 0422  51		     1C 	PUSH CX
+ 0423  52		     1C 	PUSH DX
+ 0424  B8 0000		     1C 	MOV AX,0
+ 0427  BB 0000		     1C 	MOV BX,0
+ 042A  B9 0000		     1C 	MOV CX,0
+ 042D			     1C ??0007 :
+ 042D  40		     1C 	INC AX
+ 042E  3D 03E8		     1C 	CMP AX,1000
+ 0431  7E FA		     1C 	JLE ??0007
+ 0433  43		     1C 	INC BX
+ 0434  81 FB 7FFE	     1C 	CMP BX,32766
+ 0438  7E F3		     1C 	JLE ??0007
+ 043A  41		     1C 	INC CX
+ 043B  81 F9 1F40	     1C 	CMP CX,8000
+ 043F  7E EC		     1C 	JLE ??0007
+ 0441  5A		     1C 	POP DX
+ 0442  59		     1C 	POP CX
+ 0443  5B		     1C 	POP BX
+ 0444  58		     1C 	POP AX
+			      C 	
+			      C 	PASTEBMP	0,0,GO
+ 0445  6A 00		     1C 	PUSH	0
+ 0447  8F 06 0406 R	     1C 	POP	BMP_X
+ 044B  6A 00		     1C 	PUSH	0
+ 044D  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0451  8D 36 0493 R	     1C 	LEA		SI,GO
+ 0455  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 045A  E8 FCCE		     1C 	CALL	LOADBMP
+ 045D  E8 05DB		      C 	CALL	SCORE
+			      C 	TPASTEBMP	12,75,87H,GUN
+ 0460  6A 0C		     1C 	PUSH	12
+ 0462  8F 06 0406 R	     1C 	POP	BMP_X
+ 0466  6A 4B		     1C 	PUSH	75
+ 0468  8F 06 0408 R	     1C 	POP	BMP_Y
+ 046C  8D 36 0516 R	     1C 	LEA		SI,GUN
+ 0470  C6 06 0410 R 87	     1C 	MOV		TRANSPARENT,87H
+ 0475  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 047A  E8 FCAE		     1C 	CALL	LOADBMP
+			      C 	TPASTEBMP	240,90,5CH,RUN
+ 047D  68 00F0		     1C 	PUSH	240
+ 0480  8F 06 0406 R	     1C 	POP	BMP_X
+ 0484  6A 5A		     1C 	PUSH	90
+ 0486  8F 06 0408 R	     1C 	POP	BMP_Y
+ 048A  8D 36 0522 R	     1C 	LEA		SI,RUN
+ 048E  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,5CH
+ 0493  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 0498  E8 FC90		     1C 	CALL	LOADBMP
+			      C 	TPASTEBMP		 20,120,05CH,OBJECT
+ 049B  6A 14		     1C 	PUSH	20
+ 049D  8F 06 0406 R	     1C 	POP	BMP_X
+ 04A1  6A 78		     1C 	PUSH	120
+ 04A3  8F 06 0408 R	     1C 	POP	BMP_Y
+ 04A7  8D 36 055D R	     1C 	LEA		SI,OBJECT
+ 04AB  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 04B0  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 04B5  E8 FC73		     1C 	CALL	LOADBMP
+			      C 	DELAY	3000
+ 04B8  50		     1C 	PUSH AX
+ 04B9  53		     1C 	PUSH BX
+ 04BA  51		     1C 	PUSH CX
+ 04BB  52		     1C 	PUSH DX
+ 04BC  B8 0000		     1C 	MOV AX,0
+ 04BF  BB 0000		     1C 	MOV BX,0
+ 04C2  B9 0000		     1C 	MOV CX,0
+ 04C5			     1C ??0009 :
+ 04C5  40		     1C 	INC AX
+ 04C6  3D 03E8		     1C 	CMP AX,1000
+ 04C9  7E FA		     1C 	JLE ??0009
+ 04CB  43		     1C 	INC BX
+ 04CC  81 FB 7FFE	     1C 	CMP BX,32766
+ 04D0  7E F3		     1C 	JLE ??0009
+ 04D2  41		     1C 	INC CX
+ 04D3  81 F9 0BB8	     1C 	CMP CX,3000
+ 04D7  7E EC		     1C 	JLE ??0009
+ 04D9  5A		     1C 	POP DX
+ 04DA  59		     1C 	POP CX
+ 04DB  5B		     1C 	POP BX
+ 04DC  58		     1C 	POP AX
+			      C 
+ 04DD  C7 06 05B0 R 00F0      C 	MOV	MAN_X,240
+ 04E3  C7 06 05B2 R 005A      C 	MOV	MAN_Y,90
+ 04E9  C7 06 05AC R 0014      C 	MOV	OBJ_X1,20
+ 04EF  C7 06 05AE R 0014      C 	MOV	LINE_X,20
+ 04F5  C6 06 05B6 R 01	      C 	MOV	COUNT,1
+			      C 
+			      C 	
+			      C 	
+ 04FA			      C CHECK_KEY:
+			      C 
+ 04FA  80 3E 05B7 R 03	      C 	CMP	NCRASH,3
+ 04FF  74 25		      C 	JE	GAME_OVER_NA
+ 0501  80 3E 05B8 R 01	      C 	CMP		RETURN,1
+ 0506  74 26		      C 	JE		EXIT_MENU_NA
+ 0508  33 C0		      C 	XOR		AX,AX
+ 050A  E8 0152		      C 	CALL	WAIT_KEY
+			      C 	
+ 050D			      C RUN_KEY:
+ 050D  80 FC 4B		      C 	CMP	AH,4BH
+ 0510  75 05		      C 	JNE	JUMP_KEY
+ 0512  E8 0159		      C 	CALL	SHOW_RUN
+ 0515  EB E3		      C 	JMP	CHECK_KEY
+			      C 	
+ 0517			      C JUMP_KEY:
+ 0517  80 FC 39		      C 	CMP	AH,39H
+ 051A  75 05		      C 	JNE	EXIT_TO_MENU
+ 051C  E8 01F7		      C 	CALL	SHOW_JUMP
+ 051F  EB D9		      C 	JMP	CHECK_KEY
+			      C 	
+ 0521			      C EXIT_TO_MENU:
+ 0521  80 FC 01		      C 	CMP	AH,01
+ 0524  75 D4		      C 	JNE	CHECK_KEY
+			      C 	
+ 0526			      C GAME_OVER_NA:
+ 0526  E8 0490		      C 	CALL	GAME_OVER
+ 0529  C6 06 05B8 R 01	      C 	MOV	RETURN,1	
+			      C 
+ 052E			      C EXIT_MENU_NA:	
+			      C 	;CALL	GET_NAME
+			      C 	
+ 052E  61		      C 	POPA
+ 052F  C3		      C 	RET
+			      C 	
+			      C 	
+ 0530			      C 	PLAY_GAME	ENDP
+			      C ;=================================================================
+ 0530			      C 	TRACK	PROC
+ 0530  60		      C 	PUSHA
+			      C 	
+ 0531  A0 05B6 R	      C 	MOV	AL,COUNT
+ 0534  24 03		      C 	AND	AL,03H
+ 0536  0C 30		      C 	OR	AL,30H
+ 0538  FE C0		      C 	INC	AL
+			      C 	
+			      C 
+ 053A  80 3E 05B6 R 03	      C 	CMP	COUNT,3
+ 053F  7F 5A		      C 	JG	SHOW_TRACK2
+			      C 	
+ 0541			      C SHOW_TRACK1:	
+ 0541  A2 04B3 R	      C 	MOV	FIRST[15],AL
+			      C 	PASTEBMP	0,0,FIRST
+ 0544  6A 00		     1C 	PUSH	0
+ 0546  8F 06 0406 R	     1C 	POP	BMP_X
+ 054A  6A 00		     1C 	PUSH	0
+ 054C  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0550  8D 36 04A4 R	     1C 	LEA		SI,FIRST
+ 0554  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0559  E8 FBCF		     1C 	CALL	LOADBMP
+ 055C  E8 04DC		      C 	CALL	SCORE
+			      C 	TPASTEBMP		 OBJ_X1,120,05CH,OBJECT
+ 055F  FF 36 05AC R	     1C 	PUSH	OBJ_X1
+ 0563  8F 06 0406 R	     1C 	POP	BMP_X
+ 0567  6A 78		     1C 	PUSH	120
+ 0569  8F 06 0408 R	     1C 	POP	BMP_Y
+ 056D  8D 36 055D R	     1C 	LEA		SI,OBJECT
+ 0571  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0576  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 057B  E8 FBAD		     1C 	CALL	LOADBMP
+ 057E  83 06 05AC R 0F	      C 	ADD	OBJ_X1,15
+ 0583  81 3E 05AC R 0118      C 	CMP OBJ_X1,320-40
+ 0589  0F 8C 00D0	      C 	JL	END_CHECKC
+			      C 	
+ 058D			      C CLEAR_OBJECT:
+ 058D  C7 06 05AC R 0014      C 	MOV	OBJ_X1,20
+ 0593  83 06 05B9 R 0A	      C 	ADD	POINT,10
+ 0598  E9 00C2		      C 	JMP	END_CHECKC
+			      C 	
+ 059B			      C SHOW_TRACK2:
+			      C 	
+ 059B  32 C0		      C 	XOR AL,AL
+ 059D  A0 05B6 R	      C 	MOV	AL,COUNT
+ 05A0  24 03		      C 	AND	AL,03H
+ 05A2  0C 30		      C 	OR	AL,30H
+ 05A4  FE C0		      C 	INC	AL
+			      C 	
+ 05A6  80 3E 05B6 R 10	      C 	CMP COUNT,16
+ 05AB  7F 57		      C 	JG	SHOW_TRACK3
+			      C 	
+ 05AD  A2 04C9 R	      C 	MOV	SECOND[16],AL
+			      C 	PASTEBMP	0,0,SECOND	
+ 05B0  6A 00		     1C 	PUSH	0
+ 05B2  8F 06 0406 R	     1C 	POP	BMP_X
+ 05B6  6A 00		     1C 	PUSH	0
+ 05B8  8F 06 0408 R	     1C 	POP	BMP_Y
+ 05BC  8D 36 04B9 R	     1C 	LEA		SI,SECOND
+ 05C0  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 05C5  E8 FB63		     1C 	CALL	LOADBMP
+ 05C8  E8 0470		      C 	CALL	SCORE
+			      C 	TPASTEBMP		 OBJ_X1,120,05CH,OBJECT
+ 05CB  FF 36 05AC R	     1C 	PUSH	OBJ_X1
+ 05CF  8F 06 0406 R	     1C 	POP	BMP_X
+ 05D3  6A 78		     1C 	PUSH	120
+ 05D5  8F 06 0408 R	     1C 	POP	BMP_Y
+ 05D9  8D 36 055D R	     1C 	LEA		SI,OBJECT
+ 05DD  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 05E2  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 05E7  E8 FB41		     1C 	CALL	LOADBMP
+ 05EA  83 06 05AC R 0F	      C 	ADD	OBJ_X1,15
+ 05EF  81 3E 05AC R 0118      C 	CMP OBJ_X1,320-40
+ 05F5  7C 66		      C 	JL	END_CHECKC
+			      C 	
+ 05F7			      C CLEAR_OBJECT2:
+ 05F7  C7 06 05AC R 0014      C 	MOV	OBJ_X1,20
+ 05FD  83 06 05B9 R 0A	      C 	ADD	POINT,10
+ 0602  EB 59		      C 	JMP	END_CHECKC
+			      C 	
+ 0604			      C SHOW_TRACK3:
+			      C 	
+ 0604  32 C0		      C 	XOR AL,AL
+ 0606  A0 05B6 R	      C 	MOV	AL,COUNT
+ 0609  24 02		      C 	AND	AL,02H
+ 060B  0C 30		      C 	OR	AL,30H
+ 060D  FE C0		      C 	INC	AL
+			      C 	
+ 060F  A2 04DF R	      C 	MOV	FINISH[16],AL
+			      C 	PASTEBMP	0,0,FINISH
+ 0612  6A 00		     1C 	PUSH	0
+ 0614  8F 06 0406 R	     1C 	POP	BMP_X
+ 0618  6A 00		     1C 	PUSH	0
+ 061A  8F 06 0408 R	     1C 	POP	BMP_Y
+ 061E  8D 36 04CF R	     1C 	LEA		SI,FINISH
+ 0622  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0627  E8 FB01		     1C 	CALL	LOADBMP
+ 062A  E8 040E		      C 	CALL	SCORE
+			      C 	TPASTEBMP	LINE_X,145,04CH,LINE
+ 062D  FF 36 05AE R	     1C 	PUSH	LINE_X
+ 0631  8F 06 0406 R	     1C 	POP	BMP_X
+ 0635  68 0091		     1C 	PUSH	145
+ 0638  8F 06 0408 R	     1C 	POP	BMP_Y
+ 063C  8D 36 057C R	     1C 	LEA		SI,LINE
+ 0640  C6 06 0410 R 4C	     1C 	MOV		TRANSPARENT,04CH
+ 0645  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 064A  E8 FADE		     1C 	CALL	LOADBMP
+ 064D  83 06 05AE R 14	      C 	ADD	LINE_X,20
+ 0652  81 3E 05AE R 0118      C 	CMP LINE_X,280
+ 0658  75 03		      C 	JNE	END_CHECKC
+ 065A  E8 0307		      C 	CALL GAME_FINISH
+ 065D			      C END_CHECKC:
+			      C 
+ 065D  61		      C 	POPA
+ 065E  C3		      C 	RET
+ 065F			      C 	TRACK	ENDP
+			      C ;=====================================================================
+ 065F			      C 	WAIT_KEY	PROC	
+			      C 	
+			      C 	
+ 065F  E8 0005		      C 	CALL	CLEAR_KEY_BUFF
+			      C 
+ 0662  B4 00		      C 	MOV	AH,0
+ 0664  CD 16		      C 	INT	16H
+			      C 	
+ 0666  C3		      C 	RET
+			      C 	
+ 0667			      C 	WAIT_KEY	ENDP
+			      C ;=====================================================================
+			      C 
+ 0667			      C 	CLEAR_KEY_BUFF	PROC
+			      C 
+ 0667  B4 0C		      C 	MOV	AH,0CH
+ 0669  B0 00		      C 	MOV	AL,0
+ 066B  CD 21		      C 	INT	21H
+ 066D  C3		      C 	RET
+ 066E			      C 	CLEAR_KEY_BUFF ENDP
+			      C 
+			      C ;======================================================================	
+ 066E			      C 	SHOW_RUN	PROC
+			      C 	
+ 066E  60		      C 	PUSHA
+			      C 	
+ 066F  FE 06 05B6 R	      C 	INC COUNT
+ 0673  B3 32		      C 	MOV	BL,'2'
+ 0675  B9 0006		      C 	MOV	CX,6
+			      C 
+ 0678			      C RUN_EMOTION:
+ 0678  E8 FEB5		      C 	CALL	TRACK
+ 067B  80 3E 05B8 R 01	      C 	CMP	RETURN,1
+ 0680  0F 84 0090	      C 	JE	RE_RUN
+			      C 	
+ 0684  88 1E 052F R	      C 	MOV	RUN[13],BL
+			      C 	TPASTEBMP MAN_X,MAN_Y,5CH,RUN
+ 0688  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 068C  8F 06 0406 R	     1C 	POP	BMP_X
+ 0690  FF 36 05B2 R	     1C 	PUSH	MAN_Y
+ 0694  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0698  8D 36 0522 R	     1C 	LEA		SI,RUN
+ 069C  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,5CH
+ 06A1  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 06A6  E8 FA82		     1C 	CALL	LOADBMP
+ 06A9  B4 01		      C 	MOV	AH,01
+ 06AB  CD 16		      C 	INT	16H
+ 06AD  80 FC 39		      C 	CMP	AH,39H
+ 06B0  74 5C		      C 	JE	JUMPING
+ 06B2  E8 FFB2		      C 	CALL	CLEAR_KEY_BUFF
+ 06B5  81 3E 05AC R 00D2      C 	CMP OBJ_X1,210
+ 06BB  7F 33		      C 	JG	CHECK_CRASH1
+			      C 	DELAY	400
+ 06BD  50		     1C 	PUSH AX
+ 06BE  53		     1C 	PUSH BX
+ 06BF  51		     1C 	PUSH CX
+ 06C0  52		     1C 	PUSH DX
+ 06C1  B8 0000		     1C 	MOV AX,0
+ 06C4  BB 0000		     1C 	MOV BX,0
+ 06C7  B9 0000		     1C 	MOV CX,0
+ 06CA			     1C ??000B :
+ 06CA  40		     1C 	INC AX
+ 06CB  3D 03E8		     1C 	CMP AX,1000
+ 06CE  7E FA		     1C 	JLE ??000B
+ 06D0  43		     1C 	INC BX
+ 06D1  81 FB 7FFE	     1C 	CMP BX,32766
+ 06D5  7E F3		     1C 	JLE ??000B
+ 06D7  41		     1C 	INC CX
+ 06D8  81 F9 0190	     1C 	CMP CX,400
+ 06DC  7E EC		     1C 	JLE ??000B
+ 06DE  5A		     1C 	POP DX
+ 06DF  59		     1C 	POP CX
+ 06E0  5B		     1C 	POP BX
+ 06E1  58		     1C 	POP AX
+ 06E2  FE C3		      C 	INC	BL
+			      C 
+ 06E4  E2 92		      C 	LOOP	RUN_EMOTION 
+			      C 
+ 06E6  81 3E 05AC R 00D2      C     CMP OBJ_X1,210
+ 06EC  7F 02		      C 	JG	CHECK_CRASH1
+			      C 
+ 06EE			      C NO_CRASH:
+ 06EE  EB 24		      C 	JMP RE_RUN
+			      C 
+ 06F0			      C CHECK_CRASH1:	
+ 06F0  51		      C 	PUSH CX
+ 06F1  33 C9		      C 	XOR CX,CX
+ 06F3  8B 0E 05B2 R	      C 	MOV	CX,MAN_Y
+ 06F7  83 C1 4A		      C 	ADD	CX,74
+ 06FA  89 0E 05B4 R	      C 	MOV	MAN_YY,CX
+ 06FE  81 3E 05B4 R 0082      C 	CMP	MAN_YY,130
+ 0704  59		      C 	POP CX
+ 0705  7F 02		      C 	JG	CLASH_YO
+ 0707  EB 0B		      C 	JMP	RE_RUN
+			      C 	
+ 0709			      C CLASH_YO:
+ 0709  E8 014C		      C 	CALL	CLASH
+ 070C  EB 06		      C 	JMP		RE_RUN
+ 070E			      C JUMPING:
+ 070E  E8 0005		      C 	CALL	SHOW_JUMP
+ 0711  E8 FF53		      C 	CALL	CLEAR_KEY_BUFF
+ 0714			      C RE_RUN:
+			      C 
+ 0714  61		      C 	POPA
+ 0715  C3		      C 	RET
+			      C 	
+ 0716			      C 	SHOW_RUN	ENDP
+			      C ;===========================================================================
+ 0716			      C 	SHOW_JUMP	PROC
+			      C 	
+ 0716  60		      C 	PUSHA
+			      C 	
+ 0717  FE 06 05B6 R	      C 	INC COUNT
+ 071B  B3 31		      C 	MOV		BL,'1'
+ 071D  B9 0003		      C 	MOV		CX,3
+			      C 	
+ 0720			      C JUMP1_EMOTION:
+			      C 
+ 0720  E8 FE0D		      C 	CALL	TRACK
+ 0723  80 3E 05B8 R 01	      C 	CMP	RETURN,1
+ 0728  0F 84 012A	      C 	JE	RE_JUMP3
+			      C 	
+ 072C  88 1E 0543 R	      C 	MOV	JUMP_UP[14],BL
+			      C 	TPASTEBMP MAN_X,MAN_Y,05CH,JUMP_UP
+ 0730  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 0734  8F 06 0406 R	     1C 	POP	BMP_X
+ 0738  FF 36 05B2 R	     1C 	PUSH	MAN_Y
+ 073C  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0740  8D 36 0535 R	     1C 	LEA		SI,JUMP_UP
+ 0744  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0749  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 074E  E8 F9DA		     1C 	CALL	LOADBMP
+ 0751  FE C3		      C 	INC	BL
+			      C 
+ 0753  83 2E 05B2 R 14	      C 	SUB	MAN_Y,20
+ 0758  83 06 05AC R 0A	      C 	ADD OBJ_X1,10
+			      C 	DELAY	500
+ 075D  50		     1C 	PUSH AX
+ 075E  53		     1C 	PUSH BX
+ 075F  51		     1C 	PUSH CX
+ 0760  52		     1C 	PUSH DX
+ 0761  B8 0000		     1C 	MOV AX,0
+ 0764  BB 0000		     1C 	MOV BX,0
+ 0767  B9 0000		     1C 	MOV CX,0
+ 076A			     1C ??000D :
+ 076A  40		     1C 	INC AX
+ 076B  3D 03E8		     1C 	CMP AX,1000
+ 076E  7E FA		     1C 	JLE ??000D
+ 0770  43		     1C 	INC BX
+ 0771  81 FB 7FFE	     1C 	CMP BX,32766
+ 0775  7E F3		     1C 	JLE ??000D
+ 0777  41		     1C 	INC CX
+ 0778  81 F9 01F4	     1C 	CMP CX,500
+ 077C  7E EC		     1C 	JLE ??000D
+ 077E  5A		     1C 	POP DX
+ 077F  59		     1C 	POP CX
+ 0780  5B		     1C 	POP BX
+ 0781  58		     1C 	POP AX
+			      C 	
+ 0782  E2 9C		      C 	LOOP	JUMP1_EMOTION
+			      C 	
+ 0784  81 3E 05AC R 00C8      C 	CMP OBJ_X1,200
+ 078A  7F 02		      C 	JG	CHECK_CRASH2
+			      C 
+ 078C			      C NO_CRASH2:
+ 078C  EB 18		      C 	JMP RE_JUMP
+			      C 
+ 078E			      C CHECK_CRASH2:	
+ 078E  51		      C 	PUSH CX
+ 078F  8B 0E 05B2 R	      C 	MOV	CX,MAN_Y
+ 0793  83 C1 4A		      C 	ADD	CX,74
+ 0796  89 0E 05B4 R	      C 	MOV	MAN_YY,CX
+ 079A  81 3E 05B4 R 0082      C 	CMP	MAN_YY,130
+ 07A0  59		      C 	POP CX
+ 07A1  7C 03		      C 	JL	RE_JUMP
+			      C 	
+ 07A3			      C CLASH_YO2:
+ 07A3  E8 00B2		      C 	CALL	CLASH
+			      C 	
+ 07A6			      C RE_JUMP:
+			      C 	
+			      C 	
+ 07A6  B3 33		      C 	MOV		BL,'3'
+ 07A8  B9 0003		      C 	MOV		CX,3
+			      C 	
+			      C 	
+ 07AB			      C JUMP2_EMOTION:
+			      C 
+ 07AB  E8 FD82		      C 	CALL	TRACK
+ 07AE  88 1E 0557 R	      C 	MOV	JUMP_DOWN[14],BL
+			      C 	TPASTEBMP MAN_X,MAN_Y,05CH,JUMP_DOWN
+ 07B2  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 07B6  8F 06 0406 R	     1C 	POP	BMP_X
+ 07BA  FF 36 05B2 R	     1C 	PUSH	MAN_Y
+ 07BE  8F 06 0408 R	     1C 	POP	BMP_Y
+ 07C2  8D 36 0549 R	     1C 	LEA		SI,JUMP_DOWN
+ 07C6  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 07CB  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 07D0  E8 F958		     1C 	CALL	LOADBMP
+ 07D3  FE CB		      C 	DEC	BL
+ 07D5  83 06 05B2 R 14	      C 	ADD	MAN_Y,20
+			      C 	DELAY	500
+ 07DA  50		     1C 	PUSH AX
+ 07DB  53		     1C 	PUSH BX
+ 07DC  51		     1C 	PUSH CX
+ 07DD  52		     1C 	PUSH DX
+ 07DE  B8 0000		     1C 	MOV AX,0
+ 07E1  BB 0000		     1C 	MOV BX,0
+ 07E4  B9 0000		     1C 	MOV CX,0
+ 07E7			     1C ??000F :
+ 07E7  40		     1C 	INC AX
+ 07E8  3D 03E8		     1C 	CMP AX,1000
+ 07EB  7E FA		     1C 	JLE ??000F
+ 07ED  43		     1C 	INC BX
+ 07EE  81 FB 7FFE	     1C 	CMP BX,32766
+ 07F2  7E F3		     1C 	JLE ??000F
+ 07F4  41		     1C 	INC CX
+ 07F5  81 F9 01F4	     1C 	CMP CX,500
+ 07F9  7E EC		     1C 	JLE ??000F
+ 07FB  5A		     1C 	POP DX
+ 07FC  59		     1C 	POP CX
+ 07FD  5B		     1C 	POP BX
+ 07FE  58		     1C 	POP AX
+			      C 	
+ 07FF  E2 AA		      C 	LOOP	JUMP2_EMOTION
+			      C 	
+ 0801  81 3E 05AC R 00E6      C 	CMP OBJ_X1,230
+ 0807  7F 02		      C 	JG	CHECK_CRASH3
+			      C 
+ 0809			      C NO_CRASH3:
+ 0809  EB 20		      C 	JMP RE_JUMP2
+			      C 
+ 080B			      C CHECK_CRASH3:	
+ 080B  51		      C 	PUSH CX
+ 080C  8B 0E 05B2 R	      C 	MOV	CX,MAN_Y
+ 0810  83 C1 4A		      C 	ADD	CX,74
+ 0813  89 0E 05B4 R	      C 	MOV	MAN_YY,CX
+ 0817  81 3E 05B4 R 0082      C 	CMP	MAN_YY,130
+ 081D  59		      C 	POP CX
+ 081E  7C 0B		      C 	JL	RE_JUMP2
+			      C 	
+ 0820			      C CLASH_YO3:
+ 0820  E8 0035		      C 	CALL	CLASH
+ 0823  81 3E 05AC R 00F0      C 	CMP	OBJ_X1,240
+ 0829  7F 26		      C 	JG	CLASH_AGIAN
+			      C 	
+ 082B			      C RE_JUMP2:
+			      C 	
+ 082B  E8 FD02		      C 	CALL		TRACK
+			      C 	TPASTEBMP MAN_X,MAN_Y,05CH,RUN
+ 082E  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 0832  8F 06 0406 R	     1C 	POP	BMP_X
+ 0836  FF 36 05B2 R	     1C 	PUSH	MAN_Y
+ 083A  8F 06 0408 R	     1C 	POP	BMP_Y
+ 083E  8D 36 0522 R	     1C 	LEA		SI,RUN
+ 0842  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0847  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 084C  E8 F8DC		     1C 	CALL	LOADBMP
+ 084F  EB 05		      C 	JMP	RE_JUMP3
+ 0851			      C CLASH_AGIAN:
+ 0851  E8 0004		      C 	CALL	CLASH
+ 0854  EB D5		      C 	JMP	RE_JUMP2
+ 0856			      C RE_JUMP3:
+			      C 
+ 0856  61		      C 	POPA
+ 0857  C3		      C 	RET
+			      C 	
+ 0858			      C 	SHOW_JUMP	ENDP
+			      C ;=============================================================
+			      C 
+ 0858			      C 	CLASH	PROC
+			      C 	
+ 0858  FE 06 05B7 R	      C 	INC	NCRASH
+ 085C  83 2E 05B9 R 0A	      C 	SUB	POINT,10
+			      C 	PASTEBMP	0,0,SECOND
+ 0861  6A 00		     1C 	PUSH	0
+ 0863  8F 06 0406 R	     1C 	POP	BMP_X
+ 0867  6A 00		     1C 	PUSH	0
+ 0869  8F 06 0408 R	     1C 	POP	BMP_Y
+ 086D  8D 36 04B9 R	     1C 	LEA		SI,SECOND
+ 0871  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0876  E8 F8B2		     1C 	CALL	LOADBMP
+ 0879  E8 01BF		      C 	CALL	SCORE
+			      C 	TPASTEBMP	180,140,05CH,OBJECT2
+ 087C  68 00B4		     1C 	PUSH	180
+ 087F  8F 06 0406 R	     1C 	POP	BMP_X
+ 0883  68 008C		     1C 	PUSH	140
+ 0886  8F 06 0408 R	     1C 	POP	BMP_Y
+ 088A  8D 36 056C R	     1C 	LEA		SI,OBJECT2
+ 088E  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0893  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 0898  E8 F890		     1C 	CALL	LOADBMP
+			      C 	TPASTEBMP	MAN_X,90,05CH,JUMP_DOWN
+ 089B  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 089F  8F 06 0406 R	     1C 	POP	BMP_X
+ 08A3  6A 5A		     1C 	PUSH	90
+ 08A5  8F 06 0408 R	     1C 	POP	BMP_Y
+ 08A9  8D 36 0549 R	     1C 	LEA		SI,JUMP_DOWN
+ 08AD  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 08B2  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 08B7  E8 F871		     1C 	CALL	LOADBMP
+			      C 	DELAY 500
+ 08BA  50		     1C 	PUSH AX
+ 08BB  53		     1C 	PUSH BX
+ 08BC  51		     1C 	PUSH CX
+ 08BD  52		     1C 	PUSH DX
+ 08BE  B8 0000		     1C 	MOV AX,0
+ 08C1  BB 0000		     1C 	MOV BX,0
+ 08C4  B9 0000		     1C 	MOV CX,0
+ 08C7			     1C ??0011 :
+ 08C7  40		     1C 	INC AX
+ 08C8  3D 03E8		     1C 	CMP AX,1000
+ 08CB  7E FA		     1C 	JLE ??0011
+ 08CD  43		     1C 	INC BX
+ 08CE  81 FB 7FFE	     1C 	CMP BX,32766
+ 08D2  7E F3		     1C 	JLE ??0011
+ 08D4  41		     1C 	INC CX
+ 08D5  81 F9 01F4	     1C 	CMP CX,500
+ 08D9  7E EC		     1C 	JLE ??0011
+ 08DB  5A		     1C 	POP DX
+ 08DC  59		     1C 	POP CX
+ 08DD  5B		     1C 	POP BX
+ 08DE  58		     1C 	POP AX
+			      C 	PASTEBMP	0,0,SECOND
+ 08DF  6A 00		     1C 	PUSH	0
+ 08E1  8F 06 0406 R	     1C 	POP	BMP_X
+ 08E5  6A 00		     1C 	PUSH	0
+ 08E7  8F 06 0408 R	     1C 	POP	BMP_Y
+ 08EB  8D 36 04B9 R	     1C 	LEA		SI,SECOND
+ 08EF  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 08F4  E8 F834		     1C 	CALL	LOADBMP
+ 08F7  E8 0141		      C 	CALL	SCORE
+			      C 	TPASTEBMP	180,140,05CH,OBJECT2
+ 08FA  68 00B4		     1C 	PUSH	180
+ 08FD  8F 06 0406 R	     1C 	POP	BMP_X
+ 0901  68 008C		     1C 	PUSH	140
+ 0904  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0908  8D 36 056C R	     1C 	LEA		SI,OBJECT2
+ 090C  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0911  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 0916  E8 F812		     1C 	CALL	LOADBMP
+			      C 	TPASTEBMP	MAN_X,115,05CH,CRASH
+ 0919  FF 36 05B0 R	     1C 	PUSH	MAN_X
+ 091D  8F 06 0406 R	     1C 	POP	BMP_X
+ 0921  6A 73		     1C 	PUSH	115
+ 0923  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0927  8D 36 0589 R	     1C 	LEA		SI,CRASH
+ 092B  C6 06 0410 R 5C	     1C 	MOV		TRANSPARENT,05CH
+ 0930  C6 06 0411 R 02	     1C 	MOV		BMP_MODE,2
+ 0935  E8 F7F3		     1C 	CALL	LOADBMP
+			      C 	DELAY 2000
+ 0938  50		     1C 	PUSH AX
+ 0939  53		     1C 	PUSH BX
+ 093A  51		     1C 	PUSH CX
+ 093B  52		     1C 	PUSH DX
+ 093C  B8 0000		     1C 	MOV AX,0
+ 093F  BB 0000		     1C 	MOV BX,0
+ 0942  B9 0000		     1C 	MOV CX,0
+ 0945			     1C ??0013 :
+ 0945  40		     1C 	INC AX
+ 0946  3D 03E8		     1C 	CMP AX,1000
+ 0949  7E FA		     1C 	JLE ??0013
+ 094B  43		     1C 	INC BX
+ 094C  81 FB 7FFE	     1C 	CMP BX,32766
+ 0950  7E F3		     1C 	JLE ??0013
+ 0952  41		     1C 	INC CX
+ 0953  81 F9 07D0	     1C 	CMP CX,2000
+ 0957  7E EC		     1C 	JLE ??0013
+ 0959  5A		     1C 	POP DX
+ 095A  59		     1C 	POP CX
+ 095B  5B		     1C 	POP BX
+ 095C  58		     1C 	POP AX
+ 095D  C7 06 05AC R 0014      C 	MOV	OBJ_X1,20
+ 0963  C3		      C 	RET
+ 0964			      C 	CLASH ENDP
+			      C ;=======================================================
+			      C 
+ 0964			      C 	GAME_FINISH	PROC
+			      C 	
+ 0964  60		      C 	PUSHA
+			      C 	
+			      C 	PASTEBMP	0,0,YEAH
+ 0965  6A 00		     1C 	PUSH	0
+ 0967  8F 06 0406 R	     1C 	POP	BMP_X
+ 096B  6A 00		     1C 	PUSH	0
+ 096D  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0971  8D 36 0503 R	     1C 	LEA		SI,YEAH
+ 0975  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 097A  E8 F7AE		     1C 	CALL	LOADBMP
+			      C 	DELAY	8000
+ 097D  50		     1C 	PUSH AX
+ 097E  53		     1C 	PUSH BX
+ 097F  51		     1C 	PUSH CX
+ 0980  52		     1C 	PUSH DX
+ 0981  B8 0000		     1C 	MOV AX,0
+ 0984  BB 0000		     1C 	MOV BX,0
+ 0987  B9 0000		     1C 	MOV CX,0
+ 098A			     1C ??0015 :
+ 098A  40		     1C 	INC AX
+ 098B  3D 03E8		     1C 	CMP AX,1000
+ 098E  7E FA		     1C 	JLE ??0015
+ 0990  43		     1C 	INC BX
+ 0991  81 FB 7FFE	     1C 	CMP BX,32766
+ 0995  7E F3		     1C 	JLE ??0015
+ 0997  41		     1C 	INC CX
+ 0998  81 F9 1F40	     1C 	CMP CX,8000
+ 099C  7E EC		     1C 	JLE ??0015
+ 099E  5A		     1C 	POP DX
+ 099F  59		     1C 	POP CX
+ 09A0  5B		     1C 	POP BX
+ 09A1  58		     1C 	POP AX
+			      C 	
+ 09A2  B4 08		      C 	MOV	AH,08
+ 09A4  CD 21		      C 	INT	21H
+			      C 	
+ 09A6  33 DB		      C 	XOR	BX,BX
+ 09A8  33 C9		      C 	XOR	CX,CX
+ 09AA  33 C0		      C 	XOR	AX,AX
+ 09AC  E8 011E		      C 	CALL	GET_NAME
+ 09AF  E8 0183		      C 	CALL	DISP_SCORE
+ 09B2  C6 06 05B8 R 01	      C 	MOV	RETURN,1
+ 09B7  61		      C 	POPA
+ 09B8  C3		      C 	RET
+			      C 	
+ 09B9			      C 	GAME_FINISH	ENDP
+			      C 	
+			      C ;==========================================================
+			      C 
+ 09B9			      C 	GAME_OVER	PROC
+			      C 	
+ 09B9  33 DB		      C 	XOR	BX,BX
+ 09BB  33 C9		      C 	XOR	CX,CX
+ 09BD  33 C0		      C 	XOR	AX,AX
+			      C 	PASTEBMP	0,0,OVER
+ 09BF  6A 00		     1C 	PUSH	0
+ 09C1  8F 06 0406 R	     1C 	POP	BMP_X
+ 09C5  6A 00		     1C 	PUSH	0
+ 09C7  8F 06 0408 R	     1C 	POP	BMP_Y
+ 09CB  8D 36 04E5 R	     1C 	LEA		SI,OVER
+ 09CF  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 09D4  E8 F754		     1C 	CALL	LOADBMP
+			      C 	DELAY	2000
+ 09D7  50		     1C 	PUSH AX
+ 09D8  53		     1C 	PUSH BX
+ 09D9  51		     1C 	PUSH CX
+ 09DA  52		     1C 	PUSH DX
+ 09DB  B8 0000		     1C 	MOV AX,0
+ 09DE  BB 0000		     1C 	MOV BX,0
+ 09E1  B9 0000		     1C 	MOV CX,0
+ 09E4			     1C ??0017 :
+ 09E4  40		     1C 	INC AX
+ 09E5  3D 03E8		     1C 	CMP AX,1000
+ 09E8  7E FA		     1C 	JLE ??0017
+ 09EA  43		     1C 	INC BX
+ 09EB  81 FB 7FFE	     1C 	CMP BX,32766
+ 09EF  7E F3		     1C 	JLE ??0017
+ 09F1  41		     1C 	INC CX
+ 09F2  81 F9 07D0	     1C 	CMP CX,2000
+ 09F6  7E EC		     1C 	JLE ??0017
+ 09F8  5A		     1C 	POP DX
+ 09F9  59		     1C 	POP CX
+ 09FA  5B		     1C 	POP BX
+ 09FB  58		     1C 	POP AX
+			      C 	
+ 09FC  B4 08		      C 	MOV	AH,08
+ 09FE  CD 21		      C 	INT	21H
+ 0A00  C3		      C 	RET
+			      C 	
+ 0A01			      C 	GAME_OVER	ENDP
+			      C ;=======================================================
+ 0A01			      C OUTDEC PROC
+			      C ;prints AX as a unsigned decimal integer
+			      C ;input: AX
+			      C ;output : none
+			      C 	
+ 0A01  50		      C 	PUSH AX
+ 0A02  53		      C 	PUSH BX
+ 0A03  51		      C 	PUSH CX
+ 0A04  52		      C 	PUSH DX
+			      C 
+ 0A05  0B C0		      C 	OR   AX,AX
+ 0A07  7D 0A		      C 	JGE  @END_IF1
+			      C 
+ 0A09  50		      C 	PUSH AX
+ 0A0A  B2 2D		      C 	MOV  DL,'-'
+ 0A0C  B4 02		      C 	MOV  AH,2
+ 0A0E  CD 21		      C 	INT  21H
+ 0A10  58		      C 	POP  AX
+ 0A11  F7 D8		      C 	NEG  AX
+			      C 
+ 0A13			      C 	@END_IF1:
+ 0A13  33 C9		      C 	XOR  CX,CX
+ 0A15  BB 000A		      C 	MOV  BX,10D
+			      C 
+ 0A18			      C 	@REPEAT1:
+ 0A18  33 D2		      C 	XOR  DX,DX
+ 0A1A  F7 F3		      C 	DIV  BX
+ 0A1C  52		      C 	PUSH DX
+ 0A1D  41		      C 	INC  CX
+ 0A1E  0B C0		      C 	OR	AX,AX
+ 0A20  75 F6		      C 	JNE  @REPEAT1
+			      C 
+			      C 	;MOV  AH,2
+			      C 
+ 0A22			      C 	@PRINT_LOOP:
+ 0A22  5A		      C 	POP  DX
+ 0A23  80 CA 30		      C 	OR   DL,30H
+			      C 	;INT  21H
+			      C 	WRITE_CHAR	DL,232
+ 0A26  50		     1C 	PUSH	AX
+ 0A27  53		     1C 	PUSH	BX
+ 0A28  B4 0E		     1C 	MOV	AH,0EH
+ 0A2A  8A C2		     1C 	MOV	AL,DL
+ 0A2C  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A2E  B3 E8		     1C 	MOV	BL,232
+ 0A30  CD 10		     1C 	INT	10H
+ 0A32  5B		     1C 	POP	BX
+ 0A33  58		     1C 	POP	AX
+ 0A34  E2 EC		      C 	LOOP @PRINT_LOOP
+			      C 
+ 0A36  5A		      C 	POP  DX
+ 0A37  59		      C 	POP  CX
+ 0A38  5B		      C 	POP  BX
+ 0A39  58		      C 	POP  AX
+			      C 	
+ 0A3A  C3		      C 	RET
+ 0A3B			      C OUTDEC ENDP
+			      C ;===============================================================
+ 0A3B			      C 	SCORE	PROC
+			      C 	
+			      C 	GOTOXY	66,1
+ 0A3B  50		     1C 	PUSH AX
+ 0A3C  53		     1C 	PUSH BX
+ 0A3D  52		     1C 	PUSH DX
+ 0A3E  B4 02		     1C 	MOV AH,02H
+ 0A40  33 DB		     1C 	XOR BX,BX
+ 0A42  B6 01		     1C 	MOV DH,1
+ 0A44  B2 42		     1C 	MOV DL,66
+ 0A46  CD 10		     1C 	INT 10H
+ 0A48  5A		     1C 	POP DX
+ 0A49  5B		     1C 	POP BX
+ 0A4A  58		     1C 	POP AX
+			      C 	WRITE_CHAR	'S',232
+ 0A4B  50		     1C 	PUSH	AX
+ 0A4C  53		     1C 	PUSH	BX
+ 0A4D  B4 0E		     1C 	MOV	AH,0EH
+ 0A4F  B0 53		     1C 	MOV	AL,'S'
+ 0A51  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A53  B3 E8		     1C 	MOV	BL,232
+ 0A55  CD 10		     1C 	INT	10H
+ 0A57  5B		     1C 	POP	BX
+ 0A58  58		     1C 	POP	AX
+			      C 	WRITE_CHAR	'C',232
+ 0A59  50		     1C 	PUSH	AX
+ 0A5A  53		     1C 	PUSH	BX
+ 0A5B  B4 0E		     1C 	MOV	AH,0EH
+ 0A5D  B0 43		     1C 	MOV	AL,'C'
+ 0A5F  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A61  B3 E8		     1C 	MOV	BL,232
+ 0A63  CD 10		     1C 	INT	10H
+ 0A65  5B		     1C 	POP	BX
+ 0A66  58		     1C 	POP	AX
+			      C 	WRITE_CHAR	'O',232
+ 0A67  50		     1C 	PUSH	AX
+ 0A68  53		     1C 	PUSH	BX
+ 0A69  B4 0E		     1C 	MOV	AH,0EH
+ 0A6B  B0 4F		     1C 	MOV	AL,'O'
+ 0A6D  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A6F  B3 E8		     1C 	MOV	BL,232
+ 0A71  CD 10		     1C 	INT	10H
+ 0A73  5B		     1C 	POP	BX
+ 0A74  58		     1C 	POP	AX
+			      C 	WRITE_CHAR	'R',232
+ 0A75  50		     1C 	PUSH	AX
+ 0A76  53		     1C 	PUSH	BX
+ 0A77  B4 0E		     1C 	MOV	AH,0EH
+ 0A79  B0 52		     1C 	MOV	AL,'R'
+ 0A7B  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A7D  B3 E8		     1C 	MOV	BL,232
+ 0A7F  CD 10		     1C 	INT	10H
+ 0A81  5B		     1C 	POP	BX
+ 0A82  58		     1C 	POP	AX
+			      C 	WRITE_CHAR	'E',232
+ 0A83  50		     1C 	PUSH	AX
+ 0A84  53		     1C 	PUSH	BX
+ 0A85  B4 0E		     1C 	MOV	AH,0EH
+ 0A87  B0 45		     1C 	MOV	AL,'E'
+ 0A89  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A8B  B3 E8		     1C 	MOV	BL,232
+ 0A8D  CD 10		     1C 	INT	10H
+ 0A8F  5B		     1C 	POP	BX
+ 0A90  58		     1C 	POP	AX
+			      C 	WRITE_CHAR	':',232
+ 0A91  50		     1C 	PUSH	AX
+ 0A92  53		     1C 	PUSH	BX
+ 0A93  B4 0E		     1C 	MOV	AH,0EH
+ 0A95  B0 3A		     1C 	MOV	AL,':'
+ 0A97  32 FF		     1C 	XOR	BH,BH		;SELECT PAGE 0
+ 0A99  B3 E8		     1C 	MOV	BL,232
+ 0A9B  CD 10		     1C 	INT	10H
+ 0A9D  5B		     1C 	POP	BX
+ 0A9E  58		     1C 	POP	AX
+ 0A9F  A1 05B9 R	      C 	MOV	AX,POINT
+ 0AA2  E8 FF5C		      C 	CALL	OUTDEC
+			      C 	
+ 0AA5  C3		      C 	RET
+			      C 	
+ 0AA6			      C 	SCORE	ENDP
+			      C ;===================================================================	
+			      C 
+				INCLUDE	HIGHSCORE.ASM
+ 0AA6			      C 	HIGH_SCORE	PROC
+			      C 	
+ 0AA6  60		      C 	PUSHA
+			      C 
+			      C 	PASTEBMP	0,0,POINT_BG
+ 0AA7  6A 00		     1C 	PUSH	0
+ 0AA9  8F 06 0406 R	     1C 	POP	BMP_X
+ 0AAD  6A 00		     1C 	PUSH	0
+ 0AAF  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0AB3  8D 36 04F2 R	     1C 	LEA		SI,POINT_BG
+ 0AB7  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0ABC  E8 F66C		     1C 	CALL	LOADBMP
+ 0ABF  E8 0073		      C 	CALL			DISP_SCORE 
+ 0AC2  B4 08		      C 	MOV	AH,08
+ 0AC4  CD 21		      C 	INT	21H
+ 0AC6  C6 06 05AB R 01	      C 	MOV	CHOICE,1
+			      C 	
+ 0ACB  61		      C 	POPA
+ 0ACC  C3		      C 	RET
+			      C 	
+ 0ACD			      C 	HIGH_SCORE ENDP
+			      C 	
+			      C ;=====================================================
+ 0ACD			      C GET_NAME        PROC
+ 0ACD  60		      C 	PUSHA
+			      C 
+ 0ACE			      C GN_PIC:	
+			      C 	PASTEBMP 80,57,ENTER_NAME
+ 0ACE  6A 50		     1C 	PUSH	80
+ 0AD0  8F 06 0406 R	     1C 	POP	BMP_X
+ 0AD4  6A 39		     1C 	PUSH	57
+ 0AD6  8F 06 0408 R	     1C 	POP	BMP_Y
+ 0ADA  8D 36 059E R	     1C 	LEA		SI,ENTER_NAME
+ 0ADE  C6 06 0411 R 00	     1C 	MOV		BMP_MODE,0
+ 0AE3  E8 F645		     1C 	CALL	LOADBMP
+			      C 	GOTOXY  15,12	;SET START INPUT NAME POSITION
+ 0AE6  50		     1C 	PUSH AX
+ 0AE7  53		     1C 	PUSH BX
+ 0AE8  52		     1C 	PUSH DX
+ 0AE9  B4 02		     1C 	MOV AH,02H
+ 0AEB  33 DB		     1C 	XOR BX,BX
+ 0AED  B6 0C		     1C 	MOV DH,12
+ 0AEF  B2 0F		     1C 	MOV DL,15
+ 0AF1  CD 10		     1C 	INT 10H
+ 0AF3  5A		     1C 	POP DX
+ 0AF4  5B		     1C 	POP BX
+ 0AF5  58		     1C 	POP AX
+			      C        	
+ 0AF6  8D 16 05BB R	      C 	LEA	DX,NAME1	;SET OFFSET FOR STORE NAME
+ 0AFA  B4 0A		      C 	MOV	AH,0AH		;GET STRING FROM KEYBOARD
+ 0AFC  CD 21		      C 	INT	21H
+			      C 
+ 0AFE  80 3E 05BC R 00	      C 	CMP	BYTE PTR NAME1[1],0	;CHECK NUMBER OF CHAR
+ 0B03  74 C9		      C 	JE	GN_PIC			;DONT'PASS WITH NO NAME
+			      C 		
+			      C 		
+ 0B05  8D 36 05BB R	      C 	LEA	SI,NAME1	
+ 0B09  83 C6 02		      C 	ADD	SI,2		;POINT TO CHAR FROM KEYBOARD
+ 0B0C  8D 3E 05C7 R	      C 	LEA	DI,NAME2
+			      C 	;XOR	CX,CX
+ 0B10  0F B6 0E 05BC R	      C 	MOVZX	CX,NAME1[1]	;LOOP NUMBER OF CHAR
+ 0B15  F3/ A4		      C 	REP	MOVSB		;COPY STIRNG TO NAME2
+			      C 
+ 0B17  E8 0083		      C         CALL    READ_DATA       ;READ DATA 10 RECORD FROM FILE
+			      C 
+ 0B1A  A1 05B9 R	      C         MOV     AX,POINT        ;STORE DATA IN RECORD 11
+ 0B1D  A3 0654 R	      C         MOV     SCORE_REC[20],AX
+ 0B20  8D 36 05C7 R	      C         LEA     SI,NAME2
+ 0B24  8D 3E 0636 R	      C         LEA     DI,NAME_REC[100]
+ 0B28  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0B2A  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0B2C  A5		      C 	MOVSW			;COPY DS:[SI] TO ES:[DI] 2 BYTE 
+			      C 				;TOTAL COPY 10 BYTE
+			      C                                         
+ 0B2D  E8 00BB		      C         CALL    SORT_           ;SORT DATA
+ 0B30  E8 0091		      C         CALL    WRITE_DATA      ;WRITE DATA 10 RECORD TO FILE
+			      C 	
+ 0B33  61		      C         POPA
+ 0B34  C3		      C         RET
+ 0B35			      C GET_NAME        ENDP
+			      C 
+			      C ;=====================================================================
+ 0B35			      C DISP_SCORE      PROC
+ 0B35  60		      C         PUSHA
+			      C 
+ 0B36  E8 0064		      C 	    CALL    READ_DATA
+			      C 
+ 0B39  33 C0		      C 	XOR	AX,AX		;FOR COUNT NUMBER
+ 0B3B  33 DB		      C 	XOR	BX,BX		;FOR POINT SCORE ARRAY
+ 0B3D  B1 09		      C 	MOV	CL,9		;DEFINE Y START POISITION
+ 0B3F  8D 36 05D2 R	      C 	LEA     SI,NAME_REC
+ 0B43			      C LOOP_SCORE:
+			      C 	;SHOW NUMBER
+ 0B43  40		      C 	INC	AX
+ 0B44  FE C1		      C        	INC	CL
+			      C         GOTOXY 	7,CL
+ 0B46  50		     1C 	PUSH AX
+ 0B47  53		     1C 	PUSH BX
+ 0B48  52		     1C 	PUSH DX
+ 0B49  B4 02		     1C 	MOV AH,02H
+ 0B4B  33 DB		     1C 	XOR BX,BX
+ 0B4D  8A F1		     1C 	MOV DH,CL
+ 0B4F  B2 07		     1C 	MOV DL,7
+ 0B51  CD 10		     1C 	INT 10H
+ 0B53  5A		     1C 	POP DX
+ 0B54  5B		     1C 	POP BX
+ 0B55  58		     1C 	POP AX
+ 0B56  E8 FEA8		      C         CALL    OUTDEC
+ 0B59  50		      C 	PUSH	AX
+			      C 		
+			      C 	;SHOW NAME
+			      C         GOTOXY 	12,CL
+ 0B5A  50		     1C 	PUSH AX
+ 0B5B  53		     1C 	PUSH BX
+ 0B5C  52		     1C 	PUSH DX
+ 0B5D  B4 02		     1C 	MOV AH,02H
+ 0B5F  33 DB		     1C 	XOR BX,BX
+ 0B61  8A F1		     1C 	MOV DH,CL
+ 0B63  B2 0C		     1C 	MOV DL,12
+ 0B65  CD 10		     1C 	INT 10H
+ 0B67  5A		     1C 	POP DX
+ 0B68  5B		     1C 	POP BX
+ 0B69  58		     1C 	POP AX
+ 0B6A  8D 3E 05C7 R	      C         LEA     DI,NAME2
+ 0B6E  66| A5		      C         MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0B70  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0B72  A5		      C 	MOVSW			;COPY DS:[SI] TO ES:[DI] 2 BYTE 
+			      C 				;TOTAL COPY 10 BYTE
+ 0B73  B4 09		      C         MOV     AH,09
+ 0B75  8D 16 05C7 R	      C         LEA     DX,NAME2
+ 0B79  CD 21		      C         INT     21H
+			      C 		
+			      C 	;SHOW SCORE
+			      C         GOTOXY 	30,CL
+ 0B7B  50		     1C 	PUSH AX
+ 0B7C  53		     1C 	PUSH BX
+ 0B7D  52		     1C 	PUSH DX
+ 0B7E  B4 02		     1C 	MOV AH,02H
+ 0B80  33 DB		     1C 	XOR BX,BX
+ 0B82  8A F1		     1C 	MOV DH,CL
+ 0B84  B2 1E		     1C 	MOV DL,30
+ 0B86  CD 10		     1C 	INT 10H
+ 0B88  5A		     1C 	POP DX
+ 0B89  5B		     1C 	POP BX
+ 0B8A  58		     1C 	POP AX
+ 0B8B  8B 87 0640 R	      C         MOV     AX,SCORE_REC[BX]
+ 0B8F  E8 FE6F		      C         CALL    OUTDEC
+			      C 
+			      C 	;NEXT RECORD
+ 0B92  58		      C         POP	AX
+ 0B93  83 C3 02		      C 	ADD     BX,2		;point to next word score
+ 0B96  83 F8 0A		      C         CMP     AX,10
+ 0B99  7C A8		      C         JL      LOOP_SCORE
+			      C 
+ 0B9B  61		      C         POPA
+ 0B9C  C3		      C         RET
+ 0B9D			      C DISP_SCORE      ENDP
+			      C ;========================================================================
+ 0B9D			      C READ_DATA       PROC
+			      C         ;PUSHA
+			      C 
+ 0B9D  B4 3D		      C 	MOV     AH,3DH
+ 0B9F  8D 16 065A R	      C         LEA     DX,FILESCORE
+ 0BA3  B0 02		      C         MOV     AL,2
+ 0BA5  CD 21		      C         INT     21H
+ 0BA7  8B D8		      C         MOV     BX,AX
+			      C         
+ 0BA9  B4 3F		      C 	MOV     AH,3FH
+			      C         ;MOV     BX,HANDLE
+ 0BAB  B9 0064		      C         MOV     CX,100
+ 0BAE  8D 16 05D2 R	      C         LEA     DX,NAME_REC
+ 0BB2  CD 21		      C         INT     21H
+			      C 
+ 0BB4  B4 3F		      C         MOV     AH,3FH
+			      C         ;MOV     BX,HANDLE
+ 0BB6  B9 0014		      C         MOV     CX,20
+ 0BB9  8D 16 0640 R	      C         LEA     DX,SCORE_REC
+ 0BBD  CD 21		      C         INT     21H
+			      C 
+			      C 	;CLOSE FILE
+ 0BBF  B4 3E		      C         MOV     AH,3EH
+			      C         ;MOV     BX,HANDLE
+ 0BC1  CD 21		      C         INT     21H
+			      C 		
+			      C         ;POPA
+ 0BC3  C3		      C         RET
+ 0BC4			      C READ_DATA       ENDP
+			      C 
+			      C ;==========================================================================
+			      C 
+ 0BC4			      C WRITE_DATA      PROC
+			      C         ;PUSHA
+			      C         
+ 0BC4  B4 3D		      C 	MOV     AH,3DH
+ 0BC6  8D 16 065A R	      C         LEA     DX,FILESCORE
+ 0BCA  B0 02		      C         MOV     AL,2
+ 0BCC  CD 21		      C         INT     21H
+ 0BCE  8B D8		      C         MOV     BX,AX
+			      C 		
+ 0BD0  B4 40		      C         MOV     AH,40H
+			      C         ;MOV     BX,HANDLE
+ 0BD2  B9 0064		      C         MOV     CX,100
+ 0BD5  8D 16 05D2 R	      C         LEA     DX,NAME_REC
+ 0BD9  CD 21		      C         INT     21H
+			      C 
+ 0BDB  B4 40		      C         MOV     AH,40H
+			      C         ;MOV     BX,HANDLE
+ 0BDD  B9 0014		      C         MOV     CX,20
+ 0BE0  8D 16 0640 R	      C         LEA     DX,SCORE_REC
+ 0BE4  CD 21		      C         INT     21H
+			      C 
+ 0BE6  B4 3E		      C         MOV     AH,3EH
+			      C         ;MOV     BX,HANDLE
+ 0BE8  CD 21		      C         INT     21H
+			      C 		
+			      C         ;POPA
+ 0BEA  C3		      C         RET
+ 0BEB			      C WRITE_DATA      ENDP
+			      C ;========================================================
+ 0BEB			      C SORT_   PROC
+ 0BEB  60		      C         PUSHA
+			      C 		
+ 0BEC  BB 000B		      C         MOV     BX,11		;NUMBER OF RECORD
+ 0BEF  C7 06 0656 R 0001      C 		MOV     NUM,1		
+ 0BF5			      C SORT_LOOP_I:                    
+ 0BF5  8B CB		      C         MOV     CX,BX        
+ 0BF7  8D 36 0640 R	      C         LEA     SI,SCORE_REC    ;SET ADDRESS
+ 0BFB  C7 06 0658 R 0000      C         MOV     NUM2,0          ;FOR NAME
+ 0C01  2B 0E 0656 R	      C         SUB     CX,NUM
+ 0C05  53		      C 	PUSH	BX		;SAVE ARRAY SIZE
+			      C 
+ 0C06			      C SORT_LOOP_J:                    
+ 0C06  8B 44 02		      C         MOV     AX,[SI+2]       ;READ DATA
+ 0C09  39 04		      C         CMP     [SI],AX         ;IF A[J] < A[J+1]
+ 0C0B  7D 32		      C         JGE     NEXT_
+ 0C0D  87 04		      C         XCHG    [SI],AX		;SWAP SCORE
+ 0C0F  89 44 02		      C         MOV     [SI+2],AX
+			      C 	
+ 0C12  56		      C 	PUSH	SI		;PUSH SCORE POINTER
+			      C 				;SWAP NAME
+ 0C13  8B 1E 0658 R	      C         MOV     BX,NUM2         ;MOV J+1 TO TMP 
+ 0C17  8D B7 05DC R	      C         LEA     SI,NAME_REC[BX+10]
+ 0C1B  8D 3E 05C7 R	      C         LEA     DI,NAME2
+ 0C1F  66| A5		      C         MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C21  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C23  A5		      C 	MOVSW			;COPY DS:[SI] TO ES:[DI] 2 BYTE 
+			      C 				;TOTAL COPY 10 BYTE
+			      C 
+ 0C24  8D B7 05D2 R	      C         LEA     SI,NAME_REC[BX] ;MOV J TO J+1
+ 0C28  8D BF 05DC R	      C         LEA     DI,NAME_REC[BX+10]
+ 0C2C  66| A5		      C         MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C2E  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C30  A5		      C 	MOVSW			;COPY DS:[SI] TO ES:[DI] 2 BYTE 
+			      C 				;TOTAL COPY 10 BYTE
+			      C 
+ 0C31  8D 36 05C7 R	      C         LEA     SI,NAME2        ;MOV TMP TO J
+ 0C35  8D BF 05D2 R	      C         LEA     DI,NAME_REC[BX]
+ 0C39  66| A5		      C         MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C3B  66| A5		      C 	MOVSD			;COPY DS:[SI] TO ES:[DI] 4 BYTE
+ 0C3D  A5		      C 	MOVSW			;COPY DS:[SI] TO ES:[DI] 2 BYTE 
+			      C 				;TOTAL COPY 10 BYTE
+			      C 
+ 0C3E  5E		      C         POP	SI		;POP SCORE POINTER
+			      C 	
+ 0C3F			      C NEXT_:
+ 0C3F  83 C6 02		      C         ADD     SI,2            ;PLUS ADDRESS
+ 0C42  83 06 0658 R 0A	      C         ADD     NUM2,10
+ 0C47  E2 BD		      C         LOOP    SORT_LOOP_J
+			      C 
+ 0C49  5B		      C 	POP	BX		;POP ARRAY	SIZE
+ 0C4A  FF 06 0656 R	      C         INC     NUM
+ 0C4E  3B 1E 0656 R	      C         CMP     BX,NUM
+ 0C52  7F A1		      C         JG      SORT_LOOP_I
+			      C         
+ 0C54  61		      C 		POPA
+ 0C55  C3		      C         RET
+ 0C56			      C SORT_   ENDP
+			      C 
+			      C 
+				INCLUDE	GRAPHIC.ASM
+			      C ;======================================================
+			      C ;Save screen to vga buffer segment
+			      C ;use MOVSD for faster ,easier load and store and reduce loop 
+			      C ;you can chaeng to use 16bit for 286 cpu
+			      C ;======================================================
+ 0C56			      C SAVESCREEN PROC
+ 0C56  60		      C 	PUSHA
+ 0C57  1E		      C 	PUSH	DS
+ 0C58  06		      C 	PUSH	ES	
+			      C 	
+ 0C59  B8 A000		      C 	MOV	AX,0A000H
+ 0C5C  8E D8		      C 	MOV	DS,AX
+ 0C5E  33 F6		      C 	XOR	SI,SI
+			      C 	
+ 0C60  B8 ---- R	      C 	MOV	AX,VBUFFERSEG
+ 0C63  8E C0		      C 	MOV ES,AX
+ 0C65  8D 3E 0000 R	      C 	LEA	DI,VBUFFER
+			      C 	
+ 0C69  B9 3E80		      C 	MOV	CX,16000
+ 0C6C  F3/ 66| A5	      C 	REP MOVSD	;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+			      C 		
+ 0C6F  07		      C 	POP	ES
+ 0C70  1F		      C 	POP	DS
+ 0C71  61		      C 	POPA
+ 0C72  C3		      C 	RET
+ 0C73			      C SAVESCREEN ENDP
+			      C ;============================================
+			      C ;Restore screen from vga buffer segment
+			      C ;============================================
+ 0C73			      C RESTORESCREEN	PROC
+ 0C73  60		      C 	PUSHA
+ 0C74  1E		      C 	PUSH 	DS
+ 0C75  06		      C 	PUSH	ES
+			      C 		
+ 0C76  B8 ---- R	      C 	MOV AX,VBUFFERSEG
+ 0C79  8E D8		      C 	MOV	DS,AX
+ 0C7B  8D 36 0000 R	      C 	LEA SI,VBUFFER
+			      C 	
+ 0C7F  B8 A000		      C 	MOV	AX,0A000H
+ 0C82  8E C0		      C 	MOV	ES,AX
+ 0C84  33 FF		      C 	XOR DI,DI
+			      C 	
+ 0C86  B9 3E80		      C 	MOV	CX,16000
+ 0C89  F3/ 66| A5	      C 	REP MOVSD	;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+			      C 	
+ 0C8C  07		      C 	POP	ES
+ 0C8D  1F		      C 	POP	DS
+ 0C8E  61		      C 	POPA
+ 0C8F  C3		      C 	RET
+ 0C90			      C RESTORESCREEN ENDP
+			      C 
+				END
+					
+Microsoft (R) Macro Assembler Version 6.11		    02/17/07 14:50:54
+0208.ASM						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+CLOSEFILE  . . . . . . . . . . .	Proc
+DELAY  . . . . . . . . . . . . .	Proc
+DISP_STR . . . . . . . . . . . .	Proc
+GOTOXY . . . . . . . . . . . . .	Proc
+OPENFILE . . . . . . . . . . . .	Proc
+PASTEBMP . . . . . . . . . . . .	Proc
+POPR . . . . . . . . . . . . . .	Proc
+PUSHR  . . . . . . . . . . . . .	Proc
+RGOTOXY  . . . . . . . . . . . .	Proc
+TPASTEBMP  . . . . . . . . . . .	Proc
+WRITE_CHAR . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+DGROUP . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	16 Bit	 0664	  Word	  Public  'DATA'	
+STACK  . . . . . . . . . . . . .	16 Bit	 0100	  Para	  Stack	  'STACK'	 
+_TEXT  . . . . . . . . . . . . .	16 Bit	 0C90	  Word	  Public  'CODE'	
+vbufferseg . . . . . . . . . . .	16 Bit	 FA00	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+CLASH  . . . . . . . . . . . . .	P Near	 0858	  _TEXT	Length= 010C Private
+CLEAR_KEY_BUFF . . . . . . . . .	P Near	 0667	  _TEXT	Length= 0007 Private
+DISP_SCORE . . . . . . . . . . .	P Near	 0B35	  _TEXT	Length= 0068 Private
+EXIT_GAME  . . . . . . . . . . .	P Near	 0121	  _TEXT	Length= 000A Private
+GAME_FINISH  . . . . . . . . . .	P Near	 0964	  _TEXT	Length= 0055 Private
+GAME_OVER  . . . . . . . . . . .	P Near	 09B9	  _TEXT	Length= 0048 Private
+GET_NAME . . . . . . . . . . . .	P Near	 0ACD	  _TEXT	Length= 0068 Private
+HIGH_SCORE . . . . . . . . . . .	P Near	 0AA6	  _TEXT	Length= 0027 Private
+LOADBMP  . . . . . . . . . . . .	P Near	 012B	  _TEXT	Length= 00A5 Private
+MAIN . . . . . . . . . . . . . .	P Near	 0000	  _TEXT	Length= 0058 Private
+MANUAL . . . . . . . . . . . . .	P Near	 0058	  _TEXT	Length= 00C9 Private
+OUTDEC . . . . . . . . . . . . .	P Near	 0A01	  _TEXT	Length= 003A Private
+PLAY_GAME  . . . . . . . . . . .	P Near	 03C9	  _TEXT	Length= 0167 Private
+PUTPIXEL_FAST  . . . . . . . . .	P Near	 029B	  _TEXT	Length= 000C Private
+PUTPIXEL_NORM  . . . . . . . . .	P Near	 0293	  _TEXT	Length= 0008 Private
+PUTPIXEL_TRAN  . . . . . . . . .	P Near	 02A7	  _TEXT	Length= 0013 Private
+READBMP  . . . . . . . . . . . .	P Near	 0180	  _TEXT	Length= 003B Private
+READ_DATA  . . . . . . . . . . .	P Near	 0B9D	  _TEXT	Length= 0027 Private
+RESTORESCREEN  . . . . . . . . .	P Near	 0C73	  _TEXT	Length= 001D Private
+SAVESCREEN . . . . . . . . . . .	P Near	 0C56	  _TEXT	Length= 001D Private
+SCORE  . . . . . . . . . . . . .	P Near	 0A3B	  _TEXT	Length= 006B Private
+SETCOLOR . . . . . . . . . . . .	P Near	 01BB	  _TEXT	Length= 0043 Private
+SHOWBMP  . . . . . . . . . . . .	P Near	 01FE	  _TEXT	Length= 0095 Private
+SHOWMENU . . . . . . . . . . . .	P Near	 02BA	  _TEXT	Length= 010F Private
+SHOW_JUMP  . . . . . . . . . . .	P Near	 0716	  _TEXT	Length= 0142 Private
+SHOW_RUN . . . . . . . . . . . .	P Near	 066E	  _TEXT	Length= 00A8 Private
+SORT_  . . . . . . . . . . . . .	P Near	 0BEB	  _TEXT	Length= 006B Private
+TRACK  . . . . . . . . . . . . .	P Near	 0530	  _TEXT	Length= 012F Private
+WAIT_KEY . . . . . . . . . . . .	P Near	 065F	  _TEXT	Length= 0008 Private
+WRITE_DATA . . . . . . . . . . .	P Near	 0BC4	  _TEXT	Length= 0027 Private
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+??0001 . . . . . . . . . . . . .	L Near	 007D	  _TEXT	
+??0003 . . . . . . . . . . . . .	L Near	 00BA	  _TEXT	
+??0005 . . . . . . . . . . . . .	L Near	 00F7	  _TEXT	
+??0007 . . . . . . . . . . . . .	L Near	 042D	  _TEXT	
+??0009 . . . . . . . . . . . . .	L Near	 04C5	  _TEXT	
+??000B . . . . . . . . . . . . .	L Near	 06CA	  _TEXT	
+??000D . . . . . . . . . . . . .	L Near	 076A	  _TEXT	
+??000F . . . . . . . . . . . . .	L Near	 07E7	  _TEXT	
+??0011 . . . . . . . . . . . . .	L Near	 08C7	  _TEXT	
+??0013 . . . . . . . . . . . . .	L Near	 0945	  _TEXT	
+??0015 . . . . . . . . . . . . .	L Near	 098A	  _TEXT	
+??0017 . . . . . . . . . . . . .	L Near	 09E4	  _TEXT	
+@CodeSize  . . . . . . . . . . .	Number	 0000h	 
+@DataSize  . . . . . . . . . . .	Number	 0000h	 
+@END_IF1 . . . . . . . . . . . .	L Near	 0A13	  _TEXT	
+@Interface . . . . . . . . . . .	Number	 0000h	 
+@Model . . . . . . . . . . . . .	Number	 0002h	 
+@PRINT_LOOP  . . . . . . . . . .	L Near	 0A22	  _TEXT	
+@REPEAT1 . . . . . . . . . . . .	L Near	 0A18	  _TEXT	
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 DGROUP
+@fardata?  . . . . . . . . . . .	Text   	 FAR_BSS
+@fardata . . . . . . . . . . . .	Text   	 FAR_DATA
+@stack . . . . . . . . . . . . .	Text   	 DGROUP
+BMP_BLANK  . . . . . . . . . . .	Word	 040E	  _DATA	
+BMP_BUFFER . . . . . . . . . . .	Byte	 0006	  _DATA	
+BMP_COUNT  . . . . . . . . . . .	Word	 0413	  _DATA	
+BMP_FAST . . . . . . . . . . . .	L Near	 025A	  _TEXT	
+BMP_HANDLE . . . . . . . . . . .	Word	 0004	  _DATA	
+BMP_HEIGHT . . . . . . . . . . .	Word	 0002	  _DATA	
+BMP_MODE . . . . . . . . . . . .	Byte	 0411	  _DATA	
+BMP_NORM . . . . . . . . . . . .	L Near	 0266	  _TEXT	
+BMP_TRANSPARENT  . . . . . . . .	L Near	 024E	  _TEXT	
+BMP_WIDTH  . . . . . . . . . . .	Word	 0000	  _DATA	
+BMP_X2 . . . . . . . . . . . . .	Word	 040A	  _DATA	
+BMP_X  . . . . . . . . . . . . .	Word	 0406	  _DATA	
+BMP_Y2 . . . . . . . . . . . . .	Word	 040C	  _DATA	
+BMP_Y  . . . . . . . . . . . . .	Word	 0408	  _DATA	
+CALL_HIGH  . . . . . . . . . . .	L Near	 0048	  _TEXT	
+CALL_PLAY  . . . . . . . . . . .	L Near	 003E	  _TEXT	
+CHECK_CRASH1 . . . . . . . . . .	L Near	 06F0	  _TEXT	
+CHECK_CRASH2 . . . . . . . . . .	L Near	 078E	  _TEXT	
+CHECK_CRASH3 . . . . . . . . . .	L Near	 080B	  _TEXT	
+CHECK_KEY  . . . . . . . . . . .	L Near	 04FA	  _TEXT	
+CHOICE_LESS  . . . . . . . . . .	L Near	 0355	  _TEXT	
+CHOICE_MORE  . . . . . . . . . .	L Near	 03C0	  _TEXT	
+CHOICE . . . . . . . . . . . . .	Byte	 05AB	  _DATA	
+CLASH_AGIAN  . . . . . . . . . .	L Near	 0851	  _TEXT	
+CLASH_YO2  . . . . . . . . . . .	L Near	 07A3	  _TEXT	
+CLASH_YO3  . . . . . . . . . . .	L Near	 0820	  _TEXT	
+CLASH_YO . . . . . . . . . . . .	L Near	 0709	  _TEXT	
+CLEAR_OBJECT2  . . . . . . . . .	L Near	 05F7	  _TEXT	
+CLEAR_OBJECT . . . . . . . . . .	L Near	 058D	  _TEXT	
+COLOR_LOOP . . . . . . . . . . .	L Near	 01E4	  _TEXT	
+COUNTCOLOR . . . . . . . . . . .	Byte	 0412	  _DATA	
+COUNT  . . . . . . . . . . . . .	Byte	 05B6	  _DATA	
+CRASH  . . . . . . . . . . . . .	Byte	 0589	  _DATA	
+DOWN_ARROW . . . . . . . . . . .	L Near	 0314	  _TEXT	
+END_CHECKC . . . . . . . . . . .	L Near	 065D	  _TEXT	
+ENTER_MENU . . . . . . . . . . .	L Near	 03C8	  _TEXT	
+ENTER_NAME . . . . . . . . . . .	Byte	 059E	  _DATA	
+ERROR1 . . . . . . . . . . . . .	L Near	 0178	  _TEXT	
+EXIT_BMP . . . . . . . . . . . .	L Near	 0175	  _TEXT	
+EXIT_MENU_NA . . . . . . . . . .	L Near	 052E	  _TEXT	
+EXIT_TO_MENU . . . . . . . . . .	L Near	 0521	  _TEXT	
+EXIT . . . . . . . . . . . . . .	L Near	 0055	  _TEXT	
+FILESCORE  . . . . . . . . . . .	Byte	 065A	  _DATA	
+FINISH . . . . . . . . . . . . .	Byte	 04CF	  _DATA	
+FIRST  . . . . . . . . . . . . .	Byte	 04A4	  _DATA	
+GAME_OVER_NA . . . . . . . . . .	L Near	 0526	  _TEXT	
+GN_PIC . . . . . . . . . . . . .	L Near	 0ACE	  _TEXT	
+GO . . . . . . . . . . . . . . .	Byte	 0493	  _DATA	
+GUN  . . . . . . . . . . . . . .	Byte	 0516	  _DATA	
+HOW1 . . . . . . . . . . . . . .	Byte	 0458	  _DATA	
+HOW2 . . . . . . . . . . . . . .	Byte	 0465	  _DATA	
+HOW3 . . . . . . . . . . . . . .	Byte	 0472	  _DATA	
+HOW_TO_PLAY1 . . . . . . . . . .	L Near	 0058	  _TEXT	
+HOW_TO_PLAY  . . . . . . . . . .	L Near	 0052	  _TEXT	
+JUMP1_EMOTION  . . . . . . . . .	L Near	 0720	  _TEXT	
+JUMP2_EMOTION  . . . . . . . . .	L Near	 07AB	  _TEXT	
+JUMPING  . . . . . . . . . . . .	L Near	 070E	  _TEXT	
+JUMP_DOWN  . . . . . . . . . . .	Byte	 0549	  _DATA	
+JUMP_KEY . . . . . . . . . . . .	L Near	 0517	  _TEXT	
+JUMP_UP  . . . . . . . . . . . .	Byte	 0535	  _DATA	
+LINE_X . . . . . . . . . . . . .	Word	 05AE	  _DATA	
+LINE . . . . . . . . . . . . . .	Byte	 057C	  _DATA	
+LOOP_SCORE . . . . . . . . . . .	L Near	 0B43	  _TEXT	
+MAN_X  . . . . . . . . . . . . .	Word	 05B0	  _DATA	
+MAN_YY . . . . . . . . . . . . .	Word	 05B4	  _DATA	
+MAN_Y  . . . . . . . . . . . . .	Word	 05B2	  _DATA	
+MENUEXIT . . . . . . . . . . . .	Byte	 0447	  _DATA	
+MENUHIGH . . . . . . . . . . . .	Byte	 0426	  _DATA	
+MENUHOW  . . . . . . . . . . . .	Byte	 0437	  _DATA	
+MENUPLAY . . . . . . . . . . . .	Byte	 0415	  _DATA	
+MENU_EXIT  . . . . . . . . . . .	L Near	 039E	  _TEXT	
+MENU_HIGH  . . . . . . . . . . .	L Near	 035A	  _TEXT	
+MENU_HOW . . . . . . . . . . . .	L Near	 037C	  _TEXT	
+MENU_LOOP  . . . . . . . . . . .	L Near	 02DE	  _TEXT	
+MENU_PLAY  . . . . . . . . . . .	L Near	 0334	  _TEXT	
+MENU . . . . . . . . . . . . . .	L Near	 000D	  _TEXT	
+MODE_0 . . . . . . . . . . . . .	L Near	 0139	  _TEXT	
+MODE_1_2 . . . . . . . . . . . .	L Near	 014B	  _TEXT	
+MODE_3 . . . . . . . . . . . . .	L Near	 016B	  _TEXT	
+NAME1  . . . . . . . . . . . . .	Byte	 05BB	  _DATA	
+NAME2  . . . . . . . . . . . . .	Byte	 05C7	  _DATA	
+NAME_REC . . . . . . . . . . . .	Byte	 05D2	  _DATA	
+NCRASH . . . . . . . . . . . . .	Byte	 05B7	  _DATA	
+NEXT_LINE  . . . . . . . . . . .	L Near	 026B	  _TEXT	
+NEXT_  . . . . . . . . . . . . .	L Near	 0C3F	  _TEXT	
+NO_BLANK . . . . . . . . . . . .	L Near	 027D	  _TEXT	
+NO_CRASH2  . . . . . . . . . . .	L Near	 078C	  _TEXT	
+NO_CRASH3  . . . . . . . . . . .	L Near	 0809	  _TEXT	
+NO_CRASH . . . . . . . . . . . .	L Near	 06EE	  _TEXT	
+NUM2 . . . . . . . . . . . . . .	Word	 0658	  _DATA	
+NUM  . . . . . . . . . . . . . .	Word	 0656	  _DATA	
+OBJECT2  . . . . . . . . . . . .	Byte	 056C	  _DATA	
+OBJECT . . . . . . . . . . . . .	Byte	 055D	  _DATA	
+OBJ_X1 . . . . . . . . . . . . .	Word	 05AC	  _DATA	
+OVER . . . . . . . . . . . . . .	Byte	 04E5	  _DATA	
+POINT_BG . . . . . . . . . . . .	Byte	 04F2	  _DATA	
+POINT  . . . . . . . . . . . . .	Word	 05B9	  _DATA	
+PUTPIXEL_T . . . . . . . . . . .	L Near	 02B6	  _TEXT	
+PUT_LOOP . . . . . . . . . . . .	L Near	 02AC	  _TEXT	
+READY  . . . . . . . . . . . . .	Byte	 047F	  _DATA	
+RETURN . . . . . . . . . . . . .	Byte	 05B8	  _DATA	
+RE_JUMP2 . . . . . . . . . . . .	L Near	 082B	  _TEXT	
+RE_JUMP3 . . . . . . . . . . . .	L Near	 0856	  _TEXT	
+RE_JUMP  . . . . . . . . . . . .	L Near	 07A6	  _TEXT	
+RE_RUN . . . . . . . . . . . . .	L Near	 0714	  _TEXT	
+RUN_EMOTION  . . . . . . . . . .	L Near	 0678	  _TEXT	
+RUN_KEY  . . . . . . . . . . . .	L Near	 050D	  _TEXT	
+RUN  . . . . . . . . . . . . . .	Byte	 0522	  _DATA	
+SCORE_REC  . . . . . . . . . . .	Word	 0640	  _DATA	
+SECOND . . . . . . . . . . . . .	Byte	 04B9	  _DATA	
+SET_BMP_BLANK  . . . . . . . . .	L Near	 0220	  _TEXT	
+SHOW_LOOP  . . . . . . . . . . .	L Near	 022D	  _TEXT	
+SHOW_TRACK1  . . . . . . . . . .	L Near	 0541	  _TEXT	
+SHOW_TRACK2  . . . . . . . . . .	L Near	 059B	  _TEXT	
+SHOW_TRACK3  . . . . . . . . . .	L Near	 0604	  _TEXT	
+SKIP_COLOR . . . . . . . . . . .	L Near	 02B7	  _TEXT	
+SORT_LOOP_I  . . . . . . . . . .	L Near	 0BF5	  _TEXT	
+SORT_LOOP_J  . . . . . . . . . .	L Near	 0C06	  _TEXT	
+TRANSPARENT  . . . . . . . . . .	Byte	 0410	  _DATA	
+UP_ARROW . . . . . . . . . . . .	L Near	 02F2	  _TEXT	
+YEAH . . . . . . . . . . . . . .	Byte	 0503	  _DATA	
+vbuffer  . . . . . . . . . . . .	Byte	 0000	  vbufferseg	
+
+	   0 Warnings
+	   0 Errors

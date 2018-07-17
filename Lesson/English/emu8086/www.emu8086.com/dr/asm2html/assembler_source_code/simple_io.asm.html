@@ -1,0 +1,90 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/simple_io.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> simple_io.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this sample shows how to access virtual ports (0 to 0FFFFh). </font>
+<font color=#008000>; these ports are emulated in this file: c:\emu8086.io </font>
+
+<font color=#008000>; this new technology allows to make external add-on devices </font>
+<font color=#008000>; for emu8086, such as led displays, thermostat, stepper-motor, etc... </font>
+
+<font color=#008000>; "devices" folder contains sample device that works with this sample. </font>
+<font color=#008000>; (with visual basic source code). </font>
+
+#start=simple.exe#
+
+#make_bin#
+
+name <font color=#800080>"simple"</font>
+
+<font color=#008000>; write byte value 0A7h into the port 110: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0A7h
+<font color=#0000FF>out</font> 110, <font color=#C80000>al</font>
+
+<font color=#008000>; write word value 1234h into the port 112: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 1234h
+<font color=#0000FF>out</font> 112, <font color=#C80000>ax</font>
+
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0 <font color=#008000>; reset register. </font>
+
+<font color=#008000>; read byte from port 110 into AL: </font>
+<font color=#0000FF>in</font> <font color=#C80000>al</font>, 110
+
+<font color=#008000>; read word from port 112 into AX: </font>
+<font color=#0000FF>in</font> <font color=#C80000>ax</font>, 112
+
+
+<font color=#0000FF>hlt</font>
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/simple_io.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

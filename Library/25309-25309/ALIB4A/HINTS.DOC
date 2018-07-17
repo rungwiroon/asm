@@ -1,0 +1,32 @@
+File HINTS.DOC
+
+How do I find a function?
+
+  The file SUMMARY.DOC is a good place to start looking.  If one
+  of the sample programs uses similiar logic it is also a good
+  source of information.  Finally, the source files are the final
+  documentation and are named to indicate function groups.
+
+How do I find more about a function?
+
+  The SCAN program is ideal for seeing who uses a function and how.
+  It also will find the source file, and any place the function is
+  mentioned in the documentation.  For example:
+
+     SCAN *.* dword_to_hex
+
+  The above will find all dword to hex functions anywhere in the
+  current directory.  To just search in the sample programs and
+  source files use:
+
+    SCAN *.asm dword_to_hex
+
+How do I write simple programs without using the built in memory
+manager.
+
+  Using the TEMPLATE.ASM with its built in memory manager is the
+  safest way to use ALIB, but isn't necessary.  The code timer
+  is one of the sample programs and has an example of disabling
+  the memory manager.  Some of the other sample programs borrow
+  souce from library and do not make any library calls (CALC.ASM)
+

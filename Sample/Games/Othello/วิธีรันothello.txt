@@ -1,0 +1,5 @@
+วิธีรัน project othello 
+1.masm othello.asm
+2.masm exit.asm
+3.link othello+exit
+4.othello

@@ -1,0 +1,26 @@
+A:link {text-decoration:none;color:blue}
+A:active {text-decoration:none;color:blue}
+A:visited {text-decoration:none; color:blue}
+A:hover{background:"transparent";text-decoration:none ;color:"#FF0080"}
+BODY {
+	scrollbar-face-color: #B48DDC;
+	scrollbar-shadow-color: #000000;
+	scrollbar-highlight-color: #663AC1;
+	scrollbar-3dlight-color:#F1E5FF;
+	scrollbar-darkshadow-color: #F1E5FF;
+	scrollbar-track-color: #F1E5FF;
+	scrollbar-arrow-color:#F1E5FF;
+	font-family:ms sans serif;
+	font-size:10pt; 
+	color:#400052;
+	}
+textarea	{font-family:ms sans serif;font-size:10pt; color: #0000FF}
+image{
+	border-width:0px;
+    }
+table{
+	border-width:0px; 
+	}
+td {font-family:ms sans serif;font-size:10pt; color:#400052;}
+.orange { font-family: MS Sans Serif; font-size: 10pt; color: #FF7200; text-decoration: none }
+

@@ -1,0 +1,672 @@
+                ASM32 version 3.4 Programmer's Toolkit
+            tools for 32-bit assembly-language programming
+     Copyright (C) 1993 - 1995 Douglas Herr - All rights reserved
+
+
+What is ASM32?
+
+ASM32 is a library of assembly-language subroutines which provides many
+tools to access and use the 32-bit address space (up to 4 Gigabytes!) of
+386 or better personal computers.  ASM32 is not a DOS extender, but can
+use either the CauseWay DOS extender or can work with a DPMI host.
+
+DISTRIBUTION AND REGISTRATION
+
+ASM32 is user-supported software, NOT public domain software.
+Possession of the ASM32 files entitles you to evaluate this product.
+If, after evaluation, you choose to use ASM32, you are expected to
+register with the library's author.  By registering, you will be entitled
+to use the latest version of ASM32, you will be entitled to low-cost
+upgrades, you will have confidence that the version of ASM32 you are using
+has not been altered by others, and you will be supporting my programming
+efforts.
+
+Two levels of registration are available: For $25, you will recieve the
+most recent ASM32 as well as the EGA32 libraries, which are more
+compact, for EGA and VGA systems only; for $50 you will receive full
+source code to ASM32 subroutines along with the assembled libraries.
+If you first register at the $25 level, you may register for ASM32 source
+code at any time for $25.  Upgrades for either level of registration are
+$10.
+
+Register by sending the registration fee to:
+
+   Douglas Herr
+   P. O. Box 207
+   Sacramento, CA  95812
+   U.S.A.
+
+   Telephone (916) 721-8762
+   CompuServe 71247,3542
+   Internet 71247.3542@compuserve.com
+
+Please specify either 5 1/4 or 3 1/2 inch disks.  Bug reports (if any)
+should be sent to the same address.  If you wish to contact me by
+telephone, please call after 8:00 PM Pacific time so I can get my kids
+in bed.
+
+Registration is a LICENSE fee, not a purchase of ASM32.  Registered users
+may use ASM32 or modified subroutines based on ASM32 source code in their
+own programs.  Registered programmers may distribute programs using ASM32
+subroutines without royalty payments.
+
+ASM32 object files, ASM32 source code (unmodified or modified) and the
+ASM32 library and documentation remain the property of Douglas Herr.
+ASM32 source code, modified or unmodified, may not be re-distributed.
+
+
+DPMI DOS extender
+
+DPMI is a standard DOS extender interface which permits normal access to
+the PC's DOS and BIOS functions while allowing access to the 4-gigabyte
+address space of the 386 (or better) computers.  Windows 3.1 is an example
+of a DPMI host.  To use Windows' DPMI capabilities, double-click on the
+MS-DOS prompt from the Main window.  You'll get a standard DOS prompt,
+and your programs will be able to run in 32-bit protected mode.
+
+
+CauseWay DOS extender
+
+The CauseWay DOS extender is a commercial product which is required in
+order to use ASM32CW.LIB.  CauseWay must be purchased separately from
+ASM32.  Licence of ASM32 does not imply permission to use CauseWay.
+
+The CauseWay DOS extender is a DPMI- and VCPI-compliant extender intended
+for Assembly-language programming.  CauseWay permits 16-bit segments,
+32-bit segments and mixed 16- and 32-bit segment programs, and includes
+a CauseWay-extended debugger for all .EXE files linked with the CauseWay
+extender.  Best of all, CauseWay is affordable!  I have included in this
+ASM32 shareware package some pre-release documentation for CauseWay;
+CW-ASM.DOC should not be considered complete CauseWay documentation, but
+does illustrate CauseWay's capabilities.  CauseWay was initially released
+1/1/1994.
+
+For more information about the CauseWay extender and debugger, contact:
+
+Devore Software and Consulting
+P. O. Box 4283
+Naperville, IL  60567-4283
+
+Voice: (708) 717-6369
+Fax:   (708) 717-6373
+
+CompuServe: 71540,62
+Internet: 71540.62@compuserve.com
+
+The advantages of CauseWay over DPMI are many:
+
+1) CauseWay works on any 386 or better system, whether a DPMI host is
+   installed or not
+
+2) The CauseWay package includes the CWD debugger, which I have found to
+   be extremely helpful
+
+3) CauseWay will load your initialized code and data to high memory, making
+   much larger programs possible
+
+4) Michael Devore and John Wildsmith are always available on CompuServe to
+   answer questions about CauseWay.
+
+I have no commercial ties with John or Michael; In my personal opinion,
+CauseWay is not only an excellent product, it's also a great value.
+
+The ASM32 shareware package includes these files:
+
+STARTCW.ASM     Startup code for CauseWay programs
+STARTDP.ASM     Startup code for DPMI programs
+ASM32CW.LIB     the ASM32 library, CauseWay NEAR model version
+ASM32DP.LIB     the ASM32 library, DPMI version
+ASM32.DOC       this introductory file
+DATA.DOC        string and integer data manipulation
+DISK.DOC        disk & file subroutines
+DPMI.DOC        information about the DPMI version of ASM32
+FLOAT.DOC       floating-point subroutines
+GRAPHICS.DOC    ASM32 graphics
+INPUT.DOC       keyboard input subroutines
+MODE.DOC        ASM32 screen mode subroutines
+MULTIWIN.DOC    text-mode multi-window subroutines
+SOLVE.DOC       ASM32 mathematical solutions
+SYSTEM.DOC      subroutines which determine PC status or equipment
+TEXT.DOC        text-mode video subroutines
+CWNEAR.INC      MODEL.INC memory model definition file for CauseWay programs
+DPMI.INC        MODEL.INC memory model definition file for DPMI programs
+DATASEG.INC     data segment definition INCLUDE file for your source code
+CODESEG.INC     code segment definition INCLUDE file for your source code
+E32.ZIP         archive of source and executable of 32-bit text editor
+                produced with ASM32 and CauseWay extender
+
+These files may be copied and distributed freely provided that all the
+above files are distributed together in unmodified or archived form
+provided that distribution charges on a floppy disk are less than $10.
+The ASM32 shareware package may also be distributed with other shareware
+or freeware programs on CD-ROM media.
+
+
+LIMITED LIABILITY & OTHER LEGAL STUFF
+
+Since I am unable to supervise all uses of ASM32, I cannot be held
+responsible for any damages, either direct or incidental, resulting
+from the use or abuse of ASM32.  I have used ASM32 subroutines on
+a wide variety of equipment and have found the library to be highly
+compatible with common 386 and 486 PC equipment, but you must use this
+library at your own risk.  Try it before you buy it.
+
+
+COMPATIBILITY
+
+ASM32 subroutines are intended for IBM-compatible personal computers
+with 386SX or better processor and PC-DOS or MS-DOS operating systems.
+I cannot provide support for use of ASM32 on other equipment or with
+other operating systems.
+
+
+ABBREVIATIONS for video boards
+
+Most new 32-bit computers are sold with a VGA monitor, but older PCs
+are frequently upgraded to 32-bit power while retaining older video
+equipment.  Even a new computer may also be equipped with a monochrome
+monitor along with the VGA.  For these reasons ASM32 includes support for
+many video standards:
+
+MDA   IBM-standard Monochrome Display Adapter
+CGA   IBM-standard Color Graphics Adapter (ugh!)
+MCGA  IBM-standard Multi-color Graphics Array
+EGA   IBM-standard Enhanced Graphics Adapter
+SEGA  EGA equipment with additional capabilities
+VGA   IBM-standard Video Graphics Array
+SVGA  VGA equipment with additional capabilities
+ATT   ATT 6300 and compatible Olivetti
+HGC   Hercules Graphics Card and compatibles
+HGC+  Hercules Graphics Card Plus
+InC   Hercules InColor Card
+
+
+OTHER ABBREVIATIONS
+
+CF = Carry Flag
+DF = Direction flag
+SF = Sign Flag
+ZF = Zero Flag
+
+
+ASSUMPTIONS
+
+Unless otherwise stated, ASM32 subroutines assume that:
+
+1) All strings are terminated with a NUL character.
+
+2) Subroutines with names including '$' may trash registers, and are
+   intended primarily for ASM32's internal use.
+   Documentation for many '$' subroutines is in SOURCE.DOC, provided to
+   registered ASM32 programmers.
+
+3) All ASM32 subroutines require a near call.  ASM32CW assumes
+   CauseWay's NEAR model, and that all selectors point to the NEAR segment.
+   ASM32DP subroutines are assembled with the
+
+   .MODEL SMALL
+
+   directive.
+
+4) ASM32 data types are:
+
+   chr   1 byte
+   str   character string, normally terminated with ASCII 0 (NUL)
+   I2    2-byte signed integer
+   U2    2-byte unsigned integer
+   I4    4-byte signed integer
+   U4    4-byte unsigned integer
+   F4    4-byte floating point value, IEEE format
+   F8    8-byte floating point value, IEEE format
+
+
+
+HOW DO I USE ALL THIS NEAT STUFF?
+
+ASM32 source code has been tested with MASM versions 5.0 and 5.1, and
+with TASM versions 2.01, 3.0, 3.1 and 4.0.  To keep your source code
+usable with either the DPMI or CauseWay versions of ASM32, include
+the line
+
+INCLUDE MODEL.INC
+
+in your source code, and use
+
+INCLUDE DATASEG.INC
+
+and
+
+INCLUDE CODESEG.INC
+
+to declare your code and data segments.
+
+Copy or rename either DPMI.INC or CWNEAR.INC to MODEL.INC and assemble
+normally:
+
+MASM yoursrc;
+
+Link with your object files this way:
+
+(CauseWay)
+C:\>WL32 [options] startcw+yourobj,yourexe,yourmap,ASM32CW
+
+(DPMI)
+C:\>TLINK /3 [options] startdp+yourobj,yourexe,yourmap,ASM32PM
+-or-
+C:\>LINK [options] startdp+yourobj,yourexe,yourmap,ASM32PM
+
+Note that some older versions of MS-LINK do not handle 32-bit backward
+jumps correctly.  WL32 and TLINK do not have this problem.  MS-LINK
+version 5.13 works well; I assume that newer versions also will work.
+
+Any program that calls an ASM32 subroutine must declare the subroutine as
+an external procedure:
+
+extrn  gedit:near        ; tell assembler to assume that GEDIT is an external
+                         ; procedure to be linked later
+
+
+If you want to support only EGA or better video hardware, link with ASM32's
+EGA32 library, provided on registration:
+
+(CauseWay)
+C:\>WL32 [options] yourobj,yourexe,yourmap,EGA32CW+ASM32CW
+
+(DPMI)
+C:\>LINK [options] yourobj,yourexe,yourmap,EGA32DP+ASM32DP;
+-or-
+C:\>TLINK /3 [options] yourobj,yourexe,yourmap,EGA32DP+ASM32DP;
+
+Some versions of WL32 will give you numerous error messages because of
+duplicate subroutine names in EGA32CW and ASM32CW, but as long as you
+specify EGA32CW before ASM32CW, the EGA version of the subroutine will be
+linked and your program will work properly.
+
+
+DOCUMENTATION
+
+There's alot of stuff in ASM32, so I've tried to keep the documentation
+succinct.  Here's a general guide to ASM32's documentation:
+
+
+
+SUBROUTINE:  a brief description
+Source:      the source code file (and other subroutines used)
+
+Call with:   this tells you what data the subroutine expects
+             additional information may be found here
+Returns:     tells you what registers and/or flags contain useful info
+             Additional lines may include more specific information about
+             the register values returned.
+Uses:        registers and flags which may be changed
+Supports:    particular equipment or operating modes; this will not apply to
+             all subroutines.
+Example:     an example of how parameters are passed to the subroutine
+             and a typical use of the subroutine.
+
+
+
+Documentation for ASM32 subroutines is in the following files:
+
+Subroutine      description                                           .DOC file
+
+$EDIT           editor module used by TEdit and GEdit                 INPUT.DOC
+$SSORT          generic Shell sort engine                              DATA.DOC
+ABSF4           get absolute value of 4-byte real number              FLOAT.DOC
+ABSF8           get absolute value of 8-byte real number              FLOAT.DOC
+ADDF4           add two 4-byte real numbers w/o x87                   FLOAT.DOC
+ADDF8           add two 8-byte real numbers w/o x87                   FLOAT.DOC
+ANSICOLOR       returns color attribute used by ANSI device driver     TEXT.DOC
+BB16MASK        create reverse image mask for 16-color bitblock    GRAPHICS.DOC
+BB16REV         reverse a 16-color bitblock right-to-left          GRAPHICS.DOC
+BB256OVL        overlay one 256-color bitblock on another          GRAPHICS.DOC
+BB256REV        reverse a 256-color bitblock right-to-left         GRAPHICS.DOC
+BEZIER          draw a bezier curve on the screen                  GRAPHICS.DOC
+BITBLOCKBYTES   calculate bytes required to save a bit block       GRAPHICS.DOC
+BITPLANEBYTES   calculate bytes to save a plane of bit block       GRAPHICS.DOC
+BLINK           turn blink attributes off or on                        TEXT.DOC
+BUFFERDIM       change logical graphics buffer dimensions          GRAPHICS.DOC
+C2F             convert degrees Celcius to degrees Fahrenheit         SOLVE.DOC
+CHRDEL          delete a character from an ASCIIZ string               DATA.DOC
+CHRNDEL         delete a character from an n-length string             DATA.DOC
+CIRCLEASPECT    modifies aspect ratio of circle                    GRAPHICS.DOC
+CLEARKEY        clears the keyboard's 'type-ahead' buffer             INPUT.DOC
+CMPF4           compare two float4 numbers                            FLOAT.DOC
+CMPF8           compare two float8 numbers                            FLOAT.DOC
+COLOR16         calculate color value for 16-color palette           SYSTEM.DOC
+COLOR32k        calculate color attribute for SVGA 32k-color modes GRAPHICS.DOC
+COLORATTR       calculates a color attribute byte                      DATA.DOC
+CRTINFO         returns video buffer, screen size, etc.                TEXT.DOC
+CSET            centers a string in a fixed field                      DATA.DOC
+CUBEFITF4       fit a cubic equation to a float4 point series         SOLVE.DOC
+CUBEFITF8       fit a cubic equation to a float8 point series         SOLVE.DOC
+CUBEFITI2       fit a cubic equation to an integer2 point series      SOLVE.DOC
+CUBEFITI4       fit a cubic equation to an integer4 point series      SOLVE.DOC
+CURSORCOLOR     enable InColor palette, set cursor color               TEXT.DOC
+CURSOROFF       make hardware cursor invisible at present location     TEXT.DOC
+CURSORON        move cursor to (row, col) and update cursor shape      TEXT.DOC
+DAYNAME         returns ASCII string for day number                    DATA.DOC
+DEFGMODE        ASM32 uses system graphics mode (default)          GRAPHICS.DOC
+DEG2RAD         convert degrees of arc to radians                     SOLVE.DOC
+DISKFREE        determines free disk space                             DISK.DOC
+DISKWP          determines if a floppy disk is writable                DISK.DOC
+DOTBAK          changes a file to a .BAK file                          DISK.DOC
+DRAWCIRCLE      draw a circle                                      GRAPHICS.DOC
+DRAWBOX         draw a rectangle on a graphics screen              GRAPHICS.DOC
+DRAWLINE        draw a line on a graphics screen                   GRAPHICS.DOC
+DRAWMODE        public byte modifying ASM32 graphics drawing mode  GRAPHICS.DOC
+
+EXENAME         determine full path and name of executing program    SYSTEM.DOC
+EXESIZE         determine size of executable portion of .EXE file    SYSTEM.DOC
+F2C             convert degrees Fahrenheit to degrees Celcius         SOLVE.DOC
+F4TOI2          converts float4 value to an integer                   FLOAT.DOC
+F4TOI4          converts float4 value to a long integer               FLOAT.DOC
+FACTORIAL       calculate the factorial of an integer                 SOLVE.DOC
+FCLOSE          close a file managed by ASM32 buffered I/O system      DISK.DOC
+FCOPY           copies one file to another                             DISK.DOC
+FCOUNT          counts the number of files matching filespec mask      DISK.DOC
+FCREATE         create new file and initialize I/O buffer              DISK.DOC
+FEXIST          determines if a file exists                            DISK.DOC
+FFLUSH          flush file output buffer for specifed handle           DISK.DOC
+FGET            read specified number of bytes from a file buffer      DISK.DOC
+FGETCHR         read a character from a file buffer                    DISK.DOC
+FGETSTR         read an ASCII string from a file buffer                DISK.DOC
+FILELIST        creates a list of filenames matching filespec mask     DISK.DOC
+FILL4, FILL4B   fill a buffer with 4-byte data                         DATA.DOC
+FILL8, FILL8B   fill a buffer with 8-byte data                         DATA.DOC
+FILLAREA        fills an irregular area on a graphics screen       GRAPHICS.DOC
+FILLBOX         draw a filled rectangle on a graphics screen       GRAPHICS.DOC
+FILLCIRCLE      draw a filled circle                               GRAPHICS.DOC
+FILLPATTERN     define an optional pattern for FillArea & FillBox  GRAPHICS.DOC
+FINDMONO        determine if monochrome monitor is installed         SYSTEM.DOC
+FLOPPIES        determines the number of floppy drives installed     SYSTEM.DOC
+FLOPPYTYPE      determines the type of floppy drive installed        SYSTEM.DOC
+FOPEN           open a file and initialize buffered I/O                DISK.DOC
+FORCEGMODE      force ASM32 to use a graph mode                    GRAPHICS.DOC
+FPRIMEI2        calculates the derivative of a polynomial function    SOLVE.DOC
+FPRIMEI4        calculates the derivative of a polynomial function    SOLVE.DOC
+FPRIMEF4        calculates the derivative of a polynomial function    SOLVE.DOC
+FPRIMEF8        calculates the derivative of a polynomial function    SOLVE.DOC
+FPUT            write specified data to output file buffer             DISK.DOC
+FPUTCHR         writes a character to output file buffer               DISK.DOC
+FPUTCRLF        writes a CR+LF pair to output file buffer              DISK.DOC
+FPUTSTR         writes a string to output file buffer                  DISK.DOC
+
+FSEEK           move file pointer for file opened by FOPEN             DISK.DOC
+FSIZE           determines the size of an open file                    DISK.DOC
+FSTRISTR        search text file for ASCIIZ string, case-insensetive   DISK.DOC
+FSTRSTR         search text file for ASCIIZ string, case-sensetive     DISK.DOC
+FVALUE          calculate future value of an even cash flow           SOLVE.DOC
+GBASEADDRESS    change ASM32 graphics default base address         GRAPHICS.DOC
+GCENTER         centers a string on a graphics screen              GRAPHICS.DOC
+GCLEAR          clears the active portion of a graphics screen     GRAPHICS.DOC
+GCOLOR          establish color used by ASM32 graphics             GRAPHICS.DOC
+GCOPY           copies one page of graphics memory to another      GRAPHICS.DOC
+GCURSOR         simulate text-mode cursor on graphics screen       GRAPHICS.DOC
+GEDIT           string editor for graphics modes                      INPUT.DOC
+GETBITBLOCK     saves a portion of a graphics screen in memory     GRAPHICS.DOC
+GETBITPLANE     saves one plane of a bit block in memory           GRAPHICS.DOC
+GETCMD          isolates multiple command line parameters              DATA.DOC
+GETCPU          determines the computer's CPU chip                   SYSTEM.DOC
+GETCRT          determine active monitor                             SYSTEM.DOC
+GETDOT          determine pixel value on graphics screen           GRAPHICS.DOC
+GETGSCREEN      save graphics screen image in memory               GRAPHICS.DOC
+GETKEY          returns next key pressed                              INPUT.DOC
+GETMARKED       returns filename marked by MarkFile                   INPUT.DOC
+GETSCREEN       save screen image in memory to restore later           TEXT.DOC
+GETVIEW         returns a pointer to graphics view area data       GRAPHICS.DOC
+GLOAD           loads a graphics screen saved by GSave             GRAPHICS.DOC
+GPAGE           changes active and displayed graphics page         GRAPHICS.DOC
+GPRINT          prints ASCIIZ string on a graphics screen          GRAPHICS.DOC
+GPRINTDOWN      prints ASCIIZ string vertically on graph screen    GRAPHICS.DOC
+GPRINTDOWNX     print string vertically on graph screen, 2x width  GRAPHICS.DOC
+GPRINTDOWN2X    print string vertically on graph screen, 2x size   GRAPHICS.DOC
+GPRINTUP        prints ASCIIZ string vertically on graph screen    GRAPHICS.DOC
+GPRINTUPX       print string vertically on graph screen, 2x width  GRAPHICS.DOC
+GPRINTUP2X      print string vertically on graph screen, 2x sixe   GRAPHICS.DOC
+GPRINTX         print string on a graphics screen, double width    GRAPHICS.DOC
+GPRINT2X        print string on a graphics screen, double size     GRAPHICS.DOC
+GPUTCHR         print character on graphics screen                 GRAPHICS.DOC
+GREP            search specified file(s) for text string               DISK.DOC
+GSAVE           saves a graphics screen as a disk file             GRAPHICS.DOC
+GUCURSOR        simulate underscore cursor on graphics screen      GRAPHICS.DOC
+HGRAPH          establish Hercules graphics mode using two pages       MODE.DOC
+HGRAPH0         establish Hercules graphics mode using one page        MODE.DOC
+HIDEMOUSE       make mouse cursor disappear                           INPUT.DOC
+
+HRAM8029        establish 80-column, 29-row RamFont mode               MODE.DOC
+HRAM8043        establish 80-column, 43-row RamFont mode               MODE.DOC
+HRAM9025        establish 90-column, 25-row RamFont mode               MODE.DOC
+HRAM9029        establish 90-column, 29-row RamFont mode               MODE.DOC
+HRAM9043        establish 90-column, 43-row RamFont mode               MODE.DOC
+HSCROLL         scrolls a portion of the screen left or right          TEXT.DOC
+HTEXT           establish Hercules text mode                           MODE.DOC
+I2TOSTR         convert a 2-byte integer to an ASCIIZ string           DATA.DOC
+I4TOF4          convert a 4-byte integer to 4-byte real number        FLOAT.DOC
+I4TOSTR         convert a 4-byte integer to an ASCIIZ string           DATA.DOC
+ICOSINE         get integer cosine*64k                                SOLVE.DOC
+INSERT          control INSERT key status                            SYSTEM.DOC
+ISALPHA         determines if a keycode returned by GetKey is A - z   INPUT.DOC
+ISANSI          determines if ANSI is loaded and active              SYSTEM.DOC
+ISATT           determines if ATT 6300 display card is installed     SYSTEM.DOC
+ISDIGIT         determines if a keycode returned by GetKey is 0 - 9   INPUT.DOC
+ISEVGA          determines if an EGA or VGA is installed             SYSTEM.DOC
+ISHERC          determine if a Hercules card is installed            SYSTEM.DOC
+ISINE           get integer sine*64k                                  SOLVE.DOC
+ISLOWER         determines if a keycode returned by GetKey is a - z   INPUT.DOC
+ISMOUSE         determines if a mouse is installed                   SYSTEM.DOC
+ISSEVGA         determines if a Super EGA or Super VGA is installed  SYSTEM.DOC
+ISUPPER         determines if a keycode returned by GetKey is A - Z   INPUT.DOC
+ISVBE           detects VESA VBE video card                          SYSTEM.DOC
+JANEIN          German language version of YesNo                      INPUT.DOC
+KBDTYPE         determines type of keyboard and functions supported  SYSTEM.DOC
+KEYIFWAITING    returns first key if one waiting in keyboard buffer   INPUT.DOC
+KEYORBUTTON     returns either keypress or mouse button press         INPUT.DOC
+KEYWAITING      determines if a key is waiting in keyboard buffer     INPUT.DOC
+LINEFITF4       fit a line equation to point series                   SOLVE.DOC
+LINEFITF8       fit a line equation to point series                   SOLVE.DOC
+LINEFITI2       fit a line equation to point series                   SOLVE.DOC
+LINEFITI4       fit a line equation to point series                   SOLVE.DOC
+LINEPATTERN     defines an optional pattern to use with DrawLine   GRAPHICS.DOC
+LOADPCX         reads & decodes .PCX-format file                   GRAPHICS.DOC
+LSET            left-justifies a string in a field                     DATA.DOC
+LTRIM           removes leading blanks from an ASCIIZ string           DATA.DOC
+MARKCOUNT       count filenames marked in MarkFile list               INPUT.DOC
+MARKFILE        Display filename list and select one or more files    INPUT.DOC
+MASKEDIT        edit one or more fields within a non-editable mask    INPUT.DOC
+MATHCHIP        determine if 80x87 math coprocessor is installed     SYSTEM.DOC
+MAXF4, MAXF4B   determine maximum value in a real number array        FLOAT.DOC
+MAXF8, MAXF8B   determine maximum value in a real number array        FLOAT.DOC
+MAXI2, MAXI2B   determine maximum value in integer array               DATA.DOC
+MAXI4, MAXI4B   determine maximum value in long integer array          DATA.DOC
+MAXU2, MAXU2B   determine maximum value in unsigned integer array      DATA.DOC
+MAXU4, MAXU4B   determine maximum value in unsigned long integer array DATA.DOC
+MEMCOPY         safe copy checks for source, destination overlap       DATA.DOC
+MENUOPTION      define options for PullDown menu system               INPUT.DOC
+
+MINF4, MINF4B   determine minimum value in a real number array        FLOAT.DOC
+MINF8, MINF8B   determine minimum value in a real number array        FLOAT.DOC
+MINI2, MINI2B   determine minimum value in integer array               DATA.DOC
+MINI4, MINI4B   determine minimum value in long integer array          DATA.DOC
+MINU2, MINU2B   determine minimum value in unsigned integer array      DATA.DOC
+MINU4, MINU4B   determine minimum value in unsigned long integer array DATA.DOC
+MLOAD           quickly loads a disk file into far memory              DISK.DOC
+MODE43          switch EGA to 80x43 text mode or VGA to 80x50 text     MODE.DOC
+MONTHNAME       returns ASCII string for month given month number      DATA.DOC
+MOUSELIMIT      limit mouse's range on screen                         INPUT.DOC
+MOUSEPOS        position mouse on the screen                          INPUT.DOC
+MOUSESTATUS     determine mouse location & buttons pressed            INPUT.DOC
+MOUSESAVE       save mouse state                                     SYSTEM.DOC
+MOUSERESTORE    restore previously saved mouse state                 SYSTEM.DOC
+MSAVE           save memory block as disk file                         DISK.DOC
+MULF4           multplies two 4-byte floating-point numbers w/o x87   FLOAT.DOC
+MWBORDER        draw border around window opened by MWOPEN         MULTIWIN.DOC
+MWCENTER        center a string in a window opened by MWOPEN       MULTIWIN.DOC
+MWCLEAR         clear a window opened by MWOPEN                    MULTIWIN.DOC
+MWCLOSE         close window opened with MWOPEN and release buffer MULTIWIN.DOC
+MWCLOSEALL      close all open windows and release window buffers  MULTIWIN.DOC
+MWDEFAULT       change MWOPEN default window status                MULTIWIN.DOC
+MWDISPLAY       display all unhidden windows in multiwindow system MULTIWIN.DOC
+MWFILL          fill a window opened by MWOPEN                     MULTIWIN.DOC
+MWHIDE          hide window in multiwindow display system          MULTIWIN.DOC
+MWHIDEALL       hide all windows in multiwindow display system     MULTIWIN.DOC
+MWINIT          initialize multi-window base screen                MULTIWIN.DOC
+MWNOBORDER      set "no border" bit in window status byte          MULTIWIN.DOC
+MWNOSHADOW      disable "shadow" effect for selected window        MULTIWIN.DOC
+MWOPEN          open a window in multi-window system               MULTIWIN.DOC
+MWPRINT         print string in window opened by MWOPEN            MULTIWIN.DOC
+MWPRINTCE       print string in window and clear to edge of window MULTIWIN.DOC
+MWSELECT        determine window visible at screen coordinates     MULTIWIN.DOC
+MWSHADOW        enable "shadow" effect for selected window         MULTIWIN.DOC
+MWTITLE         center a string at the top of a window             MULTIWIN.DOC
+MWTOP           move selected window to top of overlapping windows MULTIWIN.DOC
+MWUNHIDE        unhide window in multiwindow display system        MULTIWIN.DOC
+MWUNHIDEALL     unhide all windows in multiwindow display system   MULTIWIN.DOC
+NORMF4, NORMF4B normalize a float4 data series                        SOLVE.DOC
+NORMF8, NORMF8B normalize a float8 data series                        SOLVE.DOC
+NPVALUE         calculate net present value of an uneven cash flow    SOLVE.DOC
+OUINON          French language version of YesNo                      INPUT.DOC
+PALETTE16       update 16-color palette registers                    SYSTEM.DOC
+PAINT           change all color attributes on a text-mode screen      TEXT.DOC
+PATH            returns a PATH from the program's enviornment block    DATA.DOC
+
+PAYMENT         calculate payment required given n, i, pv, fv         SOLVE.DOC
+PCXINFO         reads vital information about .PCX-format file     GRAPHICS.DOC
+PICKFILE        select filename from list                             INPUT.DOC
+PICKSTRING      select one from a list of strings                     INPUT.DOC
+POLAR2RECT      get rectangular coordinates from polar                SOLVE.DOC
+PSOLVEF4        solve a polynomial equation for y, given x            SOLVE.DOC
+PSOLVEF8        solve a polynomial equation for y, given x            SOLVE.DOC
+PSOLVEI2        solve a polynomial equation for y, given x            SOLVE.DOC
+PSOLVEI4        solve a polynomial equation for y, given x            SOLVE.DOC
+PULLDOWN        pull-down menu system; text mode                      INPUT.DOC
+PUTBITBLOCK     restores bit block saved by GetBitBlock            GRAPHICS.DOC
+PUTBITPLANE     restores bit plane saved by GetBitPlane            GRAPHICS.DOC
+PUTDOT          set a pixel on a graphics screen                   GRAPHICS.DOC
+PUTKEY          put a keycode in the keyboard's type-ahead buffer     INPUT.DOC
+PUTGSCREEN      restores graphics screen image saved by GetGScreen GRAPHICS.DOC
+PUTSCREEN       restores screen image saved by GetScreen               TEXT.DOC
+PVALUE          calculate present value of an even cash flow          SOLVE.DOC
+QFNAME          given a partial filename, returns full path+filename   DISK.DOC
+QUADFITF4       fit a quadratic equation to a data series             SOLVE.DOC
+QUADFITF8       fit a quadratic equation to a data series             SOLVE.DOC
+QUADFITI2       fit a quadratic equation to a data series             SOLVE.DOC
+QUADFITI4       fit a quadratic equation to a data series             SOLVE.DOC
+RAD2DEG         convert radians to degrees of arc                     SOLVE.DOC
+RANDOM          generates a near-random number                         DATA.DOC
+RECOLOR         change selected color attributes on a text-mode screen TEXT.DOC
+RECT2POLAR      get polar coordinates from rectangular                SOLVE.DOC
+RESETVIEW       restores defalt view area on active graphics page  GRAPHICS.DOC
+RSET            right-justifies a string in a field                    DATA.DOC
+RTRIM           removes trailing blanks from an ASCIIZ string          DATA.DOC
+SAMP2POP        stddev option                                         SOLVE.DOC
+SCALEF4         scale a float4 number by an integer power of 2        FLOAT.DOC
+SCALEF8         scale a float8 number by an integer power of 2        FLOAT.DOC
+SCREENBYTES     calculates bytes required to save screen image         TEXT.DOC
+SCREENORIGIN    control position of video buffer on screen         GRAPHICS.DOC
+SHOWGPAGE       change graphics page displayed on screen           GRAPHICS.DOC
+SHOWGPLANE      show one or more planes of 16-color EGA/VGA screen GRAPHICS.DOC
+SHOWMOUSE       make mouse cursor visible                             INPUT.DOC
+SHOWTPAGE       change video page shown on screen                      TEXT.DOC
+SINO            Spanish language version of YesNo                     INPUT.DOC
+SMALLTEXT       change GPrint default to 8x8 characters            GRAPHICS.DOC
+SNOWOFF         disables CGA snow control                              TEXT.DOC
+SNOWON          enables CGA snow control (ASM32 default)               TEXT.DOC
+SORTF4HI        sorts the values in a float4 array, highest first     FLOAT.DOC
+SORTF4LO        sorts the values in a float4 array, lowest first      FLOAT.DOC
+SORTF8HI        sorts a float8 array, highest first                   FLOAT.DOC
+SORTF8LO        sorts a float8 array, lowest first                    FLOAT.DOC
+SORTI2HI        sorts the values in an array of 2-byte integers        DATA.DOC
+SORTI4HI        sorts the values in an array of 4-byte integers        DATA.DOC
+SORTI2LO        sorts the values in an array of 2-byte integers        DATA.DOC
+SORTI4LO        sorts the values in an array of 4-byte integers        DATA.DOC
+SORTU2HI        sorts an array of unsigned 2-byte integers             DATA.DOC
+SORTU2LO        sorts an array of unsigned 2-byte integers             DATA.DOC
+SORTU4HI        sorts an array of unsigned 4-byte integers             DATA.DOC
+SORTU4LO        sorts an array of unsigned 4-byte integers             DATA.DOC
+STDDEVF4        calculate standard deviation of float4 series         SOLVE.DOC
+STDDEVF8        calculate standard deviation of float8 series         SOLVE.DOC
+STDDEVI2        calculate standard deviation of integer2 series       SOLVE.DOC
+STDDEVI4        calculate standard deviation of integer4 series       SOLVE.DOC
+STDTEXT         restore GPrint default characters                  GRAPHICS.DOC
+STR2VBUF        copies a string to the video buffer                    TEXT.DOC
+STRCPY          copy an ASCIIZ string to existing buffer               DATA.DOC
+STRNCPY         copy ECX bytes of an ASCII string to existing buffer   DATA.DOC
+
+STRTOI4         converts an ASCII string to equivalent long integer    DATA.DOC
+STRNTOI4        converts n bytes of string to equivalent long integer  DATA.DOC
+STRCAT          catenates (adds) two strings                           DATA.DOC
+STRCHR          searches for a specified character in a string         DATA.DOC
+STRCMP          compare strings, case-sensetive                        DATA.DOC
+STRDUP          duplicates an ASCIIZ string                            DATA.DOC
+STRINS          combines string0 and string1 at specified position     DATA.DOC
+STRICMP         compare strings, case-insensetive                      DATA.DOC
+STRIPCHR        removes selected character from a string               DATA.DOC
+STRISTR         finds a substring in a string, case insensetive        DATA.DOC
+STRLEN          determines the length of an ASCIIZ string              DATA.DOC
+STRLWR          change upper-case characters in a string to lower      DATA.DOC
+STRNCHR         searches n bytes of a string for for a character       DATA.DOC
+STRNDUP         duplicates n characters of a string                    DATA.DOC
+STRNLWR         changes n bytes in string to lower case                DATA.DOC
+STRNRCHR        finds the last character matching AL in n bytes        DATA.DOC
+STRNREV         reverses n bytes of an ASCIIZ string                   DATA.DOC
+STRNSET         sets n characters in a string to specified character   DATA.DOC
+STRNUPR         changes n bytes in string to upper case                DATA.DOC
+STRREV          reverses all characters in an ASCIIZ string            DATA.DOC
+STRRCHR         finds the last byte in an ASCIIZ string matching AL    DATA.DOC
+STRRSTR         finds the last substring in a string, case sensetive   DATA.DOC
+STRSET          sets all characters in a string to specified character DATA.DOC
+STRSPACE        creates a new string of space characters               DATA.DOC
+STRSTR          finds a substring in a string, case sensetive          DATA.DOC
+STRUPR          changes lower-case characters in string to upper case  DATA.DOC
+SVGA132         set 132-column text modes on SEGA and SVGA systems     MODE.DOC
+SVGA16          set 800x600 or 1024x768 16-color mode                  MODE.DOC
+SVGA256         set 256-color mode up to 1024x768 pixels               MODE.DOC
+SVGA32k         set 32k-color mode up to 1280x1024 pixels              MODE.DOC
+SWAPB           swaps data areas                                       DATA.DOC
+SYS2UC          convert system coordinates to user coordinates     GRAPHICS.DOC
+TCENTER         prints a string on the screen, centered horizontally   TEXT.DOC
+TCOPY           copies one page of text-mode video memory to another   TEXT.DOC
+TCLEAR          clears text-mode screen with specified color attribute TEXT.DOC
+TEDIT           string editor for text modes                          INPUT.DOC
+TFILL           fill text-mode screen with specified character & color TEXT.DOC
+TGETCHR         read character and color attribute from text screen    TEXT.DOC
+TLOAD           loads a screen image disk file saved by TSave          TEXT.DOC
+TMOUSELIMIT     limit mouse's range of motion on text screen          INPUT.DOC
+TOCOLOR         switch system to color monitor or color text mode      MODE.DOC
+TOLOWER         converts keycode from GetKey to lower case            INPUT.DOC
+TOMONO          switch system to monochrome monitor or mono text mode  MODE.DOC
+TOUPPER         converts keycode from GetKey to upper case            INPUT.DOC
+TPAGE           changes active page and shows active page              TEXT.DOC
+TPRINT          print ASCIIZ string directly to video buffer           TEXT.DOC
+TPRINTCE        print ASCIIZ string & clear to end of line             TEXT.DOC
+TPRINTL         print directly to video buffer, lower case             TEXT.DOC
+TPRINTU         print directly to video buffer, upper case             TEXT.DOC
+TPUTCHR         write one character to video buffer                    TEXT.DOC
+TSAVE           saves a screen image as a disk file                    TEXT.DOC
+
+UC2SYS          convert user coordinates to system coordinates     GRAPHICS.DOC
+UCINIT          initialize user-defined coordinates                GRAPHICS.DOC
+UCURSORON       move cursor to (row, col), change to underscore        TEXT.DOC
+USE32K, USE64K  Hercules memory configuration control                SYSTEM.DOC
+USEGPAGE        changes active graphics page                       GRAPHICS.DOC
+USEGSCREEN      direct ASM32 graphics to off-screen buffer         GRAPHICS.DOC
+USEDEFAULTSCREEN restore ASM32 graphics to using video hardware    GRAPHICS.DOC
+USETPAGE        establish ASM32's active page                          TEXT.DOC
+VGA13X          use undocumented 256-color VGA modes                   MODE.DOC
+VIEWLIMIT       determine current mode's maximum dimensions        GRAPHICS.DOC
+VSCROLL         scroll a portion of the screen up or down              TEXT.DOC
+WCLEAR          clears a rectangular portion of a text-mode screen     TEXT.DOC
+WFILL           fills a window of a text-mode screen w/specified char  TEXT.DOC
+WFRAME          draws a box on a text-mode screen                      TEXT.DOC
+WPAINT          replaces all color attributes in screen window         TEXT.DOC
+WPRINT          print directly to a window with word wrap              TEXT.DOC
+WRECOLOR        changes selected color attributes in screen window     TEXT.DOC
+WRESTORE        restore window saved by WSAVE                          TEXT.DOC
+WSAVE           save screen window in memory                           TEXT.DOC
+WSIZE           calculates the memory required to save screen window   TEXT.DOC
+XMODE16         use super EGA /super VGA 16-color graphics modes       MODE.DOC
+XMODECLEAR      reset ASM32 graphics mode flags                        MODE.DOC
+XTOTHEY         calculate X to the Y power                            SOLVE.DOC
+YESNO           wait for 'Y' or 'N' key to be pressed                 INPUT.DOC
+

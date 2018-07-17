@@ -1,0 +1,19 @@
+HTTrack3.43-7+htsswf+htsjava launched on Mon, 21 Dec 2009 12:59:44 at http://dit.dru.ac.th/task/assembly/Menu.html +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.asm
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2008], %s -->" -%l "en, en, *" http://dit.dru.ac.th/task/assembly/Menu.html -O1 "C:\My Web Sites\Assembly證社戙號種譏" +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.asm )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+12:59:45	Info: 	engine: warning: entry cleaned up, but no trace on heap: dit.dru.ac.th/task/assembly/logo1.gif (C:/My Web Sites/Assembly證社戙號種譏/dit.dru.ac.th/task/assembly/logo1.gif)
+12:59:46	Info: 	engine: warning: entry cleaned up, but no trace on heap: dit.dru.ac.th/task/assembly/Computer.gif (C:/My Web Sites/Assembly證社戙號種譏/dit.dru.ac.th/task/assembly/Computer.gif)
+12:59:51	Info: 	engine: warning: entry cleaned up, but no trace on heap: dit.dru.ac.th/task/assembly/eemail.gif (C:/My Web Sites/Assembly證社戙號種譏/dit.dru.ac.th/task/assembly/eemail.gif)
+12:59:51	Warning: 	File seems complete (same size), but there was a cache read error: dit.dru.ac.th/task/assembly/logo1.gif
+12:59:52	Warning: 	File seems complete (same size), but there was a cache read error: dit.dru.ac.th/task/assembly/Computer.gif
+12:59:52	Error: 	"Not Found" (404) at link dit.dru.ac.th/task/assembly/Main.html (from dit.dru.ac.th/task/assembly/Menu.html)
+13:00:10	Warning: 	File seems complete (same size), but there was a cache read error: dit.dru.ac.th/task/assembly/eemail.gif
+13:00:10	Error: 	"Not Found" (404) at link dit.dru.ac.th/task/Picture/fpic5.gif (from dit.dru.ac.th/task/assembly/mul.html)
+
+HTTrack Website Copier/3.43-7 mirror complete in 27 seconds : 69 links scanned, 69 files written (804466 bytes overall) [564268 bytes received at 20898 bytes/sec], 309816 bytes transfered using HTTP compression in 17 files, ratio 16%
+(2 errors, 3 warnings, 3 messages)

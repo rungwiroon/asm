@@ -1,0 +1,17 @@
+If speed is a consideration then most of the converstion and string
+functions should be of interest.  Also, some of the following:
+
+  FD_INIT  and the fixed record lenght database system is faster
+           than the variable lenght database system (DBASE_INIT).
+
+  SCAN_BLOCK_FAST - a very fast search function.  Even faster than
+           using the Intel string search instructions.
+
+  MERGE_SORT - faster than the quick sort algrothm in some cases.
+
+  COMPRESS   - the compress functions are all optimized for speed
+               and rival some commerical products.
+
+  DISPLAY - many of the display functions write directly to memory
+            and are very fast.
+

@@ -1,0 +1,62 @@
+LESSON10 - PORTS, TIPS, SUMMERY
+
+the way of the computer to communicate with it's cards is through the 
+ports, lets say the screen data port is 3dah and the keyboard port
+is 60h,64h
+
+IN al,port  ; al recieves the value in port
+OUT port,al ; port recieves the value in al
+
+basic listing of ports (can't get it on a list) :
+
+0-7   : dma base ports
+20h   : pic, interrupt aknowlege
+21h   : interrupt masking port
+40h   : timer port
+43h   : timer init port
+60h   : keyboard keys port
+64h   : keyboard control port
+3c8h  : screen pal port
+3dah  : screen data port
+
+and there are more, non significent or that I don't know (and there a lot)
+
+TIPS :
+
+- never use a source that don't know what it does.
+- take sources and learn them.
+- learn to use any debug program.
+- assembly is a language that every mistake can be important and the computer 
+  may hang, so don't give up.
+- use qemm is traps errors that you won't know .
+- get an interrupt list (very very important).
+- don't be a lamer.
+
+SUMMARY :
+
+you have learned in those quick 10 lessons, to code in assembly - this
+is realy the basic, currenly you can't do much but the hard work
+is behind you.
+now you will just have to learn the technics (no shortage of those)
+and maybe some day you will right a better guide than this.
+
+good programing to you all.
+
+reminder  : don't be one of those lamers that uses lots of units/lib and
+            say you are a good programmer, do it yourself that's the
+            trick.
+
+if you want to contact me, then you realy can't cause I don't have
+means of contact and you wont get my phone (+972-Megadeath)
+maybe try to contact one of CTF members and he will contact me.
+
+GREETINGS OUT TO :
+
+                   True color  - keep drawing those c00l Vga's
+                   13Titan     - When will your bbs be open
+                   Lord Psonic - Keep going...
+                   Wise man    - Learn assembly
+                   Salt man    - Continue to do those amazing intro's
+                   Whisper     - Tnx for the help
+                   Programmers - Who releases their sources and
+                                 made be what I am.

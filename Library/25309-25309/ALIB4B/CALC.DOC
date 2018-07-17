@@ -1,0 +1,74 @@
+
+
+Purpose:   CALC.COM is a small programmers pop up calculator.
+
+
+
+Features:  CALC works with both hex and decimal numbers up to
+           4294967295 decimal or ffffffffh hex.
+
+           Numbers can be added,subtracted,divided,multiplied
+           or converted.
+
+           CALC uses only 840 bytes of memory.
+
+           All results are shown in both hex and decimal.
+
+
+
+Usage:     When CALC is executed it becomes resident and remains dormant
+           until activated by entering ALT-Z.  Each time ALT-Z is pressed
+           CALC will perform one calculation.   After the calculation is
+           complete, the results will remain in the upper right area
+           of display until scrolled off.   Data is entered as it would
+           normally be written.  For example: to add 11 and 12 enter
+           11+12 followed by Enter key.
+
+
+
+Restrictions:
+
+           In order to keep CALC as small as possible, several restrictions
+           are necessary.  Only one calculation containing a maximum of two
+           values can be performed each time CALC is activated.  Thus,
+           only two number can be added or subtracted at a time.  
+           Also, the cursor does not appear as data is entered, and error
+           checking is minimal.
+
+
+
+Examples:  For each of the following ALT-Z was pressed first.
+
+           123456+1234h<enter>   <- adds 123456 decimal and 1234 hex
+
+           123456/4<enter>       <- divides 123456 by 4
+
+           123h<enter>           <- converts 123 hex to decimal
+
+           123<enter>            <- converts 123 decimal to hex
+
+           123h*123              <- multiply 123 hex by 123 decimal
+
+           123h-123              <- subtract 123 decimal from 123 hex
+
+
+Who needs it:
+
+           CALC is designed for programmers who occasionally need a
+           pop up calculator.  It does not
+           handle decimal points or signed numbers, so non-programmers
+           will not find it useful.  Also, programmers working
+           in a high level language may not find it useful, so it is
+           mainly of interest to assembly language programmers.
+
+
+Why was it written:
+
+           CALC was programmed by Jeff Owens to pop up over an
+           editor.  The small size was needed so compliers could
+           be executed without unloading resident programs first.
+           This allowed the compiler to be executed from the
+           editor.  CALC is not copyrighted and can be distributed
+           freely.  Comments to Jeff Owens, 503-6302317
+
+           

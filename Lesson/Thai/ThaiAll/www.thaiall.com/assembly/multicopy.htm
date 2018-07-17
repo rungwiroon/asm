@@ -1,0 +1,142 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/multicopy.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>คัดลอกหลายแฟ้ม (Multi Copy)</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="copy,many,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="การคัดลอกหลายแฟ้ม">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+คัดลอกหลายแฟ้ม (Multi Copy)</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+เว็บเพจสำรอง (Backup Webpages) : <a href=http://202.29.78.12/burin/assembly/multicopy.htm>thaiall.com</a> | <a href=multicopy.htm>thaiall.com</a>  
+<br>ปรับปรุง : 2549-08-09 (ปรับการแสดงผล)
+<br> 
+
+<a name=mcopy></a>
+<table width=760 align=center bgcolor=#f9f9f9>
+<tr><td bgcolor=#dddddd><font color=blue><b>mcopy.bat และ copyto.bat ใช้สำหรับคัดลอกหลายแฟ้มไป Destination เดียวกันได้</b>
+<tr><td>
+<dd>คำสั่ง copy ใช้คัดลอก เช่น *.doc ไปที่ต่าง ๆ ได้ แต่ไม่สามารถ <font face="courier new">copy *.doc *.ppt x.gif y.jpg oho.bat</font> ไปที่ต่าง ๆ ได้พร้อมกันด้วยคำสั่งเดียว จึงต้องสร้าง batch file ให้สามารถทำงานนี้ได้ โดย 2 โปรแกรมนี้ต่างกันที่รูปแบบการใช้
+<table width=90% bgcolor=#ddffff align=center>
+<td width=30%>
+<ol start=1><b>คำสั่งที่ควรรู้</b>
+<li>การสร้าง และสั่งประมวลผล
+<li>@echo off
+<li>rem
+<li>%0 คือ Batch Name
+<li>%1 คือ First Param
+<li>shift
+</ol>
+<td width=30% valign=top>
+<ol start=7>&nbsp;
+<li>set และ %x%
+<li>:label และ goto
+<li>if ==
+<li>echo
+<li>copy
+<li>move
+</ol>
+<td width=30% valign=top bgcolor=#aaffff>
+<pre><b>ตัวอย่าง Batch</b>
+โปรแกรม x.bat เช่น <font face="courier new">c:\>x a b</font>
+<font face="courier new" color=blue>@echo off
+echo %0
+shift
+echo %1
+</font>ผลลัพธ์คืออะไร</table>
+<table width=100%>
+<td valign=top width=50% bgcolor=#ffffdd>
+<b>ตัวอย่างการใช้โปรแกรม copyto.bat</b>
+<br><font face="courier new" color=red>c:\&gt;copyto <u>c:\x</u> *.doc b.ppt c.xls</font> 
+<br>เมื่อ c:\x คือ directory ปลายทาง
+<br>ใช้คัดลอกแฟ้ม *.doc b.ppt c.xls จาก directory ปัจจุบันไปเก็บใน c:\x ซึ่งคอมพิวเตอร์ต้องมีห้องนี้รอรับแฟ้มของท่านแล้ว 
+<br>(ถ้าไม่มีก็สร้างสิครับ ด้วยคำสั่ง md c:\x)
+<pre><font color=black size=4><b>copyto.bat</b><font face="courier new" color=blue>
+@echo off
+rem copyto.bat c:\x *.doc b.ppt c.xls
+set destdir=%1
+:start
+shift
+if "%1" == "" goto end
+copy %1 %destdir%
+goto start
+:end
+echo bye
+<td valign=top width=50% bgcolor=#ffffdd>
+<b>ตัวอย่างการใช้โปรแกรม mcopy.bat</b>
+<br><font face="courier new" color=red>c:\&gt;mcopy *.doc b.ppt c.xls <u>c:\x</u></font> 
+<br>เมื่อ c:\x คือ directory ปลายทาง
+<br>ใช้คล้าย copyto แต่ทำหน้าที่สลับ destination กับ copylist ทำให้ผู้ใช้คุ้นเคยเหมือนคำสั่ง copy ที่คัดลอกจากต้นทางไป ปลายทาง มิใช่ระบุปลายทางก่อน
+<br>โปรแกรม mcopy จะเรียกใช้ copyto จึงต้องมั่นใจก่อนว่า copyto ทำงาน
+<pre><font color=black size=4><b>mcopy.bat</b><font face="courier new" color=blue>
+@echo off
+rem mcopy.bat *.doc b.ppt c.xls c:\x
+set copylist=
+:start
+if "%2" == "" goto end
+set copylist=%copylist% %1
+shift
+goto start
+:end
+set destination=%1
+copyto %destination% %copylist%
+</table>
+<hr color=black>
+</table>
+
+<table width=760 align=center bgcolor=#f9f9f9>
+<tr><td bgcolor=#dddddd><b>รูปแบบของคำสั่ง copy ในระบบ DOS</b>
+<tr><td bgcolor=#ddffdd><pre><font face="courier new">Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+C:\Documents and Settings\student.CPSC_NEE><b>copy /?</b>
+Copies one or more files to another location.
+COPY [/D] [/V] [/N] [/Y | /-Y] [/Z] [/A | /B ] source [/A | /B]
+     [+ source [/A | /B] [+ ...]] [destination [/A | /B]]
+  source       Specifies the file or files to be copied.
+  /A           Indicates an ASCII text file.
+  /B           Indicates a binary file.
+  /D           Allow the destination file to be created decrypted
+  destination  Specifies the directory and/or filename for the new file(s).
+  /V           Verifies that new files are written correctly.
+  /N           Uses short filename, if available, when copying a file with a
+               non-8dot3 name.
+  /Y           Suppresses prompting to confirm you want to overwrite an
+               existing destination file.
+  /-Y          Causes prompting to confirm you want to overwrite an
+               existing destination file.
+  /Z           Copies networked files in restartable mode.
+</table>
+
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_multicopy"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+if(url == "202.29.78.1") document.write("<SCRIPT LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/i0015336.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/multicopy.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+</html>

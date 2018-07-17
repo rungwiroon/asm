@@ -1,0 +1,254 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/string.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> string.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+
+<font color=#008000>; this example demonstrates the input and output string functions of emu8086.inc </font>
+<font color=#008000>; this code doesnt depend on MS-DOS or any other operating system's interrupts, therefore </font>
+<font color=#008000>; it can easily be used for developing an operating system or a boot record loader. </font>
+
+name <font color=#800080>"string"</font>
+
+<font color=#008000>; this macro prints a string that is given as a parameter, example: </font>
+<font color=#008000>; print 'hello world!' </font>
+print   <font color=#0000FF>macro</font>   sdat
+local   next_char, s_dcl, printed, skip_dcl
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>      <font color=#008000>; </font>
+<font color=#0000FF>jmp</font>     skip_dcl        <font color=#008000>; skip declaration. </font>
+        s_dcl <font color=#000064>db</font> sdat, 0
+skip_dcl:
+        <font color=#0000FF>lea</font>     <font color=#C80000>si</font>, s_dcl
+next_char:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800000>cs</font>:<font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     next_char
+printed:
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+print   endm
+
+
+<font color=#008000>; this macro prints a string that is given as a parameter, example: </font>
+<font color=#008000>; printn 'hello world!' </font>
+<font color=#008000>; the same as print, but new line is automatically added. </font>
+printn   <font color=#0000FF>macro</font>   sdat
+local   next_char, s_dcl, printed, skip_dcl
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>      <font color=#008000>; </font>
+<font color=#0000FF>jmp</font>     skip_dcl        <font color=#008000>; skip declaration. </font>
+        s_dcl <font color=#000064>db</font> sdat, 0Dh, 10, 0
+skip_dcl:
+        <font color=#0000FF>lea</font>     <font color=#C80000>si</font>, s_dcl
+next_char:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800000>cs</font>:<font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     next_char
+printed:
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+printn   endm
+
+
+<font color=#008000>; this macro prints a char in al and advances </font>
+<font color=#008000>; the current cursor position: </font>
+putc    <font color=#0000FF>macro</font>   char
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, char
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+putc    endm
+
+
+
+<font color=#000064>org</font>     100h
+
+<font color=#0000FF>jmp</font> start  <font color=#008000>; skip over the declarations and data </font>
+
+
+
+
+buffer <font color=#000064>db</font> <font color=#800080>'empty buffer --- empty buffer'</font>
+size = $ <font color=#0064C8>-</font> <font color=#000064>offset</font> buffer  <font color=#008000>; declare constant </font>
+msg1   <font color=#000064>db</font> <font color=#800080>'enter a string: '</font>, 0
+
+
+start:
+<font color=#008000>; print a welcome message: </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>si</font>, msg1
+<font color=#0000FF>call</font>    print_string
+
+<font color=#008000>; get string to ds:di </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>di</font>, buffer      <font color=#008000>; buffer offset. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, size        <font color=#008000>; buffer size. </font>
+<font color=#0000FF>call</font>    get_string
+
+putc    0Dh
+putc    10 <font color=#008000>; next line. </font>
+
+<font color=#008000>; print using macro: </font>
+print <font color=#800080>"you've entered: "</font>
+
+<font color=#008000>; print string in ds:si using procedure: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>si</font>, <font color=#C80000>di</font>
+<font color=#0000FF>call</font>    print_string
+
+<font color=#0000FF>ret</font>
+
+
+
+<font color=#008000>; get a null terminated string from keyboard, </font>
+<font color=#008000>; write it to buffer at ds:di, maximum buffer size is set in dx. </font>
+<font color=#008000>; 'enter' stops the input. </font>
+get_string      <font color=#0000FF>proc</font>    near
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+<font color=#0000FF>push</font>    <font color=#C80000>cx</font>
+<font color=#0000FF>push</font>    <font color=#C80000>di</font>
+<font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 0                   <font color=#008000>; char counter. </font>
+
+<font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 1                   <font color=#008000>; buffer too small? </font>
+<font color=#0000FF>jbe</font>     empty_buffer            <font color=#008000>; </font>
+
+<font color=#0000FF>dec</font>     <font color=#C80000>dx</font>                      <font color=#008000>; reserve space for last zero. </font>
+
+
+<font color=#008000>;============================ </font>
+<font color=#008000>; eternal loop to get </font>
+<font color=#008000>; and processes key presses: </font>
+
+wait_for_key:
+
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0                   <font color=#008000>; get pressed key. </font>
+<font color=#0000FF>int</font>     16h
+
+<font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0Dh                  <font color=#008000>; 'return' pressed? </font>
+<font color=#0000FF>jz</font>      exit
+
+
+<font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 8                   <font color=#008000>; 'backspace' pressed? </font>
+<font color=#0000FF>jne</font>     add_to_buffer
+<font color=#0000FF>jcxz</font>    wait_for_key            <font color=#008000>; nothing to remove! </font>
+<font color=#0000FF>dec</font>     <font color=#C80000>cx</font>
+<font color=#0000FF>dec</font>     <font color=#C80000>di</font>
+putc    8                       <font color=#008000>; backspace. </font>
+putc    <font color=#800080>' '</font>                     <font color=#008000>; clear position. </font>
+putc    8                       <font color=#008000>; backspace again. </font>
+<font color=#0000FF>jmp</font>     wait_for_key
+
+add_to_buffer:
+
+        <font color=#0000FF>cmp</font>     <font color=#C80000>cx</font>, <font color=#C80000>dx</font>          <font color=#008000>; buffer is full? </font>
+        <font color=#0000FF>jae</font>     wait_for_key    <font color=#008000>; if so wait for 'backspace' or 'return'... </font>
+
+        <font color=#0000FF>mov</font>     <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#C80000>al</font>
+        <font color=#0000FF>inc</font>     <font color=#C80000>di</font>
+        <font color=#0000FF>inc</font>     <font color=#C80000>cx</font>
+
+        <font color=#008000>; print the key: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+        <font color=#0000FF>int</font>     10h
+
+<font color=#0000FF>jmp</font>     wait_for_key
+<font color=#008000>;============================ </font>
+
+exit:
+
+<font color=#008000>; terminate by null: </font>
+<font color=#0000FF>mov</font>     <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, 0
+
+empty_buffer:
+
+<font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+<font color=#0000FF>pop</font>     <font color=#C80000>di</font>
+<font color=#0000FF>pop</font>     <font color=#C80000>cx</font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+<font color=#0000FF>ret</font>
+get_string      endp
+
+
+
+<font color=#008000>; print null terminated string at current cursor position, </font>
+<font color=#008000>; raddress of string in ds:si </font>
+print_string <font color=#0000FF>proc</font> near
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>      <font color=#008000>; </font>
+
+next_char:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     next_char
+printed:
+
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+
+<font color=#0000FF>ret</font>
+print_string endp
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/string.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

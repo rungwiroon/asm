@@ -1,0 +1,45 @@
+<html><head><title></title></head><body alink="#dd2200" bgcolor="#ffffff" link="#8080ff" text="#000000" vlink="#a400a4">
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td align="left" valign="top"><font size="+1"><font color="#408080"><b>Pseudo Random number generator</b></font></font></td><td align="right" valign="top"><font size="+1"><font color="#408080"><b>ASM/8086</b></font></font></td></tr></tbody></table><p>
+Here is a small pseudo random generator. I found it on Andrew Griffinis
+homepage, but I seem to have misslaid his e-mail and homepage address.<b><pre><font color="#408080">;
+; pseudo random number generator
+;
+; input:
+;   bp = seed (!=0)
+;
+; output:
+;   ax = random word
+;
+; destroys:
+;   bp
+;   flags
+;
+
+	mov     al,16
+r_loop: rol     bp,1
+	jnc     r_skip
+	xor     bp,0ah
+
+r_skip: dec     al
+	jne     r_loop
+        mov     ax,bp</font></pre></b>One improvement that can be done is to replace store <code><font color="#408080">BP</font></code> someway so you can reuse it later in the random routine.</p><p>
+<a href="mailto:amcguire@andrew.cmu.edu">Max McGuire</a> has submitted a new version (note that in order for this version to run on a 286 and below, <code><font color="#408080">FS</font></code> has to be replaced with another segment register):</p><p>
+I'm submitting to you an alternative pseudo random generator that I
+found in the source for the intro Chaos by Consub of CSB. Here's his
+original code:<b><pre><font color="#408080">
+        mov     ax,fs
+        mov     bx,13
+        mul     bx
+        xchg    ah,al
+        mov     fs,ax</font></pre></b>I
+kept the same basic idea, but optimized (at least I think I optimized)
+this code for speed by making a few changes (I also changed the seed
+from fs to dx):<b><pre><font color="#408080">        mov     bx,dx
+        shl     dx,2
+        add     dx,bx
+        xchg    dl,dh</font></pre></b>I don't know if this algorithm generates random numbers that are uniformly distributed between 0 and 65535.
+</p><div align="right">Gem writers: <a href="mailto:agriff@tin.it">Andrew Griffini</a><br>
+<a href="mailto:amcguire@andrew.cmu.edu">Max McGuire</a><br>
+<font size="-2">last updated: 1998-03-16</font></div>
+
+</body></html>

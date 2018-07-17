@@ -1,0 +1,6 @@
+Assembly Wizard's Library v2.0 for assembly
+language (most assemblers are supported).
+Text and graphics, buffered file I/O, kbd,
+mouse, exception handler, string support,
+hi-res timers & countdowns, lots more. Tiny
+model (.COM format). By Tom Hanlin.

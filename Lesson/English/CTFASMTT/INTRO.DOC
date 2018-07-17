@@ -1,0 +1,32 @@
+Assembly guides by dr. encryption
+
+ever wanted to start coding in assembly, but you didn't knew how
+well now you can with this new guide, that will help you learn the
+most powerfull language on the pc.
+this guides is for pepole who program c,pascal or any langauge
+that uses basic elements like pointers, segment:offset cause
+lots of stuff are taken like basic so.....
+
+topics which will be disccused :
+
+LESSON1  - THE REGISTERS AND SEGMENTS
+LESSON2  - BASIC OPERATORS
+LESSON3  - INTERRUPTS LABELS AND DB
+LESSON4  - STACK (PUSH,POP) AND MORE COMMANDS
+LESSON5  - FLAGS AND JUMPS
+LESSON6  - MEMORY MOVING
+LESSON7  - PROCEDURES AND MACROS
+LESSON8  - EXTERNALS AND PUBLICS
+LESSON9  - INCLUDING INFO IN THE EXE
+LESSON10 - PORTS, TIPS, SUMMERY
+
+the main reason that i doing this guide is for the pepole that don't
+know assembly and want to learn (that is the way i learned (arg....))
+
+p.s. : way of compiling
+
+tasm filename
+tlink filename
+
+remember Megadeath rulez !!!! be sure of that..... when you pray for
+me you realize you are prey for me !!!!

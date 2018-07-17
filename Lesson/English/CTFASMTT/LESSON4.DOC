@@ -1,0 +1,85 @@
+LESSON4 - STACK (PUSH,POP) AND MORE COMMANDS
+
+stack, how does it work well the law if last in first out,
+the principle is if I enter a series of numbers like : 1 34 54 54 65
+and then I take em out I will get : 65 54 54 34 1.
+in assembly the command is push (it can push only 16bit) and
+the reverse is pop.
+
+so lets say I want to save the ds and later get it back :
+
+push ds
+.
+.
+.
+.
+pop ds
+
+mov ax,4c00h      ; short cut for : mov ah,4ch mov al,0
+int 21h
+
+ok now you've got the basic of assembly (I hope).
+
+in order to pass to the next level we have to explore the structure of the 8
+bit register !!! (I hope you you binary very good cause I wont explain)
+now bit is a condition that can be 0 or 1 so if we have 8 bit so the
+number of combinations can be 2^8 which is 256 (0..255) the limit
+of one byte (or word 2^16 65535) so assembly gives us the tools
+to modify and alter those bits.
+
+SHR destination,count     : Shift arithmic right divide the number by
+                            count^2 so 1 is 2 and 2 is 4 and so on
+                            "shr ax,4" will divide ax by 16 (4^2)
+SHL destination,count     : Shift arithmic left multiply the number by
+                            count^2 so 1 is 2 and 2 is 4 and so on
+                            "shr ax,4" will multiply ax by 16 (4^2)
+ROR destination,count     : Rotate right rotates the bits right so
+                            bit 0 is now bit 7 (16 bit, bit 0 is bit 15)
+                            and does is by count.
+                            "ror al,8" will not affect cause there are
+                            only 8 bits so a whole round will be preformed.
+ROL destination,count     : Rotate left rotates the bits right so
+                            bit 7 is now bit 0 (16 bit, bit 15 is bit 0)
+                            and does is by count.
+                            "ror al,8" will not affect cause there are
+                            only 8 bits so a whole round will be preformed.
+DIV factor                : Divide will divide ax (or al) by the factor
+                            ("dx" must be set to 0), "div cl" will divide
+                            al by cl, "div cx" will divide ax by cx.
+MUL factor                : Multiply will multiply ax (or al) by the factor
+                            (dx will be altered), if the operation is 8 bit
+                            "div cl" then the sum will be stored in ax
+                            (if it passes 8 bit) "mul cl" will mul ax by cl,
+                            "mul cx" will multiply ax by cx.
+NEG destination           : Negation what it does he reverses negativity
+                            lets say we have 4 so it will become -4 and
+                            vise verse (n*-1)
+
+as you might have noticed no floating points nor integers has been discussed 
+well assembly has non !!!! floating points (don't be shocked) because you can
+still use the precision well how do you ask, there are fixed points.
+fixed points are precision that was shifted before and after the calc
+been shifted back. fixed points example :
+
+mov ax,100       ; our circle radios
+mov cx,181       ; 181/256 is 0.707 (sin(45))
+mul cx           ; multiply (result : 18,100)
+
+shr ax,8         ; now the number is shifted back (n / 256 = shr n,8 cause
+                 ; 2^8 is 256) so the result is 70.7 (the point disapears)
+                 ; number is trunced to 70 (if you check 100*0.707 is 70.7)
+
+the fixed points are much faster then real (double) and usually the
+sin cos table is being written onto a file predifined by pascal,c
+example for extracting cos(56) to fix :
+
+var
+  a:integer ;
+begin
+  a:=trunc(cos(56*pi/180)*256) ;
+end ;
+
+now first we converted deg to rad and then multiply it by our factor.
+but, but, but noticed shr,shl,ror,rol do not work on integers,
+it will get wacked and will bug you program, so we need to detect
+if it's lower/higher then zero so we go to next chapter (flags and jumps)

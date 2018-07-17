@@ -1,0 +1,24 @@
+HTTrack3.43-7+htsswf+htsjava launched on Mon, 21 Dec 2009 12:36:55 at http://www.thaiall.com/assembly/index.html +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.ppt
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2008], %s -->" -%l "en, en, *" http://www.thaiall.com/assembly/index.html -O1 "C:\My Web Sites\Assembly2" +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.png +*.tif +*.bmp +*.zip +*.tar +*.tgz +*.gz +*.rar +*.z +*.exe +*.ppt )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+12:47:04	Warning: 	File not parsed, looks like binary: www.thaiall.com/assembly/empday1.cds
+12:47:10	Error: 	"Not Found" (404) at link www.thaiall.com/download/winhex-e.zip (from www.thaiall.com/assembly/winhex.htm)
+12:47:12	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/add_8bit.cpu (from www.thaiall.com/assembly/computersim.htm)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/goggen.php (from hits1.truehits.net/data/h0013199.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=lampangthaiall (from hits1.truehits.net/data/h0013199.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=yonok (from hits1.truehits.net/data/c0001943.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=thaiall (from hits1.truehits.net/data/c0001941.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=perlphpasp (from hits1.truehits.net/data/h0013336.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=thailandhosting (from hits0.truehits.net/data/k0020653.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=thaiabc (from hits1.truehits.net/data/h0014200.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=weblampang (from hits1.truehits.net/data/i0015336.js)
+12:48:36	Error: 	"Not Found" (404) at link www.thaiall.com/assembly/stat.php?login=thainame (from hits1.truehits.net/data/h0013970.js)
+12:49:02	Error: 	"Unable to get server's address: Unknown error" (-5) after 2 retries at link "+_hsv+"/func/th_common_1.4.js (from hits1.truehits.net/data/h0013199.js)
+
+HTTrack Website Copier/3.43-7 mirror complete in 12 minutes 7 seconds : 155 links scanned, 138 files written (17600315 bytes overall) [17669463 bytes received at 24304 bytes/sec]
+(12 errors, 1 warnings, 0 messages)

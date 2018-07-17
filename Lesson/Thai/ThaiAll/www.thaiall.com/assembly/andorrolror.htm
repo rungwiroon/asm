@@ -1,0 +1,769 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/andorrolror.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:33 GMT -->
+<head><title>Bit Operation & Boolean Operation (and or nor xor rol ror complement)</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="logic,assembly">
+<meta name="description" content="Bit Operation & Boolean Operation (and or nor xor rol ror complement)">
+<style type="text/css">
+body{scrollbar-base-color:blue;scrollbar-arrow-color:white;font-family:microsoft sans serif;font-size:10pt;color:black;}
+a:link{text-decoration:none;font-family:microsoft sans serif;font-size:10pt}
+a:visited{text-decoration:none;font-family:microsoft sans serif;font-size:10pt}
+a:hover{text-decoration:none;font-family:microsoft sans serif;font-size:10pt}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+Bit Operation & Boolean Operation (and or nor xor rol ror complement)</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2550-07-19 (เพิ่ม rcr)
+<br> 
+
+<table width=760 align=center><td>
+<center><font size=6>Bit Operation & Boolean Operations</font>
+<br>ได้แก่ and or xor not และ shr shl rol ror rcl rcr
+</center>
+<ol>
+<li><b>shl (Shift Left)</b> ทำหน้าที่ เลื่อนไปทางซ้าย (shl 0111,1 = 1110)
+<li><b>shr (Shift Right)</b> ทำหน้าที่ เลื่อนไปทางขวา (shr 0111,1 = 1110)
+<li><b>rol (Rotate Left)</b> ทำหน้าที่ เลื่อนบิทไปทางซ้าย ไม่เก็บ Carry Flag เช่น 01110111 => 11101110
+<li><b>ror (Rotate Right)</b> ทำหน้าที่ เลื่อนบิทไปทางขวา ไม่เก็บ Carry Flag เช่น 01110111 => 10111011
+<li><b>rcl (Rotate through Carry Left)</b> ทำหน้าที่ เลื่อนบิทไปทางซ้าย และเก็บ Carry Flag เป็นตัวที่ 9 (ตัวทด)
+<li><b>rcr (Rotate through Carry Right)</b> ทำหน้าที่ เลื่อนบิทไปทางขวา และเก็บ Carry Flag เป็นตัวที่ 9 (ตัวทด)
+<li><b>sal (Shift Arithmetic Left)</b> ทำหน้าที่ เลื่อนไปทางซ้ายแบบคิดเครื่องหมาย 
+<li><b>sar (Shift Arithmetic Right)</b> ทำหน้าที่ เลื่อนไปทางขวาแบบคิดเครื่องหมาย 
+<li><b>add</b> ทำหน้าที่ เพิ่มค่า แต่อ้างอิงกับเลขฐาน 10 (41 add 2 = 43)
+<li><b>and</b> ทำหน้าที่ เป็นจริงเมื่อเป็นจริงทั้งคู่ (0100 0001 and 0100 0010 = 0100 0000)
+<li><b>or</b> ทำหน้าที่ เป็นจริงเมื่อตัวใดตัวหนึ่งเป็นจริง (0100 0001 or 0100 0010 = 0100 0011)
+<li><b>xor</b> ทำหน้าที่ เป็นจริงเมื่อต่างกัน เหมือนกันเป็นเท็จ (0100 0011 or 0000 0010 = 0100 0001)
+<li><b>not</b> ทำหน้าที่ เปลี่ยนจริงเป็นเท็จ และเท็จเป็นจริง (not 0100 0011 = 1011 1100)
+</ol>
+<dd>สำหรับการแสดงผล จะใช้ Interrupt 21 บริการ AH = 02 ร่วมกับ DL นำ Ascii ฐาน 16 ไปแสดงบนจอภาพ 1 ตัวอักษร
+<dd>เช่น<font face="courier new" color=blue>
+<dd>mov ah,02
+<dd>mov dl,41
+<dd>int 21
+<dd>int 20
+</font>
+<dd><font size=4>เป็นความจำเป็นที่ต้องเรียนเลขฐาน 2 เพราะในหลาย ๆ เรื่องต้องใช้ เช่น การเขียนโปรแกรม ระบบเครือข่าย และ ระบบความปลอดภัย เป็นต้น
+เช่น การหาคำตอบว่า 5 and 3 เป็นเท่าใด (คำตอบคือ 7) ก็ต้องใช้เลขฐาน 2
+ก่อนเรียนเรื่อง Boolean Operations หรือคำสั่งกระทำการทางลอจิก (Logic Operations) ก็ต้องเข้าใจเลขฐาน 2 และ ฐาน 16 ให้ดี
+<center><font size=6 color=blue>101 and 011 = 111</font></center>
+</ul>
+</table>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 1 :: ? คือ การแสดงคำสั่งที่ใช้งานได้ของ debug</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-?
+assemble     A [address]
+compare      C range address
+dump         D [range]
+enter        E address [list]
+fill         F range list
+go           G [=address] [addresses]
+hex          H value1 value2
+input        I port
+load         L [address] [drive] [firstsector] [number]
+move         M range address
+name         N [pathname] [arglist]
+output       O port byte
+proceed      P [=address] [number]
+quit         Q
+register     R [register]
+search       S range list
+trace        T [=address] [value]
+unassemble   U [range]
+write        W [address] [drive] [firstsector] [number]
+allocate expanded memory        XA [#pages]
+deallocate expanded memory      XD [handle]
+map expanded memory pages       XM [Lpage] [Ppage] [handle]
+display expanded memory status  XS
+-
+</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 2 :: ตัวอย่างการใช้ SHL
+<dd>- SHL คือย้ายบิท เข้าไปทางซ้าย
+<dd>- DFFD = 1101 1111 1111 1101
+<dd>- BFFA = 1011 1111 1111 1100
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-a 100
+0B24:0100 mov dx,dffd
+0B24:0103 shl dx,1
+0B24:0105
+-r
+AX=0000  BX=0000  CX=0000  DX=DFFD  SP=FFEE  BP=0000  SI=0000  DI=01B8
+DS=0B24  ES=0B24  SS=0B24  CS=0B24  IP=0103   OV UP EI PL NZ NA PE CY
+0B24:0103 D1E2          SHL     DX,1
+-t =cs:100 2
+
+AX=0000  BX=0000  CX=0000  DX=DFFD  SP=FFEE  BP=0000  SI=0000  DI=01B8
+DS=0B24  ES=0B24  SS=0B24  CS=0B24  IP=0103   OV UP EI PL NZ NA PE CY
+0B24:0103 D1E2          SHL     DX,1
+
+AX=0000  BX=0000  CX=0000  DX=BFFA  SP=FFEE  BP=0000  SI=0000  DI=01B8
+DS=0B24  ES=0B24  SS=0B24  CS=0B24  IP=0105   NV UP EI NG NZ NA PE CY
+0B24:0105 D1E2          SHL     DX,1
+-
+</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 3 :: ดูข้อมูลใน <a href=register.htm>Register</a> จะใช้ t หรือ r ก็ได้</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-t 
+AX=0000  BX=0000  CX=0000  DX=0011  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=0AE8  ES=0AE8  SS=0AE8  CS=0AE8  IP=0102   NV UP EI PL NZ NA PO NC
+-
+</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 4 :: แสดงตัวอักษร แล้วเลิกการทำงาน</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-a 100
+0AE8:0100 mov ah,02
+0AE8:0102 mov dl,41
+0AE8:0104 int 21
+0AE8:0106 int 20
+-g
+A
+Program terminated normally
+-
+</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 5 :: แก้ตำแหน่ง 106 โดยใช้ or 
+<dd>0100 0001 or 0100 0010 = 0100 0011</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-a 100
+0AE8:0100 mov ah,02
+0AE8:0102 mov dl,41
+0AE8:0104 int 21
+0AE8:0106 int 20
+-g
+A
+Program terminated normally
+-a 106
+0AE8:0106 or dl,42
+0AE8:0109 int 21
+0AE8:010B int 20
+0AE8:010D 
+-g
+AC
+Program terminated normally
+-</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 6 :: คำสั่ง add และสร้างแฟ้ม ทำให้ค่าของ 41 เพิ่มอีก 2 เป็น 43</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-n x.com
+-a
+0AE8:0100 mov ah,02
+0AE8:0102 mov dl,41
+0AE8:0104 int 21
+0AE8:0106 add dl,2
+0AE8:0109 int 21
+0AE8:010B int 20
+0AE8:010D
+-rcx
+CX 0000
+:d
+-w
+Writing 0000D bytes
+-q
+C:\>x
+AC
+C:\></ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 7 :: คำสั่ง ror ย้าย bit ไปทางขวา 
+<dd>before 01110111=77=w, after 10111011=BB</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>
+-u 100 10a
+0AE8:0100 B277          MOV     DL,77
+0AE8:0102 B402          MOV     AH,02
+0AE8:0104 CD21          INT     21
+0AE8:0106 D0CA          ROR     DL,1
+0AE8:0108 CD21          INT     21
+0AE8:010A CD20          INT     20
+-g
+w?
+Program terminated normally
+-</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 8 :: คำสั่ง rcl ย้าย bit ไปทางงซ้าย แต่มีตัวทด(Carry Flag) มารับ (ต.ย.นี้ไม่เห็นความแตกต่าง)
+<dd>before 00110001=31=1, after 01100010=62=b, cf=0</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>
+-u 100 10A
+0AE8:0100 B231          MOV     DL,31
+0AE8:0102 B402          MOV     AH,02
+0AE8:0104 CD21          INT     21
+0AE8:0106 D0CA          RCL     DL,1
+0AE8:0108 CD21          INT     21
+0AE8:010A CD20          INT     20
+-g
+1b
+Program terminated normally
+-</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 9 :: คำสั่ง rcr ย้าย bit ไปทางขวา แต่มีตัวทด(Carry Flag) มารับ 
+<dd>106 : before 01110001=71=q, after 00111000=38=8, cf=1
+<dd>10A : before 00111000=38=8, after 10011100=9C=?, cf=0
+<dd>10C : before 10011100=9C=?, after 01001110=4E=N, cf=0</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>
+-u 100 
+0AE8:0100 B271          MOV     DL,71
+0AE8:0102 B402          MOV     AH,02
+0AE8:0104 CD21          INT     21
+0AE8:0106 D0DA          RCR     DL,1
+0AE8:0108 CD21          INT     21
+0AE8:010A D0DA          RCR     DL,1
+0AE8:010C D0DA          RCR     DL,1
+0AE8:010E CD21          INT     21
+0AE8:0110 CD20          INT     20
+-g
+q8N
+Program terminated normally
+-</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=black align=center><tr><td>
+<font color=yellow size=4>EX 10 :: คำสั่ง rcl และ rcr ใช้ย้าย bit แบบมีตัวทด(Carry Flag)  
+<dd>106 : rcr dl,1 : before 0111_0111=77=w, cf=0, after 0011_1011=3B, cf=1
+<dd>10A : rcr dl,1 : before 0011_1011=3B=?, cf=1, after 1001_1101=9D, cf=1
+<dd>10E : rcr dl,1 : before 1001_1101=9D=w, cf=1, after 1100_1110=CE, cf=1
+<dd>112 : rcl dl,1 : before 1100_1110=CE, cf=1, after 1001_1101=9D=w, cf=1
+<dd>116 : rcl dl,1 : before 1001_1101=9D=w, cf=1, after 0011_1011=3B=?, cf=1</font>
+<tr bgcolor=#444444><td><pre><font face="courier new" color=white><ul>C:\>debug
+-a 100
+0AE8:0100 mov dl,77
+0AE8:0102 mov ah,02
+0AE8:0104 int 21
+0AE8:0106 rcr dl,1
+0AE8:0108 int 21
+0AE8:010A rcr dl,1
+0AE8:010C int 21
+0AE8:010E rcr dl,1
+0AE8:0110 int 21
+0AE8:0112 rcl dl,1
+0AE8:0114 int 21
+0AE8:0116 rcl dl,1
+0AE8:0118 int 21
+0AE8:011A int 20
+0AE8:011C
+-g
+w;???;
+-</ul></font></pre></td></table>
+<br>
+
+<table width=760 bgcolor=#ddffdd align=center><td>
+<font size=6>OpCode of Intel Assembly 80x86
+<br>Mnemonics</font> 
+<br>From :<a href=http://www.jegerlehner.ch/intel/opcode.html>http://www.jegerlehner.ch/intel/opcode.html</a>
+<hr>
+<big>TRANSFER</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">MOV</td>
+<td width="48%" valign="top">Move (copy)</td>
+<td width="34%" valign="top">MOV Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">XCHG</td>
+<td width="48%" valign="top">Exchange</td>
+<td width="34%" valign="top">XCHG Op1,Op2</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STC</td>
+<td width="48%" valign="top">Set Carry</td>
+<td width="34%" valign="top">STC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLC</td>
+<td width="48%" valign="top">Clear Carry</td>
+<td width="34%" valign="top">CLC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CMC</td>
+<td width="48%" valign="top">Complement Carry</td>
+<td width="34%" valign="top">CMC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STD</td>
+<td width="48%" valign="top">Set Direction</td>
+<td width="34%" valign="top">STD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLD</td>
+<td width="48%" valign="top">Clear Direction</td>
+<td width="34%" valign="top">CLD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STI</td>
+<td width="48%" valign="top">Set Interrupt</td>
+<td width="34%" valign="top">STI</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLI</td>
+<td width="48%" valign="top">Clear Interrupt</td>
+<td width="34%" valign="top">CLI</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSH</td>
+<td width="48%" valign="top">Push onto stack</td>
+<td width="34%" valign="top">PUSH Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSHF</td>
+<td width="48%" valign="top">Push flags</td>
+<td width="34%" valign="top">PUSHF</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSHA</td>
+<td width="48%" valign="top">Push all general registers</td>
+<td width="34%" valign="top">PUSHA</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POP</td>
+<td width="48%" valign="top">Pop from stack</td>
+<td width="34%" valign="top">POP Dest</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POPF</td>
+<td width="48%" valign="top">Pop flags</td>
+<td width="34%" valign="top">POPF</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POPA</td>
+<td width="48%" valign="top">Pop all general registers</td>
+<td width="34%" valign="top">POPA</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CBW</td>
+<td width="48%" valign="top">Convert byte to word</td>
+<td width="34%" valign="top">CBW</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CWD</td>
+<td width="48%" valign="top">Convert word to double</td>
+<td width="34%" valign="top">CWD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CWDE</td>
+<td width="48%" valign="top">Conv word extended double</td>
+<td width="34%" valign="top">CWDE</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IN</td>
+<td width="48%" valign="top">Input</td>
+<td width="34%" valign="top">IN Dest, Port</td>
+</tr>
+<tr>
+<td width="18%" valign="top">OUT</td>
+<td width="48%" valign="top">Output</td>
+<td width="34%" valign="top">OUT Port, Source</td>
+</tr>
+</table>
+<br/>
+
+<big>ARITHMETIC</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">ADD</td>
+<td width="48%" valign="top">Add</td>
+<td width="34%" valign="top">ADD Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ADC</td>
+<td width="48%" valign="top">Add with Carry</td>
+<td width="34%" valign="top">ADC Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SUB</td>
+<td width="48%" valign="top">Subtract</td>
+<td width="34%" valign="top">SUB Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SBB</td>
+<td width="48%" valign="top">Subtract with borrow</td>
+<td width="34%" valign="top">SBB Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">DIV</td>
+<td width="48%" valign="top">Divide (unsigned)</td>
+<td width="34%" valign="top">DIV Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IDIV</td>
+<td width="48%" valign="top">Signed Integer Divide</td>
+<td width="34%" valign="top">IDIV Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">MUL</td>
+<td width="48%" valign="top">Multiply (unsigned)</td>
+<td width="34%" valign="top">MUL Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IMUL</td>
+<td width="48%" valign="top">Signed Integer Multiply</td>
+<td width="34%" valign="top">IMUL Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">INC</td>
+<td width="48%" valign="top">Increment</td>
+<td width="34%" valign="top">INC Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">DEC</td>
+<td width="48%" valign="top">Decrement</td>
+<td width="34%" valign="top">DEC Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CMP</td>
+<td width="48%" valign="top">Compare</td>
+<td width="34%" valign="top">CMP Op1,Op2</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SAL</td>
+<td width="48%" valign="top">Shift arithmetic left</td>
+<td width="34%" valign="top">SAL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SAR</td>
+<td width="48%" valign="top">Shift arithmetic right</td>
+<td width="34%" valign="top">SAR Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">RCL</td>
+<td width="48%" valign="top">Rotate left through Carry</td>
+<td width="34%" valign="top">RCL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">RCR</td>
+<td width="48%" valign="top">Rotate right through Carry</td>
+<td width="34%" valign="top">RCR Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ROL</td>
+<td width="48%" valign="top">Rotate left</td>
+<td width="34%" valign="top">ROL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ROR</td>
+<td width="48%" valign="top">Rotate right</td>
+<td width="34%" valign="top">ROR Op,Quantity</td>
+</tr>
+</table>
+<br/>
+
+<big>LOGIC</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">NEG</td>
+<td width="48%" valign="top">Negate (two-complement)</td>
+<td width="34%" valign="top">NEG Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">NOT</td>
+<td width="48%" valign="top">Invert each bit</td>
+<td width="34%" valign="top">NOT Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">AND</td>
+<td width="48%" valign="top">Logical and</td>
+<td width="34%" valign="top">AND Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">OR</td>
+<td width="48%" valign="top">Logical or</td>
+<td width="34%" valign="top">OR Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">XOR</td>
+<td width="48%" valign="top">Logical exclusive or</td>
+<td width="34%" valign="top">XOR Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SHL</td>
+<td width="48%" valign="top">Shift logical left</td>
+<td width="34%" valign="top">SHL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SHR</td>
+<td width="48%" valign="top">Shift logical right</td>
+<td width="34%" valign="top">SHR Op,Quantity</td>
+</tr>
+</table>
+<br/>
+
+<big>MISCELLANEOUS</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">NOP</td>
+<td width="48%" valign="top">No operation</td>
+<td width="34%" valign="top">NOP</td>
+</tr>
+<tr>
+<td width="18%" valign="top">LEA</td>
+<td width="48%" valign="top">Load effective adress</td>
+<td width="34%" valign="top">LEA Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">INT</td>
+<td width="48%" valign="top">Interrupt</td>
+<td width="34%" valign="top">INT Nr</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS (general)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td><b>Name</b></td>
+<td><b>Comment</b></td>
+<td><b>Syntax</b></td>
+</tr>
+<tr>
+<td>CALL</td>
+<td>Call subroutine</td>
+<td>CALL Proc</td>
+</tr>
+<tr>
+<td>JMP</td>
+<td>Jump</td>
+<td>JMP Dest</td>
+</tr>
+<tr>
+<td>JE</td>
+<td>Jump if Equal</td>
+<td>JE Dest</td>
+</tr>
+<tr>
+<td>JZ</td>
+<td>Jump if Zero</td>
+<td>JZ Dest</td>
+</tr>
+<tr>
+<td>JCXZ</td>
+<td>Jump if CX Zero</td>
+<td>JCXZ Dest</td>
+</tr>
+<tr>
+<td>JP</td>
+<td>Jump if Parity (Parity Even)</td>
+<td>JP Dest</td>
+</tr>
+<tr>
+<td>JPE</td>
+<td>Jump if Parity Even</td>
+<td>JPE Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">RET</td>
+<td width="34%" valign="top">Return from subroutine</td>
+<td width="17%" valign="top">RET</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNE</td>
+<td width="34%" valign="top">Jump if not Equal</td>
+<td width="17%" valign="top">JNE Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNZ</td>
+<td width="34%" valign="top">Jump if not Zero</td>
+<td width="17%" valign="top">JNZ Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JECXZ</td>
+<td width="34%" valign="top">Jump if ECX Zero</td>
+<td width="17%" valign="top">JECXZ Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNP</td>
+<td width="34%" valign="top">Jump if no Parity (Parity Odd)</td>
+<td width="17%" valign="top">JNP Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JPO</td>
+<td width="34%" valign="top">Jump if Parity Odd</td>
+<td width="17%" valign="top">JPO Dest</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS unsigned (Cardinal)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td>JA</td>
+<td>Jump if Above</td>
+<td>JA Dest</td>
+</tr>
+<tr>
+<td>JAE</td>
+<td>Jump if Above or Equal</td>
+<td>JAE Dest</td>
+</tr>
+<tr>
+<td>JB</td>
+<td>Jump if Below</td>
+<td>JB Dest</td>
+</tr>
+<tr>
+<td>JBE</td>
+<td>Jump if Below or Equal</td>
+<td>JBE Dest</td>
+</tr>
+<tr>
+<td>JNA</td>
+<td>Jump if not Above</td>
+<td>JNA Dest</td>
+</tr>
+<tr>
+<td>JNAE</td>
+<td>Jump if not Above or Equal</td>
+<td>JNAE Dest</td>
+</tr>
+<tr>
+<td>JNB</td>
+<td>Jump if not Below</td>
+<td>JNB Dest</td>
+</tr>
+<tr>
+<td>JNBE</td>
+<td>Jump if not Below or Equal</td>
+<td>JNBE Dest</td>
+</tr>
+<tr>
+<td>JC</td>
+<td>Jump if Carry</td>
+<td>JC Dest</td>
+</tr>
+<tr>
+<td>JNC</td>
+<td>Jump if no Carry</td>
+<td>JNC Dest</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS signed (Integer)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td>JG</td>
+<td>Jump if Greater</td>
+<td>JG Dest</td>
+</tr>
+<tr>
+<td>JGE</td>
+<td>Jump if Greater or Equal</td>
+<td>JGE Dest</td>
+</tr>
+<tr>
+<td>JL</td>
+<td>Jump if Less</td>
+<td>JL Dest</td>
+</tr>
+<tr>
+<td>JLE</td>
+<td>Jump if Less or Equal</td>
+<td>JLE Dest</td>
+</tr>
+<tr>
+<td>JNG</td>
+<td>Jump if not Greater</td>
+<td>JNG Dest</td>
+</tr>
+<tr>
+<td>JNGE</td>
+<td>Jump if not Greater or Equal</td>
+<td>JNGE Dest</td>
+</tr>
+<tr>
+<td>JNL</td>
+<td>Jump if not Less</td>
+<td>JNL Dest</td>
+</tr>
+<tr>
+<td>JNLE</td>
+<td>Jump if not Less or Equal</td>
+<td>JNLE Dest</td>
+</tr>
+<tr>
+<td>JO</td>
+<td>Jump if Overflow</td>
+<td>JO Dest</td>
+</tr>
+<tr>
+<td>JNO</td>
+<td>Jump if no Overflow</td>
+<td>JNO Dest</td>
+</tr>
+<tr>
+<td>JS</td>
+<td>Jump if Sign  (= negative)</td>
+<td>JS Dest</td>
+</tr>
+<tr>
+<td>JNS</td>
+<td>Jump if no Sign (= positive)</td>
+<td>JNS Dest</td>
+</tr>
+</table>
+</table>
+
+<font size=0>
+<center>
+<! 4.2548.02 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=gray width=760>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>แสดงผลการจัดอันดับ</a>
+<input Type=text Name=SearchText Size=20><input Type=submit value=สืบค้นในฐานข้อมูลเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>lampang.thcity.com</a> : <a href=http://thaiall.thailandhosting.net/>thailandhosting.net</a> : <a href=http://www.perlphpasp.com/>topsiam.com</a> : <a href=http://www.cookkoo.com/>cookkoo.com</a> : <a href=http://www.yonok.ac.th/>โยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> :  <a href=http://www.thaiall.com/download>Download</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_andorrolror"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/andorrolror.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:33 GMT -->
+</html>

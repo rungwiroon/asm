@@ -1,0 +1,49 @@
+LESSON8 - EXTERNALS AND PUBLICS
+
+now in order to call a proc from another file, the files
+which contains the proc will have to declare the proc
+as public :
+
+.
+.
+.
+
+public clearscreen
+
+clearscreen proc far
+.
+.
+.
+ret
+endp
+
+and in your file you will have to declare the proc as extrn :
+
+.
+.
+.
+extrn clearscreen:far
+.
+.
+call clearscreen
+
+you can also declare public/extrn global arguments.
+
+way of compiling :
+
+your file -  prog.asm
+extrn file - clear.asm
+
+than
+
+tasm prog
+tasm clear
+
+tlink prog clear
+
+error can occure in tasm if you didn't define public/extrn and in tlink
+if you wont supply the extrns.
+
+in this point you know most of assembly but you are lacking of technics
+in this point you will have to get sources and analize them, in the
+next chapter we will talk about entering info into EXE

@@ -1,0 +1,5 @@
+Ohh just one last thing, to speed things up a bit
+write in the first line of the code .286 because
+it will allow 286 instructions and the execution will
+be much faster.
+

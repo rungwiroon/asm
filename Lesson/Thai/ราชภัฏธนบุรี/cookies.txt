@@ -1,0 +1,4 @@
+# HTTrack Website Copier Cookie File
+# This file format is compatible with Netscape cookies
+dit.dru.ac.th	TRUE	/	FALSE	1999999999	PHPSESSID	18e84265803e98b8ad6b9d081990f6ee
+

@@ -1,0 +1,40 @@
+EXAMPLES FILE
+
+all of the examples are not in complete program you will have to put
+the in one !!!
+
+lesson 2 :
+
+mov : "mov ax,2" ax will be ax.
+add : "add ax,2" ax will be ax+2.
+sub : "sub ax,2" ax will be ax-2.
+inc : "inc ax"   ax will be ax+1.
+dec : "dec ax"   ax will be ax-1.
+and : "and ax,1" ax will be anded with 1. (if ax=0 then ax*1 is 0)
+or  : "or ax,1"  ax will be ored with 1.  (if ax=0 then ax+1 is 1)
+
+lesson 3 :
+
+mov ax,4c00h
+int 21h      ; terminate
+
+mov ax,seg msg
+mov ds,ax
+mov dx,offset msg
+mov ah,9
+
+int 21h     ; writes a message
+
+lesson 4 :
+
+shr : "shr ax,1" ax will be ax/2 (2^1).
+shl : "shl ax,1" ax will be ax*2 (2^1).
+ror : "ror ax,1" ax will be rotated right by one bit.
+rol : "rol ax,1" ax will be rotated left by one bit.
+div : "div cx"   ax will be divided by cx.
+mul : "mul cx"   ax will be multiplied by cx.
+neg : "neg ax"   ax will be ax*-1.
+
+these were basic examples for the starting lessons, the next lessons have
+their own examples so.........
+"lucretia" said....

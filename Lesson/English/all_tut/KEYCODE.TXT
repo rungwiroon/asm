@@ -1,0 +1,33 @@
+ДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДДД
+     Key       Code    є     Key          Code    є     Key          Code
+                       є                          є
+     Esc       1       є     A            30      є     Caps Lock    58
+     ! or 1    2       є     S            31      є     F1           59
+     @ or 2    3       є     D            32      є     F2           60
+     # or 3    4       є     F            33      є     F3           61
+     $ or 4    5       є     G            34      є     F4           62
+     % or 5    6       є     H            35      є     F5           63
+     ^ or 6    7       є     J            36      є     F6           64
+     & or 7    8       є     K            37      є     F7           65
+     * or 8    9       є     L            38      є     F8           66
+     ( or 9    10      є     : or ;       39      є     F9           67
+     ) or 0    11      є     " or '       40      є     F10          68
+     _ or -    12      є     ~ or `       41      є     F11          133
+     + or =    13      є     Left Shift   42      є     F12          134
+     Bksp      14      є     | or \       43      є     NumLock      69
+     Tab       15      є     Z            44      є     Scroll Lock  70
+     Q         16      є     X            45      є     Home or 7    71
+     W         17      є     C            46      є     Up or 8      72
+     E         18      є     V            47      є     PgUp or 9    73
+     R         19      є     B            48      є     Gray -       74
+     T         20      є     N            49      є     Left or 4    75
+     Y         21      є     M            50      є     Center or 5  76
+     U         22      є     < or ,       51      є     Right or 6   77
+     I         23      є     > or .       52      є     Gray +       78
+     O         24      є     ? or /       53      є     End or 1     79
+     P         25      є     Right Shift  54      є     Down or 2    80
+     { or [    26      є     Prt Sc or *  55      є     PgDn or 3    81
+     } or ]    27      є     Alt          56      є     Ins or 0     82
+     Enter     28      є     Spacebar     57      є     Del or .     83
+     Ctrl      29      є                          є
+

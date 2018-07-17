@@ -1,0 +1,148 @@
+/* ---- Computer Time C Programmong ---- */
+
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <mem.h>
+#include <dos.h>
+#include <time.h>
+typedef unsigned char BYTE;
+char far *PageStart; char far *FirstAdr[4];
+BYTE PAGE = 0;
+void SetModeX(void)
+{
+     unsigned int i;
+     _AX = 0x13; geninterrupt(0x10);
+     outport(0x3c4, 0x604);
+     outport(0x3c4, 0xf02);
+     outport(0x3d4, 0xe317);
+     PageStart = MK_FP(0xa000, 0);
+     for(i = 0; i < 0xffff; i++) *(PageStart + i) = 0;
+     for(i = 0; i < 4; i++) FirstAdr[i] = MK_FP(0xa000 + (i << 10), 0);
+     outport(0x3d4, 0x14);
+}
+#define SetActivePage(page)PageStart = FirstAdr[page]
+void SetVisualPage(BYTE page)
+{
+     outport(0x3d4, (page << 14) | 0x0c);
+     while   (inp(0x3da) & 8) ;/* -- VSync loop -- */
+     while (!(inp(0x3da) & 8)) ;
+}
+BYTE GetPixel(int x, int y)
+{
+	outp(0x3ce , 4); outp(0x3cf, x & 3);
+	return *(PageStart + (y << 4) + (y << 6) + (x >> 2));
+}
+void PutPixel(int x, int y, BYTE color)
+{
+     outport(0x3c4, (256 << (x & 3)) | 2);
+     *(PageStart + (y << 6) + (y << 4) + (x >> 2)) = color;
+}
+void CopyPage(int pdest, int psource)
+{
+     register int i; char far *ptr0, far *ptr1;
+     ptr0 = FirstAdr[pdest]; ptr1 = FirstAdr[psource];
+     outport(0x3ce, 0x4105); outport(0x3c4, 0x0f02);
+     for(i = 0; i < 16000; i++) *ptr0++ = *ptr1++;
+     outport(0x3ce, 0x4005);
+}
+
+#define FLIPPAGE()  { PAGE = 1 - PAGE; \
+					SetVisualPage(1 - PAGE); \
+					SetActivePage(PAGE); \
+					CopyPage(PAGE, 2); }
+
+BYTE Pal[768];
+
+void Setpal(void)
+{
+	 int i;
+	 outp(0x3c8, 0);
+	 for(i = 0; i < 768; i++)
+	  outp(0x3c9, Pal[i]);
+}
+
+
+int LoadBMP(char *name)
+{
+	 FILE *fp;
+	 int i, j;
+	 BYTE *ptr;
+	 unsigned int Length, Index, psi,a=0;
+
+	 Length = 320 * 200;
+	 fp = fopen(name,"rb");
+	 if(fp == NULL)
+	  return 0;
+	 fseek(fp, 1078, 0); /* seek header */
+
+	 for(j = 199; j >= 0; j--){
+	  for(i = 0; i < 320; i++){
+			a = fgetc(fp);
+		  PutPixel(i,j, a);
+	  }
+	 }
+	// free(buf0);
+	fclose(fp);
+	 return 1;
+}
+void SavePic( int x1, int y1, int x2, int y2, char *name){
+	FILE *fp;
+	int x,y;
+	fp = fopen("sprite.txt","a");
+	if(fp == NULL)
+		exit(0);
+	fprintf(fp,"\n\n%s\tdb %3d,%3d",name,x2-x1,y2-y1);
+	for( y = y1; y < y2; y++){
+		fprintf(fp,"\n\tdb ");
+		for( x = x1; x < x2-1; x++){
+			fprintf(fp,"%d,",GetPixel(x,y));
+		}
+		fprintf(fp,"%d",GetPixel(x,y));
+	}
+
+
+	fclose(fp);
+
+}
+void main(int agc,char *agv[])
+{
+	int	i,loop;
+	FILE *fp;
+	int x1,x2,y1,y2;
+	char *name;
+	if(agc == 1) {
+		printf("type SPRITE *fileinfo to run\n");
+		printf("do you simple fileinfo in S_SIMPLE.txt\n");
+		exit(0);
+	}
+	SetModeX();
+	fp = fopen(agv[1],"r");
+	if(fp == NULL){
+		printf("Cannot open file\n");
+		exit(0);
+	}else {
+		fscanf(fp,"%s",name);
+		if(!LoadBMP(name)){
+			_AX = 3; geninterrupt(0x10);
+			fclose(fp);
+			printf("Cannot open file %s\n",name);
+			exit(0);
+		}
+		fscanf(fp,"%d",&loop);
+		for(i = 0; i < loop;i++){
+			fscanf(fp,"%s",name);
+			fscanf(fp,"%d",&x1);
+			fscanf(fp,"%d",&y1);
+			fscanf(fp,"%d",&x2);
+			fscanf(fp,"%d",&y2);
+			SavePic(x1,y1,x2,y2,name);
+		}
+		fclose(fp);
+	}
+	getch();
+	_AX = 3; geninterrupt(0x10);
+	printf("\nModified Meff cs20");
+	printf("\nThank Computer Time Book.");
+	printf("\nOut put file Sprite.txt");
+}

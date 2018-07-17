@@ -1,0 +1,9 @@
+File       : asmfire.zip
+Title      : fire code w/ assembly source
+Author(s)  : legend
+Party      : --
+  Category : --
+  Rank     : --
+Part X/X   : 1/1
+
+Destination Directory : /pub/demos/code/effects/fire

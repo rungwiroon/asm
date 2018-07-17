@@ -1,0 +1,938 @@
+
+*********************** MATHEMATICAL SOLUTIONS *****************************
+
+ASM32's SOLVE subroutines are handy for many number crunching problems.
+Most SOLVE subroutines require a math coprocessor.  In subroutines
+requiring a math coprocessor, the coprocessor must have been initialized
+with FINIT or FNINIT before calling the subroutine.  See MathChip in
+SYSTEM.DOC.  Note that the 80x87 math coprocessors do not understand
+unsigned integers.
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+C2F:        convert degrees Celcius to degrees Fahrenheit
+Source:     f2c.asm
+
+80x87 required
+
+Call with:  ST(0) = degrees Celcius
+Returns:    ST(0) = degrees Fahrenheit
+Uses:       ST(0), 80x87 flags
+Example:
+
+include model.inc
+
+extrn   c2f:near
+
+include dataseg.inc
+
+c0      dw 100           ; 100 degrees Celcius
+f0      dw ?             ; going to store degrees Fahrenheit here
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        fild   c0        ; load degrees Celcius into ST(0)
+        call   c2f       ; returns degrees Fahrenheit in ST(0)
+        fistp  f0        ; save degrees Fahrenheit and pop the 8087's stack
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+CUBEFITF4:  fit a cubic equation to a set of float4 data
+CUBEFITF8:  fit a cubic equation to a set of float8 data
+CUBEFITI2:  fit a cubic equation to a set of integer2 data
+CUBEFITI4:  fit a cubic equation to a set of integer4 data
+Source:     cubefit.asm
+
+80x87 required
+
+            CubeFit subroutines use the Least Squares method to calculate
+            the a, b, c and d coefficients of the equation
+
+            y = a + bx + c(x^2) + d(x^3)
+
+            which best fits the given data points.  See also QuadFit and
+            LineFit.
+            The data series at DS:[EBX] consists of n sets of x and y
+            coordinates.
+
+Call with:  EBX pointing to data series
+            ECX = number of (x,y) points
+Returns:    ST(0) = a
+            ST(1) = b
+            ST(2) = c
+            ST(3) = d
+Uses:       entire 80x87 stack
+Example:
+
+extrn   cubefiti2:near
+
+include dataseg.inc
+points  dw 1,6           ; first (x,y) coordinate pair: x0 = 1, y0 = 6
+        dw 2,17          ; x1 = 2, y1 = 17
+        dw 5,86          ; x2 = 5, y2 = 86
+        dw 4,57          ; x3 = 4, y3 = 57
+        dw 3,34          ; x4 = 3, y4 = 34
+n equ ($-points) shr 2   ; number of coordinate pairs (5 in this case)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   ebx,points  ; point to data series
+        mov   ecx,n       ; 5 data points
+        call  cubefiti2   ; returns ST(0) = a
+                          ;         ST(1) = b
+                          ;         ST(2) = c
+                          ;         ST(3) = d
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+DEG2RAD:    convert degrees of arc to radians
+Source:     deg2rad.asm
+
+80x87 required
+
+Call with:  ST(0) = degrees of arc
+Returns:    ST(0) = radians
+Uses:       80x87 stack - ST(6) and ST(7) are lost
+Example:
+
+extrn   deg2rad:near
+
+include dataseg.inc
+deg     dw 180             ; dumb example - everyone knows this is pi radians
+@curseg ends
+
+include codeseg .inc
+        .
+        .
+        .
+        fild   deg         ; load degrees into ST(0)
+        call   deg2rad     ; it comes back with ST(0) = radians
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+F2C:        convert degrees Fahrenheit to degrees Celcius
+Source:     f2c.asm
+
+80x87 required
+
+Call with:  ST(0) = degrees Fahrenheit
+Returns:    ST(0) = degrees Celcius
+Uses:       ST(0), 80x87 flags
+Example:
+
+extrn   f2c:near
+
+include dataseg.inc
+f0      dw 212           ; 212 degrees Farenheit
+c0      dw ?             ; going to store degrees Celcius here
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        fild   f0        ; load degrees Fahrenheit into ST(0)
+        call   f2c       ; returns degrees Celcius in ST(0)
+        fistp  c0        ; save degrees Celcius and pop the 8087's stack
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FACTORIAL:  calculates the factorial of an integer
+Source:     factori.asm
+
+80x87 required
+
+Call with:  EAX = signed integer value
+Returns:    ST(0) = factorial of the integer value
+            Note: factorials get very large with relatively small integers
+Uses:       ST(0); coprocessor stack is pushed, ST(7) is lost
+Example:
+
+
+extrn   factorial:near
+
+include codeseg.inc
+        .
+        .
+        .
+        mov   eax,6          ; gonna calculate the factorial of 6
+        call  factorial
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPRIMEI2:   calculate the derivative of a polynomial function
+Source:     fprimei2.asm
+
+80x87 NOT required
+
+Call with:  ESI pointing to equation coefficients; all coefficients
+               must be 2-byte signed integers
+            ECX = order of polynomial (i. e., a quadratic function
+               is a second-order polynomial, so ECX = 2)
+               ECX limited to 0 < ECX < 32768
+Returns:    nothing
+Uses:       nothing
+Example:
+
+extrn   fprimei2:near
+
+include dataseg.inc
+fx      dw 2,0,3,2,0,5      ; the function y = 2+3*(x^2)+2*(x^3)+5*(x^5)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        mov     ecx,5        ; fifth order polynomial
+        lea     esi,fx       ; point to f(x) coefficients (2-byte integers)
+        call    fprimei2     ; calculate derivative of the function
+                             ; results:
+                             ; fx=0, fx+2=6, fx+4=6, fx+6=0, fx+8=25, fx+10=0
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPRIMEI4:   calculate the derivative of a polynomial function
+Source:     fprimei4.asm
+
+80x87 NOT required
+
+Call with:  ESI pointing to equation coefficients; all coefficients
+               must be 4-byte signed integers
+            ECX = order of polynomial (i. e., a quadratic function
+               is a second-order polynomial, so ECX = 2)
+               ECX limited to 0 < ECX < 32768
+Returns:    nothing
+Uses:       nothing
+Example:
+
+extrn   fprimei4:near
+
+include dataseg.inc
+
+fx      dd 2,0,3,2,0,5      ; the function y = 2+3*(x^2)+2*(x^3)+5*(x^5)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        mov     ecx,5        ; fifth order polynomial
+        lea     esi,fx       ; point to f(x) coefficients (2-byte integers)
+        call    fprimei4     ; calculate derivative of the function
+                             ; results:
+                             ; fx=0, fx+2=6, fx+4=6, fx+6=0, fx+8=25, fx+10=0
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPRIMEF4:   calculate the derivative of a polynomial function
+Source:     fprimef4.asm
+
+80x87 required
+
+Call with:  ESI pointing to equation coefficients; all coefficients
+               must be float4 values
+            ECX = order of polynomial (i. e., a quadratic function
+               is a second-order polynomial, so ECX = 2)
+               0 < ECX < 32768
+
+Returns:    nothing
+Uses:       nothing
+Example:
+
+extrn   fprimef4:near
+
+include dataseg.inc
+
+fx      dd 2.2,0.0,3.5,2.0,0.0,5.1
+                            ; the function y = 2.2+3.5*(x^2)+2*(x^3)+5.1*(x^5)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        mov     ecx,5        ; fifth order polynomial
+        lea     esi,fx       ; point to f(x) coefficients (float4 values)
+        call    fprimef4     ; calculate derivative of the function
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPRIMEF8:   calculate the derivative of a polynomial function
+Source:     fprimef8.asm
+
+80x87 required
+
+Call with:  ESI pointing to equation coefficients; all coefficients
+               must be float8 values
+            ECX = order of polynomial (i. e., a quadratic function
+               is a second-order polynomial, so ECX = 2)
+               0 < ECX < 32768
+
+Returns:    nothing
+Uses:       nothing
+Example:
+
+extrn   fprimef8:near
+
+include dataseg.inc
+
+fx      dq 2.2,0.0,3.5,2.0,0.0,5.1
+                            ; the function y = 2.2+3.5*(x^2)+2*(x^3)+5.1*(x^5)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        mov     ecx,5        ; fifth order polynomial
+        lea     esi,fx       ; point to f(x) coefficients (float4 values)
+        call    fprimef8     ; calculate derivative of the function
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FVALUE:     calculate the future value of a given present value and
+            equal periodic payments
+Source:     fvalue.asm (xtothey.asm)
+
+80x87 required
+
+Call with:  DS:[ESI] pointing to an ASM32 Financial data structure
+            (see FINDATA.INC).  The pv, n, i, and pmt data must be
+            current before calling fvalue.
+Returns:    updates fv in FINDATA data structure; future value also
+            returned in ST(0)
+Uses:       80x87 stack
+Evample:
+
+include model.inc
+include findata.inc
+
+extrn   fvalue:near
+
+include dataseg.inc
+
+case1   findata <12,.0525,100.0,10.0,> ; n = 12 periods
+                                       ; i = .0525 (5.25% interest rate per n)
+                                       ; present value = 100
+                                       ; 10 = payment per n period
+@curseg ends
+
+include codeseg.inc
+         .
+         .
+         .
+         lea  esi,case1
+         call fvalue                    ; calculate future value; update
+                                        ; fv in case1
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+ICOSINE:    return integer cosine*64k from integer angle
+ISINE:      return integer sine*64k from integer angle
+Source:     itrig.asm
+
+Call with:  EAX = angle in degrees
+Returns:    (ICosine) EAX = cosine*64k of angle
+            (ISine)   EAX = sine*64k of angle
+
+            Given an integer angle in degrees, these subroutines return a
+            biased sine or cosine.  The 64k bias results in sine or cosine
+            values returned in the range of 0 to 10000h.  After multiplying
+            these number by an integer, you should remove the bias by
+            shifting the result right 16 bits.  See example.
+Uses:       EAX, flags
+Example:
+
+; this code fragment is from ASM32's POLAR2RECT subroutine
+
+extrn   isine, icosine
+
+include codeseg.inc
+        .
+        .
+        .
+        movsx   eax,word ptr 6[ebx]     ; angle may be positive or negative
+        call    icosine                 ; get biased cosine
+        mov     edi,eax                 ; save cosine*64k
+
+        movsx   eax,word ptr 4[ebx]     ; magnitude
+        imul    edi                     ; EAX = x-pixels*64k
+        movsx   edx,word ptr [ebx]      ; x-origin
+        sar     eax,16                  ; divide by 64k
+        mov     x0,dx
+        add     eax,edx                 ; plus origin
+        mov     x1,ax
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+LINEFITF4:  fit a line equation to a series of float4 data points
+LINEFITF8:  fit a line equation to a series of float8 data points
+LINEFITI2:  fit a line equation to a series of i2 data points
+LINEFITI4:  fit a line equation to a series of i4 data points
+Source:     linefit.asm
+
+80x87 required
+
+            LineFit subroutines use the Least Squares method to calculate
+            the a and b coefficients of the equation
+
+            y = a + bx
+
+            which best fits the given data points.  See also CubeFit
+            and QuadFit.
+            The data series at DS:[EBX] consists of n sets of x and y
+            coordinates.
+
+Call with:  EBX pointing to data series
+            ECX = number of (x,y) points
+Returns:    ST(0) = a
+            ST(1) = b
+            ST(2) = äx
+            ST(3) = äxx
+            ST(4) = äy
+            ST(5) = äxy
+Uses:       entire 80x87 stack
+Example:
+
+extrn   linefiti2:near
+
+include dataseg.inc
+points  dw 1,5           ; first (x,y) coordinate pair
+        dw 3,12          ; x1 = 3, y1 = 12
+        dw 7,24          ; x2 = 7, y2 = 24
+        dw 5,17          ; x3 = 5, y3 = 17
+        dw 10,33         ; x4 = 10, y4 = 33
+n equ ($-points) shr 2   ; number of coordinate pairs (5 in this case)
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   ebx,points  ; point to data series
+        mov   ecx,n       ; 5 data points
+        call  linefiti2   ; returns a in ST(0) and b in ST(1)
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+NORMF4, NORMF4b:   normalize a float4 array
+Source:            normf4.asm (maxf4.asm)
+
+NORMF8, NORMF8b:   normalize a float8 array
+Source:            normf8.asm (maxf8.asm)
+
+80x87 required
+
+Call with:  EDI pointing to the numeric array
+            ECX = number of values in the array
+            ST(0) = number to normalize the array to
+            normf?b: EBX = bytes between data points
+            normf4 assumes EBX = 4, norm f8 assumes EBX = 8
+
+            NormF4 and NormF8 assume that the maximum value of the data
+            is greater than zero.  I have used these subroutines
+            to scale data upward or downward, for example, to convert
+            from raw data to percent-of-maximum data.
+
+Returns:    ST(0) = scaling factor
+Uses:       ST(0); ST(7) and ST(6) are pushed off the coprocessor stack
+Example:
+
+include model.inc
+
+extrn   normf4:near
+
+include dataseg.inc
+
+hundred dw 100            ; convert all data to percent-of-peak
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        esi    edi,f4fdata   ; EDI points to the data
+        mov    ecx,1488      ; half-hourly data for a month
+        fild   hundred       ; make the maximum value 100
+        call   normf4        ; normalize the data
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+NPVALUE:    calculate net present value of an uneven cash flow
+Source:     npvalue.asm (xtothey.asm)
+
+80x87 required
+
+Call with:  ESI pointing to ASM32's FINDATA data structure
+            EBX pointing to float4 cash flow data
+            n, i, and fv in FINDATA must be current before calling NPValue,
+            and there must be at least n cash flows
+Returns:    updates pv in FINDATA
+            ST(0) = present value
+Uses:       80x87 stack
+Example:
+
+include   model.inc
+
+include   findata.inc
+
+extrn     npvalue:near
+
+include dataseg.inc
+
+case1     findata <30,.105,,,0.0>     ; 30 payments, 10.5% interest, fv = 0.0
+payments  dd 10 dup (80.0)            ; need 30 payments for this example
+          dd 10 dup (95.0)
+          dd 10 dup (103.0)
+@curseg ends
+
+include codeseg.inc
+          .
+          .
+          .
+        lea    ebx,payments
+        lea    esi,case1
+        call   npvalue
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+PAYMENT:    calculates periodic payment
+Source:     payment.asm
+
+80x87 required
+
+Call with:  ESI pointing to ASM32's FINDATA data structure
+            n, i, fv and pv in FINDATA must be current before calling
+            Payment.  Payment replaces pmt in the data structure.
+Returns:    replaces pmt in data structure
+Uses:       80x87 stack; 80x86 registers and flags are unchanged
+Example:
+
+include model.inc
+include findata.inc
+
+extrn   payment:near
+
+include dataseg.inc
+
+; 30 payments, 10.5% interest, pv = 10,000, fv = 0.0
+
+case1   findata <30,.105,10000.0,,0.0>
+
+@curseg ends
+
+include codeseg.inc
+          .
+          .
+          .
+        lea    esi,case1
+        call   payment
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+POLAR2RECT:  convert polar coordiantes to rectangular
+Source:      pol2rect.asm (itrig.asm)
+
+Call with:   EBX pointing to polar vector data (see Example)
+Returns:     EBX pointing to rectangular coordinates in Polar2Rect's
+             data area.  Vector data is not disturbed.  Each call to
+             Polar2Rect will overwrite the results of the previous call.
+
+             Note that if you want to use this subroutine to draw a
+             vector on a graphics screen, the vector's direction and
+             magnitude may not appear correct unless the graphics mode
+             has an x/y pixel ratio of 1:1.  Graphics screen dimensions
+             resulting in this pixel ratio are:
+
+             320x240             VGA13x(1)
+             640x480             VGA 11h, 12h, SVGA256(1), SVGA32k(1)
+             800x600             VESA 6Ah, SVGA16(0), SVGA256(2), SVGA32k(2)
+             1024x768            SVGA16(1), SVGA256(3), SVGA32k(3)
+
+             Also, because the screen's coordinate origin is at the top of
+             the screen, the y1 coordinate must be adjusted in order to
+             display the vector in a standard orientation.  See Example 1.
+
+             Another way to display a vector in the proper orientation is
+             to set up a user-defined coordinate system with ASM32's UCINIT
+             and to convert the vector's rectangular coordinates to system
+             coordinates with UC2SYS.  See GRAPHICS.DOC and Example 2.
+
+Uses:        EBX, flags
+
+Examples on next page
+
+(Polar2Rect, continued)
+
+Example 1:
+
+extrn   polar2rect:near, drawline:near
+
+include dataseg.inc
+polar   dw 50,50                    ; (x,y) origin  -32768 to +32767
+        dw 300                      ; magnitude     -32768 to +32767
+        dw 207                      ; direction     -+degrees
+@curseg ends
+
+include codeseg.inc
+; code fragment assumes 1:1 pixel ratio
+        .
+        .
+        .
+        lea     ebx,polar
+        call    polar2rect          ; returns EBX -> rectangular data
+        movsx   eax,word ptr 6[ebx] ; y1
+        movsx   edx,word ptr 2[ebx] ; y0
+        sub     eax,edx             ; delta y
+        add     eax,eax             ; double it
+	sub	6[ebx],ax           ; adjust y1
+        call    drawline            ; on screen
+
+
+
+Example 2:
+
+extrn   polar2rect:near, drawline:near
+extrn   ucinit:near, uc2sys:near
+
+include dataseg.inc
+; user coordinates with 1:1 pixel ratio
+user    dw 0,0
+        dw 800,600
+
+polar   dw 50,50                    ; (x,y) origin
+        dw 300                      ; magnitude
+        dw 207                      ; direction
+@curseg ends
+
+include codeseg.inc
+; set up user coordinates with 1:1 pixel ratio
+        lea     ebx,user            ; point to user coordinates
+        call    uc2sys
+        .
+        .
+        .
+        lea     ebx,polar
+        call    polar2rect          ; returns EBX -> rectangular data
+        call    uc2sys              ; convert to screen coordinates
+        call    drawline            ; on screen
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+PSOLVEF4:   solve a polynomial equation for y, given x; float4 equation
+            coefficients
+Source:     psolvef4.asm
+
+PSOLVEF8:   solve a polynomial equation for y, given x; float8 equation
+            coefficients
+Source:     psolvef8.asm
+
+PSOLVEI2:   solve a polynomial equation for y, given x; 2-byte integer
+            equation coefficients
+Source:     psolvei2.asm
+
+PSOLVEI4:   solve a polynomial equation for y, given x; 4-byte integer
+            equation coefficients
+Source:     psolvei4.asm
+
+80x87 required for all psolve subroutines
+
+Call with:  ESI pointing to equation coefficients
+            ECX = n (order of the equation, i. e., a quadratic equation
+               is a second-order polynomial, so ECX = 2)
+            ST(0) = x value
+Returns:    ST(0) = y value
+Uses:       most coprocessor registers
+Example:
+
+include model.inc
+
+; I want to calculate y for the equation
+; y = 12 + 2x + 17(x**2) + 4(x**3)
+
+extrn   psolvei2:near
+
+include dataseg.inc
+
+fx      dw 12,2,17,4
+n       equ 3              ; third-order equation
+x       dd 0.85
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea     esi,fx      ; DS:[ESI] points to equation coefficients
+        mov     ecx,n       ; a third-order polynomial
+        fld     x           ; find y given x
+        call    psolvei2    ; returns y in register ST(0)
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+PVALUE:     calculate the present value of an even cash flow
+Source:     pvalue.asm (xtothey.asm)
+
+80x87 required
+
+Call with:  [ESI] pointing to FINDATA data structure
+            n, i, pmt and fv must be updated before calling
+            pvalue.
+Returns:    updates pv in FINDATA data structure
+            ST(0) = present value
+Uses:       80x87 stack
+Example:
+
+include  model.inc
+
+include  findata.inc
+
+extrn    pvalue:near
+
+include  dataseg.inc
+
+case1    findata <12,.0525,,10.0,0.0>   ; n = 12 periods
+                                        ; i = .0525 (5.25% interest rate per n)
+                                        ; present value unknown
+                                        ; payment per n period = 10
+                                        ; future value = 0
+@curseg ends
+
+include  codeseg.inc
+         .
+         .
+         .
+         lea  esi,case1
+         call pvalue                    ; calculate present value; update
+                                        ; pv in case1
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+QUADFITF4:  fit a quadratic equation to a series of float4 data points
+QUADFITF8:  fit a quadratic equation to a series of float8 data points
+QUADFITI2:  fit a quadratic equation to a series of i2 data points
+QUADFITI4:  fit a quadratic equation to a series of i4 data points
+Source:     quadfit.asm
+
+80x87 required
+
+            QuadFit subroutines use the Least Squares method to calculate
+            the a, b and c coefficients of the equation
+
+            y = a + bx + c(x^2)
+
+            which best fits the given data points.  See also CubeFit and
+            LineFit.
+            The data series at DS:[EBX] consists of n sets of x and y
+            coordinates.
+
+Call with:  EBX pointing to data series
+            ECX = number of (x,y) points
+Returns:    ST(0) = a
+            ST(1) = b
+            ST(2) = c
+Uses:       entire 80x87 stack
+Example:
+
+include model.inc
+
+extrn   quadfiti2:near
+
+include dataseg.inc
+
+points  dw 1,6           ; first (x,y) coordinate pair: x0 = 1, y0 = 6
+        dw 2,17          ; x1 = 2, y1 = 17
+        dw 5,86          ; x2 = 5, y2 = 86
+        dw 4,57          ; x3 = 4, y3 = 57
+        dw 3,34          ; x4 = 3, y4 = 34
+n equ ($-points) shr 2   ; number of coordinate pairs (5 in this case)
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   ebx,points  ; point to data series
+        mov   ecx,n       ; 5 data points
+        call  quadfiti2   ; returns a in ST(0), b in ST(1) and c in ST(2)
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+RAD2DEG:    convert radians to degrees of arc
+Source:     rad2deg.asm
+
+80x87 required
+
+Call with:  ST(0) = radians
+Returns:    ST(0) = degrees of arc
+Uses:       80x87 stack - ST(6) and ST(7) are lost
+Example:
+
+include codeseg.inc
+extrn   rad2deg:near
+
+include dataseg.inc
+
+rad     dd 3.14159        ; dumb example - everyone knows this is 180 degrees
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        fld    rad         ; load radians into ST(0)
+        call   rad2deg     ; it comes back with ST(0) = degrees
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+RECT2POLAR:  convert rectangualr coordinates to polar coordinates
+Source:      rect2pol.asm (itrig.asm)
+
+80x87 required
+
+Call with:   EBX pointing to rectangular coordinate data (see Example)
+Returns:     EBX pointing to polar coordinates in Rect2Polar's data area.
+             Input coordinate data is not disturbed.  Each call to
+             Rect2Polar will overwrite the results of the previous call.
+Uses:        EBX
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SAMP2POP:   convert sample standard deviation to population standard
+            deviation; used with StdDev subroutines.
+Source:     samp2pop.asm
+
+80x87 required
+
+Call with:  ST(0) = sample standard deviation
+            ECX = n (number of data points)
+Returns:    ST(0) = population standard deviation
+Uses:       ST(0); ST(7), ST(6) and ST(5) are lost
+Example:    see StdDev series subroutines
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STDDEVF4:   calculate standard deviation of a float4 data series 
+Source:     stddevf4.asm ($stddev.asm)
+
+STDDEVF8:   calculate standard deviation of a float8 data series 
+Source:     stddevf8.asm ($stddev.asm)
+
+STDDEVI2:   calculate standard deviation of an i2 data series 
+Source:     stddevi2.asm ($stddev.asm)
+
+STDDEVI4:   calculate standard deviation of an i4 data series 
+Source:     stddevi4.asm ($stddev.asm)
+
+80x87 required
+
+Call with:  EDI pointing to data series
+            ECX = number of values
+            Note that integer values are signed integers
+Returns:    if CF = 1, was called with ECX = 0
+            if CF = 0, ST(0) = standard deviation
+            The value returned by StdDev subroutines is the sample standard
+            deviation S; population standard deviation SP is calculated from
+            sample standard deviation with this formula:
+
+            SP = S * SQRT((n - 1) / n)
+
+Uses:       CF, coprocessor registers
+Example:
+
+include model.inc
+
+extrn   stddevf4:near       ; my data series is in float4 format
+extrn   samp2pop:near       ; I want the result as a
+                            ; population standard deviation
+include codeseg.inc
+        .
+        .
+        .
+; the program has established a series of float4 values, and I need the
+; standard deviation of the series
+        lea     edi,series_of_numbers
+        push    ds
+        pop     es
+        mov     ecx,1600       ; a whole bunch of data
+        call    stddevf4       ; ST(0) = sample standard deviation
+
+; the standard deviation returned by StdDev subroutines is the sample
+; standard deviation.  Use samp2pop to convert to population standard
+; deviation
+        call    samp2pop       ; ST(0) = population standard deviation
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+XTOTHEY:    calculates x to the y power (x^y)
+Source:     xtothey.asm
+
+80x87 required
+
+Call with:  ST(0) = x, ST(1) = y
+Returns:    ST(0) = x^y, coprocessor stack popped
+Uses:       coprocessor stack
+Example:
+
+include model.inc
+
+extrn   xtothey:near
+
+include dataseg.inc
+
+x       dd 17.4
+y       dd .3
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        fld    y                ; ST(0) = exponent
+        fld    x                ; ST(0) = x, ST(1) = exponent
+        call   xtothey          ; calculate x**y
+
+

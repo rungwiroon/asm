@@ -1,0 +1,41 @@
+Publics by module
+
+FILLPAT 	size = 250
+	_FillPatternX                   
+
+FILLRECT	size = 145
+	_FillRectangleX                 
+
+MASKS   	size = 8
+	LeftClipPlaneMask                 RightClipPlaneMask
+
+MEM2SC  	size = 131
+	_CopySystemToScreenX            
+
+MEM2SCX 	size = 152
+	_CopySystemToScreenMaskedX      
+
+MKALIGN 	size = 300
+	_CreateAlignedMaskedImage       
+
+MODE    	size = 196
+	SCREEN_SEG                        SCREEN_WIDTH
+	_ResetModeX                       _Set320x240Mode
+
+RDPIX   	size = 48
+	_ReadPixelX                     
+
+SC2SC   	size = 211
+	_CopyScreenToScreenX            
+
+SC2SCX  	size = 200
+	_CopyScreenToScreenMaskedX      
+
+SHPAGE2 	size = 91
+	_ShowPage                       
+
+VPAL    	size = 97
+	_SetAllPalette                    _SetIndexedPalette
+
+WRPIX   	size = 53
+	_WritePixelX                    

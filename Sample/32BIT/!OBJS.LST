@@ -1,0 +1,5 @@
+k:\asm\pm32\obj\xlib.lib &
++ mode + wrpix + fillrect + shpage2 + rdpix + mem2sc + sc2sc + mem2scx &
++ sc2scx + masks + vpal + fillpat +mkalign &
+, xlib.lst
+

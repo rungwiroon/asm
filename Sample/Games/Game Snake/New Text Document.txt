@@ -1,0 +1,7 @@
+ mov	ah,11h
+	int	16h
+	jne	Ok
+	jmp	exit_1
+
+Ok:	mov	ah,10h
+	int 	16h

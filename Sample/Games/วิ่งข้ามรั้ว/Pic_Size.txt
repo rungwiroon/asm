@@ -1,0 +1,15 @@
+up   700
+down 705
+rear 938
+
+ASCII
+UP = 72
+DOWN = 80
+ENTER = 13
+
+human 70*130
+0078FF
+5ch
+
+400*570
+430*130

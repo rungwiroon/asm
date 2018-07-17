@@ -1,0 +1,151 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/convert_string_to_packed_bcd.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> convert_string_to_packed_bcd.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"convert"</font>
+
+<font color=#008000>; this program uses a subroutine written in 8086 assembly language  </font>
+<font color=#008000>; that can be used for converting a string of number  </font>
+<font color=#008000>; (max of 4 ascii digit) to equivalent packed bcd digits. </font>
+<font color=#008000>; bcd is binary coded decimal. </font>
+
+<font color=#008000>; this program does no screen output. </font>
+<font color=#008000>; to see results click "vars". </font>
+
+
+
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start
+
+string <font color=#000064>db</font> <font color=#800080>'1234'</font>  <font color=#008000>; 4 ascii digits. </font>
+packed_bcd <font color=#000064>dw</font> ?   <font color=#008000>; two bytes (word) to store 4 digits. </font>
+
+start:
+
+<font color=#0000FF>lea</font> <font color=#C80000>bx</font>, string
+<font color=#0000FF>lea</font> <font color=#C80000>di</font>, packed_bcd
+<font color=#0000FF>call</font> pack_to_bcd_and_binary
+
+<font color=#0000FF>ret</font> <font color=#008000>; return to operating system. </font>
+
+
+
+
+
+<font color=#008000>; subroutine written in 8086 assembly language  </font>
+<font color=#008000>; that can be used for converting a string of number  </font>
+<font color=#008000>; (max of 4 ascii digit) to equivalent packed </font>
+<font color=#008000>; bcd digits.  </font>
+<font color=#008000>; input parameters: </font>
+<font color=#008000>;    bx - address of source string (4 ascii digits). </font>
+<font color=#008000>; output: </font>
+<font color=#008000>;    di - must be set to address for packed bcd (2 bytes). </font>
+
+
+pack_to_bcd_and_binary <font color=#0000FF>proc</font> near
+<font color=#0000FF>pusha</font>
+
+<font color=#008000>; point to 2 upper digits of packed bcd: </font>
+<font color=#008000>; (assumed that we have 4 digits) </font>
+<font color=#0000FF>add</font> <font color=#C80000>di</font>, 1
+
+<font color=#008000>; loop only for 2 because every time we </font>
+<font color=#008000>; read 2 digits (2 x 2 = 4 digits) </font>
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 2
+
+<font color=#008000>; reset packed bcd: </font>
+<font color=#0000FF>mov</font> <font color=#000064>word</font> <font color=#000064>ptr</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, 0
+
+	<font color=#008000>; to convert a char (0..9) to digit we need </font>
+	<font color=#008000>; to subtract 48 (30h) from its ascii code, </font>
+	<font color=#008000>; or just clear the upper nibble of a byte. </font>
+	<font color=#008000>; mask:  00001111b  (0fh) </font>
+
+next_digit:
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>	<font color=#008000>; read 2 digits. </font>
+
+<font color=#0000FF>and</font> <font color=#C80000>ah</font>, 00001111b
+<font color=#0000FF>and</font> <font color=#C80000>al</font>, 00001111b
+
+<font color=#008000>; 8086 and all other Intel's microprocessors store less  </font>
+<font color=#008000>; significant byte at lower address. </font>
+
+<font color=#0000FF>xchg</font> <font color=#C80000>al</font>, <font color=#C80000>ah</font>
+
+<font color=#008000>; move first digit to upper nibble: </font>
+<font color=#0000FF>shl</font> <font color=#C80000>ah</font>, 4
+
+<font color=#008000>; pack bcd: </font>
+<font color=#0000FF>or</font> <font color=#C80000>ah</font>, <font color=#C80000>al</font>
+
+<font color=#008000>; store 2 digits: </font>
+<font color=#0000FF>mov</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#C80000>ah</font>
+
+<font color=#008000>; next packed bcd: </font>
+<font color=#0000FF>sub</font> <font color=#C80000>di</font>, 1
+<font color=#008000>; next word (2 digits): </font>
+<font color=#0000FF>add</font> <font color=#C80000>bx</font>, 2
+
+<font color=#0000FF>loop</font> next_digit
+
+<font color=#0000FF>popa</font>
+<font color=#0000FF>ret</font>
+pack_to_bcd_and_binary endp
+
+
+
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/convert_string_to_packed_bcd.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

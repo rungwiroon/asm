@@ -1,0 +1,398 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/shlshr.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:52 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>SHL และ SHR</title>
+</head>
+
+<body background="bgstou.jpg" bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="0" width="100%">
+    <tr>
+        <td><p align="right">&nbsp;</p>
+&nbsp;        </td>
+        <td><p align="center"><font color="#FF0080" size="7"><strong><u>คำสั่ง
+        SHL และ SHR</u></strong></font></p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><p align="center">&nbsp;</p>
+&nbsp;        </td>
+        <td><p align="center"><img src="bookworm.gif" width="120"
+        height="100"></p>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+</center></div>
+
+<p align="center"><img src="link1.gif" width="100" height="17"><img
+src="link1.gif" width="100" height="17"><img src="link1.gif"
+width="100" height="17"></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><img src="running.gif" width="51" height="51"></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#8000FF" size="5"><strong><u>คำอธิบาย</u></strong><strong>
+            : </strong></font><font color="#008000" size="5"><strong>คำสั่งเลื่อนค่าในบิต</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>การปฎิบัติการ
+    : SHL จะเลื่อนค่าบิตของ
+    operand ไปทางซ้าย
+    ทำให้บิตค่ามากสุดถูกเลื่อนเข้าไปใน
+    flag CFและบิตค่าน้อยสุดนั้นถูก
+    reset เป็น 0 SHR
+    จะเลื่อนค่าบิตของ operand
+    ไปทางขวา
+    ทำให้บิตค่ามากสุดถูกเลื่อนเข้าไปใน
+    flag CF
+    และบิตค่ามากสุดนั้นถูก
+    reset เป็น o </strong></font></p>
+    <p><font color="#008080" size="4"><strong>การเลื่อนค่าบิตจะทำซ้ำตามจำนวนที่กำหนดโดย
+    operand ตัวที่สอง ซึ่ง
+    จะเป็นค่าตัวเลขหรือ
+    register CL 8026/80386
+    ไม่ยอมให้ใช้ค่าเลื่อนมากกว่า
+    31 ถ้ามากกว่า 31
+    การใช้ค่าในการเลื่อนจะใช้เพียง
+    5 บิตของไบต์เท่านั้น </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>OF จะถูก</strong></font><font
+    color="#FF8000" size="4" face="CordiaUPC"><strong> </strong></font><font
+    color="#FF8000" size="4"><strong>set
+    ถ้าคำสั่งเลื่อนครั้งเดียวถูก
+    execute
+    สำหรับการเลื่อนทางซ้ายจะถูก
+    reset เป็น 0
+    ถ้าบิตค่ามากสุด
+    มีผลลัพธ์เช่นเดียวกับ
+    flag ตัวทด
+    หรือกรณีอื่นจะถูก set
+    เป็น 1 ซึ่งคำส่ง SHR
+    จะเซต flag OF เท่ากับ bit
+    ค่ามากที่สุดของ operand
+    เริ่มต้น </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>Syntax :</strong></font><font
+    size="4"><strong> </strong></font></p>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>SHL / SHR
+            destination, count </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>SHL / SHR
+            destination, </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>SHL / SHR
+            destination, CL </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>ตัวอย่าง
+    : </strong></font></p>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>SHL / SHR
+            MEMORY_ BYTE, 1 </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>ตย.
+    การใช้คำสั่ง shift and add
+    คุณค่าที่อยู่ในรีจีสเตอร์
+    AXด้วย 9 : </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>:Program to multiply AX by 9 using
+    shift and add </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong>code-seg</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Segment </strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>assume cs : code-seg </strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>star</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>push cx : save register cx
+            and ax </strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>push ax : on stack </strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>mov cx,3 </strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>SHL ax,cx : multiply ax by
+            8</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Mov cx,ax</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Pop ax : original ax value</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Add ax,cx : ax has 9 times
+            original value</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Pop cx</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Mov ah,4ch</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>Int 21 h</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>Code-seg </strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>ends</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>End start </strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><img src="home2.gif"
+border="0" width="83" height="30"></a></p>
+
+<p align="center"><img src="line2.gif" width="435" height="15"></p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><img src="eemail.gif" width="36" height="37"></td>
+            <td>&nbsp;</td>
+            <td><font color="#FF0080" size="5"><strong>การนำคำสั่ง
+            SHL/SHR ไปประยุกต์ใช้</strong></font><font
+            color="#FF0080" size="4"><strong> </strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>FLAG
+    ที่ถูกกระทำ : OF (
+    ใช้กับคำสั่ง Simple – shift
+    เท่านั้น ) , CF , AF , PF , SF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>Overflow ( OF )
+    มีค่าเป็น 1
+    เมื่อผลลัพธ์ที่ได้มีค่าเกิน
+    Bit สูงของข้อมูล</strong></font></p>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8000" size="4"><strong>มีค่าเป็น
+            0
+            เมื่อผลลัพธ์ที่ได้มีค่าไม่เกิน
+            Bit สูงของข้อมูล</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>Carry Flag ( CF )
+    มีค่าเป็น 1
+    เมื่อมีตัวทดหรือตัวยืม
+    ในขณะทำการคำนวณทางคณิตศาสตร์ด้วยข้อมูล
+    8 หรือ 16 Bit ถ้าใช้คำสั่ง
+    Shift , Rorate เกิน Register ก็จะใช้ CF
+    นี้ด้วย</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8000" size="4"><strong>มีค่าเป็น
+            0 ในกรณีอื่น
+            นอกจากนี้</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>Auxiliary Carry
+    Flag ( AF )
+    ใช้สำหรับการคำนวณที่มีการทด
+    หรือตัวยืม สำหรับเลข 1
+    หลัก ขนาด 4 Bit ของ BCD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>Parity Flag ( PF )
+    ใช้สำหรับการติดต่อข้อมูล</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8000" size="4"><strong>มีค่าเป็น
+            1 ได้ Parity เป็นเลขคี่ </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8000" size="4"><strong>มีค่าเป็น
+            0 ได้ Parity เป็นเลขคู่ </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>Sign Flag ( SF )
+    มีค่าเป็น 1
+    เมื่อได้ผลลัพธ์เป็นค่าลบ</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8000" size="4"><strong>มีค่าเป็น
+            0
+            เมื่อได้ผลลัพธ์เป็นค่าบวก
+            </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>FLAG
+    ที่ไม่ต้องกำหนด : AF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นใน
+    MODE PORTECTED : การยกเว้นการ protect
+    เกิดขึ้นถ้าใช้ operand ใน
+    segment ที่เขียนค่าไม่ได้
+    ถ้าใช้ segment CS , DS , ES
+    เก็บค่าหน่วยความจริงของ
+    operand ที่ EA การยกเว้นการ
+    protect
+    นั้นเกิดขึ้นและถ้าใช้
+    segment SS
+    เก็บค่าหน่วยความจำการยกเว้นการผิดพลาดของ
+    stack เกิดขึ้นด้วย </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นใน
+    MODE REAL ADDRESS : เมื่อ operand
+    อยู่ที่ offset OFFFFH จะเกิด int 13
+    การนำคำสั่ง SHL/SHR
+    ไปประยุกต์ใช้งาน :
+    มักนิยมนำไปใช้ในการเขียน
+    program เพื่อเลื่อน bit </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อมูลในงานกราฟฟิก
+    เช่น program ThaiGr.</strong></font></p>
+</blockquote>
+
+<hr>
+
+<p><a href="Menu.html"><img src="Back.gif" border="0" width="83"
+height="28"></a></p>
+
+<table border="0">
+    <tr>
+        <td><img src="Rosebul.gif" width="17" height="17"></td>
+        <td>&nbsp;</td>
+        <td><font color="#800080"><strong><u>เอกสารประกอบการเรียนวิชา
+        </u></strong></font><font color="#800080"
+        face="CordiaUPC"><strong><u>Assembly</u></strong></font></td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/shlshr.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:53 GMT -->
+</html>

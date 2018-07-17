@@ -1,0 +1,226 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/mouse.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> mouse.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; mouse test </font>
+
+name <font color=#800080>"mouse"</font>
+
+<font color=#000064>org</font> 100h
+
+print <font color=#0000FF>macro</font> x, y, attrib, sdat
+LOCAL   s_dcl, skip_dcl, s_dcl_end
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#800000>cs</font>
+    <font color=#0000FF>mov</font> <font color=#800000>es</font>, <font color=#C80000>dx</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 13h
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1
+    <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0
+    <font color=#0000FF>mov</font> <font color=#C80000>bl</font>, attrib
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, <font color=#000064>offset</font> s_dcl_end <font color=#0064C8>-</font> <font color=#000064>offset</font> s_dcl
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, x
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, y
+    <font color=#0000FF>mov</font> <font color=#C80000>bp</font>, <font color=#000064>offset</font> s_dcl
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>popa</font>
+    <font color=#0000FF>jmp</font> skip_dcl
+    s_dcl <font color=#000064>DB</font> sdat
+    s_dcl_end <font color=#000064>DB</font> 0
+    skip_dcl:
+endm
+
+clear_screen <font color=#0000FF>macro</font>
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0600h
+    <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0000_1111b
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, 24
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 79
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>popa</font>
+endm
+
+print_space <font color=#0000FF>macro</font> num
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#800080>' '</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>bl</font>, 0000_1111b
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, num
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>popa</font>
+endm
+
+
+<font color=#0000FF>jmp</font> start
+
+curX <font color=#000064>dw</font> 0
+curY <font color=#000064>dw</font> 0
+curB <font color=#000064>dw</font> 0
+
+
+start:
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 1003h <font color=#008000>; disable blinking.   </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, 0
+<font color=#0000FF>int</font> 10h
+
+<font color=#008000>; hide text cursor: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ch</font>, 32
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>int</font> 10h
+
+
+<font color=#008000>; reset mouse and get its status: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0
+<font color=#0000FF>int</font> 33h
+<font color=#0000FF>cmp</font> <font color=#C80000>ax</font>, 0
+<font color=#0000FF>jne</font> ok
+print 1,1,0010_1111b, <font color=#800080>" mouse not found :-( "</font>
+<font color=#0000FF>jmp</font> stop
+
+ok:
+clear_screen
+
+print 7,7,0010_1011b,<font color=#800080>" note: in the emulator you may need to press and hold mouse buttons "</font>
+print 7,8,0010_1011b,<font color=#800080>" because mouse interrupts are not processed in real time.           "</font>
+print 7,9,0010_1011b,<font color=#800080>" for a real test, click external-&gt;run from the menu.                "</font>
+print 10,11,0010_1111b,<font color=#800080>" click/hold both buttons to exit... "</font>
+
+<font color=#008000>; display mouse cursor: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 1
+<font color=#0000FF>int</font> 33h
+
+check_mouse_buttons:
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 3
+<font color=#0000FF>int</font> 33h
+<font color=#0000FF>cmp</font> <font color=#C80000>bx</font>, 3  <font color=#008000>; both buttons </font>
+<font color=#0000FF>je</font>  hide
+<font color=#0000FF>cmp</font> <font color=#C80000>cx</font>, curX
+<font color=#0000FF>jne</font> print_xy
+<font color=#0000FF>cmp</font> <font color=#C80000>dx</font>, curY
+<font color=#0000FF>jne</font> print_xy
+<font color=#0000FF>cmp</font> <font color=#C80000>bx</font>, curB
+<font color=#0000FF>jne</font> print_buttons
+
+
+print_xy:
+print 0,0,0000_1111b,<font color=#800080>"x="</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#C80000>cx</font>
+<font color=#0000FF>call</font> print_ax
+print_space 4
+print 0,1,0000_1111b,<font color=#800080>"y="</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#C80000>dx</font>
+<font color=#0000FF>call</font> print_ax
+print_space 4
+<font color=#0000FF>mov</font> curX, <font color=#C80000>cx</font>
+<font color=#0000FF>mov</font> curY, <font color=#C80000>dx</font>
+<font color=#0000FF>jmp</font> check_mouse_buttons
+
+print_buttons:
+print 0,2,0000_1111b,<font color=#800080>"btn="</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#C80000>bx</font>
+<font color=#0000FF>call</font> print_ax
+print_space 4
+<font color=#0000FF>mov</font> curB, <font color=#C80000>bx</font>
+<font color=#0000FF>jmp</font> check_mouse_buttons
+
+
+
+hide:
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 2  <font color=#008000>; hide mouse cursor. </font>
+<font color=#0000FF>int</font> 33h
+
+clear_screen
+
+print 1,1,1010_0000b,<font color=#800080>" hardware must be free!      free the mice! "</font>
+
+stop:
+<font color=#008000>; show box-shaped blinking text cursor: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font> <font color=#C80000>ch</font>, 0
+<font color=#0000FF>mov</font> <font color=#C80000>cl</font>, 8
+<font color=#0000FF>int</font> 10h
+
+print 4,7,0000_1010b,<font color=#800080>" press any key.... "</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+<font color=#0000FF>ret</font>
+
+
+print_ax <font color=#0000FF>proc</font>
+<font color=#0000FF>cmp</font> <font color=#C80000>ax</font>, 0
+<font color=#0000FF>jne</font> print_ax_r
+    <font color=#0000FF>push</font> <font color=#C80000>ax</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#800080>'0'</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0eh
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>pop</font> <font color=#C80000>ax</font>
+    <font color=#0000FF>ret</font>
+print_ax_r:
+    <font color=#0000FF>pusha</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, 0
+    <font color=#0000FF>cmp</font> <font color=#C80000>ax</font>, 0
+    <font color=#0000FF>je</font> pn_done
+    <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, 10
+    <font color=#0000FF>div</font> <font color=#C80000>bx</font>
+    <font color=#0000FF>call</font> print_ax_r
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#C80000>dx</font>
+    <font color=#0000FF>add</font> <font color=#C80000>al</font>, 30h
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0eh
+    <font color=#0000FF>int</font> 10h
+    <font color=#0000FF>jmp</font> pn_done
+pn_done:
+    <font color=#0000FF>popa</font>
+    <font color=#0000FF>ret</font>
+endp
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/mouse.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

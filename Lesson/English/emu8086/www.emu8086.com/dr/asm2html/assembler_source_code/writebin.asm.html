@@ -1,0 +1,502 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/writebin.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> writebin.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"writebin"</font>
+
+<font color=#008000>; version 0.02 </font>
+<font color=#008000>; assembled by emu8086 -- must be compatible with major assemblers. </font>
+<font color=#008000>; writebin.com -- a tiny operating system loader. </font>
+
+<font color=#008000>; writebin [filename] [/k]     </font>
+
+<font color=#008000>; this utility is be used from command prompt, </font>
+<font color=#008000>; it reads a specified file and writes it to floppy drive at </font>
+<font color=#008000>; cylinder: 0, head: 0, sector: 1  (boot sector). </font>
+
+<font color=#008000>; if there is /k parameter after the file name, then the </font>
+<font color=#008000>; file is written at cylinder: 0, head: 0, sector: 2. </font>
+<font color=#008000>; first sector of a floppy drive is reserved for boot sector. </font>
+<font color=#008000>; second and other sectors can be used to store any kind of data </font>
+<font color=#008000>; and code. kernel module of tiny operating system should be </font>
+<font color=#008000>; written to sector 2. </font>
+
+<font color=#008000>; this program works with drive A: only. </font>
+<font color=#008000>; for emulator drive A: is c:\emu8086\FLOPPY_0 </font>
+
+<font color=#008000>; filename must be in 8.3 format,  </font>
+<font color=#008000>; maximum 8 chars for the name and 3 chars after the dot. </font>
+
+<font color=#008000>; warning! if you run this program outside of the emulator  </font>
+<font color=#008000>;           it may corrupt existing data. use with caution. </font>
+<font color=#008000>;           do not play with floppies that contain valuable data. </font>
+
+
+
+<font color=#000064>org</font>  100h
+
+<font color=#0000FF>jmp</font> st
+
+filename    <font color=#000064>db</font> 128 dup(0)       <font color=#008000>; full path up to 128 chars can be specified. </font>
+buffer      <font color=#000064>db</font> 512 dup (0)
+buffer_size =  $ <font color=#0064C8>-</font> <font color=#000064>offset</font> buffer
+handle      <font color=#000064>dw</font> 0
+kernel_flag <font color=#000064>db</font> 0               <font color=#008000>; if there is /k parameter, kernel_flag=1. </font>
+
+counter <font color=#000064>dw</font> 0
+
+
+sect  <font color=#000064>db</font> 1 <font color=#008000>; sector number (1..18). </font>
+cyld  <font color=#000064>db</font> 0 <font color=#008000>; cylinder number (0..79). </font>
+head  <font color=#000064>db</font> 0 <font color=#008000>; head number (0..1). </font>
+drive <font color=#000064>db</font> 0 <font color=#008000>; drive number (0..3) ; A:=0, B:=1... </font>
+
+
+<font color=#008000>; init </font>
+st: <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#800000>cs</font>
+    <font color=#0000FF>mov</font> <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+    <font color=#0000FF>mov</font> <font color=#800000>es</font>, <font color=#C80000>ax</font>
+
+<font color=#0000FF>call</font> clear_screen
+
+
+<font color=#008000>; read cmd parameters </font>
+cp: <font color=#0000FF>xor</font> <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>cl</font>, <font color=#0064C8>[</font>80h<font color=#0064C8>]</font>
+    <font color=#0000FF>jcxz</font> np                    <font color=#008000>; this instruction is assembled into OR CX, CX and two JMPs, tutorial 7 tells why. </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>si</font>, 82h
+    <font color=#0000FF>mov</font> <font color=#C80000>di</font>, <font color=#000064>offset</font> filename
+    <font color=#0000FF>cld</font>
+    <font color=#0000FF>rep</font> <font color=#0000FF>movsb</font>
+    <font color=#0000FF>mov</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>-</font>1<font color=#0064C8>]</font>, 0
+
+
+<font color=#008000>; check for /k parameter: </font>
+    <font color=#0000FF>cld</font>
+    <font color=#0000FF>xor</font> <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>cl</font>, <font color=#0064C8>[</font>80h<font color=#0064C8>]</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>di</font>, <font color=#000064>offset</font> filename
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, <font color=#800080>'/'</font>
+    <font color=#0000FF>repne</font> <font color=#0000FF>scasb</font>
+    <font color=#0000FF>jz</font>  fs
+    <font color=#0000FF>jmp</font> boot
+fs: <font color=#0000FF>cmp</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>-</font>2<font color=#0064C8>]</font>, <font color=#800080>' '</font>
+    <font color=#0000FF>jne</font> nsp
+    <font color=#0000FF>mov</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>-</font>2<font color=#0064C8>]</font>, 0
+nsp:<font color=#0000FF>mov</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>-</font>1<font color=#0064C8>]</font>, 0
+    <font color=#0000FF>or</font>  <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, 0010_0000b   <font color=#008000>; to lower case. </font>
+    <font color=#0000FF>cmp</font> <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#800080>'k'</font>
+    <font color=#0000FF>jne</font> wp
+    <font color=#0000FF>or</font> kernel_flag, 1
+    <font color=#0000FF>mov</font> sect, 2            <font color=#008000>; start write at sector 2. </font>
+
+
+    <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, s0
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> s0s
+    s0 <font color=#000064>db</font> 0Dh,0Ah,<font color=#800080>"[/k] - start from sector: 2 "</font> , 0Dh,0Ah, <font color=#800080>'$'</font>
+    s0s:
+    <font color=#0000FF>jmp</font> of
+
+boot:
+    <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, s3
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> s3s
+    s3 <font color=#000064>db</font> 0Dh,0Ah,<font color=#800080>" boot record "</font>, 1 , 0Dh,0Ah, <font color=#800080>'$'</font>
+    s3s:
+
+
+<font color=#008000>; open file </font>
+of: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3dh
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jc</font>  co
+    <font color=#0000FF>mov</font> handle, <font color=#C80000>ax</font>
+
+
+    <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, m0
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> m0m
+    m0 <font color=#000064>db</font> <font color=#800080>"opened: $"</font>
+    m0m:
+    <font color=#0000FF>mov</font> <font color=#C80000>si</font>, <font color=#000064>offset</font> filename
+    <font color=#0000FF>call</font> print_string
+
+
+<font color=#008000>; read bytes from file </font>
+rd: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3fh
+    <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, buffer_size
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> buffer
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jc</font> er
+
+    <font color=#0000FF>cmp</font> <font color=#C80000>ax</font>, 0  <font color=#008000>; no bytes left? </font>
+    <font color=#0000FF>jz</font>  cf
+
+
+<font color=#008000>; write bytes to disk </font>
+wr: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 03h
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1 <font color=#008000>; write 1 sector (512 bytes). </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>cl</font>, sect  <font color=#008000>; sector (1..18) </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ch</font>, cyld  <font color=#008000>; cylinder (0..79) </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, head  <font color=#008000>; head  (0..1)   </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, drive <font color=#008000>; always 0 (A:) </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, <font color=#000064>offset</font> buffer
+    <font color=#0000FF>int</font> 13h
+    <font color=#0000FF>jc</font> er
+
+    <font color=#0000FF>inc</font> counter
+
+    <font color=#008000>; set cursor at 2,5 </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2
+    <font color=#0000FF>mov</font> <font color=#C80000>dh</font>, 5
+    <font color=#0000FF>mov</font> <font color=#C80000>bh</font>, 0
+    <font color=#0000FF>int</font> 10h
+
+    <font color=#008000>; show current progress: </font>
+    <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, s1
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> s1s
+    s1 <font color=#000064>db</font> 1Dh,0Ah,<font color=#800080>"writing: $"</font>
+    s1s:
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, counter
+    <font color=#0000FF>call</font> print_num_uns
+
+
+
+
+    <font color=#008000>; sectors... cylinders... heads... </font>
+    <font color=#0000FF>cmp</font> kernel_flag, 1
+    <font color=#0000FF>jne</font> cf
+    <font color=#0000FF>inc</font> sect
+    <font color=#0000FF>cmp</font> sect, 18
+    <font color=#0000FF>jbe</font> rd           <font color=#008000>; ^ </font>
+    <font color=#0000FF>mov</font> sect, 1
+    <font color=#0000FF>inc</font> cyld
+    <font color=#0000FF>cmp</font> cyld, 79
+    <font color=#0000FF>jbe</font> rd           <font color=#008000>; ^ </font>
+    <font color=#0000FF>mov</font> cyld, 0
+    <font color=#0000FF>inc</font> head
+    <font color=#0000FF>cmp</font> head, 1
+    <font color=#0000FF>jbe</font> rd           <font color=#008000>; ^ </font>
+
+
+
+<font color=#008000>; close file </font>
+cf: <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jc</font> er
+
+    <font color=#0000FF>jmp</font> ex
+
+
+co: <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, e0
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> e0e
+    e0 <font color=#000064>db</font> <font color=#800080>"  cannot open the file..."</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+    e0e:
+    <font color=#0000FF>jmp</font> ex
+
+np: <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, e1
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> e1e
+    e1 <font color=#000064>db</font> <font color=#800080>"  no parameters..."</font>,0Dh,0Ah
+       <font color=#000064>db</font>  <font color=#800080>"=============================================================================="</font>,0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>"this program was designed especially to test micro-operating system"</font>,0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>"if you are emulating in emu8086, click file-&gt;set command line parameters."</font>,0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>"from command prompt type:"</font>, 0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>"                           writebin [filename] [/k]"</font>,0Dh,0Ah,
+       <font color=#000064>db</font>  <font color=#800080>"when /k parameter is specified file is written to second sector (kernel area)."</font>,0Dh,0Ah,
+       <font color=#000064>db</font>  <font color=#800080>"=============================================================================="</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+e1e: <font color=#0000FF>jmp</font> ex
+
+
+er: <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, e2
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> e2e
+    e2 <font color=#000064>db</font> <font color=#800080>"   i/o error..."</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+    e2e:
+    <font color=#0000FF>jmp</font> ex
+
+wp: <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, e3
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> e3e
+    e3 <font color=#000064>db</font> <font color=#800080>"   wrong parameter. only [/k] is supported. use 8.3 short file names only."</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+    e3e:
+
+
+ex: <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, m1
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> m1m
+    m1 <font color=#000064>db</font> 0Dh,0Ah,<font color=#800080>"   total sectors: $"</font>
+    m1m:
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, counter
+    <font color=#0000FF>call</font> print_num_uns
+
+    <font color=#0000FF>lea</font> <font color=#C80000>dx</font>, m2
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>jmp</font> m2m
+    m2 <font color=#000064>db</font> 0Dh,0Ah, <font color=#800080>"thank your for using writebin!   - emu8086.com - 2005 (c) freeware"</font>,0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>" press any key..."</font>,0Dh,0Ah, <font color=#800080>'$'</font>
+    m2m:
+
+
+    <font color=#008000>; wait for any key... </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+    <font color=#0000FF>int</font> 16h
+
+
+    <font color=#0000FF>ret</font>        <font color=#008000>; exit. </font>
+
+
+
+<font color=#008000>; this macro prints a char in AL and advances </font>
+<font color=#008000>; the current cursor position: </font>
+PUTC    <font color=#0000FF>MACRO</font>   char
+        <font color=#0000FF>PUSH</font>    <font color=#C80000>AX</font>
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AL</font>, char
+        <font color=#0000FF>MOV</font>     <font color=#C80000>AH</font>, 0Eh
+        <font color=#0000FF>INT</font>     10h
+        <font color=#0000FF>POP</font>     <font color=#C80000>AX</font>
+PUTC    ENDM
+
+
+<font color=#008000>; prints out an unsigned value of AX register. </font>
+<font color=#008000>; allowed values from 0 to 65535    </font>
+print_num_uns   <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>bx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>cx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#008000>; flag to prevent printing zeros before number: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 1
+        <font color=#008000>; (result of "/ 10000" is always less or equal to 9). </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, 10000       <font color=#008000>; 2710h - divider. </font>
+        <font color=#008000>; ax is zero? </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jz</font>      print_zero
+begin_print:
+        <font color=#008000>; check divider (if zero go to end_print): </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>bx</font>,0
+        <font color=#0000FF>jz</font>      end_print
+        <font color=#008000>; avoid printing zeros before number: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>cx</font>, 0
+        <font color=#0000FF>je</font>      calc
+        <font color=#008000>; if ax&lt;bx then result of div will be zero: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>jb</font>      skip
+calc:
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 0   <font color=#008000>; set flag. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>div</font>     <font color=#C80000>bx</font>      <font color=#008000>; ax = dx:ax / bx   (dx=remainder). </font>
+        <font color=#008000>; print last digit </font>
+        <font color=#008000>; ah is always zero, so it's ignored </font>
+        <font color=#0000FF>add</font>     <font color=#C80000>al</font>, 30h    <font color=#008000>; convert to ascii code. </font>
+        putc    <font color=#C80000>al</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>dx</font>  <font color=#008000>; get remainder from last div. </font>
+skip:
+        <font color=#008000>; calculate bx=bx/10 </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>div</font>     <font color=#800000>cs</font>:ten  <font color=#008000>; ax = dx:ax / 10   (dx=remainder). </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>jmp</font>     begin_print
+print_zero:
+        putc    <font color=#800080>'0'</font>
+end_print:
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>cx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>bx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>ret</font>
+ten             <font color=#000064>dw</font>      10      <font color=#008000>; used as divider.       </font>
+print_num_uns   endp
+
+
+
+
+
+<font color=#008000>; print null terminated string at ds:si </font>
+print_string <font color=#0000FF>proc</font> near
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>      <font color=#008000>; </font>
+
+nxtch:  <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     nxtch
+printed:
+
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+
+<font color=#0000FF>ret</font>
+print_string endp
+
+
+
+
+clear_screen <font color=#0000FF>proc</font> near
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+        <font color=#0000FF>push</font>    <font color=#800000>ds</font>      <font color=#008000>; </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>bx</font>      <font color=#008000>; </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>cx</font>      <font color=#008000>; </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>di</font>      <font color=#008000>; </font>
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 40h
+        <font color=#0000FF>mov</font>     <font color=#800000>ds</font>, <font color=#C80000>ax</font>  <font color=#008000>; for getting screen parameters. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 06h <font color=#008000>; scroll up function id. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 0   <font color=#008000>; scroll all lines! </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>bh</font>, 07  <font color=#008000>; attribute for new lines. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ch</font>, 0   <font color=#008000>; upper row. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cl</font>, 0   <font color=#008000>; upper col. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>di</font>, 84h <font color=#008000>; rows on screen -1, </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dh</font>, <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font> <font color=#008000>; lower row (byte). </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>di</font>, 4ah <font color=#008000>; columns on screen, </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>
+        <font color=#0000FF>dec</font>     <font color=#C80000>dl</font>      <font color=#008000>; lower col. </font>
+        <font color=#0000FF>int</font>     10h
+
+        <font color=#008000>; set cursor position to top </font>
+        <font color=#008000>; of the screen: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>bh</font>, 0   <font color=#008000>; current page. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, 0   <font color=#008000>; col. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dh</font>, 0   <font color=#008000>; row. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 02
+        <font color=#0000FF>int</font>     10h
+
+        <font color=#0000FF>pop</font>     <font color=#C80000>di</font>      <font color=#008000>; re-store registers... </font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>cx</font>      <font color=#008000>; </font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>bx</font>      <font color=#008000>; </font>
+        <font color=#0000FF>pop</font>     <font color=#800000>ds</font>      <font color=#008000>; </font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+
+        <font color=#0000FF>ret</font>
+clear_screen endp
+
+
+<font color=#008000>; some interrupt info: </font>
+
+<font color=#008000>; ----------------------------------------------------------- </font>
+<font color=#008000>;   INT 21h / AH= 3Dh - open existing file.      </font>
+<font color=#008000>;   entry: ;     </font>
+<font color=#008000>;   AL = access and sharing modes (if unsure set to zero).  </font>
+<font color=#008000>;   DS:DX -&gt; ASCIZ filename. </font>
+<font color=#008000>;   return:  </font>
+<font color=#008000>;   CF clear if successful, AX = file handle. </font>
+<font color=#008000>;   CF set on error AX = error code.  </font>
+<font color=#008000>;   Note: file pointer is set to start of file.  </font>
+<font color=#008000>; ----------------------------------------------------------- </font>
+<font color=#008000>;   INT 21h / AH= 3Fh - read from file.  </font>
+<font color=#008000>;   entry:  </font>
+<font color=#008000>;   BX = file handle.  </font>
+<font color=#008000>;   CX = number of bytes to read.  </font>
+<font color=#008000>;   DS:DX -&gt; buffer for data.  </font>
+<font color=#008000>;   return:  </font>
+<font color=#008000>;   CF is clear if successful - AX = number of bytes actually read; 0 if at EOF (end of file) before call.  </font>
+<font color=#008000>;   CF is set on error AX = error code.  </font>
+<font color=#008000>;   note: data is read beginning at current file position, and the file position is updated after </font>
+<font color=#008000>;         a successful read the returned AX may be smaller than the request in CX if a partial read occurred.  </font>
+<font color=#008000>; -----------------------------------------------------------    </font>
+<font color=#008000>;   INT 21h / AH= 3Eh - close file.      </font>
+<font color=#008000>;   entry: BX = file handle      </font>
+<font color=#008000>;   return:      </font>
+<font color=#008000>;   CF clear if successful, AX destroyed.  </font>
+<font color=#008000>;   CF set on error, AX = error code (06h).  </font>
+<font color=#008000>; ----------------------------------------------------------- </font>
+<font color=#008000>;   INT 13h / AH = 03h - write disk sectors. </font>
+<font color=#008000>;   input: </font>
+<font color=#008000>;   AL = number of sectors to read/write (must be nonzero) </font>
+<font color=#008000>;   CL = sector number (1..18). </font>
+<font color=#008000>;   CH = cylinder number (0..79). </font>
+<font color=#008000>;   DH = head number (0..1). </font>
+<font color=#008000>;   DL = drive number (0..3 , for the emulator it depends on quantity of FLOPPY_ files). </font>
+<font color=#008000>;   ES:BX points to data buffer. </font>
+<font color=#008000>;   return: </font>
+<font color=#008000>;   CF set on error. </font>
+<font color=#008000>;   CF clear if successful. </font>
+<font color=#008000>;   AH = status (0 - if successful). </font>
+<font color=#008000>;   AL = number of sectors transferred.  </font>
+<font color=#008000>;   Note: each sector has 512 bytes.  </font>
+<font color=#008000>; ----------------------------------------------------------- </font>
+<font color=#008000>; INT 10h / AH = 02h - set cursor position. </font>
+<font color=#008000>;  input: </font>
+<font color=#008000>;  DH = row. </font>
+<font color=#008000>;  DL = column. </font>
+<font color=#008000>;  BH = page number (0..7). </font>
+<font color=#008000>; ----------------------------------------------------------- </font>
+<font color=#008000>;  INT 21h / AH=09h - output of a string at DS:DX. </font>
+<font color=#008000>;  string must be terminated by '$' character.  </font>
+<font color=#008000>; ----------------------------------------------------------- </font>
+
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/writebin.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

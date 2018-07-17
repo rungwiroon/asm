@@ -1,0 +1,528 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/macrobasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>โพรซีเดอร์ และมาโคร ในแอสเซมบลี้</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="macro,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="โพรซีเดอร์ และมาโคร ในแอสเซมบลี้">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+proc + macro (Module)</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2551-09-05 (ปรับ header)
+<br> 
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>1. การเขียน procedure พิมพ์ A</b>
+<dd>- เขียน procedure นอก .code หรือ segment เหมือน macro ไม่ได้
+<dd>- การเรียกใช้ procedure ต้องขึ้นต้นด้วยคำว่า call
+<dd>- ก่อน endp ต้องสั่ง ret เพื่อกลับมายังบรรทัดที่ call
+<tr><td bgcolor=#ddffdd><pre><font face="courier new">      .model  small
+      .data           
+      .code
+x:    mov ax,@data   
+      mov ds,ax
+      call oho1    
+y:    mov ah,4ch     
+      int 21h
+; === procedure ===
+oho1 proc near      
+      mov ah,2h     
+      mov dl,41h      
+      int 21h      
+      ret
+oho1 endp
+      .stack  200h    
+      end x
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>2. การเขียนมากกว่า 1 procedure</b>
+<dd>- procedure ถูกเรียกใช้ได้หลายครั้ง เช่นเดียวกับ macro
+<dd>- สามารถประการ procedure ใต้ .code แล้วเรียกใช้ภายหลังได้
+<tr><td bgcolor=#ddffdd><pre><font face="courier new">      .model  small
+      .data           
+      .code
+x:    mov ax,@data   
+      mov ds,ax
+      call oho1   
+      call oho2
+      call oho1   
+      call oho2      
+y:    mov ah,4ch     
+      int 21h
+; === procedure ===
+oho1 proc near      
+      mov ah,2h     
+      mov dl,41h      
+      int 21h      
+      ret
+oho1 endp
+oho2 proc near      
+      mov ah,2h     
+      mov dl,61h      
+      int 21h      
+      ret
+oho2 endp
+      .stack  200h    
+      end x
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>3. การเขียน macro พิมพ์ A</b>
+<dd>- ประกาศ macro ก่อนเข้าโปรแกรม จะประกาศเหมือน procedure ไม่ได้
+<dd>- เพียงพิมพ์ชื่อมาโคร ก็จะหมายถึงเรียกใช้ macro
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">helloa  macro
+        mov     ah,2
+        mov     dl,41h
+        int     21h
+        endm
+; === end of macro ===
+        .model  small
+        .data
+        .code
+pmain   proc    far      
+        push    ds      ; 1 of 5 line required for .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+        helloa
+        ret
+pmain   endp
+        .stack  200h    ; not required (if have, will not warning in link)
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>4. การเขียนมากกว่า 1 macro</b>
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">setproc macro
+        push    ds      ; 1 of 5 line required for .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+        endm	
+prtout  macro
+        mov     ah,9
+        lea     dx,msg
+        int     21h
+        endm
+; =============
+; Main program
+; =============
+        .model  small
+        .data
+msg     db      'This is the program testing $'
+        .code
+pmain   proc    far     ; can not change far to near 
+        setproc
+        prtout
+        ret
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>5. การเขียน macro เพิ่มค่าให้กับ al ทีละ 1 แล้วพิมพ์ โดยเรียก macro 5 ครั้ง</b>
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">love    macro
+        mov     bl,01h
+        add     al,bl
+        mov     sum,al
+        mov     dl,sum
+        mov     ah,2
+        int     21h
+        endm
+; =============
+; Main program
+; =============
+        .model  small
+        .data
+n       db      30h
+sum     db  ?
+        .code
+pmain   proc    far     ; can not change far to near 
+        push    ds      ; 1 of 5 line required for .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+        mov     al,n
+        love
+        love
+        love
+        love
+        love
+        love
+pmain   endp
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>6. โปรแกรมพิมพ์ 1 ถึง 15 โดยใช้ 2 macro</b>
+<dd>- macro ชื่อ jack ใช้พิมพ์ 1 ถึง 9 โดยแยกตัวเลขละ 1 บรรทัด
+<dd>- macro ชื่อ jack ใช้พิมพ์ 10 ถึง 15 โดยใช้การแสดง 1 และ 0 ถึง 5 แยกกันคนละตัวอักษร
+<dd>- ผู้เรียนต้องเข้าใจว่า 30h คือเลข 0
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">
+jack  macro
+      mov    al,cl
+      mov    bl,01h
+      add    al,bl
+      mov    sum,al
+      mov    dl,sum
+      mov    ah,2
+      int    21h
+      mov    cl,al
+      lea    dx,lf
+      mov    ah,9
+      int    21h
+      endm
+mary  macro
+      mov    dl,31h
+      mov    ah,2
+      int    21h
+      mov    dl,bl
+      mov    ah,2
+      int    21
+      mov    al,cl
+      mov    bl,01h
+      add    al,bl
+      mov    sum,al
+      mov    dl,sum
+      mov    ah,2
+      int    21h
+      mov    cl,al
+      lea    dx,lf
+      mov    ah,9
+      int    21h
+      endm
+; =============
+; Main program
+; =============
+      .model small
+      .data
+n1    db     30h
+n2    db     2fh
+last1 db     39h
+last2 db     35h
+lf    db     0dh,0ah,'$'
+sum   db     ?
+      .code
+pmain proc   far     ; can not change far to near 
+      push   ds      ; 1 of 5 line required for .exe 
+      mov    ax,0    ; 2 clear ax by xor  ax,ax
+      push   ax      ; 3 send ax to stack
+      mov    ax,@data
+      mov    ds,ax
+      mov    cl,n1
+boy:  jack
+      cmp    cl,last1
+      jl     boy
+      mov    cl,n2
+girl: mary
+      cmp    cl,last2
+      jl     girl
+      ret
+pmain endp
+      .stack 10h
+      end    pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>7. รับตัวอักษร และเลือกด้วย CMP ไปทำ Macro</b>
+<dd>- ถ้ารับตัวอักษร a ก็จะแสดงตัวอักษร C
+<dd>- ถ้ารับตัวอักษรที่ไม่ใช่ a ก็จะไม่แสดงอะไรเลย
+<tr><td bgcolor=#ddffdd><pre><font face="courier new"><font color=blue>burin1	macro
+	mov     ah,2
+        mov     dl,43h ; C
+        int     21h
+	endm</font>
+	.model  small
+        .data
+        .code
+pmain   proc    far      
+        <font color=gray>push    ds     
+        mov     ax,0   
+        push    ax     
+        mov     ax,@data
+        mov     ds,ax</font><font color=red>
+        mov     ah,8
+        int     21h
+        cmp     al,61h ; a
+	je      work1
+        jmp     bye</font>
+work1:  burin1
+bye:    ret
+pmain   endp
+        .stack  200h   
+        end     pmain
+</table>
+<hr color=black>
+
+<table width=760 align=center><tr><td bgcolor=#dddddd>
+<font color=#000044><b>8. แปลงโปรแกรมเข้ารหัส และถอดรหัสส่วนหนึ่งของ Kailas Jagtap เป็น macro</b>
+<dd>- โปรแกรมนี้นำมาจาก http://www.thaiall.com/assembly/loopbasic.htm
+<dd>- มีต้นฉบับที่ http://www.laynetworks.com/Assembly%20Program7.htm โดย Kailas Jagtap
+<dd>- โปรแกรมนี้แบ่งเป็น 4 procedure และ 4 macro
+<dd>- ลบ Comment ออกเพื่อให้ดูสั้นลง
+<tr><td bgcolor=#ffffdd><pre><font face="courier new">
+; ตัวอย่างการย้ายบางส่วนของโปรแกรมมาเป็น macro   
+; ตัวอย่างจาก http://www.thaiall.com/assembly/loopbasic.htm
+burin4 macro
+      ; move readnext1 in macro
+      lea dx,buffer  
+      mov cx,512     
+      mov bx,handle
+      mov ah,3fh
+      int 21h
+      jc err_out1
+      mov save_ax,ax 
+      cmp ax,0     
+      je done4     
+      call decurrupt 
+      lea dx,buffer  
+      mov ah,40h     
+      mov bx,newhandle
+      mov cx,save_ax
+      int 21h
+      jc err_out1    
+      jmp readnext1  
+	endm
+burin3 macro
+      ; move decr in macro
+      call disp_nl   
+      mov ah,9     
+      lea dx,s3
+      int 21h
+      lea dx,fname   
+      call getname   
+      mov ah,3dh
+      lea dx,fname+2
+      mov al,0
+      int 21h
+      mov handle,ax
+      jc err_out
+      call disp_nl   
+      mov ah,9     
+      lea dx,s33
+      int 21h
+      lea dx,newf1   
+      call getname   
+      mov ah,3ch
+      lea dx,newf1+2
+      mov cx,0
+      int 21h
+      mov newhandle,ax
+      jc err_out 
+	endm
+burin2 macro
+      ; move encr in macro
+      call disp_nl   
+      mov ah,9     
+      lea dx,s2
+      int 21h
+      lea dx,fname   
+      call getname   
+      mov ah,3dh     
+      lea dx,fname+2 
+      mov al,0     
+      int 21h      
+      mov handle,ax  
+      jc err_out2    
+      call disp_nl   
+      mov ah,9     
+      lea dx,s22
+      int 21h
+      lea dx,newf1   
+      call getname   
+      mov ah,3ch     
+      lea dx,newf1+2 
+      mov cx,0     
+      int 21h      
+      mov newhandle,ax      
+      jc err_out     
+      readnext: lea dx,buffer 
+      mov cx,512     
+      mov bx,handle  
+      mov ah,3fh     
+      int 21h      
+      jc err_out     
+      mov save_ax,ax 
+      cmp ax,0     
+      je done1     
+      call currupt   
+      lea dx,buffer  
+      mov ah,40h     
+      mov bx,newhandle      
+      mov cx,save_ax 
+      int 21h      
+      jc err_out     
+      jmp readnext   
+      err_out2: jmp err_out
+     endm
+burin1 macro
+      ; move rpt_disp in macro
+      call disp_nl   
+      call disp_nl   
+      call disp_nl   
+      mov ah,9     
+      lea dx,s1 
+      int 21h
+      mov ah,1     
+      int 21h
+      cmp al,'E'     
+      je encr
+      cmp al,'e'
+      je encr
+      cmp al,'D'     
+      je decr2
+      cmp al,'d'
+      je decr2
+      cmp al,'X'     
+      je stop2
+      cmp al,'x'
+      je stop2
+      call disp_nl   
+      call disp_nl   
+      mov ah,9     
+      lea dx,s4 
+      int 21h
+      jmp rpt_disp   
+     endm
+	.model  small
+      .data      
+s0      db      0dh,0ah,'PROGRAM FOR FILE ENCRYPTION AND DECRYPTION ..By Kailas Jagtap$'
+s1      db      0dh,0ah,'Do you want to ENCRYPT(E) or DECRYPT(D) a file ? : $'
+s2      db      0dh,0ah,'Enter Name of File(to be encrypted): $'
+s22     db      0dh,0ah,'Enter Name of File(which will store encrypted data): $'
+s3      db      0dh,0ah,'Enter Name of encrypted File(to be decrypted): $'
+s33     db      0dh,0ah,'Enter Name of File(which will store decrypted data): $'
+s4      db      0dh,0ah,'***************** ERROR!!! - INVALID INPUT ****************** $'
+s44     db      0dh,0ah,'***************** ERROR IN FILE OPERATION !!!!!! ************ $'
+s5      db      0dh,0ah,'$'
+s6      db      0dh,0ah,'.............. File ENCRYPTED Successfully ! ................. $'
+s7      db      0dh,0ah,'.............. File DECRYPTED Successfully ! ................. $'
+fname   db      80     
+        db      0      
+        db      80 dup(0)      
+newf1   db      80     
+        db      0      
+        db      80 dup(0)     
+save_ax dw      1 dup(0)      
+buffer  db      512 dup(0)      
+endbuffer db    '$'    
+handle  dw      ?      
+newhandle dw    ?      
+      .code
+start: 	mov ax,@data   
+      mov ds,ax
+      call disp_nl   
+      mov ah,9     
+      lea dx,s0 
+      int 21h
+rpt_disp: burin1
+decr2:  jmp decr1      
+stop2:  jmp stop1      
+encr:   burin2      
+decr1:  jmp decr     
+stop1:  jmp stop     
+done1:  lea dx,s6      
+      jmp done3
+done2:  lea dx,s7      
+done3:  mov ah,9 
+      int 21h      
+      jmp done     
+stop:   mov ah,4ch     
+      int 21h
+; === procedure ===
+getname proc near
+      mov ah,0ah     
+      int 21h      
+      mov si,dx      
+      mov bl,[si+1]  
+      add si,02      
+      sub bh,bh      
+      mov BYTE PTR[si+bx],0     
+      ret      
+getname endp
+;    
+err_out: mov ah,9      
+      lea dx,s44
+      int 21h
+      jmp stop     
+      done: mov ah,3eh      
+      mov bx,handle  
+      int 21h      
+      mov bx,newhandle      
+      int 21h      
+      jmp stop     
+done4:  jmp done2      
+; === procedure ===
+currupt proc near      
+      lea si,buffer  
+      mov cx,save_ax 
+      again: mov al,[si]      
+      add al,07h     
+      mov [si],al    
+      inc si     
+      loop again     
+      ret
+currupt endp
+;    
+err_out1: jmp err_out
+decr:   burin3
+readnext1: burin4
+; === procedure ===
+decurrupt proc near    
+      lea si,buffer  
+      mov cx,512
+      again1: mov al,[si]
+      sub al,07h
+      mov [si],al
+      inc si
+      loop again1
+      ret
+decurrupt endp
+; === procedure ===
+disp_nl proc near      
+      mov ah,9     
+      lea dx,s5      
+      int 21h      
+      ret
+disp_nl endp
+      .stack  200h
+      end      start
+</table>
+
+<center>
+<! 4.2548.02 >
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_macrobasic"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/macrobasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+</html>

@@ -1,0 +1,186 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/fasm_compatibility.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+<head>
+       <title>source code: fasm_compatibility.asm</title>
+       <meta name="description" content="assembler source code - fasm compatibility">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=110  rightmargin=110 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> fasm_compatibility.asm </font></center>
+
+
+
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; Flat Assembler uses the Intel syntax.</font>
+<font color=#008000>; Effective for: </font>
+<font color=#008000>;      Flat assembler version 1.64 </font>
+<font color=red>;      emu8086 integrated assembler version 4.00-Beta-20 (or above)           </font>
+
+#fasm#   <font color=#008000>; this code is for fasm. </font>
+
+<font color=#000064>org</font> 100h
+
+name <font color=#800080>"fasmcomp"</font>
+
+
+<font color=#008000>; === [NOTE 1]  </font>
+<font color=#008000>; calculate the sum of 'a' and 'b' </font>
+
+<font color=#0000FF>jmp</font> start
+
+a <font color=#000064>dw</font> 5
+b <font color=#000064>dw</font> 7
+
+
+start:
+
+<font color=#008000>; this is correct syntax for emu8086 integrated assembler, </font>
+<font color=#008000>; but it is wrong for fasm: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, a
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, b
+<font color=#0000FF>add</font> <font color=#C80000>ax</font>, <font color=#C80000>bx</font>    <font color=#008000>; AX = offset a + offset b  (AX=206)   (correct, but not what we expect) </font>
+
+
+<font color=#008000>; correct syntax for fasm: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#0064C8>[</font>a<font color=#0064C8>]</font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, <font color=#0064C8>[</font>b<font color=#0064C8>]</font>
+<font color=#0000FF>add</font> <font color=#C80000>ax</font>, <font color=#C80000>bx</font>    <font color=#008000>; AX = 5 + 7   (AX=000C)     (correct) </font>
+
+
+<font color=#008000>;; to calculate sum of offsets for emu8086 integrated assembler </font>
+<font color=#008000>;; it is required to use the offset directive, for example: </font>
+<font color=#008000>;    mov ax, offset a </font>
+<font color=#008000>;    mov bx, offset b </font>
+<font color=#008000>;    add ax, bx    ; sum of offsets instead of values.              </font>
+<font color=#008000>;; the offset directive is not supported for fasm (error: extra characters on line) </font>
+
+
+<font color=#008000>; Hello, World example in fasm:         </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, msg
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; for emu8086 integrated assembler: </font>
+<font color=#008000>;    mov dx, offset msg </font>
+<font color=#008000>; or </font>
+<font color=#008000>;    lea dx, msg </font>
+<font color=#008000>; (syntax of the integrated 8086 assembler is mostly MASM/TASM compatible) </font>
+
+
+<font color=#008000>; wait for any key... </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+<font color=#0000FF>ret</font>
+
+msg <font color=#000064>db</font> <font color=#800080>"Hello, World!"</font>, 0x0D, 0x0A, <font color=#800080>"$"</font>
+
+<font color=#008000>; emu8086 compatible declaration is: </font>
+<font color=#008000>; msg: db "Hello, World!", 0x0D, 0x0A, "$" </font>
+<font color=#008000>;  (note: there is ":" after msg) </font>
+
+
+
+<font color=#008000>; === [NOTE 2]   </font>
+<font color=#008000>; fasm does not support the comment directive, for example: </font>
+<font color=#008000>; comment * </font>
+<font color=#008000>;    la lalala la... </font>
+<font color=#008000>; *       </font>
+
+<font color=#008000>; === [NOTE 3]      </font>
+<font color=#008000>; these precompiler directives are preparsed by the IDE: </font>
+<font color=#008000>;  NAME </font>
+<font color=#008000>;  #make... </font>
+<font color=#008000>;  #AX=... </font>
+<font color=#008000>;  etc... </font>
+
+
+<font color=#008000>; === [NOTE 4]   </font>
+<font color=#008000>; for fasm it's required to use "byte" and "word" prefixes </font>
+<font color=#008000>; in places where it may be required to use "byte ptr", "word ptr" </font>
+<font color=#008000>; or "b.", "w." prefixes for the integrated 8086 assembler.  </font>
+<font color=#008000>; For example: </font>
+
+
+<font color=#0000FF>mov</font> <font color=#000064>byte</font> <font color=#0064C8>[</font>m1<font color=#0064C8>]</font>, <font color=#C80000>AL</font>
+m1 <font color=#000064>dw</font> 1234h
+
+<font color=#008000>;	; for the integrated 8086 assembler it should be: </font>
+<font color=#008000>;	mov b. m1, AL              </font>
+<font color=#008000>;	; or: </font>
+<font color=#008000>;	mov byte ptr m1, AL  ; (MASM compatible) </font>
+
+
+<font color=#008000>; === [NOTE 5]  </font>
+<font color=#008000>; uninitialised variables are not added to actual binary file </font>
+<font color=#008000>; when these variables are located in the bottom of the file </font>
+<font color=#008000>; and there is no defined data after them (MASM compatible) </font>
+<font color=#008000>; 8086 assembler always initialises variables as 0 (MASM incompatibility) </font>
+<font color=#008000>; For example: </font>
+
+u1 <font color=#000064>dw</font> ?
+
+
+<font color=#008000>; === [NOTE 6]  </font>
+<font color=#008000>; fasm assembler is case sensitive; </font>
+<font color=#008000>; for example, the following code would cause </font>
+<font color=#008000>; "symbol redefinition" error for MASM or 8086 integrated assembler, </font>
+<font color=#008000>; but it is completely legal for fasm: </font>
+
+<font color=#0000FF>mov</font> <font color=#0064C8>[</font>d<font color=#0064C8>]</font>, 9
+<font color=#0000FF>mov</font> <font color=#0064C8>[</font>D<font color=#0064C8>]</font>, 12
+<font color=#0000FF>ret</font>
+d <font color=#000064>Dw</font> 5
+D <font color=#000064>dw</font> 7
+
+<font color=#008000>; === [NOTE 7]    </font>
+<font color=#008000>; there may be other slight syntax incompatibilities, </font>
+<font color=#008000>; if you find any problem feel free to email. </font>
+
+
+</font></pre>
+<!-- emu8086 version 4.00-Beta-18    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/fasm_compatibility.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:39 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

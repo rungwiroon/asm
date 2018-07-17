@@ -1,0 +1,212 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/int21.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> int21.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this sample gets a string from a user, then it prints it out. </font>
+<font color=#008000>; this example uses dos interrupt: 21h </font>
+
+name <font color=#800080>"int21"</font>
+
+<font color=#000064>org</font>  100h
+
+<font color=#0000FF>jmp</font> start
+
+
+<font color=#008000>; when no file path is specified the default file path is: </font>
+<font color=#008000>;   c:\emu8086\MyBuild </font>
+
+<font color=#008000>; if path is specified, it is emulated in: </font>
+<font color=#008000>;   c:\emu8086\vdrive\ </font>
+<font color=#008000>; for example, c:\test.txt is c:\emu8086\vdrive\c\test.txt </font>
+<font color=#008000>; this is done to prevent disasters and accidental overwriting of valuable files. </font>
+<font color=#008000>; relative paths such as "c:\mydir\..\autoexec.bat" are disabled for the same reasons. </font>
+
+
+<font color=#008000>; declarations: </font>
+
+<font color=#008000>; buffers hold ascii chars for INT 21h/0Ah input function, </font>
+<font color=#008000>; first byte is its maximum size, second byte: actual size. </font>
+
+<font color=#008000>; format of INT 21h/0Ah input buffer: </font>
+<font color=#008000>;  -byte-offset-     -number-of-bytes-             -description-  </font>
+<font color=#008000>;      00                  1                        buffer size </font>
+<font color=#008000>;      01                  1                        number of characters actually read (excluding cr). </font>
+<font color=#008000>;      02             1 to buffer-size              actual buffer contents (including cr).  </font>
+
+s1        <font color=#000064>db</font> 100,?, 100 dup(<font color=#800080>' '</font>)
+t2        <font color=#000064>db</font> 100,?, 100 dup(<font color=#800080>' '</font>)
+filename  <font color=#000064>db</font> 30,?, 30 dup(<font color=#800080>' '</font>)   <font color=#008000>; file name should be in 8.3 - dos compatible format. </font>
+
+
+<font color=#008000>; file handle: </font>
+handle   <font color=#000064>dw</font>   0
+
+
+<font color=#008000>; set segment registers to code: </font>
+start:  <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, <font color=#800000>cs</font>
+        <font color=#0000FF>mov</font> <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font> <font color=#800000>es</font>, <font color=#C80000>ax</font>
+
+<font color=#0000FF>jmp</font> m1
+msg1    <font color=#000064>db</font>  <font color=#800080>"enter any text: $"</font>
+m1:     <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg1
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+        <font color=#0000FF>int</font> 21h
+<font color=#008000>; input a string: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> s1
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ah
+        <font color=#0000FF>int</font> 21h
+
+
+
+<font color=#0000FF>jmp</font> m2
+msg2    <font color=#000064>db</font>  0Dh,0Ah,<font color=#800080>"enter file name: $"</font>
+m2:     <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg2
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+        <font color=#0000FF>int</font> 21h
+<font color=#008000>; input filename: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ah
+        <font color=#0000FF>int</font> 21h
+
+<font color=#008000>; set 0 to the end of the filename: </font>
+        <font color=#0000FF>xor</font> <font color=#C80000>bx</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>mov</font> <font color=#C80000>bl</font>, filename<font color=#0064C8>[</font>1<font color=#0064C8>]</font>  <font color=#008000>; get actual size. </font>
+        <font color=#0000FF>mov</font> filename<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>+</font>2<font color=#0064C8>]</font>, 0
+
+<font color=#008000>; create new file: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 0
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3ch
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename<font color=#0064C8>+</font>2
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font>  error
+        <font color=#0000FF>mov</font> handle, <font color=#C80000>ax</font>
+<font color=#008000>; write buffer to file: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 40h
+        <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> s1<font color=#0064C8>+</font>2
+        <font color=#0000FF>xor</font> <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+        <font color=#0000FF>mov</font> <font color=#C80000>cl</font>, s1<font color=#0064C8>[</font>1<font color=#0064C8>]</font>
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font>  error
+<font color=#008000>; close file </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font> error
+
+
+
+<font color=#008000>; open existing file: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 0     <font color=#008000>; read. </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3dh
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> filename<font color=#0064C8>+</font>2
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font>  error
+        <font color=#0000FF>mov</font> handle, <font color=#C80000>ax</font>
+<font color=#008000>; read bytes from file </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3fh
+        <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+        <font color=#0000FF>xor</font> <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+        <font color=#0000FF>mov</font> <font color=#C80000>cl</font>, t2<font color=#0064C8>[</font>0<font color=#0064C8>]</font>
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> t2<font color=#0064C8>[</font>2<font color=#0064C8>]</font>
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font> error
+        <font color=#0000FF>mov</font> t2<font color=#0064C8>[</font>1<font color=#0064C8>]</font>, <font color=#C80000>al</font>
+<font color=#008000>; close file </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>bx</font>, handle
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 3eh
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>jc</font> error
+<font color=#0000FF>jmp</font> m3
+msg3    <font color=#000064>db</font>  0Dh,0Ah,<font color=#800080>"read from file: $"</font>
+m3:     <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg3
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+        <font color=#0000FF>int</font> 21h
+<font color=#008000>; set '$' to the end of the buffer: </font>
+        <font color=#0000FF>xor</font> <font color=#C80000>bx</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>mov</font> <font color=#C80000>bl</font>, t2<font color=#0064C8>[</font>1<font color=#0064C8>]</font>        <font color=#008000>; get actual size. </font>
+        <font color=#0000FF>mov</font> t2<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>+</font>2<font color=#0064C8>]</font>, <font color=#800080>'$'</font>
+<font color=#008000>; print the buffer: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> t2<font color=#0064C8>[</font>2<font color=#0064C8>]</font> <font color=#008000>; skip 2 control bytes. </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+        <font color=#0000FF>int</font> 21h
+
+
+        <font color=#0000FF>jmp</font> ok
+
+<font color=#008000>; print error message: </font>
+error:  <font color=#0000FF>jmp</font> m5
+        msg5    <font color=#000064>db</font>  0Dh,0Ah,<font color=#800080>"error..."</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+        m5:     <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg5
+                <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+                <font color=#0000FF>int</font> 21h
+
+
+ok:
+<font color=#0000FF>jmp</font> m4
+msg4    <font color=#000064>db</font>  0Dh,0Ah,<font color=#800080>"press any key..."</font>,0Dh,0Ah,<font color=#800080>'$'</font>
+m4:     <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg4
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+        <font color=#0000FF>int</font> 21h
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+        <font color=#0000FF>int</font> 16h
+
+
+<font color=#008000>; exit to the operating system: </font>
+        <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 4ch
+        <font color=#0000FF>int</font> 21h
+
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/int21.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

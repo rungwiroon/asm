@@ -1,0 +1,226 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/robot.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> robot.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+
+#start=robot.exe#
+
+name <font color=#800080>"robot"</font>
+
+#make_bin#
+#<font color=#800000>cs</font> = 500#
+#<font color=#800000>ds</font> = 500#
+#<font color=#800000>ss</font> = 500#    <font color=#008000>; stack </font>
+#<font color=#C80000>sp</font> = ffff#
+#ip = 0#
+
+<font color=#008000>; this is an example of contoling the robot. </font>
+
+<font color=#008000>; this code randomly moves the robot, </font>
+<font color=#008000>; and makes it to switch the lamps on and off. </font>
+
+<font color=#008000>; robot is a mechanical creature and it takes  </font>
+<font color=#008000>; some time for it to complete a task. </font>
+<font color=#008000>; status register is used to see if robot is busy or not. </font>
+
+<font color=#008000>; c:\emu8086\devices\robot.exe uses ports 9, 10 and 11 </font>
+<font color=#008000>; source code of the robot and other devices is in: </font>
+<font color=#008000>; c:\emu8086\devices\developer\sources\ </font>
+<font color=#008000>; robot is programmed in visual basic 6.0 </font>
+
+
+<font color=#008000>; robot base i/o port: </font>
+r_port <font color=#000064>equ</font> 9
+
+<font color=#008000>;=================================== </font>
+
+eternal_loop:
+<font color=#008000>; wait until robot </font>
+<font color=#008000>; is ready: </font>
+<font color=#0000FF>call</font> wait_robot
+
+<font color=#008000>; examine the area </font>
+<font color=#008000>; in front of the robot: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 4
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+
+<font color=#0000FF>call</font> wait_exam
+
+<font color=#008000>; get result from </font>
+<font color=#008000>; data register: </font>
+<font color=#0000FF>in</font> <font color=#C80000>al</font>, r_port <font color=#0064C8>+</font> 1
+
+<font color=#008000>; nothing found? </font>
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 0
+<font color=#0000FF>je</font> cont  <font color=#008000>; - yes, so continue. </font>
+
+<font color=#008000>; wall? </font>
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 255
+<font color=#0000FF>je</font> cont  <font color=#008000>; - yes, so continue. </font>
+
+<font color=#008000>; switched-on lamp? </font>
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 7
+<font color=#0000FF>jne</font> lamp_off  <font color=#008000>; - no, so skip. </font>
+<font color=#008000>; - yes, so switch it off, </font>
+<font color=#008000>;   and turn: </font>
+<font color=#0000FF>call</font> switch_off_lamp
+<font color=#0000FF>jmp</font>  cont  <font color=#008000>; continue </font>
+
+lamp_off: <font color=#0000FF>nop</font>
+
+<font color=#008000>; if gets here, then we have </font>
+<font color=#008000>; switched-off lamp, because </font>
+<font color=#008000>; all other situations checked </font>
+<font color=#008000>; already: </font>
+<font color=#0000FF>call</font> switch_on_lamp
+
+cont:
+<font color=#0000FF>call</font> random_turn
+
+<font color=#0000FF>call</font> wait_robot
+
+<font color=#008000>; try to step forward: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+
+<font color=#0000FF>call</font> wait_robot
+
+<font color=#008000>; try to step forward again: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+
+<font color=#0000FF>jmp</font> eternal_loop <font color=#008000>; go again! </font>
+
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; this procedure does not </font>
+<font color=#008000>; return until robot is ready </font>
+<font color=#008000>; to receive next command: </font>
+wait_robot <font color=#0000FF>proc</font>
+<font color=#008000>; check if robot busy: </font>
+busy: <font color=#0000FF>in</font> <font color=#C80000>al</font>, r_port<font color=#0064C8>+</font>2
+      <font color=#0000FF>test</font> <font color=#C80000>al</font>, 00000010b
+      <font color=#0000FF>jnz</font> busy <font color=#008000>; busy, so wait. </font>
+<font color=#0000FF>ret</font>
+wait_robot endp
+
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; this procedure does not </font>
+<font color=#008000>; return until robot completes </font>
+<font color=#008000>; the examination: </font>
+wait_exam <font color=#0000FF>proc</font>
+<font color=#008000>; check if has new data: </font>
+busy2: <font color=#0000FF>in</font> <font color=#C80000>al</font>, r_port<font color=#0064C8>+</font>2
+       <font color=#0000FF>test</font> <font color=#C80000>al</font>, 00000001b
+       <font color=#0000FF>jz</font> busy2 <font color=#008000>; no new data, so wait. </font>
+<font color=#0000FF>ret</font>
+wait_exam endp
+
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; switch off the lamp: </font>
+switch_off_lamp <font color=#0000FF>proc</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 6
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+<font color=#0000FF>ret</font>
+switch_off_lamp endp
+
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; switch on the lamp: </font>
+switch_on_lamp <font color=#0000FF>proc</font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 5
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+<font color=#0000FF>ret</font>
+switch_on_lamp endp
+
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; generates a random turn using </font>
+<font color=#008000>; system timer: </font>
+random_turn <font color=#0000FF>proc</font>
+
+<font color=#008000>; get number of clock </font>
+<font color=#008000>; ticks since midnight </font>
+<font color=#008000>; in cx:dx </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 1ah
+
+<font color=#008000>; randomize using xor: </font>
+<font color=#0000FF>xor</font> <font color=#C80000>dh</font>, <font color=#C80000>dl</font>
+<font color=#0000FF>xor</font> <font color=#C80000>ch</font>, <font color=#C80000>cl</font>
+<font color=#0000FF>xor</font> <font color=#C80000>ch</font>, <font color=#C80000>dh</font>
+
+<font color=#0000FF>test</font> <font color=#C80000>ch</font>, 2
+<font color=#0000FF>jz</font> no_turn
+
+<font color=#0000FF>test</font> <font color=#C80000>ch</font>, 1
+<font color=#0000FF>jnz</font> turn_right
+
+<font color=#008000>; turn left: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 2
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+<font color=#008000>; exit from procedure: </font>
+<font color=#0000FF>ret</font>
+
+turn_right:
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 3
+<font color=#0000FF>out</font> r_port, <font color=#C80000>al</font>
+
+no_turn:
+<font color=#0000FF>ret</font>
+random_turn endp
+
+<font color=#008000>;=================================== </font>
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/robot.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

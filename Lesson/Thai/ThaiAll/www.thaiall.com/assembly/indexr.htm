@@ -1,0 +1,271 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/indexr.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:40:07 GMT -->
+<head><title>ภาษาแอสเซมบลี้ และ การแปล</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="assembly,computer,organization,programming,language,principles">
+<meta name="description" content="ภาษาแอสเซมบลี้ถูกใช้พัฒนาโปรแกรมขนาดเล็กที่เข้าถึงอุปกรณ์ได้โดยตรง เป็นภาษาระดับต่ำ สามารถเข้าถึง Register เพื่อสั่งให้เครื่องคอมพิวเตอร์ทำงานโดยตรง">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr><td colspan=3 bgcolor=black height=3>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a><td align=center><font color=white>
+ภาษาแอสเซมบลี้ และ การแปล</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2551-06-30 (เพิ่ม mainboard)
+<br> 
+<center><object><embed src="http://www.thaiall.com/ipic/nonthippc.swf" width="728" height="80"></embed></object>
+<center><a href=processormodel.gif><img src=processormodelt.jpg border=0></a>
+<a href=http://www.answers.com/topic/industry-standard-architecture><img src=mainboardt.jpg border=0></a>
+<br>โครงสร้างภายในไมโครโปรเซสเซอร์ แสดง EU, BIU,Register, Pointer และ ระบบบัส
+</center>
+<dd><b>ความหมายของไมโครโปรเซสเซอร์ (Microprocessor)</b>
+<dd>- <a href=http://web.ku.ac.th/schoolnet/snet1/hardware/archit.html>http://web.ku.ac.th/schoolnet/snet1/hardware/archit.html</a>
+<dd>- <a href=http://kanchanapisek.or.th/kp6/BOOK11/chapter6/t11-6-l.htm>http://kanchanapisek.or.th/kp6/BOOK11/chapter6/t11-6-l.htm</a>
+<dd>- <a href=http://www.manager.co.th/cyberbiz/showall_word.asp?wordcyber_id=52>http://www.manager.co.th/cyberbiz/showall_word.asp?wordcyber_id=52</a>
+<dd>- Video : <a href=http://www.expertvillage.com/videos/building-pc-motherboard.htm>building-pc-motherboard.htm</a>
+<table width=100%><td bgcolor=black><font color=white>
+<pre><font color=yellow><b>ตัวอย่างการดู register ด้วยโปรแกรม debug</b></font><font face="courier new">
+C:\MASM611\BIN>debug
+-r
+AX=0000  BX=0000  CX=0000  DX=0000  SP=FFEE  BP=0000  SI=0000  DI=0000
+DS=119B  ES=119B  SS=119B  CS=119B  IP=0100   NV UP EI PL NZ NA PO NC
+119B:0100 C8            DB      C8
+-q
+C:\MASM611\BIN>
+</pre></table>
+<table width=100% bgcolor=#dddddd><td>
+<b>วิธีติดตั้งตัวแปลภาษา Assembly</b>
+<br>1. Compiler : <a href=../../course.yonok.ac.th/downloadx/masm611.zip>masm611.zip</a> 4.7 MB
+<br>2. คลาย zip ลงในเครื่อง
+<br>3. สั่ง run โปรแกรม setup.exe 
+<br>4. กด Enter ประมาณ 20 ครั้ง
+<br>- เมื่อ enter ที่ 12 ควรเปลี่ยน binr เป็น bin
+<br>5. ถ้าพบ Setup Successfully กด Ctrl-C ได้
+<br>6. โปรแกรมทั้งหมดอยู่ในห้อง c:\masm611
+<br>7. พบตัวแปลภาษาใน c:\masm611\bin\
+<br>8. ถ้าขณะ install ถ้าไม่เปลี่ยน bin เป็น binr
+<br>- ต้อง cd c:\masm611\binr
+<br>- ต้อง copy *.* c:\masm611\bin 
+<br>- จึงจะแปลโปรแกรมได้สำเร็จ ตามตัวอย่าง
+<td><img src=install.jpg>
+</table>
+<table width=100% bgcolor=#ffffdd><td>
+<b>วิธีแปล (Compile) ลิงค์(Link) และสั่งประมวลผล(Execute)</b>
+<dd>การสั่งแปล source code ให้ได้ .exe ด้วย <b>c:\masm611\bin>a sample1</b>
+<dd>สร้าง <b>a.bat</b> ด้วย notepad
+<dd><font color=red face="courier new">masm %1.asm
+<dd>link %1,,,,,
+<dd>%1
+</font>
+<dd><font color=blue>ประโยชน์ของโปรแกรม a.bat คือ ช่วยแปล ลิงค์ และประมวลผล ในคำสั่งเดียว
+<center><img src=editplus.gif border=1>
+</table>
+<hr color=red>
+<table width=100%><td bgcolor=black><center><font size=6 color=yellow>Sample code of assembly</font></center></table>
+<table width=98%>
+<tr><td bgcolor=#dddddd>
+<font color=blue><b>1. แสดงการสร้างโปรแกรมใช้งาน interrupt</b></font>
+<dd>:: สร้างโปรแกรม 2 byte .com เป็นบริการของ bios เพื่อแสดง <b>Divide overflow</b> ถ้าเป็น Windows XP จะแสดงข้อความเท่าที่เห็น แต่ถ้าเป็น 98 จะแสดงดังตัวอย่างด้านล่าง
+<tr><td bgcolor=black>
+<pre><font face="courier new" color=white>
+C:\>debug test.com
+-a
+11BD:0100 int 0h
+11BD:0102
+-rcx
+CX 0001
+:2
+-w
+Writing 00002 bytes
+-q
+C:\>test.com
+Your program caused a divide overflow error.
+If the problem persists, contact your program vendor.
+C:\>
+</font></pre>
+<tr><td bgcolor=#dddddd>
+<font color=blue><b>2. แสดงการประมวลผลใน debug อย่างง่าย</b></font>
+<dd>:: ใช้คำสั่ง mov shr และ int 21 สำหรับ int 20 เป็นการหยุดการทำงาน
+<tr><td bgcolor=black>
+<pre><font face="courier new" color=white>
+C:\>debug
+-a 100
+0AE8:0100 mov ah,02
+0AE8:0102 mov dl,51
+0AE8:0104 int 21
+0AE8:0106 shr dl,1
+0AE8:0108 shl dl,1
+0AE8:010A int 21
+0AE8:010C int 20
+0AE8:010E
+-g
+QP
+Program terminated normally
+-
+</font></pre>
+<tr><td bgcolor=#dddddd>
+<font color=blue><b>3. แสดงใช้ directive segment ends แบบเก่า</b></font>
+<dd>:: พิมพ์ตัวอักษร a จนกระทั่งกดปุ่ม ctrl-break จึงหยุดการทำงาน
+<tr><td bgcolor=black>
+<pre><font face="courier new" color=white>
+        ; a1.asm compile by MASM611
+cseg    segment
+        assume cs:cseg,ds:cseg    ; Code segment, Data segment
+        push    cs
+        pop     ds
+        jmp     start             ;<font face="microsoft sans serif"> กระโดดไป start label</font>
+msg1    db      'a',0dh,0ah,'$'
+start:  mov     ah,09h            ;<font face="microsoft sans serif"> พิมพ์ string ทางจอภาพ</font>
+        lea     dx,msg1
+        int     21h
+        mov     ah,01h            ;<font face="microsoft sans serif"> รับค่าจากแป้นพิมพ์</font>
+        int     21h
+        jmp     start
+cseg    ends                      ;<font face="microsoft sans serif"> ปิด segment</font>
+        end                       ;<font face="microsoft sans serif"> เลิกการทำงาน</font>
+</font></pre>
+<tr><td bgcolor=#dddddd>
+<font color=blue><b>4. แสดงการทำซ้ำด้วย label, cmp, je</b></font>
+<dd>:: โปรแกรมนี้ใช้ directive .model .data .code .stack มิได้ใช้ segment ends แบบเก่า
+<dd>:: Loop รับ 1 อักษร จากบริการ int21 สำหรับที่ ah,06 และ dl,ff แต่พิมพ์ซ้ำตลอดกาล จนรับ e หรือ E จึงหยุด โปรแกรมนี้ชื่อ x.asm ถูกแปลด้วย MASM611 ซึ่งเป็นแนวการเขียนโปรแกรมแบบ .exe โปรแกรมที่ได้มีขนาด 578 Byte
+<tr><td bgcolor=black>
+<pre><font face="courier new" color=white>
+; Get char and repeat print char until e or E
+        .model  small   
+        .data
+x1      db      "type e or E to Exit",0ah,0dh,'$'        
+        .code
+pmain   proc    far     ; can not change far to near 
+        push    ds      ; 1 of 5 line required for end .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+start:  mov     ah,09h  ;<font face="microsoft sans serif"> พิมพ์ string ทางจอภาพ</font>
+        lea     dx,x1
+        int     21h
+        mov     ah,06h  ;<font face="microsoft sans serif"> รับ char จากแป้นพิมพ์ส่งเข้า al</font>
+top:    mov     dl,0ffh ;<font face="microsoft sans serif"> ถ้า dl เป็น ff จะรับค่าจาก console แบบไม่หยุดรอ</font>
+        int     21h
+        jz      typeo   ;<font face="microsoft sans serif"> ถ้าไม่กดอะไร จะไป typeo เพราะ ah ค้างที่ 6 อยู่</font>
+        mov     cl,al   ;<font face="microsoft sans serif"> เก็บตัวอักษรใน al ไว้กลัวหาย</font>
+        cmp     al,'E'
+        je      finish
+        cmp     al,'e'
+        je      finish
+typeo:  mov     dl,cl   ;<font face="microsoft sans serif"> ถ้า dl ไม่เป็น ff จะส่งค่าใน al ไป console</font>
+        int     21h
+        jmp     top
+finish: ret             ;<font face="microsoft sans serif"> ไม่สามารถใช้ int20 เพื่อสั่งให้เลิกงาน</font>
+pmain   endp
+        .stack  200h    ;<font face="microsoft sans serif"> not required</font>
+        end     pmain
+</font></pre>
+<tr><td bgcolor=#dddddd>
+<font color=blue><b>5. แสดงการเขียน macro</b></font>
+<dd>:: แสดงเทคนิคการใช้ macro ในภาษา assembly
+<tr><td bgcolor=black>
+<pre><font face="courier new" color=white>
+setproc macro
+        push    ds      ; 1 of 5 line required for end .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+        endm	
+prtout  macro
+        mov     ah,09h
+        lea     dx,msg
+        int     21h
+        endm
+; =============
+; Main program
+; =============
+        .model  small
+        .data
+msg     db      'This is the program testing $'
+        .code
+pmain   proc    far     ; can not change far to near 
+        setproc
+        prtout
+        ret
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+</font></pre></table>
+
+<table width=100% bgcolor=#ffffdd><td width=240 valign=top>
+<a href=computersim.htm><img src=computersim.jpg border=0 width=240></a>
+</td><td valign=top>
+<dd>ช่วงปี 48 และ 49 ผมได้มีโอกาสเรียน Digital Computer กับอาจารย์ Hans ชาวเยอรมัน
+ในหลักสูตรสั้น ๆ ท่านสอนให้รู้จัก <a href=http://www.thaiall.com/pspice>pspice</a> สำหรับวาด Logic Gate
+และจบด้วยการใช้โปรแกรม Computer Simulation เพื่อแสดงการทำงานของคอมพิวเตอร์ โดยเฉพาะคำสั่งภาษา Assembly,
+Memory, Control Bus, Address Bus, Data Bus, Register และ CPU
+<dd>โปรแกรมนี้ท่านเคยนำเสนอมาครั้งหนึ่ง แต่ใช้ได้เฉพาะเครื่องเก่า ต่อมาผมตรวจพบว่าเขียนด้วย Pascal 7.0 
+จึงหา Patch มาแก้ปัญหา และสามารถนำมาใช้ได้กับเครื่องใหม่ รวมทั้งการแก้ไขภาษาเยอรมันบางส่วนเป็นภาษาไทย
+</td></table>
+
+<table width=100% bgcolor=#ffffdd><td width=240 valign=top>
+<a href=emu8086.gif><img src=emu8086.jpg border=0></a>
+</td><td valign=top>
+<dd>โปรแกรม Assembler-Intel 8086 พบในเว็บเพจของ <a href=http://www.cpe.ku.ac.th/~fengtwr/>อ.ธนาวินท์ </a>
+ที่สอน <a href=http://www.cpe.ku.ac.th/~fengtwr/472-204221/204221.html>204221 : Computer Organization and Assembly Language</a>
+ซึ่งมี Powerpoint ที่ละเอียดมาก และพบว่าโปรแกรม emu8086 สามารถ download ได้จาก http://www.emu8086.com 
+</td></table>
+
+<table width=100% bgcolor=#ddffdd><td>
+<ol><b>ตัวอย่างรูปแบบแฟ้ม (File Format Sample)</b>
+<li><a href=xls2dbf3.html>xls2dbf3.dbf</a> สร้างแฟ้ม DBF III ด้วย Microsoft Excel
+<li><a href=empday1.html>empday1.cds</a> รับคำถามว่าเดิมคือ .mdf เป็นแฟ้มใหม่ .cds เปิดอย่างไร จาก tantinorojt@yahoo.com
+</ol>
+
+<a name=webguides></a>
+<ol><b>แนะนำเว็บ (Web Guides)</b> ::
+<li><a href=http://webster.cs.ucr.edu/AsmTools/MASM/>http://webster.cs.ucr.edu/AsmTools/MASM/</a> มีตัวอย่าง .asm และ doc (<b>ยอด</b>)
+<li><a href=http://doc.ddart.net/asm/Microsoft_MASM_Programmers_Guide_v6.1/>http://doc.ddart.net/asm/Microsoft_MASM_Programmers_Guide_v6.1/</a> (<b>ยอด</b>)
+<li><a href=http://www.totallygeek.com/vscdb/o/offspr81_asm.php>http://www.totallygeek.com/vscdb/o/offspr81_asm.php</a> Virus Code
+<li><a href=http://dit.rid.ac.th/task/assembly/ma.html>http://dit.rid.ac.th/task/assembly/ma.html</a> สอน Macro assembler
+<li><a href=http://www.linuxassembly.org/>http://www.linuxassembly.org</a>
+<li><a href=http://www.janw.easynet.be/>http://www.janw.easynet.be/</a>
+<li><a href=http://www.geocities.com/thestarman3/asm/>http://www.geocities.com/thestarman3/asm/</a> แหล่งอ้างอิงที่ดีมาก อีกแห่งหนึ่ง
+<li><a href=http://www.karig.net/0008.html>http://www.karig.net/0008.html</a>
+<li><a href=http://www.xs4all.nl/~smit/asm01001.htm>http://www.xs4all.nl/~smit/asm01001.htm</a> อธิบายเรื่อง register
+<li><a href=http://www-2.cs.cmu.edu/afs/cs.cmu.edu/user/ralf/pub/WWW/files.html>http://www-2.cs.cmu.edu</a> รวมข้อมูล Interrupt
+<li><a href=http://www.freezone.co.uk/sieug/ch11.html>Assembly in High level language</a> :: siriususer@eurobell.co.uk 
+<li><a href=http://dit.rid.ac.th/task/assembly/Menu.html>http://dit.rid.ac.th/task/assembly/Menu.html</a>
+<li><a href=http://www.ik.ku.lt/lessons/konspekt/kti/12_files/Assembler%20Tutorial.htm>http://www.ik.ku.lt/lessons/konspekt/kti/12_files/</a> (Assembler tutorial)
+<li><a href=http://www.deinmeister.de/wasmtute.htm>http://www.deinmeister.de/wasmtute.htm</a> Win32 Assembler
+<li><a href=http://www.csn.ul.ie/~darkstar/assembler/manual/>http://www.csn.ul.ie/~darkstar/assembler/manual/</a>
+<li><a href=http://www.geocities.com/SiliconValley/Park/3230/index.html>/SiliconValley/Park/3230/index.html</a> (TASM) 
+<li><a href=http://www.geocities.com/codeteacher/>/codeteacher</a> (PC Assembly Tutorial)
+<li><a href=http://ww.nbk.rit.ac.th/asm/assembly.htm>http://ww.nbk.rit.ac.th/asm/assembly.htm</a> สอน assembly ของราชมงคล
+<li><a href=http://pegasus.kkc.rit.ac.th/~eep/Coursewares/assembly/pdf/AoAPDF.html>http://pegasus.kkc.rit.ac.th/%7Eeep/Coursewares/assembly/pdf/</a>
+<li><a href=http://www.school.net.th/library/snet1/>ข้อมูลเรื่อง Computer</a> ละเอียดมาก ๆ มีหัวข้อประมาณ 100 หัวข้อ
+<li><a href=http://www.stanford.edu/class/cs242/readings/vocabulary.html>http://www.stanford.edu/class/cs242/readings/vocabulary.html</a>
+<li><a href=http://www.internettrash.com/users/fdb/asm.htm>http://www.internettrash.com/users/fdb/asm.htm</a> รวม Source Code .asm
+</ol>
+</table>
+
+
+<center>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_indexr"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/indexr.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:40:34 GMT -->
+</html>

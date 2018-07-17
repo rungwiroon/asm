@@ -1,0 +1,650 @@
+.model small
+.stack 100h
+.386
+include macro.asm
+;----------------------------------------
+load_redsnow macro	;start position
+	mov ax,r_snowx  
+	mov startx,ax
+	add ax,40
+	mov stopx,ax
+	mov ax,r_snowy
+	mov starty,ax
+	add ax,32
+	mov stopy,ax
+endm
+;----------------------------------------
+clear_redsnow macro
+	save_register <ax,cx,dx>
+	mov ax,r_snowx
+	mov ganx,ax
+	add ax,40
+	mov maxc,ax
+	mov ax,r_snowy
+	mov gany,ax
+	add ax,32
+	mov maxr,ax
+	mov r_snowx,250
+	mov r_snowy,85
+	pixel ganx,gany,maxc,maxr,15
+	load_register <dx,cx,ax>
+endm
+;----------------------------------------
+load_greensnow macro
+	mov ax,g_snowx
+	mov startx,ax
+	add ax,40
+	mov stopx,ax
+	mov ax,g_snowy
+	mov starty,ax
+	add ax,32
+	mov stopy,ax
+endm
+;----------------------------------------
+load_heart macro
+	local h1
+	save_register <ax,bx,cx,dx>
+	pixel 155,181,199,194,0
+	cmp life,1
+	jb h1
+	showpicture 155,181,14,13,heart
+	cmp life,2
+	jb h1
+	showpicture 170,181,14,13,heart
+	cmp life,3
+	jb h1
+	showpicture 185,181,14,13,heart
+h1:	
+	load_register <dx,cx,bx,ax>
+endm
+;----------------------------------------
+set_variable macro
+	mov life,3
+	mov score,0
+	mov check1,0
+	MOV CHECK2,0
+	mov countk,0
+	mov countloop,0
+	mov count_gw,0
+	mov time,100
+	mov srx1,0
+	mov sry1,0
+	mov srs1,0
+	mov srx2,0
+	mov sry2,0
+	mov srs2,0
+	mov sgx,0
+	mov sgy,0
+	mov sgs,0
+	mov r_snowx,250	          ;display snow_red position
+	mov r_snowy,85
+	mov g_snowx,20
+	mov g_snowy,70	
+endm
+;----------------------------------------
+load_score macro
+        save_register <ax>
+	gotoxy 8,23
+	mov ax,score
+	call outdec
+	load_register <ax>
+endm
+;----------------------------------------
+load_screen macro
+	save_register <ax,bx,cx,dx>
+	pixel 0,0,320,200,15,15
+	pixel 5,180,315,195,0,0
+	square 1,1,318,198,88,88  ; border out
+	square 3,3,316,196,92,92
+	square 5,5,314,194,88,88
+	square 5,5,314,179,88,88  ; border in
+	showmessage 1,23,mesg12
+	showmessage 13,23,mesg11
+	showmessage 26,23,mesg10
+	showpicture 70,80,40,25,snow3
+	showpicture 190,90,40,25,snow4		
+	load_heart
+	load_score
+	load_redsnow
+	pixel startx,starty,stopx,stopy,15
+	showgame startx,starty,stopx,stopy,05,red1 
+	load_greensnow
+	pixel startx,starty,stopx,stopy,15
+	showgame startx,starty,stopx,stopy,0,green1
+	load_register <dx,cx,bx,ax>
+endm
+;----------------------------------------
+help_screen macro
+	local h1,h2
+	save_register <ax,bx,cx,dx,si>    
+	pixel 50,25,275,175,0,0
+	square 50,25,276,176,78,78	; border
+	square 51,26,276,176,78,78
+	square 50,25,275,176,78,78
+	square 51,26,276,176,78,78
+	square 50,44,275,175,78,78
+	square 51,45,276,176,78,78
+	showmessage 17,4,mesg1		; message
+	showmessage 10,8,mesg2
+	showmessage 10,10,mesg3
+	showmessage 10,12,mesg4
+	showmessage 10,14,mesg5
+	showmessage 10,16,mesg6
+	showmessage 10,18,mesg7
+	showmessage 10,20,mesg8
+	;showmessage 10,23,mesg9
+h1:
+	keyplay
+	cmp key,1
+	je h2
+	delay 100
+	jmp h1
+h2:
+	load_register <si,dx,cx,bx,ax>
+endm
+;----------------------------------------
+SHOWREDSHOOT MACRO
+	showgame startx,starty,stopx,stopy,016,red1
+	delay 500
+	showgame startx,starty,stopx,stopy,016,red3
+	delay 500
+	showgame startx,starty,stopx,stopy,016,red4
+	delay 500
+ENDM
+;----------------------------------------
+SHOWGREENSHOOT MACRO
+	showgame startx,starty,stopx,stopy,016,green1
+	delay 500
+	showgame startx,starty,stopx,stopy,016,green2
+	delay 500
+	showgame startx,starty,stopx,stopy,016,green3
+	delay 500
+	showgame startx,starty,stopx,stopy,016,green4
+	delay 500
+	showgame startx,starty,stopx,stopy,016,green2
+	delay 500
+ENDM
+;----------------------------------------
+movegreensnow macro
+        local l1,l2,l3,exitp
+	save_register <ax>
+	inc count_gw
+	cmp count_gw,2
+	jb  exitp
+	mov ax,g_snowy
+	cmp ax,r_snowy
+	ja  l1
+	cmp ax,r_snowy
+	jb  l2
+	jmp l3
+    l1:
+        dec g_snowy
+	jmp l3
+    l2: 
+        inc g_snowy
+    l3:
+	mov count_gw,0
+    exitp:	
+	load_register <ax>
+endm
+;----------------------------------------
+loadxyballred macro	
+	mov ax,r_snowx
+	mov bx,r_snowy		
+endm
+;----------------------------------------
+NEWballred MACRO
+         LOCAL L1,EXITball
+         SAVE_REGISTER <AX,BX,CX,DX>
+	 CMP srS1,0
+	 JNE L1
+	 MOV srX1,AX
+         MOV srY1,bx	 
+	 MOV srS1,1
+	 JMP EXITball
+      L1:
+         CMP srS2,0
+	 JNE exitball
+	 MOV srX2,AX
+         MOV srY2,bx	 
+	 MOV srS2,1
+      EXITball:         
+	 LOAD_REGISTER <DX,CX,BX,AX>
+ENDM
+;----------------------------------------
+SHOWballred MACRO
+        LOCAL L1,L2,L3,L4,L5,L6,L7,L8,L9
+        SAVE_REGISTER <AX,BX,CX,DX> 
+	CMP srS1,0
+	JZ  L1
+	SHOWballred1
+    L1: 
+	CMP srs2,0
+	JZ  L2
+	SHOWballred2
+    L2: 
+        LOAD_REGISTER <DX,CX,BX,AX>
+ENDM
+;---------------------------------------------
+SHOWballred1 MACRO
+        LOCAL MOVE
+	SAVE_REGISTER <AX,bx,CX,DX>
+	MOV AX,srX1
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,srY1
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	PIXEL GANX,GANY,MAXC,MAXR,015
+	SUB srx1,10	
+    MOVE:
+	MOV AX,srX1
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,srY1
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	SHOWPIC GANX,GANY,MAXC,MAXR,0,snowball
+        LOAD_REGISTER <DX,CX,bx,AX>
+ENDM
+;----------------------------------------------
+SHOWballred2 MACRO
+        LOCAL MOVE
+	SAVE_REGISTER <AX,bx,CX,DX>
+	MOV AX,srX2
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,srY2
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	PIXEL GANX,GANY,MAXC,MAXR,015
+	SUB srx2,10	
+    MOVE:
+	MOV AX,srX2
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,srY2
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	SHOWPIC GANX,GANY,MAXC,MAXR,0,snowball
+        LOAD_REGISTER <DX,CX,bx,AX>
+ENDM
+;---------------------------------------------
+CHECKREDBALL MACRO
+        LOCAL L1,L2
+        SAVE_REGISTER <AX,CX,DX>
+        CMP SRS1,0
+	JE  L1
+	CHECKREDBALL1
+     L1:
+        CMP SRS2,0
+	JE  L2
+	CHECKREDBALL2
+     L2:
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CHECKREDBALL1 MACRO
+        LOCAL L1,L2
+        SAVE_REGISTER <AX,CX,DX>
+	MOV CX,SRX1
+	ADD CX,1     
+	MOV DX,SRY1
+	ADD DX,4
+	CMP CX,15
+	JNL  L1
+	MOV SRS1,3
+	MOV CHECK1,2
+	JMP L2
+     L1:
+	MOV AH,0DH
+	INT 10H
+	CMP AL,027
+	JE  L2
+	MOV SRS1,2
+	MOV CHECK1,1
+	JMP L2
+     L2:
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CHECKREDBALL2 MACRO
+        LOCAL L1,L2
+        SAVE_REGISTER <AX,CX,DX>
+	MOV CX,SRX2
+	ADD CX,1     
+	MOV DX,SRY2
+	ADD DX,4
+	CMP CX,15
+	JNL  L1
+	MOV SRS2,3
+	MOV CHECK1,2
+	JMP L2
+     L1:
+	MOV AH,0DH
+	INT 10H
+	CMP AL,027
+	JE  L2
+	MOV SRS2,2
+	MOV CHECK1,1
+	JMP L2
+     L2:
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+;---------------------------------------------
+CLEARBALLRED MACRO
+        LOCAL L1,L2
+        SAVE_REGISTER <AX,CX,DX>
+	CMP SRS1,0
+	JE L1
+	CMP SRS1,1
+	JE L1
+	CLEARBALLRED1
+     L1:	
+        CMP SRS2,0
+	JE L2
+	CMP SRS2,1
+	JE L2
+	CLEARBALLRED2
+     L2:
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CLEARBALLRED1 MACRO
+        SAVE_REGISTER <AX,CX,DX>
+	MOV AX,SRX1
+	MOV GANX,AX
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,SRY1
+	MOV GANY,AX
+	ADD AX,10
+	MOV MAXR,AX	
+	MOV SRX1,0
+	MOV SRY1,0
+	MOV SRS1,0
+	PIXEL GANX,GANY,MAXC,MAXR,15
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CLEARBALLRED2 MACRO
+        SAVE_REGISTER <AX,CX,DX>
+	MOV AX,SRX2
+	MOV GANX,AX
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,SRY2
+	MOV GANY,AX
+	ADD AX,10
+	MOV MAXR,AX	
+	MOV SRX2,0
+	MOV SRY2,0
+	MOV SRS2,0
+	PIXEL GANX,GANY,MAXC,MAXR,15
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+;----------------------------------------------
+loadxyballgreen macro	
+	mov ax,g_snowx
+	add ax,41
+	mov bx,g_snowy		
+endm
+;----------------------------------------
+NEWballgreen MACRO
+         LOCAL EXITball
+         SAVE_REGISTER <AX,BX,CX,DX>
+	 CMP sgS,0
+	 JNE exitball
+	 MOV sgX,AX
+         MOV sgY,bx	 
+	 MOV sgS,1	 
+    exitball:  
+	 LOAD_REGISTER <DX,CX,BX,AX>
+ENDM
+;----------------------------------------
+SHOWballgreen MACRO
+        LOCAL L1
+        SAVE_REGISTER <AX,BX,CX,DX> 
+	CMP sgS,0
+	JZ  L1
+	SHOWballgreen1
+    L1: 
+        LOAD_REGISTER <DX,CX,BX,AX>
+ENDM
+;---------------------------------------------
+SHOWballgreen1 MACRO
+        LOCAL MOVE
+	SAVE_REGISTER <AX,bx,CX,DX>
+	MOV AX,sgX
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,sgY
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	PIXEL GANX,GANY,MAXC,MAXR,015
+	add sgx,10	
+    MOVE:
+	MOV AX,sgX
+	MOV GANX,AX	
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,sgY
+	MOV GANY,AX	
+	ADD AX,10
+	MOV MAXR,AX
+	SHOWPIC GANX,GANY,MAXC,MAXR,0,snowball
+        LOAD_REGISTER <DX,CX,bx,AX>
+ENDM
+;--------------------------------------------
+CHECKgreenBALL MACRO
+        LOCAL L1
+        SAVE_REGISTER <AX,CX,DX>
+        CMP SgS,0
+	JE  L1
+	CHECKgreenBALL1
+     L1:        
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CHECKgreenBALL1 MACRO
+        LOCAL L1,L2
+        SAVE_REGISTER <AX,CX,DX>
+	MOV CX,SgX
+	ADD CX,8     
+	MOV DX,SgY
+	ADD DX,4
+	CMP CX,290
+	JNG L1
+	MOV SgS,3
+	MOV CHECK2,2
+	JMP L2
+     L1:
+	MOV AH,0DH
+	INT 10H
+	CMP AL,027
+	JE  L2
+	MOV SgS,2
+	MOV CHECK2,1
+	JMP L2
+     L2:
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+;--------------------------------------------------
+greenshoot macro
+        local exitp
+	save_register <>
+	cmp sgs,0
+	jne exitp
+        load_greensnow
+	SHOWGREENSHOOT
+	loadxyballgreen
+	newballgreen
+      exitp:
+	load_register <>
+endm
+;--------------------------------------------------
+CLEARBALLgreen MACRO
+        LOCAL L1
+        SAVE_REGISTER <AX,CX,DX>
+	CMP SgS,0
+	JE L1
+	CMP SgS,1
+	JE L1
+	CLEARBALLgreen1
+     L1:	       
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+CLEARBALLgreen1 MACRO
+        SAVE_REGISTER <AX,CX,DX>
+	MOV AX,SgX
+	MOV GANX,AX
+	ADD AX,10
+	MOV MAXC,AX
+	MOV AX,SgY
+	MOV GANY,AX
+	ADD AX,10
+	MOV MAXR,AX	
+	MOV SgX,0
+	MOV SgY,0
+	MOV SgS,0
+	PIXEL GANX,GANY,MAXC,MAXR,15
+	LOAD_REGISTER <DX,CX,AX>
+ENDM
+;------------------------------------------------
+play_screen macro
+	local p1,left,right,up,down,help,pause,newgame,exitplay
+	local l1,HIT1,FLOOR1,hit2,floor2
+	set_variable
+	load_screen
+	load_greensnow
+p1:
+	showpicture 70,80,40,25,snow3	
+	showpicture 190,90,40,25,snow4		        
+        showballred 	
+	showballgreen	
+	load_greensnow
+	showgame startx,starty,stopx,stopy,016,green1
+	movegreensnow	
+	load_redsnow
+	showgame startx,starty,stopx,stopy,016,red1
+	LOAD_SCORE	
+	CHECKREDBALL	 
+	CMP CHECK1,1
+	JE  HIT1
+	CMP CHECK1,2
+	JE  FLOOR1
+	checkgreenball
+	cmp check2,1
+	je  hit2
+	cmp check2,2
+	je  floor2
+	greenshoot
+	keyplay	
+	cmp key,57	; space bar
+	je shootr
+	cmp key,59	; f1
+	je help
+	cmp key,68	; f10
+	je pause
+	cmp key,60	; f2
+	je newgame
+	cmp key,75	; left
+	je left
+	cmp key,77	; right	
+	je right
+	cmp key,72	; up
+	je up
+	cmp key,80	; down
+	je down
+	cmp key,1
+	je exitplay
+	delay time
+	jmp p1
+left:
+	cmp r_snowx,230
+	je p1
+	sub r_snowx,1
+	jmp p1
+right:
+	cmp r_snowx,274
+	je p1
+	add r_snowx,1
+	jmp p1
+up:
+	cmp r_snowy,6
+	je p1
+	sub r_snowy,1
+	jmp p1
+down:
+	cmp r_snowy,147
+	je p1
+	add r_snowy,1
+	jmp p1
+HIT1:
+        ADD SCORE,5
+        CLEARBALLRED
+	LOAD_GREENSNOW
+	showgame startx,starty,stopx,stopy,016,green5
+	DELAY 1000
+	showgame startx,starty,stopx,stopy,016,greeNDED
+	DELAY 2000
+	MOV CHECK1,0
+	JMP P1
+FLOOR1:
+        CLEARBALLRED
+	MOV CHECK1,0
+        JMP P1
+hit2:
+	sub life,1
+	load_heart
+	clearballgreen
+	load_redsnow
+	showgame startx,starty,stopx,stopy,016,red5
+	DELAY 1000
+	showgame startx,starty,stopx,stopy,016,redDED
+	DELAY 1000
+	cmp life,0
+	je gameover
+	mov check2,0
+	jmp p1
+floor2:
+        clearballgreen
+	mov check2,0
+	jmp p1
+pause:
+help:
+	help_screen
+	jmp p1
+shootr:	
+        load_redsnow
+	SHOWREDSHOOT
+	loadxyballred
+	newballred	
+	jmp p1
+
+newgame:
+gameover:
+exitplay:
+endm
+;----------------------------------------
+.data 
+include variable.asm
+include picgame.asm
+.code
+main proc
+	
+	mov ax,@data
+	mov ds,ax
+	opengraphic		
+	play_screen	
+	closegraphic
+	mov ah,4ch
+	int 21h
+main endp
+include outdec.asm
+end main	

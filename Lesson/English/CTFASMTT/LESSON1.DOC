@@ -1,0 +1,87 @@
+LESSON1 - THE REGISTERS AND SEGMENTS
+
+ok, assembly is not a language like pascal or c because
+unlike them there is no predefined command link let say
+"writeln", "printf", assembly doesn't provide those tools for you
+so how those assembly works, well first they have predefine registers :
+
+AX - accumulator index   -\
+BX - Base index           | all of these are the data holders
+CX - Count index          |
+DX - Data index          -/
+
+SP - Stack pointer       -\
+BP - Base pointer         |
+SI - Source index         | all of these are the pointing and index storage
+DI - Destination indec    | registers
+IP - Instruction pointer -/
+
+CS - Code segment        -\
+DS - Data segment         | all of these are segments holder
+SS - Stack segment        |
+ES - Extra segment       -/
+
+FLAGS - Holds some of the function conditions
+
+ok now to be more specific :
+
+Data registers :
+
+they are the basic registers for all the computer calcs, and position
+each of the registers is 16bit and they are divided into two registers
+high and low which are 8 bit :
+AX - ah (high), al (lo)
+BX - bh (high), bl (lo)
+CX - ch (high), cl (lo)
+DX - dh (high), dl (lo)
+
+high is MSB - most significent byte
+lo is LSB - least significent byte
+
+Pointing registers :
+
+each of these registers has an unique job :
+
+SP - is the offset of the stack   (-n-)
+BP - a pointer for the stack      (-n-)
+SI - is the source index, uses as an offset in memory transfers
+DI - is the destination index, uses as an offset in memory transfers
+IP - is the offset of the current instruction (-n-)
+
+(-n-) means don't change unless you know what your'e doing
+
+Segment registers :
+
+CS - is the segment of the code       (-n-)
+DS - is the segment (usually) of the data
+SS - is the segment for the stack     (-n-)
+ES - is an extra segment, uses for memory transfers
+
+Flags, will be disscussed later
+
+now assembly works with segments and each segment max limit is 64K,
+so when we have a segment we will have to give it a definition,
+so we will need the command "Assume" which gives each one of the segments
+registers it's default segment, so lets see a typical assembly structure
+
+Sseg segment  ; a semicolon (;) is a remark and will not be compiled
+  db 10 dup (?)
+ends          ; each segment has a name and the "segment" after it
+              ; when we finished to define stuff in the segment
+              ; we close it with ends (end segment)
+Dseg segment
+ends
+
+Cseg segment
+assume cs:cseg,ds:dseg,ss:sseg
+ends
+end
+
+know as we saw segment is built as follow :
+Name Segment
+.
+.
+.
+Ends
+know in the dseg all the data will be stored, in the sseg the stack
+and in the cseg the code.

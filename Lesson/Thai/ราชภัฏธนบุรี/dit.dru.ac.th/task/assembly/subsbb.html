@@ -1,0 +1,1151 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/subsbb.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:10 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>SUB และ SBB</title>
+</head>
+
+<body background="bg70.jpg" bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="5">
+    <tr>
+        <td><p align="center"><img src="stu43.jpg"></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<p align="center"><font color="#FF0080" size="7"><strong><u><img
+src="line2.gif" width="435" height="15"></u></strong></font></p>
+
+<p align="center"><font color="#FF0080" size="7"><strong><u>คำสั่ง
+SUB และ SBB.</u></strong></font></p>
+
+<blockquote>
+    <p><font color="#FF0000" size="5"><strong><u>คำอธิบาย
+    :</u></strong></font><font size="4"><strong> </strong></font><font
+    color="#8000FF" size="4"><strong>sub (subtrac) และ sbb
+    (subtrac with Borrow)
+    ป็นการปฎิบัติการที่ตรงกันข้ามกับการบวกโดยที่แฟลก
+    CF
+    ทำหน้าที่เหมือนตัวยืม
+    คำสั่ง SBB
+    ทำงานเช่นเดียวกับคำสั่ง
+    SUB แต่จะรวมแฟลก CF ด้วย</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="5"><strong><u>การปฎิบัติการ
+    :</u></strong></font><font size="4"><strong> </strong></font><font
+    color="#8000FF" size="4"><strong>คำสั่ง SUB
+    และ SBB จะลบ OPERAND
+    ต้นฉบับจาก OPERANDปลายทางผลลัพธ์ที่ได้จะเก็บที่
+    OPERAND ปลายทางดังสมการ
+    แล้วผลลัพธ์ที่ได้
+    เก็บไว้ใน Destination Operand</strong></font></p>
+    <blockquote>
+        <p><font size="4"><strong>destination = destination =
+        source -----&gt; SUB</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>destination = destination =
+        source – carry -----&gt; SBB </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>SYNTAX : SUB destination,operand</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>SBB destination,operand</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>ตัวอย่าง
+    : </u></strong></font></p>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB AX,MEM_WORD</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB MEM_WORD[BX],AX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB MEM_BYTE, OFH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB AL,10</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<hr width="90%">
+
+<blockquote>
+    <table border="5">
+        <tr>
+            <td><font size="4"><strong><img src="Computer.gif"
+            width="60" height="48"></strong></font></td>
+        </tr>
+    </table>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    SBB</u></strong></font><font size="4"><strong> </strong></font><font
+    color="#008080" size="4"><strong>ใช้ในกรณีที่มีเลขหลายหลัก
+    โดยจะลบในหลักที่สูง
+    ตัวอย่างเช่น
+    ต้องการลบค่า 32 บิต
+    โดยตัวตั้งอยู่ใน register BX,AXและตัวลบอยู่ใน
+    register DX,CX
+    ให้ใช้คำสั่งดังนี้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>SUB AX,CX ;subtrac
+    low_order 16 bits</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>SUB BX,DX ;then
+    high-order 16 bits </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ตัวอย่างการลบเลขที่ไม่มีเครื่องหมาย</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>;CL = 10011100 = 156
+            decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>;BH = 01111011 = 123
+            decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB CL,BH ; CL = 00100001 =
+            33 decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>; CF=0,ZF=0,SF=0,Of=0,PF=1</strong></font></p>
+                </blockquote>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8040" size="4"><strong>ตัวอย่างการลบที่มีเครื่องหมาย</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8040" size="4"><strong>; CL =
+            00110111 = 455 decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8040" size="4"><strong>; BH =
+            00100101 = +37 decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#FF8040" size="4"><strong>SUB CL,BH ;
+            CL = 00010010 = +18 decimal</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <blockquote>
+                    <p><font color="#FF8040" size="4"><strong>;
+                    CF=0,AF=0,ZF=0,SF=0,OF=0,PF=1</strong></font></p>
+                </blockquote>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="4"><strong><u>ตัวอย่าง</u></strong></font><font
+    size="4"><strong> </strong></font><font color="#0000FF"
+    size="4"><strong>Program ใช้คำสั่ง
+    บวก ลบ คูณ หาร
+    เพื่อคำนวณสมการ A = X*X+Y+2/2-3</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>DATA_SEG SEGMENT</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>X DW 10</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>Y DW 5</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>Z DW 8</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>A DW 7</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>DATA_SEG ENDS</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>CODE_SEG SEGMENT</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ASSUME CS:CODE_SEG;DS:DATA_SEG</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>START MOV AX,DATA_SEG
+    ; SETUP DS REGISTER</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV DS,AX </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AX,X</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>IMUL X ; DX:AX=X*X</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV DX,DX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV CX,AX ;
+            BX:CX=X*X</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AX,2</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>IMUL Y ; DX:AX=Y*2</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ADD AX,CX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ABC DX,BX ;
+            DX:AX=X*X+Y*2</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV CX,Z</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>SUB CX,3 ;
+            CX=2-3</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>IDIV CX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV A.AX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AH,4CH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>INT 21H</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>CODE_SEG
+            ENDS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>END START</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>FLAG
+    ที่ถูกกระทำ : AF,CF,OF,PF,SF,ZF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Auxiliary Carry
+    Flag (AF)
+    ใช้สำหรับการคำนวณเลขที่มีการใช้ตัวทด
+    หรือตัวยืม สำหรับเลข 1
+    หลัก ขนาด 4 bit ของ BCD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Carry Flag (CF)
+    มีค่าเป็น 1
+    เมื่อมีตัวทดหรือตัวยืม
+    ในขณะทำการคำนวณทางคณิตศาสตร์
+    ตัวข้อมูล 8 หรือ 16 bit
+    ถ้าใช้คำสั่ง Shift,Rorale
+    เก็บ Register ก็จะใช้ CF
+    นี้ด้วย</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Parity Flag (PF)
+    ใช้สำหรับการติดต่อข้อมูล</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>มีค่าเป็น
+        1 ได้ Parity เป็นเลขคี่ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>มีค่าเป็น
+        0 ได้ Parity เป็นเลขคู่</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Overflow (OF)
+    มีค่าเป็น 1
+    เมื่อผลลัพธ์ที่ได้มีค่าเกิน
+    Bit สูงของข้อมูล</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>มีค่าเป็น
+            0
+            เมื่อผลลัพธ์ที่ไม่มีค่าไม่เกิน
+            Bit สูงของข้อมูล</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Parity Flag (PF)
+    ใช้สำหรับการติดต่อข้อมูล</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Sign Flag (SF)
+    มีค่าเป็น 1
+    เมื่อได้ผลลัพธ์เป็นค่าลบ</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>มีค่าเป็น
+            0
+            เมื่อได้ผลลัพธ์เป็นค่าบวก</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>Zero Flag (ZF)
+    มีค่าเป็น 1
+    เมื่อได้ผลลัพธ์เป็น 0</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#008080" size="4"><strong>มีค่าเป็น
+            0 ในกรณีอื่น
+            นอกจากนี้ </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>FLAG
+    ที่ไม่ต้องกำหนด :
+    ไม่มี</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ข้อยกเว้นใน
+    mode protected :</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ถ้าผลลัพธ์อยู่ใน
+    segment ที่เขียนค่าไม่ได้
+    การยกเว้นการผิดพลาดนั้นเกิดขึ้น
+    ถ้าใช้ segment CS,DS,ES
+    เก็บค่าหน่วยความจำการผิดพลาดของ
+    STACK นั้นเกิดขึ้น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ข้อยกเว้นใน
+    mode real address : จะเกิด INT 13 เมื่อ
+    operand อยู่ที่ตำแหน่ง OFFSET
+    OFFFFH การประยุกต์ใช้งาน :
+    เราสามารถนำไปใช้ในการลบเลขต่าง
+    ๆ เช่น การลบโดยมีเงื่อนไขว่าตัวเลขที่นำมาลบจะมีค่าลดลงเรื่อย
+    ๆ หรือนำไปใช้ในการ check
+    loop</strong></font><font size="4" face="CordiaUPC"><strong> </strong></font><font
+    size="4"><strong>ว่าค่าที่ตั้งไว้ลดลงจนมค่าตามที่ต้องการหรืไม่เป็นต้น</strong></font></p>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><font size="4"><strong><img
+src="home2.gif" border="0" width="83" height="30"></strong></font></a></p>
+
+<p align="center"><font size="4"><strong><img src="line2.gif"
+width="435" height="15"></strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong><img src="anbird1.gif"
+            width="62" height="68"></strong></font></td>
+            <td><font color="#FF0080" size="5"><strong><u></u></strong></font><p><font
+            color="#FF0080" size="5"><strong><u></u></strong></font>&nbsp;</p>
+            <p><font color="#FF0080" size="5"><strong><u>คำสั่ง
+            ASSCII และ Decimal Adjust for Subtraction (ADD
+            และ DAS)</u></strong></font></p>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>เช่นเดียวกับการบวก
+    โปรเซสเซอร์ 8088
+    จะลบเลชเหมือนกับว่า
+    เป็นฐานสองหมด ดังนั้น
+    ถ้ามีการลบ เลขฐานสิบ
+    ผลที่ได้จะผิดไป
+    ตัวอย่างเช่น
+    การลบเลขฐานสิบ 55-26 808
+    จะทำการลบดังนี้ </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>0101 0101 (BCD
+            55)</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>+</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>1101 1010 (2’s
+            complement of BCD 26) </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>1 0010 1111
+            (=??) </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>จะเห็นว่า
+    ผลลัพธ์ที่ได้แทนที่จะเป็นค่า
+    BCD 29 กลับได้ค่า 2FH
+    และแฟลก CF = 1 คำสั่ง ASSCII Adjust
+    For subtraction (ASS)</strong></font></p>
+</blockquote>
+
+<p><font color="#0000FF" size="4"><strong>และคำสั่ง
+Decimal Adjust FOR subtraction (DAS)
+จะปรับค่าของผลลัพธ์จากการ
+ลบเลขฐานสิบ โดยที่ผลลัพธ์ที่จะปรับค่าต้องอยู่ในรีจิสเตอร์
+AL</strong></font></p>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คำสั่ง
+    ASS
+    จะเปลี่ยนค่าในรีจิสเตอร์
+    AL เป็น unpacked decimal digit
+    โดยการพิจารณาค่า 4
+    บิตล่าง ของรีจิสเตอร์
+    Al ถ้ามีค่าระหว่าง 0-9
+    ก็จะทำให้ 4
+    บิตบนของรีจิสเตอร์ Al
+    มีค่า 0 แฟลก AF และ CF
+    ก็จะมี ค่า 0 ด้วย
+    แต่ถ้า 4
+    บิตล่างของรีจิสเตอร์
+    AL มีค่ามากกว่า 9 หรือแฟลก
+    AF มีค่า
+    ก็จะมีวิธีการปรับค่าดังนี้
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- ลบ 6
+        กับรีจิสเตอร์ AL</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- ลบ 1
+        กับรีจิสเตอร์ AH </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- แฟลก
+        AF และ CF มีค่า 1</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- 4
+        บิตบนของรีจิสเตอร์ AL
+        มีค่า 0 </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คำสั่ง
+    DAS
+    จะเปลี่ยนค่าในรีจิสเตอร์
+    AL เป็นค่า packed decimal degit 2 ค่า
+    คำสั่ง DAS มีการทำงานคล้ายคำสั่ง
+    ASS</strong></font></p>
+</blockquote>
+
+<p><font color="#0000FF" size="4"><strong>เพียงแต่ต้องพิจารณาตัวเลข
+2 ตัว
+วิธีการปรับค่าของคำสั่ง
+DAS มีดังนี้ </strong></font></p>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>- ถ้า 4
+    บิตล่างของรีจิสเตอร์
+    AL มีค่ามากกว่า 9 หรือ AF
+    มีค่า 1 ลบค่า 6
+    กับรีจิสเตอร์ AL และให้ค่าแฟลก
+    AF เป็น 1</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>คำสั่ง
+    DAS</strong></font><font size="4"><strong> </strong></font><font
+    color="#808000" size="4"><strong>มีที่ใช้ดังนี้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808000" size="4"><strong>SUB AL,BL ;subtrac
+    packed decimal in BL from AL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808000" size="4"><strong>DAS ;and make the
+    result a packed number</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808000" size="4"><strong>ถ้าผลที่ได้ทำให้ค่าแฟลก
+    CF มีค่า 1 ต้องเพิ่ม BCD
+    อีก 1 ตัว
+    เพื่อเก็บค่าในหลักที่เกินมาตัวอย่างของการใช้คำสั่ง
+    AAS เช่น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808000" size="4"><strong>; CL = 0011
+        0111 = ASSCII</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808000" size="4"><strong>; BH = 0011
+        0100 = ASSCII 4</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808000" size="4"><strong>SUB CL,BL ;(7-4)</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808000" size="4"><strong>; CL = 0000
+        0011 = BCD 03</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#808000" size="4"><strong>AAS ; CL = 0010
+        1001 = BCD 03 </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#FF0000" size="4"><strong>ตัวอย่างการใช้คำสั่ง
+        DAS</strong></font><font size="4"><strong> </strong></font><font
+        color="#804000" size="4"><strong>เช่น</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#804000" size="4"><strong>;CL = 1000 0110
+        = 86 BCD</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#804000" size="4"><strong>;BH = 0101 0111
+        = 57 BCD</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#804000" size="4"><strong>SUB CL,BH ;CL =
+        0010 1111 = 2FH</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#804000" size="4"><strong>DAS ;subtract
+        0000 0110</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <p><font color="#804000" size="4"><strong>;because
+                1111 in low nibbles &gt; 9</strong></font></p>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <p><font color="#804000" size="4"><strong>;CL =
+                0010 1001 = 29 BCD</strong></font></p>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p align="center"><a href="Menu.html"><font size="4"><strong><img
+    src="home2.gif" border="0" width="83" height="30"></strong></font></a></p>
+    <p align="center"><font size="4"><strong><img src="line2.gif"
+    width="435" height="15"></strong></font></p>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    DEC</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>คำสั่ง DEC
+    จะลบค่า 1 ออกจาก
+    รีจิสเตอร์หรือหน่วยความจำ
+    คำสั่งนี้นิยมใช้กับวงจรการทำงานที่ซ้ำ
+    ๆ
+    กันและลบค่าภัวนับจำนวนรอบการทำงาน
+    หรือใช้ลบค่าดัชนีในการประมวลผลกับตาราง
+    ตัวอย่างการใช้คำสั่ง
+    DEC เช่น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>DEC CX ; decrement a word
+        register</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>DEC AL ; or a byte register</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>DEC MEM_BYTE ; or a byte in
+        memory</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>DEC_MEM WORD [BX] ; or a word
+        in memory</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    Negate (NEG)</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>คำสั่ง
+    (NEG)</strong></font><font size="4"><strong> </strong></font><font
+    color="#8000FF" size="4"><strong>จะลบค่าของโอเปอร์เรนต์
+    0 ซึ่งก็คือการหาค่า 2’
+    complement นั่นเอง คำสั่ง NEG
+    มีผลกับค่าของแฟลกดังนี้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Carry flag (CF)
+        มีค่า 0
+        เมื่อผลลัพธ์เป็นบวก</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            1
+            เมื่อผลลัพธ์เป็นลบ</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Parity flag (PF)
+        มีค่า 0
+        เมื่อผลลัพธ์มีจำนวนบิตที่มีค่า
+        1 เป็นคี่</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            1
+            เมื่อผลลัพธ์มีจำนวนบิตที่มีค่า
+            1เป็นคู่</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Auxiliary
+        carry flag (AF) มีค่า 0
+        ถ้าผลลัพธ์ของการลบเลขฐานสิบไม่ต้องปรับค่า</strong></font></p>
+    </blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            1
+            ถ้าผลลัพธ์ของการลบเลขฐานสิบต้องปรับค่า
+            </strong></font></p>
+        </blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Zero flag (ZF)
+        มีค่า
+        ถ้าผลลัพธ์ไม่ใช่ 0</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            1 ถ้าผลลัพธ์เป็น 0</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Sign flag (SF)
+        มีค่า 0
+        ถ้าผลลัพธ์มีค่าบวก</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            1 ถ้าผลลัพธ์มีค่า
+            ลบ</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- Overflow flag
+        (OF) มีค่า 1
+        ถ้าผลลัพธ์มีค่า 80H
+        หรือ 8000H (word)</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>มีค่า
+            0
+            กรณีที่นอกเหนือจากนี้</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ตัวอย่างการใช้คำสั่ง
+    NEG เช่น
+    ต้องการลบค่าของรีจีสเตอร์
+    AL จากค่า 123
+    ไม่สามารถใช้คำสั่ง SUB
+    123 , AL ได้เพราะ immediate value
+    จะเป็น destination operand ไม่ได้
+    แต่สามารถทำได้ดังนี้คือ</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>NEG AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#8000FF" size="4"><strong>ADD AL ,
+            123</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>คำสั่ง
+    Compate Destination to source ( CMP )</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#808000" size="4"><strong>คำสั่ง
+    CMP
+    มีการทำงานคล้ายกับคำสั่ง
+    SUB คือ CMP จะลบ source จาก destination
+    ออปเปอแรนด์แต่ไม่ได้เก็บค่าผลลัพธ์ดังนั้นค่าใน
+    source และ desination ออปเปอแนด์
+    จึงไม่มีการเปลี่ยนแปลงจากการลบ
+    ทำให้เกิดผลลัพธ์แฟลกต่าง
+    ๆ ดังนี้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Condition</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0" size="4"><strong>OF</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0" size="4"><strong>SF </strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0" size="4"><strong>ZF</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0" size="4"><strong>CF</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Unsigned
+            operands </strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source
+            &lt; destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source =
+            destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source
+            &gt; destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Signed
+            operand</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0/1</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0" face="Times New Roman">0</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source
+            &lt; destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">1</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source =
+            destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0/1</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">1</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">0</font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0">x</font></td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>Source
+            &gt; destination</strong></font></td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+            <td><font color="#0000A0"></font>&nbsp;</td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>โดยที่
+    X หมายถึง Don’ t care และ 0
+    หมายถึง clear 1 หมายถึง set
+    คำสั่ง CMP ใช้ในการตรวจสอบค่าแฟลกเพื่อตัดสินใจในการย้ายคำสั่งการทำงานไปยังจุดต่าง
+    ๆ ในโปรแกรม </strong></font></p>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><font size="4"><strong><img
+src="home2.gif" border="0" width="83" height="30"></strong></font></a></p>
+
+<p align="center"><font size="4"><strong><img src="line2.gif"
+width="435" height="15"></strong></font></p>
+
+<p align="center"><font size="4"><strong><img src="c3.gif"
+width="146" height="39"></strong></font></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/subsbb.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:10 GMT -->
+</html>

@@ -1,0 +1,186 @@
+
+
+PASTEBMP	MACRO	X,Y,PICNAME
+	PUSH	X
+	POP	BMP_X
+	PUSH	Y
+	POP	BMP_Y
+	LEA		SI,PICNAME
+	MOV		BMP_MODE,0
+	CALL	LOADBMP
+
+ENDM
+
+TPASTEBMP	MACRO	X,Y,TRANS,PICNAME
+	
+	PUSH	X
+	POP	BMP_X
+	PUSH	Y
+	POP	BMP_Y
+	LEA		SI,PICNAME
+	MOV		TRANSPARENT,TRANS
+	MOV		BMP_MODE,2
+	CALL	LOADBMP
+ENDM
+
+DELAY MACRO TIME
+	LOCAL TIME,EATTIME
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+
+	MOV AX,0
+	MOV BX,0
+	MOV CX,0
+
+EATTIME :
+	INC AX
+	CMP AX,1000
+	JLE EATTIME
+	INC BX
+	CMP BX,32766
+	JLE EATTIME
+	INC CX
+	CMP CX,TIME
+	JLE EATTIME
+
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+ENDM
+
+;============================================
+;Go to define  x,y in screen
+;============================================
+GOTOXY MACRO X,Y
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	
+	MOV AH,02H
+	XOR BX,BX
+	MOV DH,Y
+	MOV DL,X
+	INT 10H
+
+	POP DX
+	POP BX
+	POP AX
+ENDM
+
+;=========================================
+;Write Charecter in teletype Mode
+;Input:	AH	= 0EH
+;		AL	= Charecter
+;		BH	= page
+;		BL	= color
+;Output:	none
+;=========================================
+WRITE_CHAR	MACRO CHAR,COLOR
+	PUSH	AX
+	PUSH	BX
+	
+	MOV	AH,0EH
+	MOV	AL,CHAR
+	XOR	BH,BH		;SELECT PAGE 0
+	MOV	BL,COLOR
+	INT	10H
+	
+	POP	BX
+	POP	AX
+ENDM
+
+;===========================================
+
+RGOTOXY MACRO X,BYT
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	
+	MOV AH,02H
+	XOR BX,BX
+	MOV DH,BYT
+	MOV DL,X
+	INT 10H
+
+	POP DX
+	POP BX
+	POP AX
+ENDM
+;===============================================
+
+OPENFILE        MACRO
+        MOV     AH,3DH
+        LEA     DX,FILESCORE
+        MOV     AL,2
+        INT     21H
+        MOV     WHAT,AX
+ENDM
+
+CLOSEFILE       MACRO
+        MOV     AH,3EH
+        MOV     BX,WHAT
+        INT     21H
+ENDM
+
+PUSHR	MACRO
+	PUSH	AX
+        PUSH    BX
+        PUSH    CX
+        PUSH    DX
+ENDM
+
+POPR    MACRO
+        POP     DX
+        POP     CX
+        POP     BX
+        POP     AX
+ENDM
+
+DISP_STR MACRO STRING
+	LOCAL START,MSG
+
+	PUSH AX
+	PUSH DX
+	PUSH DS
+	JMP START
+MSG DB STRING,'$'
+START:
+	MOV AX,CS
+	MOV DS,AX
+	MOV AH,9
+	LEA DX,MSG
+	INT 21H
+
+	POP DS
+	POP DX
+	POP AX
+ENDM
+
+;=============================================
+;SET AND RESET INTERRUPT VECTOR
+;=============================================
+SET_TIME_VEC	MACRO
+;SET UP TIMER INTERRUPT VECTOR
+	PUSHA
+	MOV	NEW_TIMER_VEC,OFFSET TIME_INT ;OFFSET
+	MOV	NEW_TIMER_VEC+2,CS		;SEGMENT
+	MOV	AL,1CH					;INTERRUPT TYPE
+ 	LEA	DI,OLD_TIMER_VEC		;DI POINTS TO VECTOR BUFFER
+	LEA	SI,NEW_TIMER_VEC		;SI POINTS TO NEW VECTOR
+	MOV	START_COUNT,1
+	CALL	SETUP_INT
+	POPA
+ENDM
+
+RESET_TIME_VEC	MACRO
+;-RESET TIME INTERRUPT VECTROR
+	PUSHA
+	LEA	DI,NEW_TIMER_VEC	;DI POINTS TO VECTOR BUFFER
+	LEA	SI,OLD_TIMER_VEC	;SI POINTS TO OLD VECTOR
+	MOV	AL,1CH				;TIMER INTERRUPT
+	CALL	SETUP_INT		;RESTORE OLD VECTOR
+	POPA
+ENDM

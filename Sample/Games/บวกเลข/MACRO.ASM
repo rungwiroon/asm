@@ -1,0 +1,88 @@
+;############## MACRO ############
+PASTEBMP        MACRO   X,Y,PICNAME
+        local   X,Y,PICNAME
+        MOV     BMP_X,X
+        MOV     BMP_Y,Y
+        LEA     SI,PICNAME
+        CALL    LOADBMP
+ENDM
+
+OPENFILE        MACRO
+        MOV     AH,3DH
+        LEA     DX,FILESCORE
+        MOV     AL,2
+        INT     21H
+        MOV     HANDLE,AX
+ENDM
+
+CLOSEFILE       MACRO
+        MOV     AH,3EH
+        MOV     BX,HANDLE
+        INT     21H
+ENDM
+
+
+PUSHR	MACRO
+	PUSH	AX
+        PUSH    BX
+        PUSH    CX
+        PUSH    DX
+ENDM
+POPR    MACRO
+        POP     DX
+        POP     CX
+        POP     BX
+        POP     AX
+ENDM
+
+DISP_STR MACRO STRING
+	LOCAL START,MSG
+
+	PUSH AX
+	PUSH DX
+	PUSH DS
+	JMP START
+MSG DB STRING,'$'
+START:
+	MOV AX,CS
+	MOV DS,AX
+	MOV AH,9
+	LEA DX,MSG
+	INT 21H
+
+	POP DS
+	POP DX
+	POP AX
+ENDM
+
+GOTOXY MACRO X,Y
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	
+	MOV AH,02H
+	XOR BX,BX
+	MOV DH,Y
+	MOV DL,X
+	INT 10H
+
+	POP DX
+	POP BX
+	POP AX
+ENDM
+
+RGOTOXY MACRO X,BYT
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	
+	MOV AH,02H
+	XOR BX,BX
+	MOV DH,BYT
+	MOV DL,X
+	INT 10H
+
+	POP DX
+	POP BX
+	POP AX
+ENDM

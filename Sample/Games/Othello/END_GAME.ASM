@@ -1,0 +1,82 @@
+END_GAME	PROC
+
+	SHOW_MOUSE
+	WAITCLICK
+	CALL	WIN_SCORE
+	WAITCLICK
+	HIDE_MOUSE
+;////////////////////////////////////////////////////////
+;
+;	GET NAME AND SHOW TOP SCORE
+;
+;////////////////////////////////////////////////////////
+
+	PIC_LOCATE	0,0,PIC_TOPSCORE
+
+	GOTO_XY		11,12
+	DISP_STR	'SCORE      :: '
+
+	MOV	AL,WIN_POINT
+	XOR	AH,AH
+	MOV	INPUT_SCORE,AX
+	CALL	OUTDEC
+
+	GOTO_XY		11,10
+	DISP_STR	'NAME       :: '
+
+	LEA	SI,INPUT_NAME
+
+	PUSH	AX
+	PUSH	CX
+	MOV	CX,10
+	LOOPCLEARNAME:
+	MOV	AL,' '
+	MOV	[SI],AL
+	ADD	SI,1
+	LOOP	LOOPCLEARNAME
+	POP	CX
+	POP	AX
+
+	LEA	SI,INPUT_NAME
+	MOV	COUNT,0
+GET_NAME : 
+
+	MOV	AH,01H
+	INT	21H
+
+	CMP	AL,0DH
+	JE	EXIT_GET_NAME
+	CMP	AL,0AH
+	JE	EXIT_GET_NAME
+
+	MOV	[SI],AL
+	INC	COUNT
+
+	CMP	COUNT,10
+	JE	EXIT_GET_NAME
+
+	INC	SI
+	JMP	GET_NAME
+
+EXIT_GET_NAME :
+
+	XOR	AX,AX
+	MOV	AL,WIN_POINT
+	MOV	INPUT_SCORE,AX
+	
+	PIC_LOCATE	0,0,PIC_TOPSCORE
+	CALL	ReadFromFile	; \
+	CALL	SortData	;  > in SAVELOAD.ASM	
+	CALL	WriteToFile	; /	
+	CALL	SHOW_FILE	;/	
+
+;/////////////////////////////////////////////////////////
+;/////////////////////////////////////////////////////////
+
+	GOTO_XY	4,24
+	DISP_STR '!! PRESS ANY KEY TO CONTINUE !!'
+	MOV	AH,0H
+	INT	16H
+	CALL	START_GAME
+	RET
+END_GAME	ENDP

@@ -1,0 +1,412 @@
+TITLE	THIS IS TEST PROJECT ASSEMBLY
+;
+.MODEL SMALL
+.486
+.STACK 100H
+
+INCLUDE	MACRO.ASM
+;==============================================
+;EXTRA SEGMENT TO USE SAVE SCREEN
+vbufferseg	segment	
+	vbuffer db	64000	dup (0)
+vbufferseg	ends
+;==============================================
+.DATA
+;PICTURE
+	BG1			DB	'BG1.BMP',0
+	BG2			DB	'BG2.BMP',0
+	MAN1		DB	'MAN1.BMP',0
+	MAN2		DB	'MAN2.BMP',0
+	MAN3		DB	'MAN3.BMP',0
+	MAN4		DB	'MAN4.BMP',0
+	LEVEL1		DB	'LEVEL1.BMP',0
+	CUT1		DB	'CUT1.BMP',0
+	CUT2		DB	'CUT2.BMP',0
+	HERO1		DB	'HERO1.BMP',0
+	BYE			DB	'BYE.BMP',0
+;LOADBMP
+	BMP_HANDLE	DW	?
+	BMP_COUNT	DW 	?
+	BMP_WIDTH	DW	?     
+	BMP_HEIGHT	DW	?
+	BMP_BUFFER 	DB  320 DUP(?)
+	BMP_X		DW	?     
+	BMP_Y		DW	?
+	COUNTCOLOR	DB	0
+	x			DW	?
+	Y			DW	?
+	RGB			DB	?
+	TRANSPARENT	DB	01H
+	BMP_MODE	DB	0
+;TIMER
+	TIMER_FLAG	DB	0
+	NEW_TIMER_VEC	DW	?,?
+	OLD_TIMER_VEC	DW  ?,?
+;KEYBOARD
+	NEW_KEY_VEC	DW	?,?
+	OLD_KEY_VEC	DW	?,?
+	SCAN_CODE	DB	0
+	KEY_FLAG	DB	0
+;SCAN CODES
+	UP_ARROW	= 72
+	DOWN_ARROW	= 80
+	RIGHT_ARROW	= 77
+	LEFT_ARROW	= 75
+	ESC_KEY		= 1
+	ENTER_KEY	= 28
+;PLAY GAME
+	MAP			DB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0
+				DB	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+				
+	DIRECTION	DB	?
+	WALK_X		DB	0
+	WALK_Y		DB	0
+	
+	
+;END DATA SEGMENT
+;===============================================	
+
+.CODE
+
+MAIN	PROC
+
+	MOV	AX,@DATA
+	MOV	DS,AX
+	MOV	ES,AX
+;set graphic mode
+	MOV	AX,13H
+	INT 10H
+;set up timer interrupt vector	
+	MOV NEW_TIMER_VEC,OFFSET TIMER_TICK ;offset
+    MOV NEW_TIMER_VEC+2,CS		 ;segment
+    MOV	AL,1CH				 ;interrupô type
+ 	LEA	DI,OLD_TIMER_VEC	;DI points to vector buffer
+	LEA	SI,NEW_TIMER_VEC	;SI points to new vector
+	CALL	SETUP_INT
+;set up keyboard interrupt vector
+	MOV	NEW_KEY_VEC,OFFSET KEYBOARD_INT
+	MOV	NEW_KEY_VEC+2,CS
+	MOV	AL,9H
+	LEA	DI,OLD_KEY_VEC
+	LEA	SI,NEW_KEY_VEC
+	CALL	SETUP_INT
+;==================================================================
+;CALL	 TO MAINMENU PROCEDURE
+;==================================================================
+START:
+	PASTEBMP 0,0,BG1		;SET COLOR TABLE
+
+	CALL	SAVESCREEN
+	CALL	MAINMENU
+		
+;==================================================================
+;Exit game
+;==================================================================
+@EXIT:
+	CALL	RESTORESCREEN
+	TPASTEBMP 0,0,BYE
+	DELAY	36
+	
+;-Reset timer interrupt vector
+	LEA	DI,NEW_TIMER_VEC
+	LEA	SI,OLD_TIMER_VEC
+	MOV	AL,1CH
+	CALL	SETUP_INT
+;-reset keyboard interrupt vectror
+	LEA	DI,NEW_KEY_VEC
+	LEA	SI,OLD_KEY_VEC
+	MOV	AL,9H
+	CALL	SETUP_INT
+;Reset to text mode	
+	mov	ax,0003h
+	int	10h			
+;Return to dos
+	mov	ax,4c00h	
+	int	21h
+MAIN	ENDP
+
+;===============================================
+;SHOW MAIN MENU
+;INPUT : KEYBOARD TO SELECT MENU
+;===============================================
+MAINMENU	PROC
+TK:	
+	FPASTEBMP 0,0,BG2
+TK_0:
+	FPASTEBMP 0,0,BG1
+	;DELAY	10
+	FPASTEBMP 0,0,BG2
+	;DELAY	10
+	CMP	KEY_FLAG,1
+	JNE	TK_0
+	MOV	KEY_FLAG,0
+	CMP	SCAN_CODE,ESC_KEY
+	JNE TK_1
+	JMP	@EXIT
+TK_1:
+	CMP	SCAN_CODE,ENTER_KEY
+	JNE	TK_0
+	CALL	PLAYGAME
+	CALL	SAVESCREEN
+	JMP TK
+	RET
+MAINMENU	ENDP
+
+;=============================================
+;PLAY GAME
+;INPUT : KEYBOARD TO MOVE OBJECT
+;OUTPUT : MOVEMENT OBJECT ON SCREEN
+;=============================================
+PLAYGAME	PROC
+
+PG:
+	FPASTEBMP 0,0,LEVEL1
+	CALL	SAVESCREEN
+	;DELAY	18
+	
+	MOV	AX,18
+	MOV	BX,8
+	FPASTEBMP	AX,BX,MAN1
+	MOV	DIRECTION,1
+	
+;CHECK KEY FOR PLAY
+PG_0:
+	CMP	KEY_FLAG,1
+	JNE	PG_0
+	MOV	KEY_FLAG,0
+
+PG_1:
+	CMP	SCAN_CODE,UP_ARROW
+	JNE	PG_2
+	CALL	WALK_UP
+	JMP	PG_0
+
+PG_2:
+	CMP	SCAN_CODE,DOWN_ARROW
+	JNE PG_3
+	CALL	WALK_DOWN
+	JMP	PG_0
+		
+PG_3:
+	CMP	SCAN_CODE,RIGHT_ARROW
+	JNE PG_4
+	CALL	WALK_RIGHT
+	JMP	PG_0
+	
+PG_4:
+	CMP	SCAN_CODE,LEFT_ARROW
+	JNE PG_5
+	CALL	WALK_LEFT
+	JMP	PG_0
+	
+PG_5:
+	CMP	SCAN_CODE,ENTER_KEY
+	JNE	PG_6
+	JMP	PG
+
+PG_6:	
+	CMP	SCAN_CODE,ESC_KEY
+	JE	PLAY_END
+	JMP	PG_0
+
+PLAY_END:	
+	RET
+
+PLAYGAME	ENDP
+
+;=========================================================
+;CHECK CAN WALK THROUGH ?
+;=========================================================
+WALK_UP	PROC
+	CMP	WALK_Y,0
+	JG	WU_1
+	RET
+WU_1:
+	;CALL	RESTORESCREEN
+	CALL	SHOWMAN1
+	MOV	DIRECTION,1
+	DEC	WALK_Y
+	RET
+
+WALK_UP	ENDP
+
+WALK_DOWN	PROC
+	;CMP	WALK_Y,12
+	JL	WD_1
+	RET
+WD_1:	
+	;CALL	RESTORESCREEN
+	CALL	SHOWMAN2
+	MOV	DIRECTION,2
+	INC	WALK_Y
+	RET
+WALK_DOWN	ENDP
+
+WALK_RIGHT	PROC
+	CMP	WALK_X,14
+	JL	WR_1
+	RET
+WR_1:	
+	INC	WALK_X
+	;CALL	RESTORESCREEN
+	CALL	SHOWMAN3
+	MOV	DIRECTION,3
+	RET
+WALK_RIGHT	ENDP
+
+WALK_LEFT	PROC
+	CMP	WALK_X,0
+	JG	WL_1
+	RET
+WL_1:	
+	DEC	WALK_X
+	;CALL	RESTORESCREEN
+	CALL	SHOWMAN4
+	MOV	DIRECTION,4
+	RET
+WALK_LEFT	ENDP
+
+;==========================================================
+;FOR SHOW MAN PICTURE 
+;==========================================================
+SHOWMAN1	PROC
+	CMP	DIRECTION,2
+	JG	SM1_2
+SM1_1:
+	ADD	BX,2
+	FPASTEBMP	AX,BX,CUT1
+	SUB	BX,19
+	FPASTEBMP	AX,BX,MAN1
+	RET
+
+SM1_2:
+	CMP	DIRECTION,3
+	JNE	SM1_3
+	FPASTEBMP	AX,BX,CUT2
+	SUB	BX,14
+	ADD	AX,14
+	FPASTEBMP	AX,BX,MAN1
+	RET
+SM1_3:
+	SUB BX,3
+	FPASTEBMP	AX,BX,CUT2
+	SUB	BX,11
+	FPASTEBMP	AX,BX,MAN1
+	RET
+	
+SHOWMAN1	ENDP
+
+SHOWMAN2	PROC
+	CMP	DIRECTION,2
+	JG	SM2_2
+SM2_1:
+	FPASTEBMP	AX,BX,CUT1
+	ADD	BX,14
+	FPASTEBMP	AX,BX,MAN2
+	RET
+
+SM2_2:
+	CMP	DIRECTION,3
+	JNE	SM2_3
+	FPASTEBMP	AX,BX,CUT2
+	ADD	AX,14
+	FPASTEBMP	AX,BX,MAN2
+	RET
+SM2_3:
+	FPASTEBMP	AX,BX,CUT2
+	;ADD	AX,14
+	FPASTEBMP	AX,BX,MAN2
+	RET	
+
+SHOWMAN2	ENDP
+
+SHOWMAN3	PROC
+	CMP	DIRECTION,3
+	JL	SM3_2
+SM3_1:
+	FPASTEBMP	AX,BX,CUT2
+	ADD	AX,14
+	FPASTEBMP	AX,BX,MAN3
+	RET
+
+SM3_2:
+	CMP	DIRECTION,1
+	JNE	SM3_3
+	ADD	BX,5
+	FPASTEBMP	AX,BX,CUT1
+	SUB BX,5
+	FPASTEBMP	AX,BX,MAN3
+	RET
+
+SM3_3:
+	SUB	BX,5
+	FPASTEBMP	AX,BX,CUT1
+	ADD	BX,19
+	FPASTEBMP	AX,BX,MAN3
+	RET	
+	
+SHOWMAN3	ENDP
+
+SHOWMAN4	PROC
+	CMP	DIRECTION,3
+	JL	SM4_2
+SM4_1:
+	FPASTEBMP	AX,BX,CUT2
+	SUB	AX,14
+	FPASTEBMP	AX,BX,MAN4
+	RET
+
+SM4_2:
+	CMP	DIRECTION,1
+	JNE	SM4_3
+	ADD	BX,5
+	FPASTEBMP	AX,BX,CUT1
+	
+	SUB BX,5
+	SUB AX,14
+	FPASTEBMP	AX,BX,MAN4
+	RET
+
+SM4_3:
+	SUB	BX,5
+	FPASTEBMP	AX,BX,CUT1
+	ADD BX,19
+	;SUB BX,5
+	SUB	AX,14
+	FPASTEBMP	AX,BX,MAN4
+	RET	
+SHOWMAN4	ENDP
+
+;===========================================
+;Other utilities
+;==========================================
+GETKEY	PROC
+	mov	ah,01
+	int	16h
+	RET
+GETKEY	ENDP
+
+CLR_KEY_BUFF PROC
+	mov	ah,0ch
+	mov	al,0
+	int	21h
+	RET
+CLR_KEY_BUFF ENDP			
+
+INCLUDE GRAPHIC.ASM
+INCLUDE LOADBMP.ASM
+INCLUDE UTIL.ASM
+
+END

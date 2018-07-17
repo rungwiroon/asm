@@ -1,0 +1,530 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/Sim.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:10 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>ตัวอย่างโปรแกรม</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font color="#FF0000" size="5"><strong><u>ตัวอย่างโปรแกรม</u></strong></font></p>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#FF00FF">DEMO.ASM</font></p>
+        <p><font color="#FF00FF">; Program Show Data Call Int 21h</font></p>
+        <p><font color="#FF00FF">;Function 09h</font></p>
+        <table border="0">
+            <tr>
+                <td><font color="#0000FF">Demol</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">SegMent</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Assume CS:DEMO1;DS:DEMO1</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Org 100h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Begin : </font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Move DX,Offset String</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Int 21h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Int 20h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">String :</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">DB ' Program assrembly
+                is easy $' </font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Demol</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Ends</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">End
+                Begin</font></td>
+            </tr>
+        </table>
+        <p>&nbsp;</p>
+        <hr>
+    </blockquote>
+</blockquote>
+
+<p><font color="#FF0000" size="5" face="Times New Roman"><strong><u></u></strong></font>&nbsp;</p>
+
+<blockquote>
+    <blockquote>
+        <p dir="ltr"><font color="#FF0080">DeMO3.ASM</font></p>
+        <p dir="ltr"><font color="#FF0080">; Example program uses
+        interrupt dos ( 21h )</font></p>
+        <p dir="ltr"><font color="#FF0080">; Function 09h </font></p>
+        <table border="0">
+            <tr>
+                <td><font color="#0000FF">Show</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">equ 09h</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; display output
+                function 09h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Calldos</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">equ 21h</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; Dos interrupt numbaer</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Data_Seg </font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">Segment
+                </font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Stirng </font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">Db
+                ' Sample show string on screen '</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Db 0dh,0ah</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Db '$'</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Data_Seg</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Ends</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Code_Seg</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">Segment</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">;
+                define code segment</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Main</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">proc far</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">assume CS:Code_Seg,DS:Code_Seg</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Begin :</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; Begin execution
+                address</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">; Setup stack for
+                return</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">push ds</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; Save old data segment</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">sub ax,ax</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">;
+                intial zero ax</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">; Set Ds registerto
+                Current data Segment</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">mov ax,Data_Seg</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">mov
+                ds,ax</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">; Show characters form
+                string on screen</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">mov ah,show</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">lea dx,string</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">;
+                Load Offset Of String</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">int calldos</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">ret</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Main</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">Endp</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF">Code_Seg</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF" face="Times New Roman">Ends</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; end of code segment</font></td>
+            </tr>
+            <tr>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">End Begin</font></td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF"></font>&nbsp;</td>
+                <td><font color="#0000FF">; end assembly</font></td>
+            </tr>
+        </table>
+        <p dir="ltr">&nbsp;</p>
+        <hr>
+        <p dir="ltr"><font color="#FF0000" size="5"><strong><u>ตัวอย่างการเรียกใช้
+        Macro.</u></strong></font></p>
+        <table border="0">
+            <tr>
+                <td><font color="#008080">Clear</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">Macro</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">;near</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">push ax</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov al,06h</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">; scroll up function</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov al,0</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">;
+                code to blank sereen</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov ch,0</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">;
+                upper left row</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov cl,0 </font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">;
+                lower right row</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov dh,24</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">; lower right column</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov dl,79</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">;
+                </font><font color="#008080">lower right column</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov bh,7</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">; blank line attribute</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">int 10h</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">;
+                video ROM call</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">pop ax</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">EndM</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+            </tr>
+        </table>
+        <p dir="ltr">&nbsp;</p>
+        <table border="0">
+            <tr>
+                <td><font color="#008080">printstr</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">Macro string</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov ah,09h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov dx,offset string</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">int 21h</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">EndM</font></td>
+            </tr>
+        </table>
+        <p dir="ltr">&nbsp;</p>
+        <table border="0">
+            <tr>
+                <td><font color="#008080">data_s</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">segment</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">str</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">db ' Example MACRO .$'</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">data_s</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">ends</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">code_s</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">segment</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">include macro.inc</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">Main</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">proce far</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">assume cs:code_s,ds:data_s</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">string :</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">push ds</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">pub ax,ax</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov ax,data_s</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">mov ds,ax</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">clrscr</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">printstr str</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">ret</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">Main</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080" face="Times New Roman">Endp</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080">code_s</font></td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">Ends</font></td>
+            </tr>
+            <tr>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080"></font>&nbsp;</td>
+                <td><font color="#008080">End start</font></td>
+            </tr>
+        </table>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p>&nbsp;</p>
+    <p align="center"><img src="line2.gif" width="435"
+    height="15"></p>
+    <p align="center"><a href="Menu.html"><img src="Back.gif"
+    border="0" width="83" height="28"></a></p>
+</blockquote>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/Sim.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:10 GMT -->
+</html>

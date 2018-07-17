@@ -1,0 +1,4832 @@
+Service : BC_ASC2INT
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an ASCIIZ string to an unsigned integer
+
+Parms:
+      BL <-- base from which to convert (2-36)
+   DS:SI <-- pointer to string
+   -------
+      AX = unsigned integer (0-65,535)
+
+Description:
+
+The BC_ASC2INT service converts an ASCIIZ string to an unsigned
+integer value. The conversion stops at the first character which
+cannot be construed as being part of the number.
+
+Any reasonable base may be specified, giving this service
+considerable flexibility. More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+
+
+
+Service : BC_ASC2LONG
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an ASCIIZ string to an unsigned long int
+
+Parms:
+      BL <-- base from which to convert (2-36)
+   DS:SI <-- pointer to string
+   -------
+   DX,AX = unsigned long integer (0-4,294,967,295)
+
+Description:
+
+The BC_ASC2LONG service converts an ASCIIZ string to an unsigned
+long integer value. The conversion stops at the first character
+which cannot be construed as being part of the number.
+
+Any reasonable base may be specified, giving this service
+considerable flexibility. More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Service : BC_ASC2SINT
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an ASCIIZ string to a signed integer
+
+Parms:
+      BL <-- base from which to convert (2-36)
+   DS:SI <-- pointer to string
+   -------
+      AX = unsigned integer (-32768 to 32767)
+
+Description:
+
+The BC_ASC2SINT service converts an ASCIIZ string to a signed
+integer value. The conversion stops at the first character which
+cannot be construed as being part of the number.
+
+Any reasonable base may be specified, giving this service
+considerable flexibility. More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Note that negative numbers are frequently represented as
+unsigned numbers when a base other than 10 (decimal) is used. If
+you wish to follow that convention, simply use BC_ASC2INT
+instead of this routine.
+
+Service : BC_ASC2SLONG
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an ASCIIZ string to a signed long integer
+
+Parms:
+      BL <-- base from which to convert (2-36)
+   DS:SI <-- pointer to string
+   -------
+   DX,AX = signed long int (-2,147,483,648 to 2,147,483,647)
+
+Description:
+
+The BC_ASC2SLONG service converts an ASCIIZ string to a signed
+long integer value. The conversion stops at the first character
+which cannot be construed as being part of the number.
+
+Any reasonable base may be specified, giving this service
+considerable flexibility. More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Note that negative numbers are frequently represented as
+unsigned numbers when a base other than 10 (decimal) is used. If
+you wish to follow that convention, simply use BC_ASC2LONG
+instead of this routine.
+
+Service : BC_INT2ASC
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an unsigned integer to an ASCIIZ string
+
+Parms:
+      AX <-- unsigned integer (0-65,535)
+      BL <-- desired base (2-36)
+   ES:DI <-- pointer to string buffer (recommend 17 bytes)
+
+Description:
+
+The BC_INT2ASC service converts an integer value to an ASCIIZ
+number of a specified base. The integer is presumed to be
+unsigned, giving a range of 0-65,535.
+
+More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+
+
+
+Service : BC_LONG2ASC
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts an unsigned long int to an ASCIIZ string
+
+Parms:
+   DX,AX <-- unsigned long integer (0-4,294,967,295)
+      BL <-- desired base (2-36)
+   ES:DI <-- pointer to string buffer (recommend 33 bytes)
+
+Description:
+
+The BC_LONG2ASC service converts an unsigned long integer value
+to an ASCIIZ number of a specified base.
+
+More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Service : BC_SINT2ASC
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts a signed integer to an ASCIIZ string
+
+Parms:
+      AX <-- signed integer (-32768 to 32767)
+      BL <-- desired base (2-36)
+   ES:DI <-- pointer to string buffer (recommend 18 bytes)
+
+Description:
+
+The BC_SINT2ASC service converts an integer value to an ASCIIZ
+number of a specified base. The integer is presumed to be
+signed, giving a range of -32,768 to 32,767.
+
+More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Note that negative numbers are frequently represented as
+unsigned numbers when a base other than 10 (decimal) is used. If
+you wish to follow that convention, simply use BC_INT2ASC
+instead of this routine.
+
+Service : BC_SLONG2ASC
+
+Module  : Base Conversion Services
+
+Compat  : Any
+
+Purpose : Converts a signed long integer to an ASCIIZ string
+
+Parms:
+   DX,AX <-- signed long int (-2,147,483,648 to 2,147,483,647)
+      BL <-- desired base (2-36)
+   ES:DI <-- pointer to string buffer (recommend 34 bytes)
+
+Description:
+
+The BC_SLONG2ASC service converts a signed long integer value to
+an ASCIIZ number of a specified base.
+
+More commonly-used bases include:
+
+     2     binary
+     8     octal
+    10     decimal
+    16     hex
+
+Note that negative numbers are frequently represented as
+unsigned numbers when a base other than 10 (decimal) is used. If
+you wish to follow that convention, simply use BC_LONG2ASC
+instead of this routine.
+
+Service : BK_GETCAPS
+
+Module  : Keyboard
+
+Compat  : BIOS with enhanced keyboard support
+
+Purpose : gets the CapsLock state
+
+Parms:
+   -------
+      AX = 0 if off, 0FFFFh if on
+
+Description:
+
+The BK_GETCAPS service tells you the current CapsLock state.
+
+Note that the BK services require a modern BIOS with enhanced
+keyboard support. If your program needs to run on older machines
+(those made before the 101-key keyboard came out), use the BKO
+services instead.
+
+
+
+Service : BK_GETKEY
+
+Module  : Keyboard
+
+Compat  : BIOS with enhanced keyboard support
+
+Purpose : gets a key
+
+Parms:
+      AL <-- bit field (see description)
+   -------
+      AX = key code (- scan code, 0 no key, + ASCII code)
+      Flags = ZF if no key, NZ if got a key
+
+Description:
+
+The BK_GETKEY service gets a key from the keyboard. It provides
+an assortment of options which may be selected by setting the
+appropriate bit in AL before calling the routine:
+
+   Bit    Meaning
+   ===    =======
+    0     wait for a key to be pressed
+    1     ignore extended ASCII keys (function keys, etc)
+    2     capitalize letters (only ASCII 97-122 affected)
+    3     clear keyboard buffer before accepting a key
+   4-7    RESERVED for future expansion. Set to zero.
+
+The result will be returned in AX. If there was no key, AX will
+be zero. If there was a normal key, its ASCII code will be
+returned. If there was an extended ASCII key, the scan code of
+the key will be returned as a negative number.
+
+Note that the BK services require a modern BIOS with enhanced
+keyboard support. If your program needs to run on older machines
+(those made before the 101-key keyboard came out), use the BKO
+services instead.
+
+Service : BK_GETNUM
+
+Module  : Keyboard
+
+Compat  : BIOS with enhanced keyboard support
+
+Purpose : gets the NumLock state
+
+Parms:
+   -------
+      AX = 0 if off, 0FFFFh if on
+
+Description:
+
+The BK_GETNUM service tells you the current NumLock state.
+
+Note that the BK services require a modern BIOS with enhanced
+keyboard support. If your program needs to run on older machines
+(those made before the 101-key keyboard came out), use the BKO
+services instead.
+
+Service : BKO_GETCAPS
+
+Module  : Keyboard
+
+Compat  : BIOS
+
+Purpose : gets the CapsLock state
+
+Parms:
+   -------
+      AX = 0 if off, 0FFFFh if on
+
+Description:
+
+The BKO_GETCAPS service tells you the current CapsLock state.
+
+Note that the BKO services provide compatibility across the
+entire range of keyboards. As such, they do not provide access
+to enhanced key codes (e.g., F11 and F12). If your program needs
+access to enhanced key codes, use the BK services instead.
+
+
+
+Service : BKO_GETKEY
+
+Module  : Keyboard
+
+Compat  : BIOS with enhanced keyboard support
+
+Purpose : gets a key
+
+Parms:
+      AL <-- bit field (see description)
+   -------
+      AX = key code (- scan code, 0 no key, + ASCII code)
+      Flags = ZF if no key, NZ if got a key
+
+Description:
+
+The BKO_GETKEY service gets a key from the keyboard. It provides
+an assortment of options which may be selected by setting the
+appropriate bit in AL before calling the routine:
+
+   Bit    Meaning
+   ===    =======
+    0     wait for a key to be pressed
+    1     ignore extended ASCII keys (function keys, etc)
+    2     capitalize letters (only ASCII 97-122 affected)
+    3     clear keyboard buffer before accepting a key
+   4-7    RESERVED for future expansion. Set to zero.
+
+The result will be returned in AX. If there was no key, AX will
+be zero. If there was a normal key, its ASCII code will be
+returned. If there was an extended ASCII key, the scan code of
+the key will be returned as a negative number.
+
+Note that the BKO services provide compatibility across the
+entire range of keyboards. As such, they do not provide access
+to enhanced key codes (e.g., F11 and F12). If your program needs
+access to enhanced key codes, use the BK services instead.
+
+Service : BKO_GETNUM
+
+Module  : Keyboard
+
+Compat  : BIOS
+
+Purpose : gets the NumLock state
+
+Parms:
+   -------
+      AX = 0 if off, 0FFFFh if on
+
+Description:
+
+The BKO_GETNUM service tells you the current NumLock state.
+
+Note that the BKO services provide compatibility across the
+entire range of keyboards. As such, they do not provide access
+to enhanced key codes (e.g., F11 and F12). If your program needs
+access to enhanced key codes, use the BK services instead.
+
+Service : BV_CHROUT
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Displays a character on the screen
+
+Parms:
+      AL <-- character to display
+
+Description:
+
+The BV_CHROUT routine displays a character on the screen.
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : BV_CLEOLN
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Clears to the end of the line
+
+Parms:
+   none
+
+Description:
+
+The BV_CLEOLN service clears from the current cursor position to
+the end of the current screen line, inclusive.
+
+Redirection, if any, is ignored.
+
+Service : BV_CLS
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Clears the screen
+
+Parms:
+   none
+
+Description:
+
+The BV_CLS service clears the screen and homes the cursor to the
+upper left corner.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : BV_COLOR
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Sets the default text color
+
+Parms:
+      AL <-- default color
+
+Description:
+
+The BV_COLOR service sets the default text color. A color
+attribute table is given in the ASMWIZ.DOC file. In general,
+however, the background is in the high nybble and ranges 0-7 in
+text modes, 0 in graphics modes; the foreground is in the low
+nybble and ranges 0-7 in text modes, 0-x in graphics modes.
+
+Redirection, if any, is ignored.
+
+Service : BV_CRLF
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Displays a <CR><LF> (carriage return and linefeed)
+
+Parms:
+   none
+
+Description:
+
+The BV_CRLF routine displays a carriage return and linefeed on
+the screen.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : BV_DELLINE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Deletes the current screen row
+
+Parms:
+   none
+
+Description:
+
+The BV_DELLINE service deletes the row on which the cursor is
+placed. Any rows beneath it are moved up and the bottom line of
+the screen is cleared to a row of spaces in the current screen
+colors.
+
+Redirection, if any, is ignored.
+
+Service : BV_FIXCOLOR
+
+Module  : BIOS Video Services
+
+Compat  : Any
+
+Purpose : Tells the BV services to convert color to monochrome
+
+Parms:
+      AL <-- whether to convert to mono (0 no, 1 yes)
+
+Description:
+
+The BV_FIXCOLOR service tells the BIOS Video services whether to
+convert colors to their monochrome equivalents. If not, the
+colors will remain as you originally specified. If so, the
+colors will be converted to appropriate values for use on a
+monochrome display.
+
+The color-to-mono translation attempts to mimic the original
+display as closely as possible. It analyzes the foreground and
+background colors by their intensity. The results are translated
+to white on black, bright white on black, or black on white. The
+"blink" attribute is preserved. If the original foreground was
+identical to the background (invisible characters), the result
+will be black on black.
+
+See also the MI_GETSCREEN service, which allows you to
+automatically detect what kind of display is in use.
+
+Service : BV_GETCOLOR
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Gets the default text color
+
+Parms:
+   -------
+      AL = default color
+
+Description:
+
+The BV_GETCOLOR service gets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-7 in text modes, 0 in graphics modes; the foreground is
+in the low nybble and ranges 0-7 in text modes, 0-x in graphics
+modes.
+
+Redirection, if any, is ignored.
+
+Service : BV_MODE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Gets the default screen mode
+
+Parms:
+   -------
+      AL = mode
+
+Description:
+
+The BV_GETMODE service gets the current screen mode. A table of
+screen modes is given in the ASMWIZ.DOC file.
+
+
+
+
+Service : BV_HIDECURSOR
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Hides the cursor
+
+Parms:
+   none
+
+Description:
+
+The BV_HIDECURSOR service hides the cursor, making it invisible.
+This does not affect normal cursor operation.
+
+Redirection, if any, is ignored.
+
+Service : BV_INSLINE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Inserts a line at the current screen row
+
+Parms:
+   none
+
+Description:
+
+The BV_INSLINE service inserts a row at the current cursor
+location. Any rows beneath it are moved down and the new line
+screen is cleared to a row of spaces in the current screen
+colors.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : BV_LOCATE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Sets the cursor position
+
+Parms:
+      DH <-- row (1-25)
+      DL <-- column (1-40/80)
+
+Description:
+
+The BV_LOCATE service sets the cursor position.
+
+Redirection, if any, is ignored.
+
+Service : BV_MODE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Sets the screen mode
+
+Parms:
+      AL <-- screen mode (0-7, 13-19, depending on adapter)
+
+Description:
+
+The BV_MODE routine sets the screen mode.  This may be:
+
+     Mode  Resolu.  Type  Colr  Use        Adapter(s)
+
+       0   40x25    b&w     16  text       CGA, EGA, VGA
+       1   40x25    color   16  text       CGA, EGA, VGA
+       2   80x25    b&w     16  text       CGA, EGA, VGA
+ def-  3   80x25    color   16  text       CGA, EGA, VGA
+       4   320x200  color    4  graphics   CGA, EGA, VGA
+       5   320x200  b&w      4  graphics   CGA, EGA, VGA
+       6   640x200  color    2  graphics   CGA, EGA, VGA
+ mda-  7   80x25    b&w      -  text       MDA, EGA, VGA
+      13   320x200  color   16  graphics   EGA, VGA
+      14   640x200  color   16  graphics   EGA, VGA
+      15   640x350  mono     -  graphics   EGA, VGA
+      16   640x350  color   16  graphics   EGA, VGA
+      17   640x480  color    2  graphics   VGA
+      18   640x480  color   16  graphics   VGA
+      19   320x200  color  256  graphics   VGA
+
+Redirection, if any, is ignored.
+
+Service : BV_POPUP
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Displays a pop-up window on the screen
+
+Parms:
+   DS:DX <-- pointer to parameter list
+
+Description:
+
+The BV_POPUP service displays a pop-up window on the screen. A
+variety of frames is available for the window. Titles are
+optional and will be left- justified in the top bar of the
+window if supplied.
+
+Frame types are as follows:
+
+   0    none (blank)
+   1    single lines
+   2    double lines
+   3    single horizontal lines, double vertical lines
+   4    double horizontal lines, single vertical lines
+
+The parameter list should look like this:
+
+Y1           db ?            ; top row of window
+X1           db ?            ; left column of window
+Y2           db ?            ; bottom row of window
+X2           db ?            ; right column of window
+FRAMETYPE    db ?            ; frame type
+FRAMECOLOR   db ?            ; frame color
+TITLE        dw ?            ; offset (DS:) of ASCIIZ title
+                             ; use 0FFFFh for no title
+
+Redirection, if any, is ignored.
+
+Service : BV_SHOWCURSOR
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Shows the cursor
+
+Parms:
+   none
+
+Description:
+
+The BV_SHOWCURSOR service shows the cursor, making it visible.
+NOTE: This service may change the cursor shape if used before
+BV_HIDECURSOR.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : BV_STROUT
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Displays a string on the screen
+
+Parms:
+   DS:DX <-- ptr to string to display
+
+Description:
+
+The BV_STROUT routine displays a string on the screen. The
+string must be in ASCIIZ format (NUL terminated).
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+Service : BV_WHERE
+
+Module  : BIOS Video Services
+
+Compat  : BIOS
+
+Purpose : Gets the cursor position
+
+Parms:
+   -------
+      DH = row (1-25)
+      DL = column (1-40/80)
+
+Description:
+
+The BV_WHERE service gets the cursor position.
+
+Redirection, if any, is ignored.
+
+Service : CG_CHROUT
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a character on the screen
+
+Parms:
+      AL <-- character to display
+
+Description:
+
+The CG_CHROUT routine displays a character on the screen. The
+screen must be in one of the CGA graphics modes (video modes
+4-6).
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : CG_CLEOLN
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Clears to the end of the line
+
+Parms:
+   none
+
+Description:
+
+The CG_CLEOLN service clears from the current cursor position to
+the end of the current screen line, inclusive. The screen must
+be in one of the CGA graphics modes (video modes 4-6).
+
+Redirection, if any, is ignored.
+
+Service : CG_CLS
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Clears the screen
+
+Parms:
+   none
+
+Description:
+
+The CG_CLS service clears the screen and homes the cursor to the
+upper left corner. The screen must be in one of the CGA graphics
+modes (video modes 4-6).
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : CG_COLOR
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the default text color
+
+Parms:
+      AL <-- default color
+
+Description:
+
+The CG_COLOR service sets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-3; the foreground is in the low nybble and also ranges
+0-3. The actual colors displayed depend on the palette setting.
+
+Redirection, if any, is ignored.
+
+Service : CG_CRLF
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a <CR><LF> (carriage return and linefeed)
+
+Parms:
+   none
+
+Description:
+
+The CG_CRLF routine displays a carriage return and linefeed on
+the screen. The screen must be in one of the CGA graphics modes
+(video modes 4-6).
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : CG_GETCOLOR
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the default text color
+
+Parms:
+   -------
+      AL = default color
+
+Description:
+
+The CG_GETCOLOR service gets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-3; the foreground is in the low nybble and also ranges
+0-3. The actual colors displayed depend on the palette setting.
+
+Redirection, if any, is ignored.
+
+Service : CG_INIT
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Initializes the CGA Graphics Services
+
+Parms:
+   none
+
+Description:
+
+The CG_INIT routine initializes the CGA Graphics Services. It
+should be used once in your program, before any other CGA
+Graphics Services are called.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : CG_LOCATE
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the cursor position
+
+Parms:
+      DH <-- row (1-25)
+      DL <-- column (1-40/80)
+
+Description:
+
+The CG_LOCATE service sets the cursor position. The screen must
+be in one of the CGA graphics modes (video modes 4-6).
+
+Redirection, if any, is ignored.
+
+Service : CG_MODE
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the screen mode
+
+Parms:
+      AL <-- screen mode (4-6)
+
+Description:
+
+The CG_MODE routine sets the screen mode. This may be any of the
+following:
+
+     Mode  Resolu.  Type  Colr  Use        Adapter(s)
+
+       4   320x200  color    4  graphics   CGA, EGA, VGA
+       5   320x200  b&w      4  graphics   CGA, EGA, VGA
+       6   640x200  color    2  graphics   CGA, EGA, VGA
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : CG_STROUT
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a string on the screen
+
+Parms:
+   DS:DX <-- ptr to the string to display
+
+Description:
+
+The CG_STROUT routine displays a string on the screen. The
+string must be in ASCIIZ (NUL terminated) format. The screen
+must be in one of the CGA graphics modes (video modes 4-6).
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+Service : CG_WHERE
+
+Module  : CGA Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the cursor position
+
+Parms:
+   -------
+      DH = row (1-25)
+      DL = column (1-40/80)
+
+Description:
+
+The CG_WHERE service gets the cursor position. The screen must
+be in one of the CGA graphics modes (video modes 4-6).
+
+Redirection, if any, is ignored.
+
+Service : DF_CLOSE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Closes a file
+
+Parms:
+      BX <-- (virtual) file handle
+
+Description:
+
+The DF_CLOSE service closes a file. This causes the disk
+information associated with the file to be updated and the file
+handle to be freed. You should use DF_CLOSE or DF_DONE to close
+all files before your program terminates.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. The AX register may be modified regardless of
+whether an error occurs. Possible errors include specification
+of an invalid handle and (if critical error handling is turned
+on) inability to update the disk.
+
+
+
+
+Service : DF_DONE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Closes all open files
+
+Parms:
+   none
+
+Description:
+
+The DF_DONE service closes all open file. This causes the disk
+information associated with the files to be updated and the file
+handles to be freed. You should use DF_CLOSE or DF_DONE to close
+all files before your program terminates.
+
+If an error occurs at any point, the carry flag is set and AX
+contains the error code. The AX register may be modified
+regardless of whether an error occurs. The only error possible
+is inability to update the disk (only returned if critical error
+handling is turned on).
+
+Service : DF_FLUSH
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Flushes a file to disk
+
+Parms:
+      BX <-- (virtual) file handle
+
+Description:
+
+The DF_FLUSH service flushes a file. This causes the disk
+information associated with the file to be updated as if the
+file had been closed, only faster. This is typically used to
+make sure a file is properly updated to its current status, so
+it won't disappear entirely if the power goes off or a similar
+disaster strikes.
+
+For DOS versions prior to 3.3, there must be at least one free
+file handle for this service to work, because a temporary handle
+is needed. For later DOS versions, there is no such requirement.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. The AX register may be modified regardless of
+whether an error occurs. Possible errors include specification
+of an invalid handle and (if critical error handling is turned
+on) inability to update the disk.
+
+
+
+
+Service : DF_GETTIME
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Gets a file's time/date stamp
+
+Parms:
+      BX <-- (virtual) file handle
+   -------
+      AX = time (DOS internal format)
+      DX = date (DOS internal format)
+
+Description:
+
+The DF_GETTIME service gets a file's time/date stamp.
+
+If an error occurs, the carry flag is set and AX contains the
+error code.
+
+Service : DF_HANDLE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Gets the DOS handle of a file
+
+Parms:
+      BX <-- (virtual) file handle
+   -------
+      BX = (DOS) file handle
+
+Description:
+
+The DF_HANDLE service gets the DOS file handle, given the
+virtual file handle used by the AsmWiz services. If the file has
+an input buffer, the buffer is flushed so that any operations
+you do using the DOS file handle will not cause the AsmWiz
+services to report incorrect information.
+
+Note that the correlation between the virtual file handle and
+DOS file handle is not guaranteed to remain constant. Any time
+you use an AsmWiz file handling service, the DOS file handle for
+any given virtual file handle may change. This is required to
+allow for the future implementation of the ability to keep an
+indefinite number of files open at the same time under any DOS
+version.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. The only possible error is the specification of an
+invalid virtual file handle.
+
+
+
+
+Service : DF_INIT
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Initializes the File Services
+
+Parms:
+      DX <-- 0 (zero)
+
+Description:
+
+The DF_INIT service initializes the File Services. The DX
+register currently must be zero. It will later be used to pass
+the PSP segment if you want extended file handles, which will
+allow an indefinite number of files to be open at one time.
+
+Service : DF_LOCATE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Sets the location of a file's read/write pointer
+
+Parms:
+      BX <-- (virtual) file handle
+      CL <-- location method (0-2)
+   DX,AX <-- location offset
+
+Description:
+
+The DF_LOCATE service sets the location of a file's read/write
+pointer. This tells the File Services where the next read or
+write should begin. You may specify any of three location
+methods:
+
+   0    offset from the start of the file    absolute offset
+   1    offset from the current location     relative offset
+   2    offset from the end of the file      relative offset
+
+The "offset from the end of the file" method specifies an offset
+at, or past, the current end of the file. It is commonly used
+with an offset of zero to set up a file for an append operation.
+It can also be used in conjunction with DF_WHERE in order to get
+the size of the file.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. Possible errors include specification of an invalid
+handle and (if critical error handling is turned on) inability
+to access the file.
+
+Service : DF_OPEN
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Opens a file for access
+
+Parms:
+      AX <-- access method: how to open the file
+   DS:DX <-- pointer to ASCIIZ filename
+      CX <-- input buffer length (use 0 for no buffer)
+   ES:SI <-- pointer to input buffer, if any
+   -------
+      BX = (virtual) file handle
+
+Description:
+
+The DF_OPEN service opens a file for access. File sharing (for
+networks and multitasking) is supported automatically if the DOS
+version is capable of handling it ("deny write" is used). You
+must specify the access method in AX, as follows:
+
+   bit 0    allow Reading from the file
+   bit 1    allow Writing to the file
+   bit 2    Create a new file or truncate an existing one to zero bytes
+   bit 3    use Text mode (as opposed to the normal Binary mode)
+
+Unused bits should be set to zero, to allow compatibility with
+future versions of AsmWiz. For instance, to open and read from
+an existing text file, you might use AX = 1001b (1001 binary is
+9 in decimal or hex).
+
+Text mode is handy for use with ASCII text files. It affects
+reading from and writing to the file. If text mode is set, reads
+from the file will stop when a carriage return/linefeed sequence
+is encountered (or if a specified maximum number of characters
+have been read) and a NUL character will be added to convert the
+buffer to a string. Disk writing in this mode expects strings
+(rather than using a byte count) and will automatically add a
+carriage return/linefeed sequence. Control-Z is not used as an
+end of file indicator, since such usage is archaic and
+inappropriate in MS-DOS.
+
+Note that if you are reading from a file using text mode, you
+must specify an input buffer. An error code will be returned if
+you do otherwise.
+
+Note that the file handle returned is an index into an internal
+file table and is not a normal DOS file handle. If you need to
+find out the actual file handle used, you can get it from the
+DF_HANDLE service.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. The AX register may be modified regardless of
+whether an error occurs. The error code will be -2 if you
+attempt to read from a file that was opened in text mode without
+a buffer. For a list of other possible errors, see the end of
+the ASMWIZ.DOC file.
+
+Service : DF_READ
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Reads from a file
+
+Parms:
+      BX <-- (virtual) file handle
+      CX <-- bytes to read (if text mode, max bytes to read)
+   DS:DX <-- pointer to read buffer
+   -------
+      AX = bytes actually read (if NC and not text mode)
+
+Description:
+
+The DF_READ service reads from a file.
+
+For files that were opened in text mode, the read operation will
+stop on encountering a carriage return / linefeed sequence or
+after having read the specified maximum number of bytes. The
+CR/LF is not stored in the result. The result will be always be
+converted to ASCIIZ (null-terminated string format), so your
+actual buffer must be at least one byte larger than the
+specified maximum number of bytes. If nulls are encountered in
+the input stream, they will be converted to spaces. The
+Control-Z code is not used as an end of file indicator and will
+be read in like any other character.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. The AX register may be modified regardless of
+whether an error occurs. For a list of possible errors, see the
+end of the ASMWIZ.DOC file.
+
+Service : DF_TIME
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Sets a file's time/date stamp
+
+Parms:
+      BX <-- (virtual) file handle
+      AX <-- time (DOS internal format)
+      DX <-- date (DOS internal format)
+
+Description:
+
+The DF_TIME service sets a file's time/date stamp.
+
+If an error occurs, the carry flag is set and AX contains the
+error code.
+
+
+
+
+Service : DF_WHERE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Gets the location of a file's read/write pointer
+
+Parms:
+      BX <-- (virtual) file handle
+   -------
+   DX,AX = location offset
+
+Description:
+
+The DF_WHERE service gets the location of a file's read/write
+pointer, which tells you where the next read or write will
+begin.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. Possible errors include specification of an invalid
+handle and (if critical error handling is turned on) inability
+to access the file.
+
+Service : DF_WRITE
+
+Module  : File Services
+
+Compat  : DOS
+
+Purpose : Writes to a file
+
+Parms:
+      BX <-- (virtual) file handle
+      CX <-- bytes to write (if not text mode)
+   DS:DX <-- pointer to write buffer
+
+Description:
+
+The DF_WRITE service writes to a file.
+
+For files that were opened in text mode, the write operation
+expects an ASCIIZ string. It writes the string to the file
+without the null terminator, then writes a carriage return /
+linefeed sequence.
+
+If an error occurs, the carry flag is set and AX contains the
+error code. For a list of possible errors, see the end of the
+ASMWIZ.DOC file. If there was no error code returned by DOS but
+the entire buffer wasn't written, an error code of -1 (negative
+one) is returned.
+
+Service : DK_GETKEY
+
+Module  : Keyboard
+
+Compat  : DOS
+
+Purpose : gets a key
+
+Parms:
+      AL <-- bit field (see description)
+   -------
+      AX = key code (- scan code, 0 no key, + ASCII code)
+      Flags = ZF if no key, NZ if got a key
+
+Description:
+
+The DK_GETKEY service gets a key from the keyboard. It provides
+an assortment of options which may be selected by setting the
+appropriate bit in AL before calling the routine:
+
+   Bit    Meaning
+   ===    =======
+    0     wait for a key to be pressed
+    1     ignore extended ASCII keys (function keys, etc)
+    2     capitalize letters (only ASCII 97-122 affected)
+    3     clear keyboard buffer before accepting a key
+   4-7    RESERVED for future expansion. Set to zero.
+
+The result will be returned in AX. If there was no key, AX will
+be zero. If there was a normal key, its ASCII code will be
+returned. If there was an extended ASCII key, the scan code of
+the key will be returned as a negative number.
+
+Service : DV_CHROUT
+
+Module  : DOS Video Services
+
+Compat  : DOS
+
+Purpose : Displays a character on the screen
+
+Parms:
+      AL <-- character to display
+
+Description:
+
+The DV_CHROUT routine displays a character on the screen.
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+
+
+
+Service : DV_CLEOLN
+
+Module  : DOS Video Services
+
+Compat  : DOS (with ANSI)
+
+Purpose : Clears to the end of the line
+
+Parms:
+   none
+
+Description:
+
+The DV_CLEOLN service clears from the current cursor position to
+the end of the current screen line, inclusive. It requires ANSI.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : DV_CLS
+
+Module  : DOS Video Services
+
+Compat  : DOS (with ANSI)
+
+Purpose : Clears the screen
+
+Parms:
+   none
+
+Description:
+
+The DV_CLS service clears the screen and homes the cursor to the
+upper left corner. It requires ANSI.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+
+
+
+Service : DV_COLOR
+
+Module  : DOS Video Services
+
+Compat  : DOS (with ANSI)
+
+Purpose : Sets the default text color
+
+Parms:
+      AL <-- default color
+
+Description:
+
+The DV_COLOR service sets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-7 in text modes, 0 in graphics modes; the foreground is
+in the low nybble and ranges 0-7 in text modes, 0-x in graphics
+modes.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : DV_CRLF
+
+Module  : DOS Video Services
+
+Compat  : DOS
+
+Purpose : Displays a <CR><LF> (carriage return and linefeed)
+
+Parms:
+   none
+
+Description:
+
+The DV_CRLF routine displays a carriage return and linefeed on
+the screen.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+
+
+
+Service : DV_DELLINE
+
+Module  : DOS Video Services
+
+Compat  : DOS (with extended ANSI)
+
+Purpose : Deletes the current screen row
+
+Parms:
+   none
+
+Description:
+
+The DV_DELLINE service deletes the row on which the cursor is
+placed. Any rows beneath it are moved up and the bottom line of
+the screen is cleared to a row of spaces in the current screen
+colors.
+
+This service is only available under extended versions of the
+ANSI driver, such as NANSI.SYS and ZANSI.SYS. It requires the
+use of an ANSI code which is not implemented in the standard IBM
+subset of the ANSI protocol.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : DV_FIXCOLOR
+
+Module  : DOS Video Services
+
+Compat  : Any
+
+Purpose : Tells the DV services to convert color to monochrome
+
+Parms:
+      AL <-- whether to convert to mono (0 no, 1 yes)
+
+Description:
+
+The DV_FIXCOLOR service tells the DOS Video services whether to
+convert colors to their monochrome equivalents. If not, the
+colors will remain as you originally specified. If so, the
+colors will be converted to appropriate values for use on a
+monochrome display.
+
+The color-to-mono translation attempts to mimic the original
+display as closely as possible. It analyzes the foreground and
+background colors by their intensity. The results are translated
+to white on black, bright white on black, or black on white. The
+"blink" attribute is preserved. If the original foreground was
+identical to the background (invisible characters), the result
+will be black on black.
+
+See also the MI_GETSCREEN service, which allows you to
+automatically detect what kind of display is in use.
+
+Service : DV_INSLINE
+
+Module  : DOS Video Services
+
+Compat  : DOS (with extended ANSI)
+
+Purpose : Inserts a line at the current screen row
+
+Parms:
+   none
+
+Description:
+
+The DV_INSLINE service inserts a row at the current cursor
+location. Any rows beneath it are moved down and the new line
+screen is cleared to a row of spaces in the current screen
+colors.
+
+This service is only available under extended versions of the
+ANSI driver, such as NANSI.SYS and ZANSI.SYS. It requires the
+use of an ANSI code which is not implemented in the standard IBM
+subset of the ANSI protocol.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+
+
+
+Service : DV_LOCATE
+
+Module  : DOS Video Services
+
+Compat  : DOS (with ANSI)
+
+Purpose : Sets the cursor position
+
+Parms:
+      DH <-- row (1-25)
+      DL <-- column (1-40/80)
+
+Description:
+
+The DV_LOCATE service sets the cursor position. It requires
+ANSI.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : DV_MODE
+
+Module  : DOS Video Services
+
+Compat  : DOS (with ANSI)
+
+Purpose : Sets the screen mode
+
+Parms:
+      AL <-- screen mode (0-6)
+
+Description:
+
+The DV_MODE routine sets the screen mode. This may be any of the
+following:
+
+     Mode  Resolu.  Type  Colr  Use        Adapter(s)
+
+       0   40x25    b&w     16  text       CGA, EGA, VGA
+       1   40x25    color   16  text       CGA, EGA, VGA
+       2   80x25    b&w     16  text       CGA, EGA, VGA
+ def-  3   80x25    color   16  text       CGA, EGA, VGA
+       4   320x200  color    4  graphics   CGA, EGA, VGA
+       5   320x200  b&w      4  graphics   CGA, EGA, VGA
+       6   640x200  color    2  graphics   CGA, EGA, VGA
+
+Additional modes may be available, depending on the ANSI driver
+used. See description of the BV_MODE service for information on
+these additional modes.
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : DV_STROUT
+
+Module  : DOS Video Services
+
+Compat  : DOS
+
+Purpose : Displays a string on the screen
+
+Parms:
+   DS:DX <-- ptr to the string to display
+
+Description:
+
+The DV_STROUT routine displays a string on the screen. The
+string must be in ASCIIZ (NUL terminated) format.
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is in effect. Text from this service may be
+redirected to any file or device. Pipes can also be used.
+
+Service : EH_ADDBREAK
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Adds a procedure to be called on ^C or ^Break
+
+Parms:
+      DX <-- offset of procedure (from CS:)
+   -------
+   Flags = CY if there's no room for another procedure
+           NC if the procedure was added
+
+Description:
+
+The EH_ADDBREAK service adds a procedure to the list of
+procedures to be called if Control-C or Control-Break is
+pressed. Up to eight procedures can be chained this way. They
+will be called only if ^C / ^Break has been allowed by your
+program.
+
+This service allows for orderly shutdown if the user chooses to
+abort the program. Files are closed automatically, but interrupt
+vectors are not ordinarily restored on program exit, which can
+lead to catastrophe if you have replaced one of the interrupt
+handlers. A number of the AsmWiz services do such things and
+need to execute a shutdown procedure before the program
+terminates: MD_DONE for the 100th-second delay services, for
+instance. If you allow the user to break out of the program with
+^C or ^Break, you should make sure that any procedures which
+must be called before program termination are added to the break
+chain by EH_ADDBREAK.
+
+Your shutdown routine must be a NEAR procedure. It may alter any
+register, except SS and SP (the stack must remain intact). Any
+BIOS or DOS interrupt may be called. Your routine is expected to
+exit with a NEAR return.
+
+If you use EH_ADDBREAK, don't forget to initialize the break
+handler by calling EH_INITBREAK at the start of your program!
+
+Service : EH_CRITDONE
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Terminates the critical error handler
+
+Parms:
+   none
+
+Description:
+
+The EH_CRITDONE service terminates the critical error handler
+installed by EH_INITCRIT. You can do this if you wish to use
+your own critical error handler or the default handler, for
+example. It is not necessary to call EH_CRITDONE before
+terminating your program.
+
+See also the EH_INITCRIT and EH_CRITERR services.
+
+Service : EH_CRITERR
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Checks for critical errors
+
+Parms:
+   -------
+      Flags = CY if there was a critical error
+                 AH contains the error code
+              NC if there was no error
+
+Description:
+
+The EH_CRITERR service tells you whether a critical error
+occurred. It should be used just after any DOS functions which
+may cause a critical error. This includes virtually all disk
+operations, DOS-based communications and printing. If a critical
+error occurred, the carry flag will be set, AH will contain the
+critical error code, and AL will contain any normal error code
+that was returned. If no critical error occurred, the flags and
+registers will be untouched, so normal errors (if any) will pass
+through.
+
+This service clears the critical error code when it is called,
+so if you call it a second time, no error will be returned
+unless another critical error occurred in the meantime.
+
+A list of critical error codes and DOS error codes is included
+at the end of the ASMWIZ.DOC file.
+
+See also the EH_INITCRIT and EH_CRITDONE services.
+
+Example:
+   MOV   AH,3Ch     ; create file
+   INT   21h        ;
+   CALL  EH_CRITERR ; see if there was a critical error
+   JNC   All_Ok     ;   no errors at all
+   CMP   AH,0       ; was it a normal error?
+   JZ    NormalErr  ;   yep, go take care of it
+   ; it was a critical error... AH contains the critical error code.
+
+Service : EH_INITBREAK
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Initializes the ^C / ^Break handler
+
+Parms:
+   none
+
+Description:
+
+The EH_INITBREAK service initializes the break handling
+services. This allows you to either ignore Control-C and
+Control-Break, or to specify one or more procedures to call
+before your program is terminated.
+
+See also the EH_ADDBREAK, EH_SETBREAK, and EH_SUBBREAK services.
+
+Service : EH_INITCRIT
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Initializes the critical error handler
+
+Parms:
+   none
+
+Description:
+
+The EH_INITCRIT service initializes and installs a critical
+error handler. This allows your programs to recover from
+problems that would normally cause DOS to display the infamous
+"A>bort, R>etry, I>gnore" prompt.
+
+When a critical error occurs, the error handler installed by
+EH_INITCRIT makes a note of what kind of error it was, then
+tells DOS to ignore the error. Your program is expected to check
+for critical errors using the EH_CRITERR service.
+
+Note that DOS will not allow certain errors to be ignored. In
+that case, DOS will act as if a Control-Break had been entered.
+The break handling services can catch such conditions. See
+EH_INITBREAK for more information.
+
+See also the EH_CRITERR and EH_CRITDONE services.
+
+Service : EH_SETBREAK
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Allows you to turn ^Break / ^C on or off
+
+Parms:
+      AL   <-- 0 to turn breaks off, 1 to turn them on
+
+Description:
+
+The EH_SETBREAK service allows you to turn ^Break / ^C on or
+off. If you turn breaks off, there will be no effect on your
+program if these keys are pressed. If you turn them on, pressing
+these keys will cause your program to be terminated after it
+calls any procedures specified by EH_ADDBREAK.
+
+Whether breaks are on or off, there is one minor effect that a
+break key will have which can't be prevented: "^C" with a
+carriage return and linefeed will be displayed. That seems to be
+controlled by the BIOS, rather than DOS, and I haven't yet found
+a way around it. I'll be working on it, though.
+
+If you use EH_SETBREAK, don't forget to initialize the break
+handler by calling EH_INITBREAK at the start of your program!
+
+Service : EH_SUBBREAK
+
+Module  : Exception Handling Services
+
+Compat  : DOS
+
+Purpose : Removes a procedure from the list to be called
+          on ^C or ^Break
+
+Parms:
+      DX   <-- offset of procedure (from CS:)
+   -------
+      Flags = CY if the procedure was not in the list
+              NC if the procedure was removed
+
+Description:
+
+The EH_SUBBREAK service removes a procedure to the list of
+procedures to be called if Control-C or Control-Break is
+pressed. This reverses the effect of the EH_ADDBREAK service.
+
+Service : FI_COMPLETE
+
+Module  : Filename Manipulation Services
+
+Compat  : DOS
+
+Purpose : Completes a filespec
+
+Parms:
+   DS:SI <-- ptr to filespec
+   DS:BX <-- ptr to default extension (1-3 bytes)
+   ES:DI <-- ptr to result buffer (80 bytes minimum)
+   -------
+      flags: CY = the filespec is not valid
+
+Description:
+
+The FI_COMPLETE service completes a file specification. If no
+drive was specified, the current drive will be inserted. The
+directory specification will be converted to an absolute path,
+with "." and ".." references also resolved. If there is no
+filename, "*.*" will be used. If there is a filename without an
+extension, the specified default extension will be added.
+
+Note that this service translates filespecs almost, but not
+quite, the same as DOS would. The final part of a filespec is
+assumed to be a filename unless it ends in "\". This means that
+something like "C:\BIN" will be translated to "C:\BIN." (if the
+default extension is null). If you want to specify a directory
+named BIN, you would use the form "C:\BIN\", which would be
+translated to "C:\BIN\*.*". This may seem like a bit of an
+inconvenience, but it removes a dangerous ambiguity from file
+specification.
+
+This service does not check to see if the drive or directory
+specified is valid. It does check to make sure that the
+specification is valid and will trim over-long file or directory
+names appropriately. Unlike DOS, directory specifications are
+not allowed to contain extensions, but few people use that
+capability in any event. I'll see about adding it to a future
+version, however.
+
+Service : FI_MATCH      (formerly MI_MATCHFILE)
+
+Module  : Filename Manipulation Services
+
+Compat  : Any
+
+Purpose : Determines whether file name matches a given pattern
+
+Parms:
+   DS:SI <-- ptr to pattern (which may contain wildcards)
+   ES:DI <-- ptr to filename (may not contain drive or path)
+   -------
+      flags: ZF = the filename matches the pattern
+             NZ = the filename does not match the pattern
+
+Description:
+
+The FI_MATCH service compares a filename with a specified
+pattern. The pattern may contain the "*" or "?" wildcards. This
+pattern-matching service works just the way DOS does. It can be
+used for finding a desired set of matches within a list of known
+files, for excluding an unwanted set of files from a directory
+list, and so forth.
+
+The DOS "DEL" command is used as a basis for this matcher. Thus,
+using "*" as a pattern is equivalent to using "*.", not "*.*" as
+"DIR" would interpret the pattern. The matcher uses the more
+conservative algorithm in an attempt to avoid excessive
+broadness in its matches. If you prefer otherwise, simply have
+your program replace the "*" pattern with "*.*" before calling
+this service.
+
+Service : FI_PATTERN
+
+Module  : Filename Manipulation Services
+
+Compat  : Any
+
+Purpose : Pushes a filename through a pattern specification
+
+Parms:
+   DS:SI <-- pointer to filename
+   DS:BX <-- pointer to pattern
+   ES:DI <-- pointer to new filename (13 bytes minimum)
+   -------
+   Flags = CY for some errors
+
+Description:
+
+The FI_PATTERN service pushes a filename through a specified
+pattern. This would be used for creating a replacement for the
+COPY command, for example. If you entered a filename of
+"EXAMPLE.ASM" and a pattern of "*.BAK", for instance, the result
+would be "EXAMPLE.BAK".
+
+This service expects filenames without drive or directory
+specifications. Wildcards are allowed in the pattern, but not in
+the filename. The carry flag will be set on return if the
+filename or pattern were malformed (basically, just if they were
+over 8 chars + "." + 3 chars).
+
+Service : FI_SPLIT
+
+Module  : Filename Manipulation Services
+
+Compat  : Any
+
+Purpose : Split a path spec into drive, directory, filename
+
+Parms:
+   DS:SI <-- pointer to path specification
+   ES:DI <-- pointer to result buffer (minimum 80 bytes)
+
+Description:
+
+The FI_SPLIT service takes a path specification apart into its
+components. Although a full path spec is not required, it is
+probably a good idea to make sure that the spec is reasonable
+beforehand, as wildly erroneous path specs may cause the results
+to overflow your result buffer.
+
+The results are stored as a series of ASCIIZ strings. The drive
+will be at offset 0, the directory at offset 2, and the filename
+at offset 67. As you might guess, then, the drive is up to one
+character (plus nul), the directory is up to 64 chars (plus
+nul), and the filename is up to 12 chars (plus nul).
+
+Service : G13_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-319)
+      DX <-- top Y coordinate     (0-199)
+      SI <-- right X coordinate   (0-319)
+      DI <-- bottom Y coordinate  (0-199)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-255)
+
+Description:
+
+The G13_BOX service displays a box on the screen. The screen
+must be in mode 13h (VGA 320x200).
+
+Service : G13_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-319)
+      DX <-- starting Y coordinate  (0-199)
+      SI <-- ending X coordinate    (0-319)
+      DI <-- ending Y coordinate    (0-199)
+      AL <-- color                  (0-255)
+
+Description:
+
+The G13_LINE service displays a line on the screen. The screen
+must be in mode 13h (VGA 320x200).
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however. For this mode, horizontal lines are
+drawn the fastest.
+
+
+
+
+Service : G13_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-319)
+      DX <-- Y coordinate (0-199)
+      AL <-- color (0-255)
+
+Description:
+
+The G13_PLOT service sets the current color of a specified
+point. The screen must be in mode 13h (VGA 320x200).
+
+Service : G4_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-319)
+      DX <-- top Y coordinate     (0-199)
+      SI <-- right X coordinate   (0-319)
+      DI <-- bottom Y coordinate  (0-199)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-3)
+
+Description:
+
+The G4_BOX service displays a box on the screen. The screen must
+be in Mode 4 or 5 (CGA 320x200).
+
+
+
+
+
+Service : G4_GETPEL
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the current color of a point
+
+Parms:
+      CX <-- X coordinate (0-319)
+      DX <-- Y coordinate (0-199)
+   -------
+      AL = color (0-3)
+
+Description:
+
+The G4_GETPEL service gets the current color of a specified
+point. The screen must be in Mode 4 or 5 (CGA 320x200). Why
+"pel"? Graphics points are also known as pixels or pels.
+
+Service : G4_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-319)
+      DX <-- starting Y coordinate  (0-199)
+      SI <-- ending X coordinate    (0-319)
+      DI <-- ending Y coordinate    (0-199)
+      AL <-- color                  (0-3)
+
+Description:
+
+The G4_LINE service displays a line on the screen. The screen
+must be in Mode 4 or 5 (CGA 320x200).
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however. For the CGA, horizontal line drawing is
+the fastest.
+
+
+
+
+Service : G4_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-319)
+      DX <-- Y coordinate (0-199)
+      AL <-- color (0-3)
+
+Description:
+
+The G4_PLOT service sets the current color of a specified point.
+The screen must be in Mode 4 or 5 (CGA 320x200).
+
+Service : G6_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-639)
+      DX <-- top Y coordinate     (0-199)
+      SI <-- right X coordinate   (0-639)
+      DI <-- bottom Y coordinate  (0-199)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-1)
+
+Description:
+
+The G6_BOX service displays a box on the screen. The screen must
+be in Mode 6 (CGA 640x200).
+
+
+
+
+
+Service : G6_GETPEL
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the current color of a point
+
+Parms:
+      CX <-- X coordinate (0-639)
+      DX <-- Y coordinate (0-199)
+   -------
+      AL = color (0-1)
+
+Description:
+
+The G6_GETPEL service gets the current color of a specified
+point. The screen must be in Mode 6 (CGA 640x200). Why "pel"?
+Graphics points are also known as pixels or pels.
+
+Service : G6_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-639)
+      DX <-- starting Y coordinate  (0-199)
+      SI <-- ending X coordinate    (0-639)
+      DI <-- ending Y coordinate    (0-199)
+      AL <-- color                  (0-1)
+
+Description:
+
+The G6_LINE service displays a line on the screen. The screen
+must be in Mode 6 (CGA 640x200).
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however. For the CGA, horizontal line drawing is
+the fastest.
+
+
+
+
+Service : G6_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-639)
+      DX <-- Y coordinate (0-199)
+      AL <-- color (0-1)
+
+Description:
+
+The G6_PLOT service sets the current color of a specified point.
+The screen must be in Mode 6 (CGA 640x200).
+
+Service : GD_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-319)
+      DX <-- top Y coordinate     (0-199)
+      SI <-- right X coordinate   (0-319)
+      DI <-- bottom Y coordinate  (0-199)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-15)
+
+Description:
+
+The GD_BOX service displays a box on the screen. The screen must
+be in Mode 0Dh (EGA 320x200).
+
+Service : GD_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-319)
+      DX <-- starting Y coordinate  (0-199)
+      SI <-- ending X coordinate    (0-319)
+      DI <-- ending Y coordinate    (0-199)
+      AL <-- color                  (0-15)
+
+Description:
+
+The GD_LINE service displays a line on the screen. The screen
+must be in Mode 0Dh (EGA 320x200).
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however. For the EGA, vertical line drawing is
+the fastest.
+
+
+
+
+Service : GD_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-319)
+      DX <-- Y coordinate (0-199)
+      AL <-- color (0-15)
+
+Description:
+
+The GD_PLOT service sets the current color of a specified point.
+The screen must be in Mode 0Dh (EGA 320x200).
+
+Service : GE_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-639)
+      DX <-- top Y coordinate     (0-199/349/479)
+      SI <-- right X coordinate   (0-639)
+      DI <-- bottom Y coordinate  (0-199/349/479)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-1/15)
+
+Description:
+
+The GE_BOX service displays a box on the screen. The screen must
+be in one of the following modes:
+
+   0Eh   EGA 640x200   16 colors
+   10h   EGA 640x350   16 colors
+   11h   VGA 640x480    2 colors
+   12h   VGA 640x480   16 colors
+
+Service : GE_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-639)
+      DX <-- starting Y coordinate  (0-199/349/479)
+      SI <-- ending X coordinate    (0-639)
+      DI <-- ending Y coordinate    (0-199/349/479)
+      AL <-- color                  (0-1/15)
+
+Description:
+
+The GE_LINE service displays a line on the screen. The screen
+must be in one of the following modes:
+
+   0Eh   EGA 640x200   16 colors
+   10h   EGA 640x350   16 colors
+   11h   VGA 640x480    2 colors
+   12h   VGA 640x480   16 colors
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however. For the EGA and VGA, vertical line
+drawing is the fastest.
+
+
+
+
+Service : GE_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-639)
+      DX <-- Y coordinate (0-199/349/479)
+      AL <-- color (0-1/15)
+
+Description:
+
+The GE_PLOT service sets the current color of a specified point.
+The screen must be in one of the following modes:
+
+   0Eh   EGA 640x200   16 colors
+   10h   EGA 640x350   16 colors
+   11h   VGA 640x480    2 colors
+   12h   VGA 640x480   16 colors
+
+Service : GH_BOX
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a box
+
+Parms:
+      CX <-- left X coordinate    (0-719)
+      DX <-- top Y coordinate     (0-347)
+      SI <-- right X coordinate   (0-719)
+      DI <-- bottom Y coordinate  (0-347)
+      AH <-- whether to fill box  (0 no, 1 yes)
+      AL <-- color                (0-1)
+
+Description:
+
+The GH_BOX service displays a box on the screen. The screen must
+be in Hercules graphics mode. It is not actually important that
+the upper left corner and lower right corner of the box be
+specified in that order.
+
+
+
+
+
+Service : GH_GETPEL
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the current color of a point
+
+Parms:
+      CX <-- X coordinate (0-719)
+      DX <-- Y coordinate (0-347)
+   -------
+      AL = color (0-1)
+
+Description:
+
+The GH_GETPEL service gets the current color of a specified
+point. The screen must be in Hercules graphics mode. Why "pel"?
+Graphics points are also known as pixels or pels.
+
+Service : GH_LINE
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Draws a line
+
+Parms:
+      CX <-- starting X coordinate  (0-719)
+      DX <-- starting Y coordinate  (0-347)
+      SI <-- ending X coordinate    (0-719)
+      DI <-- ending Y coordinate    (0-347)
+      AL <-- color                  (0-1)
+
+Description:
+
+The GH_LINE service displays a line on the screen. The screen
+must be in Hercules graphics mode.
+
+Drawing diagonal lines is a bit slow and will be optimized in a
+future release. Vertical and horizontal line drawing is
+extremely fast, however.
+
+
+
+
+Service : GH_PLOT
+
+Module  : Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the color of a point
+
+Parms:
+      CX <-- X coordinate (0-719)
+      DX <-- Y coordinate (0-347)
+      AL <-- color (0-1)
+
+Description:
+
+The GH_PLOT service sets the current color of a specified point.
+The screen must be in Hercules graphics mode.
+
+Service : HG_CHROUT
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a character on the screen
+
+Parms:
+      AL <-- character to display
+
+Description:
+
+The HG_CHROUT routine displays a character on the screen. The
+screen must be in Hercules graphics mode.
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : HG_CLEOLN
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Clears to the end of the line
+
+Parms:
+   none
+
+Description:
+
+The HG_CLEOLN service clears from the current cursor position to
+the end of the current screen line, inclusive. The screen must
+be in Hercules graphics mode.
+
+Redirection, if any, is ignored.
+
+Service : HG_CLS
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Clears the screen
+
+Parms:
+   none
+
+Description:
+
+The HG_CLS service clears the screen and homes the cursor to the
+upper left corner. The screen must be in Hercules graphics mode.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : HG_COLOR
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the default text color
+
+Parms:
+      AL <-- default color
+
+Description:
+
+The HG_COLOR service sets the default text color. The background
+is in the high nybble and the foreground in the low nybble.
+Colors may be 0 (black) or 1 (white), giving the following
+possibilities:
+
+  Fore   Back    Color in AL
+  -----  -----   -----------
+  black  black       00h
+  black  white       10h     (reverse video)
+  white  black       01h     (normal video)
+  white  white       11h
+
+
+Redirection, if any, is ignored.
+
+Service : HG_CRLF
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a <CR><LF> (carriage return and linefeed)
+
+Parms:
+   none
+
+Description:
+
+The HG_CRLF routine displays a carriage return and linefeed on
+the screen. The screen must be in Hercules graphics mode.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : HG_GETCOLOR
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the default text color
+
+Parms:
+   -------
+      AL = default color
+
+Description:
+
+The HG_GETCOLOR service gets the default text color. The
+background is in the high nybble and the foreground in the low
+nybble. Colors may be 0 (black) or 1 (white), giving the
+following possibilities:
+
+  Fore   Back    Color in AL
+  -----  -----   -----------
+  black  black       00h
+  black  white       10h     (reverse video)
+  white  black       01h     (normal video)
+  white  white       11h
+
+
+Redirection, if any, is ignored.
+
+Service : HG_LOCATE
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the cursor position
+
+Parms:
+      DH <-- row (1-43)
+      DL <-- column (1-90)
+
+Description:
+
+The HG_LOCATE service sets the cursor position. The screen must
+be in Hercules graphics mode.
+
+Redirection, if any, is ignored.
+
+Service : HG_MODE
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Sets the screen mode
+
+Parms:
+      AL <-- screen mode (0-1)
+
+Description:
+
+The HG_MODE service sets the screen mode. Since the Hercules
+graphics mode is not assigned a BIOS mode number, I've set up an
+arbitrary system. The mode may be either:
+
+     Mode   Resolu.       Use       Notes
+
+       0     80x25       text     same as BIOS mode 7: normal MDA
+       1     90x43     graphics   this is a 720x348 graphics mode
+
+The HG services are designed for use in Hercules graphics mode.
+When in text mode, the Hercules operates like an ordinary MDA,
+so you should use the MV, BV, or DV services instead.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : HG_STROUT
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Displays a string on the screen
+
+Parms:
+   DS:DX <-- ptr to the string to display
+
+Description:
+
+The HG_STROUT routine displays a string on the screen. The
+string must be in ASCIIZ (NUL terminated) format. The screen
+must be in Hercules graphics mode.
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+Service : HG_WHERE
+
+Module  : Hercules Graphics Services
+
+Compat  : Clone
+
+Purpose : Gets the cursor position
+
+Parms:
+   -------
+      DH = row (1-43)
+      DL = column (1-90)
+
+Description:
+
+The HG_WHERE service gets the cursor position. The screen must
+be in Hercules graphics mode.
+
+Redirection, if any, is ignored.
+
+Service : MA_ADD32
+
+Module  : Math (32-bit) Services
+
+Compat  : Any
+
+Purpose : Adds two unsigned long integers
+
+Parms:
+   DS:SI   <-- first operand
+   DS:SI+4 <-- second operand
+   -------
+   DS:SI+8 = result
+
+Description:
+
+The MA_ADD32 routine adds two unsigned long integers, giving a
+result of the same type. Since such numbers are rather bulky,
+they are passed through a buffer rather than through registers.
+The numbers in the buffer are stored in normal Intel format,
+least significant word to most significant word. The buffer
+should look something like this:
+
+   FIRST32   dd ?
+   SECOND32  dd ?
+   RESULT32  dd ?
+
+Service : MA_DIV32
+
+Module  : Math (32-bit) Services
+
+Compat  : Any
+
+Purpose : Divides an unsigned very long integer by a long int
+
+Parms:
+   DS:SI   <-- dividend (64 bits: high bit must be zero)
+   DS:SI+8 <-- divisor (unsigned long integer)
+   -------
+   DS:SI+12 = quotient (unsigned long integer)
+   DS:SI+16 = remainder (unsigned long integer)
+
+Description:
+
+The MA_DIV32 routine divides an unsigned 63-bit integer by an
+unsigned long integer, giving a quotient and remainder.
+
+Since the numbers are rather bulky, they are passed through a
+buffer rather than through registers. The numbers in the buffer
+are stored in normal Intel format, least significant word to
+most significant word. The buffer should look something like
+this:
+
+   FIRST64   dq ?
+   SECOND32  dd ?
+   RESULT32  dd ?
+   REMAIN32  dd ?
+
+Note that since this service uses unsigned numbers, it is
+possible to use it to divide a 32-bit quantity by another 32-bit
+quantity, giving a 32-bit result. In that case, just convert the
+32-bit dividend to 64 bits by making the upper 32 bits zero. The
+BC_LONG2ASC service uses this approach in the course of its
+work.
+
+Service : MA_MUL32
+
+Module  : Math (32-bit) Services
+
+Compat  : Any
+
+Purpose : Multiplies two unsigned long integers
+
+Parms:
+   DS:SI   <-- first operand
+   DS:SI+4 <-- second operand
+   -------
+   DS:SI+8 = result (64 bits)
+
+Description:
+
+The MA_MUL32 routine multiplies two unsigned long integers,
+giving a result of a type that might be called an unsigned very
+long integer (64 bits). Since such numbers are rather bulky,
+they are passed through a buffer rather than through registers.
+The numbers in the buffer are stored in normal Intel format,
+least significant word to most significant word. The buffer
+should look something like this:
+
+   FIRST32   dd ?
+   SECOND32  dd ?
+   RESULT64  dq ?
+
+Note that since this service uses unsigned numbers, it is
+possible to use it to multiply a 32-bit quantity by a 16-bit
+quantity, giving (maybe) a 32-bit result. In that case, just
+convert the 16-bit quantity to 32 bits by making the upper 16
+bits zero; if the next-to-highest word of the result is nonzero,
+there was an overflow, and the result did not fit into 32 bits.
+
+Service : MA_SUB32
+
+Module  : Math (32-bit) Services
+
+Compat  : Any
+
+Purpose : Subtracts one unsigned long integer from another
+
+Parms:
+   DS:SI   <-- first operand
+   DS:SI+4 <-- second operand
+   -------
+   DS:SI+8 = result
+
+Description:
+
+The MA_SUB32 routine subtracts one unsigned long integer from
+another, giving a result of the same type. Since such numbers
+are rather bulky, they are passed through a buffer rather than
+through registers. The numbers in the buffer are stored in
+normal Intel format, least significant word to most significant
+word. The buffer should look something like this:
+
+   FIRST32   dd ?
+   SECOND32  dd ?
+   RESULT32  dd ?
+
+Service : MD_DELAY
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Delays for a number of 100ths of seconds
+
+Parms:
+      CX <-- delay (0-32767)
+
+Description:
+
+The MD_DELAY service waits for a specified number of clock
+ticks. This is based on the timer system initialized by the
+MD_INIT service. Timer #0 is used by MD_DELAY, so you should
+avoid Timer #0 if you use MD_DELAY. Timer #1 will probably be
+reserved for music in the future, so avoid it if you expect to
+add sound effects to your program.
+
+If you use the 100th-second time services, it is vital that you
+initialize them with MD_INIT (at the start of your program) and
+terminate them with MD_DONE (at the end of your program).
+
+Since the system clock is maintained via the interrupt system,
+interrupts will be enabled for the duration of this service, to
+avoid an infinite delay.
+
+This service has been designed to accommodate multitaskers. If
+another task is in operation, the delay may be a trifle longer
+than expected, however.
+
+
+
+
+Service : MD_DONE
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Terminates the 100th-second timer handler
+
+Parms:
+   none
+
+Description:
+
+The MD_DONE service terminates the 100th-second timer handler.
+The original timer interrupt is restored and the system clock is
+reset to 18.2 cycles per second, which is presumed to have been
+the original speed.
+
+If you use the 100th-second time services, it is vital that you
+initialize them with MD_INIT (at the start of your program) and
+terminate them with MD_DONE (at the end of your program).
+
+Service : MD_GETTIMER
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Gets one of the 100th-second countdown timers
+
+Parms:
+      AL <-- timer number (0-7)
+   -------
+      CX = time count (0-65,534)
+
+Description:
+
+The MD_GETTIMER service gets the time remaining from one of the
+100th-second countdown timers. The time returned will be in
+200ths of seconds. It is expected that you will normally just
+compare the result with zero to see if the countdown time has
+elapsed. See the MD_SETTIMER service for details.
+
+If you use the 100th-second time services, it is vital that you
+initialize them with MD_INIT (at the start of your program) and
+terminate them with MD_DONE (at the end of your program).
+
+
+
+
+Service : MD_INIT
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Initializes the 100th-second timer handler
+
+Parms:
+   none
+
+Description:
+
+The MD_INIT service initializes the 100th-second timer handler.
+The system clock is reset to 200.27 cycles per second. The old
+timer interrupt is executed every 11th time through, so as to
+maintain the usual 18.2 cycles per second for the rest of the
+system.
+
+If you use the 100th-second time services, it is vital that you
+initialize them with MD_INIT (at the start of your program) and
+terminate them with MD_DONE (at the end of your program).
+
+The MD_INIT service provides up to eight countdown timers which
+may be accessed by the MD_SETTIMER and MD_GETTIMER services.
+These countdown timers decrement their respective counts at a
+rate of 100 per second. The count is not allowed to go below
+zero.
+
+Service : MD_SETTIMER
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Sets one of the 100th-second countdown timers
+
+Parms:
+      AL <-- timer number (0-7)
+      CX <-- time count (0-32,767)
+
+Description:
+
+The MD_SETTIMER service sets one of the 100th-second countdown
+timers going. The time will be decremented once every 100th of a
+second until it reaches zero. This is useful for occasions where
+you need to do something within a specified amount of time. For
+instance, in a communications program you might want a "receive
+character" routine to keep looking for a character for up to a
+second before returning a "time out" error.
+
+Up to eight countdown timers are available. Timer 0 is used by
+MD_DELAY, so don't access it if you wish to use the MD_DELAY
+service. Timer 1 is reserved for the upcoming MU_MUSIC music
+service, so don't use it if you would like to add music to a
+future program. Timers 2-7 are always available for your use.
+
+The time count is restricted to a maximum of 32,767 because it
+is doubled internally. The timer runs at 200 cycles/second to
+improve accuracy and make it easy to maintain the old rate of
+18.2 cycles/second for the system.
+
+If you use the 100th-second time services, it is vital that you
+initialize them with MD_INIT (at the start of your program) and
+terminate them with MD_DONE (at the end of your program).
+
+
+
+
+Service : MD_TICK
+
+Module  : Delay Services
+
+Compat  : Clone
+
+Purpose : Delays for a number of clock ticks (1/18th seconds)
+
+Parms:
+      CX <-- delay (0-65535)
+
+Description:
+
+The MD_TICK service waits for a specified number of clock ticks.
+This is based on the system clock. There are about 18.2 ticks
+per second, so the delay for one tick is approximately 1/18th
+second.
+
+Since the system clock is maintained via the interrupt system,
+interrupts will be enabled for the duration of this service, to
+avoid an infinite delay.
+
+This service has been designed to accommodate multitaskers. If
+another task is in operation, the delay may be a trifle longer
+than expected, however.
+
+Service : ME_BINFO
+
+Module  : Memory Services
+
+Compat  : Clone
+
+Purpose : Gets information about a BSAVE-format memory image
+
+Parms:
+   DS:DX <-- pointer to ASCIIZ filename
+   -------
+   ES:SI = memory image segment:offset
+      CX = memory image size (bytes)
+   Flags = CY if unable to get information; AX = error code
+
+Description:
+
+The ME_BINFO service gets information about a memory image
+stored in a BSAVE-format file. The information is retrieved from
+the file header.
+
+The BSAVE format is used by BASIC in storing memory images to
+disk. It is typically used for saving screen images.
+
+If there is an error in reading from the specified file, the
+carry flag will be set and an error code will be returned. The
+error code corresponds with normal DOS error codes, except for
+the code of -1, which means that the file was not in BSAVE
+format.
+
+The following information may prove helpful in decoding picture
+files:
+
+   Segment      Picture type
+
+    B000h       Monochrome (Hercules graphics)
+    B800h       CGA
+    A000h       EGA or VGA
+                (monochrome unless there are multiple files)
+
+Service : ME_BLOAD
+
+Module  : Memory Services
+
+Compat  : Clone
+
+Purpose : Restores a memory image from a BSAVE-format file
+
+Parms:
+   DS:DX <-- pointer to ASCIIZ filename
+   -------
+   Flags = CY if unable to load memory image; AX = error code
+
+Description:
+
+The ME_BLOAD service restores a memory image from a file in
+BSAVE format. The image is restored to the location from which
+it was originally saved.
+
+The BSAVE format is used by BASIC in storing memory images to
+disk. It is typically used for saving screen images.
+
+If there is an error in reading from the specified file, the
+carry flag will be set and an error code will be returned. The
+error code corresponds with normal DOS error codes, except for
+the code of -1, which means that the file was not in BSAVE
+format.
+
+The following information may prove helpful in decoding picture
+files:
+
+   Segment      Picture type
+
+    B000h       Monochrome (Hercules graphics)
+    B800h       CGA
+    A000h       EGA or VGA
+                (monochrome unless there are multiple files)
+
+Service : ME_BSAVE
+
+Module  : Memory Services
+
+Compat  : Clone
+
+Purpose : Saves a memory image to a BSAVE-format file
+
+Parms:
+   DS:DX <-- pointer to ASCIIZ filename
+   ES:SI <-- pointer to start of area to be saved
+      CX <-- size of memory area (bytes)
+   -------
+   Flags = CY if unable to save memory image; AX = error code
+
+Description:
+
+The ME_BSAVE service saves a memory image to a file in BSAVE
+format.
+
+The BSAVE format is used by BASIC in storing memory images to
+disk. It is typically used for saving screen images.
+
+If there is an error in writing to the specified file, the carry
+flag will be set and an error code will be returned. The error
+code corresponds with normal DOS error codes.
+
+The following information may prove helpful in saving picture
+files (note that the offset is normally zero):
+
+   Segment      Picture type               Length
+
+    B000h       Hercules graphics          16,384
+    B800h       CGA graphics               16,384
+    A000h       EGA or VGA (monochrome)    28,000+
+
+It is possible to save EGA and VGA pictures in color, using four
+files rather than one, plus a palette file. This is a bit
+awkward, though, so we'll save it for a future version of AsmWiz
+(using the PCX file format, instead).
+
+Service : ME_HIGHOFS
+
+Module  : Memory Services
+
+Compat  : Any
+
+Purpose : Converts an address to have the lowest segment
+          and highest offset
+
+Parms:
+   DX:AX <-- segment:offset
+   -------
+   DX:AX = converted segment:offset
+
+Description:
+
+The ME_HIGHOFS service converts an address so that it has the
+highest possible offset and lowest possible segment. This allows
+you to work backwards from this address by up to 65,519 bytes
+without wrapping around within the segment, which is a
+convenience for reverse REP operations, for example. The
+resulting offset will be in the range FFF0h - FFFFh, unless the
+address is extremely low in memory, in which case the range may
+be lower.
+
+
+
+
+Service : ME_LOWOFS
+
+Module  : Memory Services
+
+Compat  : Any
+
+Purpose : Converts an address to have the highest segment and
+          lowest offset
+
+Parms:
+   DX:AX <-- segment:offset
+   -------
+   DX:AX = converted segment:offset
+
+Description:
+
+The ME_LOWOFS service converts an address so that it has the
+lowest possible offset and highest possible segment. This allows
+you to work forwards from this address by up to 65,519 bytes
+without wrapping around within the segment, which is a
+convenience for forward REP operations, for example. The
+resulting offset will be in the range 0000h - 000Fh.
+
+Service : ME_MOVE
+
+Module  : Memory Services
+
+Compat  : Any
+
+Purpose : Moves a block of data from one place to another
+
+Parms:
+   DS:SI <-- source segment:offset
+   ES:DI <-- destination segment:offset
+      CX <-- bytes to move (0 - 65,519)
+
+Description:
+
+The ME_MOVE service moves data from one place to another. It
+automatically handles overlaps, so the data will always be
+copied correctly.
+
+The reason ME_MOVE can only handle up to 65,519 characters
+rather than a full 65,535 is because it uses the ME_LOWOFS and
+ME_HIGHOFS services rather than recalculating and re-normalizing
+the addresses every time. The loss of a few bytes' range is, in
+most cases, an acceptable price for the vastly increased speed.
+If you need greater range, calling ME_MOVE more than once may be
+a bit of a nuisance, but it will still be considerably faster
+than the recalculation approach.
+
+Service : MI_BOOT
+
+Module  : Miscellaneous Services
+
+Compat  : Clone
+
+Purpose : Reboots the computer (warm boot)
+
+Parms:
+   none
+
+Description:
+
+The MI_BOOT service restarts the computer by performing a warm
+boot.
+
+I'd provide a "cold boot" service as well, but I've found that
+doing a cold boot is liable to lock up many clones, including
+some Compaq models. The warm boot, however, always seems to work
+as advertised.
+
+This service may be accessed by JMP instead of CALL if you
+prefer. It really doesn't matter, since the stack is reset and
+control is returned to the system during the boot process. The
+JMP is trivially more efficient, though.
+
+Service : MI_GETSCREEN
+
+Module  : Miscellaneous Services
+
+Compat  : Clone
+
+Purpose : Gets information about the active video display
+
+Parms:
+   -------
+      AH = adapter type (1-6: MDA, Herc, CGA, EGA, MCGA, VGA)
+      AL = color flag (0 color, 1 mono)
+
+Description:
+
+The MI_GETSCREEN service gets vital information about the
+active display. It tells you whether the display is capable of
+handling color and what kind of display adapter is in use.
+
+Note that the color flag will not necessarily be accurate for
+CGAs. It is possible to connect a monochrome monitor to the CGA,
+but there is no way for the computer to detect whether this has
+been done, so it is assumed that CGAs are always color. You
+should add a "/B" command-line option to your program so that
+the user can specify that a monochrome CGA display is in use
+("/B" is what Microsoft uses to specify "black and white").
+
+If the adapter is determined to be MDA or Hercules, the
+interrupt system will be turned on and the service will delay
+for up to 1/9th second as it attempts to decide which kind of
+adapter is in use. The original interrupt status will be
+restored when the service exits.
+
+The AsmWiz text services allow for automatic conversion of
+colors to their monochrome equivalents, making it easy to handle
+any display. See the BV_FIXCOLOR, DV_FIXCOLOR, or MV_FIXCOLOR
+service for more information.
+
+Service : MI_PARSE
+
+Module  : Miscellaneous Services
+
+Compat  : DOS
+
+Purpose : Parses a command line into file specs and options
+
+Parms:
+   DS:SI <-- ptr to command line (for COM files, is CS:0080h)
+   ES:DI <-- ptr to filename buffer (recommend 128 bytes)
+   ES:BX <-- ptr to option buffer (recommend 128 bytes)
+      AL <-- switch character (normally "/" for DOS)
+   -------
+      AH = number of options
+      AL = number of filenames
+
+Description:
+
+The MI_PARSE routine takes the information passed to your
+program on the command line and parses it into filenames and
+options.
+
+The command line is everything that comes after your program
+name when the user types in the name of your program. It is
+generally used for passing filenames and options to your
+program. DOS itself is rather crude about such matters and
+simply passes the original input to your program, after removing
+the name of the program itself and any piping or redirection
+which may have been done.
+
+This routine assumes that anything which isn't an option is a
+filename. Of course, this need not be true, but it's a
+convenient fiction for separating the options from the rest of
+the information.
+
+Options may be delimited by the character of your choice. DOS
+normally uses "/" and assumes "\" is used for specifying paths.
+Many people prefer the *nix convention of "-" for switches and
+"/" for specifying paths, however, so this routine allows for
+that possibility. DOS will recognize "/" as being the same as
+"\" in any DOS interrupt that accepts paths, so this works out
+fairly well, since *nix folks are accustomed to using "/" as a
+path delimiter. It's somewhat appalling that Microsoft/IBM
+deliberately chose to avoid the *nix conventions, but it is
+certainly handy that DOS will (more or less) accept such usage
+internally, if not at the command level. Note that use of "-" as
+a switch character means that you will not be able to access any
+files which contain "-" characters in the filename. This is
+rarely a problem, but it can happen.
+
+The two parameter tables, filenames and options, will consist of
+strings in their original order in the command line. Each string
+will be terminated by a null character, in keeping with C usage.
+The number of strings in each parameter table is returned by
+MI_PARSE in one or another half of the AX register, as specified
+in the "Parms" list, above.
+
+You will normally specify the offset of the command line for
+this service. For COM-format files, this is CS:0080h.
+
+Service : MI_RANDOM
+
+Module  : Miscellaneous Services
+
+Compat  : Any
+
+Purpose : Generates a pseudo-random number
+
+Parms:
+      DX <-- desired range of pseudo-random number (1-4000)
+   -------
+      AX = pseudo-random number (0 to DX - 1)
+
+Description:
+
+The MI_RANDOM service generates pseudo-random numbers within a
+desired range.
+
+A linear congruential method is used to generate the numbers.
+The algorithm was derived from the book "How to Solve it by
+Computer", by R. G. Dromey (Prentiss-Hall).
+
+See also the MI_RANDOMIZE service, which is used to initialize
+the random number generator.
+
+
+
+
+Service : MI_RANDOMIZE
+
+Module  : Miscellaneous Services
+
+Compat  : Any / Clone
+
+Purpose : Initializes the pseudo-random number generator
+
+Parms:
+      AX <-- random number seed or 0FFFFh
+
+Description:
+
+The MI_RANDOMIZE routine initializes the MI_RANDOM random number
+generator service. You may specify your own random number seed
+(in which case this routine is compatible with any PC) or use
+0FFFFh for the routine to pick its own seed (in which case this
+routine is only compatible with clones).
+
+If you specify 0FFFFh, the random number seed is read directly
+from the timer chip's countdown tick, giving a quite adequately
+random initial seed value.
+
+Specifying your own seed may be done to maximize compatibility
+with the most machines. In that case, you will probably want to
+get a seed value from the DOS time service, using the seconds
+value. Use of the "hundredths of seconds" value is not advised,
+as it is always zero on some machines.
+
+You might also want to specify your own seed during debugging,
+to assure you of a reproducible set of pseudo-random numbers.
+The same stream of numbers will always be generated from the
+same seed value.
+
+Service : MI_SCANENV
+
+Module  : Miscellaneous Services
+
+Compat  : DOS
+
+Purpose : Scans the DOS environment (or similar table) for a
+          specified string
+
+Parms:
+   DS:SI <-- ptr to DOS environment
+   ES:DI <-- ptr to string for which to seek
+   -------
+   DS:SI = ptr to parm value (if NC; CY is set if not found)
+
+Description:
+
+The MI_SCANENV routine scans the DOS environment for a specified
+string and returns the value of the parameter which matches that
+string. If there is no matching parameter, the carry flag is
+set.
+
+You may also use this routine for scanning your own tables if
+you format them like the DOS environment: each entry of the
+table is an ASCIIZ string which contains a parameter name and
+parameter value, seperated by an "equals" sign. The end of the
+table is marked by an additional NUL character. Matching is
+case-sensitive ("comspec" will not match "COMSPEC").
+
+The segment of the environment is stored at offset 002Ch within
+the PSP. For COM files, the segment is at CS:[002Ch] (see notes
+under MI_PARSE). Since parameters in the environment are stored
+in uppercase, you should make sure that the string for which you
+seek is also capitalized.
+
+The resulting match, if any, will be pointed to by DS:SI on
+exit. It is the value of the parameter, not the parameter name,
+which is returned.
+
+
+Example:
+      MOV   DS,DS:[002Ch]       ; assumes CS = DS = ES  (COM file)
+      XOR   SI,SI
+      MOV   DI,OFFSET TOFIND
+      CALL  MI_SCANENV
+      JC    NOTFOUND
+      MOV   DX,SI
+      CALL  DV_STROUT
+      CALL  DV_CRLF
+      (etc)
+   NOTFOUND:
+      (etc)
+   TOFIND  DB "PATH",0
+
+This example will search the environment for the "PATH"
+parameter. If a PATH exists, it will be displayed, looking
+perhaps something like "C:\DOS;C:\WP" (without the quotes).
+
+Service : MK_SETCAPS
+
+Module  : Keyboard
+
+Compat  : BIOS
+
+Purpose : sets the Caps Lock state
+
+Parms:
+      AX <-- 0 to turn off, nonzero to turn on
+
+Description:
+
+The MK_SETCAPS service sets the Caps Lock state.
+
+To avoid disrupting the global environment, it is a good idea to
+get the state of Caps Lock at the start of your program, and
+restore this original state before your program exits-- unless,
+of course, your program is specifically intended to alter the
+Caps Lock setting.
+
+Use of this routine may cause the corresponding keyboard status
+light on some old keyboards (mostly IBM PC and XT types) to be
+at variance with the actual setting.
+
+
+
+Service : MK_SETNUM
+
+Module  : Keyboard
+
+Compat  : BIOS
+
+Purpose : sets the Num Lock state
+
+Parms:
+      AX <-- 0 to turn off, nonzero to turn on
+
+Description:
+
+The MK_SETNUM service sets the Num Lock state.
+
+To avoid disrupting the global environment, it is a good idea to
+get the state of Num Lock at the start of your program, and
+restore this original state before your program exits-- unless,
+of course, your program is specifically intended to alter the
+Num Lock setting.
+
+Use of this routine may cause the corresponding keyboard status
+light on some old keyboards (mostly IBM PC and XT types) to be
+at variance with the actual setting.
+
+Service : MO_GLOCATE
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Sets the mouse cursor location (graphics modes)
+
+Parms:
+      CX <-- X (horiz) coordinate (0-MaxX, depending on mode)
+      DX <-- Y (vert) coordinate (0-MaxY, depending on mode)
+
+Description:
+
+The MO_GLOCATE service sets the mouse cursor position. It works
+whether or not the mouse cursor is visible.
+
+In 80x25 text mode and CGA graphics modes, the mouse driver uses
+virtual coordinates based on a 640x200 graphics screen. Keep
+this in mind if using these modes.
+
+
+
+
+Service : MO_GWHERE
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Gets the mouse cursor location
+
+Parms:
+   -------
+      AH = right mouse button (0 if not pressed, 1 if pressed)
+      AL = left mouse button  (0 if not pressed, 1 if pressed)
+      CX <-- X (horiz) coordinate (0-MaxX, depending on mode)
+      DX <-- Y (vert) coordinate (0-MaxY, depending on mode)
+
+Description:
+
+The MO_GWHERE service gets the mouse cursor position and current
+button status. It works whether or not the mouse cursor is
+visible.
+
+In 80x25 text mode and CGA graphics modes, the mouse driver uses
+virtual coordinates based on a 640x200 graphics screen. Keep
+this in mind if using these modes.
+
+Service : MO_HIDECURSOR
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Hides the mouse cursor
+
+Parms:
+   none
+
+Description:
+
+The MO_HIDECURSOR service hides the mouse cursor. After using
+this service, the mouse cursor will not be visible, although it
+will still be there.
+
+This is a somewhat peculiar service. If you use it more than
+once, it will take more than one application of MO_SHOWCURSOR
+before the cursor actually reappears. The mouse driver keeps a
+"level of invisibility" counter rather than simply turning the
+cursor on and off.
+
+
+
+
+Service : MO_INIT
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Initialize mouse, if any, and get info about it
+
+Parms:
+   -------
+      AL = number of buttons (0-3)
+
+Description:
+
+The MO_INIT service initializes the mouse driver and returns the
+number of buttons on the mouse. If no mouse is available, the
+number of buttons will be zero. Otherwise, you can expect 2-3
+buttons.
+
+The Microsoft mouse is somewhat limited in that it has only two
+buttons. Most compatible mice have three. The AsmWiz mouse
+services will work with either, but will ignore the middle
+button of three-button mice.
+
+Service : MO_LOCATE
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Sets the mouse cursor location
+
+Parms:
+      DH <-- row (1-25)
+      DL <-- column (1-80)
+
+Description:
+
+The MO_LOCATE service sets the mouse cursor position. It works
+whether or not the mouse cursor is visible.
+
+Normally, the mouse driver uses coordinates based on a 640x200
+virtual screen. In order to make it easier to handle the mouse
+for text, this service automatically converts from an 80x25
+format.
+
+
+
+
+Service : MO_RANGE
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Sets the mouse cursor range
+
+Parms:
+      CH <-- top row (1-25)
+      CL <-- left column (1-80)
+      DH <-- bottom row (1-25)
+      DL <-- right column (1-80)
+
+Description:
+
+The MO_RANGE service sets the mouse cursor range. The mouse
+cursor will be constrained to the specified area of the screen.
+
+Normally, the mouse driver uses coordinates based on a 640x200
+virtual screen. In order to make it easier to handle the mouse
+for text, this service automatically converts from an 80x25
+format.
+
+Service : MO_SHOWCURSOR
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Shows the mouse cursor
+
+Parms:
+   none
+
+Description:
+
+The MO_SHOWCURSOR service shows the mouse cursor. After using
+this service, the mouse cursor will (probably) be visible.
+
+See the description of the MO_HIDECURSOR service for details on
+that "probably" caution!
+
+
+
+
+Service : MO_WHERE
+
+Module  : Mouse Services
+
+Compat  : BIOS (Microsoft-type mouse driver)
+
+Purpose : Gets the mouse cursor location
+
+Parms:
+   -------
+      AH = right mouse button (0 if not pressed, 1 if pressed)
+      AL = left mouse button  (0 if not pressed, 1 if pressed)
+      DH = row (1-25)
+      DL = column (1-80)
+
+Description:
+
+The MO_WHERE service gets the mouse cursor position and current
+button status. It works whether or not the mouse cursor is
+visible.
+
+Normally, the mouse driver uses coordinates based on a 640x200
+virtual screen. In order to make it easier to handle the mouse
+for text, this service automatically converts to an 80x25
+format.
+
+Service : MU_SOUND
+
+Module  : Sound and Music Services
+
+Compat  : Clone
+
+Purpose : Produces a sound of the desired frequency & duration
+
+Parms:
+   AX <-- frequency of the sound, in cycles per second (Hertz)
+   DX <-- duration of the sound (in 1/18th seconds)
+
+Description:
+
+The MU_SOUND routine produces a sound of the specified frequency
+(about 50-4000 is useful) and duration (in 18ths of seconds).
+
+If you are interested in producing music using this service, the
+following table may prove of some use. You can move down an
+octave by halving the frequency for a given note (which can be
+efficiently accomplished using the SHR or SHift Right
+assembly-language operation). About seven octaves are available
+on the usual PC compatible.
+
+Note     Frequency (highest octave)
+=====    =========
+  A         3520
+A#,B-       3714
+  B         3952
+  C         4186
+C#,D-       4434
+  D         4698
+D#,E-       4978
+  E         5274
+  F         5588
+F#,G-       5920
+  G         6272
+G#,A-       6644
+
+Service : MV_CHROUT
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Displays a character on the screen
+
+Parms:
+      AL <-- character to display
+
+Description:
+
+The MV_CHROUT routine displays a character on the screen. The
+screen must be in one of the text modes (video modes 0-3, 7).
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_CLEOLN
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Clears to the end of the line
+
+Parms:
+   none
+
+Description:
+
+The MV_CLEOLN service clears from the current cursor position to
+the end of the current screen line, inclusive. The screen must
+be in one of the text modes (video modes 0-3, 7).
+
+Redirection, if any, is ignored.
+
+Service : MV_CLS
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Clears the screen
+
+Parms:
+   none
+
+Description:
+
+The MV_CLS service clears the screen and homes the cursor to the
+upper left corner. The screen must be in one of the text modes
+(video modes 0-3, 7).
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_COLOR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Sets the default text color
+
+Parms:
+      AL <-- default color
+
+Description:
+
+The MV_COLOR service sets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-7; the foreground is in the low nybble and also ranges
+0-7. For bright, add 8 to the foreground; for blinking, add 8 to
+the background.
+
+Redirection, if any, is ignored.
+
+Service : MV_CRLF
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Displays a <CR><LF> (carriage return and linefeed)
+
+Parms:
+   none
+
+Description:
+
+The MV_CRLF routine displays a carriage return and linefeed on
+the screen. The screen must be in one of the text modes (video
+modes 0-3, 7).
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_DELCHR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Deletes the character at the cursor
+
+Parms:
+   none
+
+Description:
+
+The MV_DELCHR service deletes the character on which the cursor
+is placed. Any characters to the right of it are moved left and
+the rightmost column of the screen is cleared to a space in the
+current screen colors.
+
+Redirection, if any, is ignored.
+
+Service : MV_DELLINE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Deletes the current screen row
+
+Parms:
+   none
+
+Description:
+
+The MV_DELLINE service deletes the row on which the cursor is
+placed. Any rows beneath it are moved up and the bottom line of
+the screen is cleared to a row of spaces in the current screen
+colors.
+
+Redirection, if any, is ignored.
+
+Service : MV_FIXCOLOR
+
+Module  : Machine-level Video Services
+
+Compat  : Any
+
+Purpose : Tells the MV services to convert color to monochrome
+
+Parms:
+      AL <-- whether to convert to mono (0 no, 1 yes)
+
+Description:
+
+The MV_FIXCOLOR service tells the Machine-level Video services
+whether to convert colors to their monochrome equivalents. If
+not, the colors will remain as you originally specified. If so,
+the colors will be converted to appropriate values for use on a
+monochrome display.
+
+The color-to-mono translation attempts to mimic the original
+display as closely as possible. It analyzes the foreground and
+background colors by their intensity. The results are translated
+to white on black, bright white on black, or black on white. The
+"blink" attribute is preserved. If the original foreground was
+identical to the background (invisible characters), the result
+will be black on black.
+
+See also the MI_GETSCREEN service, which allows you to
+automatically detect what kind of display is in use.
+
+Service : MV_FRAME
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Displays a window frame
+
+Parms:
+   CH,CL <-- upper left corner (row 1-25/43, column 1-40/80)
+   DH,DL <-- lower right corner (row 1-25/43, column 1-40/80)
+   DS:SI <-- frame pointer (SI = -1 to -9 for built-in frames)
+
+Description:
+
+The MV_FRAME service displays a window frame. You may design
+your own frame or use one of a variety of built-in frames.
+
+If you choose to build your own frame, you must point DS:SI to
+an eight-byte list of characters with which to build the frame.
+The list should be in this order: top left corner, top middle,
+top right corner, left middle, right middle, lower left corner,
+lower middle, and lower right corner.
+
+You may also choose to use a built-in frame by setting SI in the
+range -1 to -9, as follows:
+
+   -1      single line frame
+   -2      double line frame
+   -3      single horizontal lines, double vertical lines
+   -4      double horizontal lines, single vertical lines
+   -5      blank block frame              (CHR$(32))
+   -6      low intensity block frame      (CHR$(176))
+   -7      medium intensity block frame   (CHR$(177))
+   -8      high intensity block frame     (CHR$(178))
+   -9      solid block frame              (CHR$(219))
+
+Redirection, if any, is ignored.
+
+Service : MV_GETCOLOR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Gets the default text color
+
+Parms:
+   -------
+      AL = default color
+
+Description:
+
+The MV_GETCOLOR service gets the default text color. A
+color/attribute table is given in the ASMWIZ.DOC file. In
+general, however, the background is in the high nybble and
+ranges 0-7; the foreground is in the low nybble and also ranges
+0-7.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_MODE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Gets the default screen mode
+
+Parms:
+   -------
+      AL = mode
+
+Description:
+
+The MV_GETMODE service gets the current screen mode. A table of
+screen modes is given in the ASMWIZ.DOC file.
+
+Service : MV_HIDECURSOR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Hides the cursor
+
+Parms:
+   none
+
+Description:
+
+The MV_HIDECURSOR service hides the cursor, making it invisible.
+This does not affect normal cursor operation.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_INIT
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Initializes the Machine-level Video Services
+
+Parms:
+   none
+
+Description:
+
+The MV_INIT routine initializes the Machine-level Graphics
+Services. It should be used once in your program, before any
+other Machine-level Graphics Services are called.
+
+Redirection, if any, is ignored.
+
+Service : MV_INSCHR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Inserts a space at the cursor position
+
+Parms:
+   none
+
+Description:
+
+The MV_INSCHR service inserts a space at the current cursor
+location. Any characters to the right of it are moved right and
+a space is inserted in the current screen colors.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_INSLINE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Inserts a line at the current screen row
+
+Parms:
+   none
+
+Description:
+
+The MV_INSLINE service inserts a row at the current cursor
+location. Any rows beneath it are moved down and the new line
+screen is cleared to a row of spaces in the current screen
+colors.
+
+Redirection, if any, is ignored.
+
+Service : MV_LOCATE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Sets the cursor position
+
+Parms:
+      DH <-- row (1-25)
+      DL <-- column (1-40/80)
+
+Description:
+
+The MV_LOCATE service sets the cursor position. The screen must
+be in one of the text modes (video modes 0-3, 7).
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_MODE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Sets the screen mode
+
+Parms:
+      AL <-- screen mode (0-3, 7)
+
+Description:
+
+The MV_MODE routine sets the screen mode. This may be any of the
+following:
+
+     Mode  Resolu.  Type  Colr  Use        Adapter(s)
+
+       0   40x25    b&w     16  text       CGA, EGA, VGA
+       1   40x25    color   16  text       CGA, EGA, VGA
+       2   80x25    b&w     16  text       CGA, EGA, VGA
+       3   80x25    color   16  text       CGA, EGA, VGA
+       7   80x25    b&w      -  text       MDA, EGA, VGA
+
+Redirection, if any, is ignored.
+
+Service : MV_POPUP
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Displays a pop-up window on the screen
+
+Parms:
+   DS:DX <-- pointer to parameter list
+
+Description:
+
+The MV_POPUP service displays a pop-up window on the screen. A
+variety of frames is available for the window. Titles are
+optional and will be left- justified in the top bar of the
+window if supplied.
+
+Frame types are as follows:
+
+   0    none (blank)
+   1    single lines
+   2    double lines
+   3    single horizontal lines, double vertical lines
+   4    double horizontal lines, single vertical lines
+
+The parameter list should look like this:
+
+Y1           db ?            ; top row of window
+X1           db ?            ; left column of window
+Y2           db ?            ; bottom row of window
+X2           db ?            ; right column of window
+FRAMETYPE    db ?            ; frame type
+FRAMECOLOR   db ?            ; frame color
+TITLE        dw ?            ; offset (DS:) of ASCIIZ title
+                             ; use 0FFFFh for no title
+
+Redirection, if any, is ignored.
+
+Service : MV_SAVESIZE
+
+Module  : Machine-level Video Services
+
+Compat  : Any
+
+Purpose : Gets the number of bytes needed to save screen area
+
+Parms:
+   -------
+      AX = bytes
+
+Description:
+
+The MV_SAVESIZE service tells you how many bytes will be needed
+to save an area of the screen with MV_SCRSAVE. This is intended
+as a convenience for programs that allocate the required space
+on the fly. The actual calculation looks like this:
+
+   Bytes = (RowsToSave * ScreenColumns + ColumnsToSave + 1)*2
+
+You will need 4,002 bytes to save an entire 80x25 screen.
+
+Service : MV_SCRREST
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Restores a saved area of the screen
+
+Parms:
+   DS:SI <-- pointer to buffer containing a saved screen area
+      DH <-- top row      (where to restore to)
+      DL <-- left column  (where to restore to)
+
+Description:
+
+The MV_SCRREST service restores a saved area of the screen to
+the display. The image may be stored to any location, regardless
+of where it was saved from, as long as the results don't go off
+the edge of the screen.
+
+Only the upper left corner of the location to which to restore
+is specified. This service calculates the lower left corner from
+size parameters which are stored in the saved screen image.
+
+Text mode (modes 0-3, 7) is required. Only display page zero is
+supported.
+
+Service : MV_SCRSAVE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Saves an area of the screen to a buffer
+
+Parms:
+   ES:DI <-- pointer to a buffer to which to save screen area
+      CH <-- top row
+      CL <-- left column
+      DH <-- bottom row
+      DL <-- right column
+   -------
+      AX = bytes used to store the image
+
+Description:
+
+The MV_SCRSAVE service saves an area of the screen to a buffer.
+The number of bytes used to store the image is returned. You can
+find out the number of bytes that will be needed in advance, if
+desired, via the MV_SAVESIZE service.
+
+The saved image will be a direct copy of the specified area of
+the screen. The first two bytes of the image will contain the
+number of rows and columns in the image, respectively.
+
+Text mode (modes 0-3, 7) is required. Only display page zero is
+supported.
+
+Service : MV_SHOWCURSOR
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Shows the cursor
+
+Parms:
+   none
+
+Description:
+
+The MV_SHOWCURSOR service shows the cursor, making it visible.
+NOTE: This service may change the cursor shape if used before
+MV_HIDECURSOR.
+
+Redirection, if any, is ignored.
+
+
+
+
+Service : MV_STROUT
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Displays a string on the screen
+
+Parms:
+   DS:DX <-- ptr to the string to display
+
+Description:
+
+The MV_STROUT routine displays a string on the screen. The
+string must be in ASCIIZ (NUL terminated) format. The screen
+must be in one of the text modes (video modes 0-3, 7).
+
+The following control codes are interpreted:
+   7      Bell             beep
+   8      Backspace        non-destructive backspace
+   9      Tab              space over to the next tab stop
+  10      Linefeed         move cursor down one line
+  12      Formfeed         clear screen and home cursor
+  13      Carriage Return  home cursor on current line
+
+Redirection, if any, is ignored.
+
+Service : MV_WHERE
+
+Module  : Machine-level Video Services
+
+Compat  : Clone
+
+Purpose : Gets the cursor position
+
+Parms:
+   -------
+      DH = row (1-25)
+      DL = column (1-40/80)
+
+Description:
+
+The MV_WHERE service gets the cursor position. The screen must
+be in one of the text modes (video modes 0-3, 7).
+
+Redirection, if any, is ignored.
+
+Service : S0_COMPARE
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Compares two strings
+
+Parms:
+   DS:SI <-- ptr to first string
+   ES:DI <-- ptr to second string
+   -------
+   Flags = ZF if equal, NZ if not equal
+   Flags = CY if first < second, NC if first >= second
+
+Description:
+
+The S0_COMPARE service compares two strings. The carry flag and
+zero flag are set as you might expect for a comparison
+operation.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+
+
+
+Service : S0_DUPE
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Creates a string by duplicating a given character
+
+Parms:
+      AL <-- character to duplicate
+      CX <-- number of times to repeat the character
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_DUPE service creates a string by repeating a single
+character. The resulting string will be in ASCIIZ form (NUL
+terminated), so be sure to use a buffer large enough to hold
+both the string and its terminator.
+
+Service : S0_FIND
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Searches for a substring within a string
+
+Parms:
+   DS:SI <-- ptr to substring
+   ES:DI <-- ptr to string
+   -------
+      AX = position of substring within string
+
+Description:
+
+The S0_FIND service searches for a substring within a string. It
+returns zero if the substring does not exist within the string.
+The Zero Flag is set accordingly (NZ if found).
+
+Service : S0_LEFT
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Copies a section from the left of a string
+
+Parms:
+      CX <-- number of characters to copy
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_LEFT service copies a specified number of characters from
+the left of one string into another. If you prefer, you can use
+the same address for both strings, allowing you to place the
+result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+
+
+
+Service : S0_LENGTH
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Returns the length of a string
+
+Parms:
+   DS:SI <-- ptr to source string
+   -------
+      CX = string length
+
+Description:
+
+The S0_LENGTH service returns the length of a string, not
+counting the NUL terminator.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+Service : S0_LOCASE
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Converts a string to lowercase (International)
+
+Parms:
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_LOCASE service converts all of the alphabetic characters
+in a string to lowercase. As well as American alphabet
+characters, the international alphabet characters supplied in
+the upper 128 IBM ASCII set are also translated.
+
+If you prefer, you can use the same address for both strings,
+allowing you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+See also S0_LOCASES, which provides a slightly slower service
+which affects only American letters, at a fraction of the cost
+in memory.
+
+
+
+
+Service : S0_LOCASES
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Converts a string to lowercase (American)
+
+Parms:
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_LOCASES service converts all of the alphabetic characters
+in a string to lowercase. Only American letters (in the ASCII
+range 1-127) are affected.
+
+If you prefer, you can use the same address for both strings,
+allowing you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+See also S0_LOCASE, which provides a faster international
+version of the same routine, at the cost of more memory.
+
+
+
+
+Service : S0_MID
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Copies a section of one string to another
+
+Parms:
+      CX <-- number of characters to copy
+      DX <-- where to start copying from (1-x)
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_MID service copies a specified number of characters one
+string to another, starting from a given location. If you
+prefer, you can use the same address for both strings, allowing
+you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+Service : S0_RIGHT
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Copies a section from the right of a string
+
+Parms:
+      CX <-- number of characters to copy
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_RIGHT service copies a specified number of characters
+from the right of one string into another. If you prefer, you
+can use the same address for both strings, allowing you to place
+the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+
+
+
+Service : S0_TRIM
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Trims the white space from either side of a string
+
+Parms:
+      AL <-- trim code: set bit 0 for left, bit 1 for right
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_TRIM service removes the "white space" from either side
+(or both sides) of a string. Blanks and control characters are
+considered white space. This is a handy routine for normalizing
+user input and trimming the padding from fixed-length records,
+for instance.
+
+If you prefer, you can use the same address for both strings,
+allowing you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+Service : S0_UPCASE
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Converts a string to uppercase (International)
+
+Parms:
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_UPCASE service converts all of the alphabetic characters
+in a string to uppercase. As well as American alphabet
+characters, the international alphabet characters supplied in
+the upper 128 IBM ASCII set are also translated.
+
+If you prefer, you can use the same address for both strings,
+allowing you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+See also S0_UPCASES, which provides a slightly slower service
+which will capitalize only American letters, but which takes up
+a fraction of the memory.
+
+Service : S0_UPCASES
+
+Module  : String Services
+
+Compat  : Any
+
+Purpose : Converts a string to uppercase (American)
+
+Parms:
+   DS:SI <-- ptr to source string
+   ES:DI <-- ptr to result string
+
+Description:
+
+The S0_UPCASES service converts all of the alphabetic characters
+in a string to uppercase. Only American letters (ASCII 1-127
+range) are affected.
+
+If you prefer, you can use the same address for both strings,
+allowing you to place the result back into the source buffer.
+
+Strings must be in ASCIIZ form (NUL terminated).
+
+See also S0_UPCASE, which provides a faster service which will
+capitalize letters in the entire IBM ASCII set (ASCII 1-255),
+but which takes up considerably more memory.
+
+Service : TC_CHKSUM
+
+Module  : Telecommunications Services
+
+Compat  : Any
+
+Purpose : Calculates a checksum for Xmodem or Ymodem
+
+Parms:
+   DS:SI <-- ptr to data block
+      CX <-- length of data block (bytes)
+   -------
+      AX = checksum
+
+Description:
+
+The TC_CHKSUM routine calculates the checksum of a block of
+data.  The algorithm used is compatible with the Xmodem and
+Ymodem file transfer protocols (use the lower byte of the
+checksum, AL, in that case).
+
+
+
+
+Service : TC_CRC
+
+Module  : Telecommunications Services
+
+Compat  : Any
+
+Purpose : Calculates a CRC for Xmodem or Ymodem
+
+Parms:
+   DS:SI <-- ptr to data block
+      CX <-- length of data block (bytes)
+   -------
+      AX = CRC
+
+Description:
+
+The TC_CRC routine calculates the CRC (Cyclical Redundancy
+Check) value of a block of data. The algorithm used is
+compatible with the Xmodem and Ymodem file transfer protocols.
+
+If you use TC_CRC for an outgoing Xmodem/Ymodem block, you need
+to add two nulls to the end of the block and increment CX
+accordingly. When you get the CRC, exchange AL and AH, then put
+AX where the nulls were, which will complete the outgoing
+packet. The reason for the swap is that Xmodem/Ymodem expect the
+CRC with the high byte followed by the low byte (non-Intel
+format).
+
+If you use TC_CRC for an incoming Xmodem/Ymodem block, leave the
+received CRC at the end of the data block and increment CX
+accordingly. If the calculated CRC comes out to zero, the
+received packet is fine.
+
+Service : TD_GETDATE
+
+Module  : Time and Date Services
+
+Compat  : DOS
+
+Purpose : Returns the date as a formatted string
+
+Parms:
+      AL <-- 0 for 2-digit year, 1 for 4-digit year
+   DS:DX <-- ptr to result buffer (minimum 11 bytes)
+
+Description:
+
+The TD_GETDATE service returns the current date as a formatted
+string. The formatting includes international date handling, in
+that the string is formatted in the appropriate manner for the
+country in which the computer is being operated. If a DOS
+version before 3.0 is used, the date delimiters are not
+guaranteed to be correct, but the month, day and year will be in
+the proper order regardless.
+
+The result is returned as an ASCIIZ (NUL terminated) string.
+
+
+
+
+Service : TD_GETTIME
+
+Module  : Time and Date Services
+
+Compat  : DOS
+
+Purpose : Returns the time as a formatted string
+
+Parms:
+   DS:DX <-- ptr to result buffer (minimum 8 bytes)
+
+Description:
+
+The TD_GETTIME service returns the current time as a formatted
+string. The formatting includes international time handling, in
+that the string is formatted in the appropriate manner for the
+country in which the computer is being operated. If a DOS
+version before 3.0 is used, the time delimiters and 12/24-hour
+formatting are not guaranteed to be correct.
+
+If the hour is a single-digit number, it will be preceeded by a
+space. This is handy for keeping times in columns, but if you
+don't want the space there, chop it off by calling the S0_TRIM
+service.
+
+The result is returned as an ASCIIZ (NUL terminated) string.

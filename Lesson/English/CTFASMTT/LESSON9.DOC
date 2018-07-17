@@ -1,0 +1,131 @@
+LESSON9 - INCLUDING INFO IN THE EXE
+
+the method to this is almost the same as extrn/public, the way
+to this is using the prog "binobj" which comes with tp/bp or bc/tc
+and use is a following :
+"binobj" <InputFileName> <OutputFileName> <PublicName>
+lets say we have pic.dat and we want the public to be dat1 then :
+"binobj pic.dat pic.obj dat1" and <-
+lets say it was a data of screen made with pascal :
+
+program example ;
+  uses dos,crt ;
+  var
+    z:file ;
+begin
+  assign (z,'pic.dat') ;
+  rewrite (z,1) ;
+  blockwrite (z,mem[$b800:0],4000) ;
+  close (z) ;
+end.
+
+this will give us a screen file, and now how to show it :
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ss:sseg,ds:cseg,es:nothing
+
+extrn dat1:far
+
+start :
+
+push ds        ; we must save it
+
+mov ax,seg dat1 ; points to extrn seg
+mov ds,ax
+mov si,offset dat1
+
+mov ax,0b800h  ; adress of screen
+mov es,ax
+mov di,0
+
+mov cx,2000    ; to speed up use movsw (4000 bytes/2)
+rep movsw
+
+pop ds
+
+mov ax,4c00h
+int 21h
+ends
+end start
+end
+
+this will write the pic to the screen, compiling goes like that :
+
+"binobj ...."
+"tasm filename.asm"
+"tlink filename pic.obj"
+
+and that's it, but what if we use a picture, then ???
+well you will have to open a new segment for the extrn :
+newseg segment
+  extrn dat1
+ends
+
+this way you will avoid passing the 64k, if your data passes 64k then
+split it or use protected mode (how, learn it, it ain't easy) ;
+
+writing a picture to screen (graphic)
+
+program example ;
+  uses dos,crt ;
+  var
+    z:file ;
+begin
+  assign (z,'pic.dat') ;
+  rewrite (z,1) ;
+  blockwrite (z,mem[$a000:0],64000) ;
+  close (z) ;
+end.
+
+sseg segment
+  db 10 dup (?)
+ends
+
+cseg segment
+assume cs:cseg,ss:sseg,ds:cseg,es:nothing
+
+extrn dat1:far
+
+start :
+
+push ds        ; we must save it
+
+mov ax,13h
+int 10h         ; goes to graphic mode 320*200*256
+
+mov ax,seg dat1 ; points to extrn seg
+mov ds,ax
+mov si,offset dat1
+
+mov ax,0a000h  ; adress of screen
+mov es,ax
+mov di,0
+
+mov cx,32000    ; and,,.... it's on the screen
+rep movsw
+
+mov ax,0
+int 16h         ; pause
+
+mov ax,3
+int 10h         ; goes back to text
+pop ds
+
+mov ax,4c00h
+int 21h
+ends
+end start
+end
+
+compiling :
+
+"binobj pic.dat pic.obj dat1"
+"tasm filename"
+"tlink filename pic"
+
+and run, this program doesn't have pal, if you want to add, then go figure
+it out (I can't teach you every thing)

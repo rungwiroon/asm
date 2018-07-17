@@ -1,0 +1,18 @@
+  code_segment   segment
+         assume  cs:code_segment
+           org 100h
+   main    proc near
+           mov ax,0000h
+           mov bx,0200h
+           mov cx,000Ah
+   main1   proc near
+           mov [bx],ax
+           INC bx
+           INC ax
+           loop main1
+           int 20h
+
+   main1 endp
+  main  endp
+code_segment  ends
+   end main1

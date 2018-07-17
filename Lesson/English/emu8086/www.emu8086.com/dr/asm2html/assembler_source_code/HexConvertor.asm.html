@@ -1,0 +1,182 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/HexConvertor.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> HexConvertor.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; hex convertor. </font>
+<font color=#008000>; this example converts a 2 digit hexadecimal number </font>
+<font color=#008000>; into a numeric value and then into decimal/ascii string representation,  </font>
+<font color=#008000>; and finally it prints out the result in binary code. </font>
+
+<font color=#008000>; to see decimal string: </font>
+<font color=#008000>;   1. click "vars" </font>
+<font color=#008000>;   2. click "result" variable </font>
+<font color=#008000>;   3. enter "3" for the elements and "ascii" for show as. </font>
+
+
+name <font color=#800080>"hex"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start
+
+<font color=#008000>; source hex value is 2 char string. </font>
+<font color=#008000>; numeric value is stored into temp, </font>
+<font color=#008000>; and string decimal value is stored into result. </font>
+
+source <font color=#000064>db</font> <font color=#800080>'1b'</font>, 0     <font color=#008000>; 1bh is converted to 27 (decimal) 00011011b (binary) </font>
+result <font color=#000064>db</font> <font color=#800080>'000'</font>, 0
+temp   <font color=#000064>dw</font> ?
+
+start:
+<font color=#008000>; convert first digit to value 0..15 from ascii: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, source<font color=#0064C8>[</font>0<font color=#0064C8>]</font>
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'0'</font>
+<font color=#0000FF>jae</font>  f1
+
+f1:
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'9'</font>
+<font color=#0000FF>ja</font> f2     <font color=#008000>; jumps only if not '0' to '9'. </font>
+
+<font color=#0000FF>sub</font> <font color=#C80000>al</font>, 30h  <font color=#008000>; convert char '0' to '9' to numeric value. </font>
+<font color=#0000FF>jmp</font> num1_ready
+
+f2:
+<font color=#008000>; gets here if it's 'a' to 'f' case: </font>
+<font color=#0000FF>or</font> <font color=#C80000>al</font>, 00100000b   <font color=#008000>; remove upper case (if any). </font>
+<font color=#0000FF>sub</font> <font color=#C80000>al</font>, 57h  <font color=#008000>;  convert char 'a' to 'f' to numeric value. </font>
+
+num1_ready:
+<font color=#0000FF>mov</font> <font color=#C80000>bl</font>, 16
+<font color=#0000FF>mul</font> <font color=#C80000>bl</font>      <font color=#008000>; ax = al * bl </font>
+
+<font color=#0000FF>mov</font> temp, <font color=#C80000>ax</font>
+
+
+
+
+<font color=#008000>; convert second digit to value 0..15 from ascii: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, source<font color=#0064C8>[</font>1<font color=#0064C8>]</font>
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'0'</font>
+<font color=#0000FF>jae</font>  g1
+
+g1:
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, <font color=#800080>'9'</font>
+<font color=#0000FF>ja</font> g2     <font color=#008000>; jumps only if not '0' to '9'. </font>
+
+<font color=#0000FF>sub</font> <font color=#C80000>al</font>, 30h  <font color=#008000>; convert char '0' to '9' to numeric value. </font>
+<font color=#0000FF>jmp</font> num2_ready
+
+g2:
+<font color=#008000>; gets here if it's 'a' to 'f' case: </font>
+<font color=#0000FF>or</font> <font color=#C80000>al</font>, 00100000b   <font color=#008000>; remove upper case (if any). </font>
+<font color=#0000FF>sub</font> <font color=#C80000>al</font>, 57h  <font color=#008000>;  convert char 'a' to 'f' to numeric value. </font>
+
+num2_ready:
+<font color=#0000FF>xor</font> <font color=#C80000>ah</font>, <font color=#C80000>ah</font>
+<font color=#0000FF>add</font> temp, <font color=#C80000>ax</font>
+<font color=#008000>; convertion from hex string complete! </font>
+<font color=#0000FF>push</font> temp <font color=#008000>; store original temp value. </font>
+
+<font color=#008000>; convert to decimal string, </font>
+<font color=#008000>; it has to be 3 decimal digits or less: </font>
+
+<font color=#0000FF>mov</font> <font color=#C80000>di</font>, 2  <font color=#008000>; point to top of the string. </font>
+
+next_digit:
+
+<font color=#0000FF>cmp</font> temp, 0
+<font color=#0000FF>je</font> stop
+
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, temp
+<font color=#0000FF>mov</font> <font color=#C80000>bl</font>, 10
+<font color=#0000FF>div</font> <font color=#C80000>bl</font> <font color=#008000>; al = ax / operand, ah = remainder. </font>
+<font color=#0000FF>mov</font> result<font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, <font color=#C80000>ah</font>
+<font color=#0000FF>add</font> result<font color=#0064C8>[</font><font color=#C80000>di</font><font color=#0064C8>]</font>, 30h <font color=#008000>; convert to ascii. </font>
+
+<font color=#0000FF>xor</font> <font color=#C80000>ah</font>, <font color=#C80000>ah</font>
+<font color=#0000FF>mov</font> temp, <font color=#C80000>ax</font>
+
+<font color=#0000FF>dec</font> <font color=#C80000>di</font>  <font color=#008000>; next digit in string. </font>
+<font color=#0000FF>jmp</font> next_digit
+
+stop:
+<font color=#0000FF>pop</font> temp <font color=#008000>; re-store original temp value. </font>
+
+
+
+
+
+<font color=#008000>; print result in binary: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bl</font>, b.temp
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 8
+print: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2   <font color=#008000>; print function. </font>
+       <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'0'</font>
+       <font color=#0000FF>test</font> <font color=#C80000>bl</font>, 10000000b  <font color=#008000>; test first bit. </font>
+       <font color=#0000FF>jz</font> zero
+       <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'1'</font>
+zero:  <font color=#0000FF>int</font> 21h
+       <font color=#0000FF>shl</font> <font color=#C80000>bl</font>, 1
+<font color=#0000FF>loop</font> print
+
+<font color=#008000>; print binary suffix: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'b'</font>
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; wait for any key press: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+
+
+
+<font color=#0000FF>ret</font>  <font color=#008000>; return to operating system. </font>
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/HexConvertor.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

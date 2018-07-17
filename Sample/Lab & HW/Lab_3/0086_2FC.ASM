@@ -1,0 +1,42 @@
+TITLE PMGF:THANWA 0086
+.MODEL  SMALL
+.CODE
+        ORG 100H
+START:
+        JMP MAIN
+MAIN    PROC
+
+        
+         MOV DL,00       ;DL HAS ASCII CODE OF NULL CHAR
+START1:  MOV AH,02       ;DISPLAY CHAR FUNCTION
+         MOV CX,10       ;NO. OF CHAR TO DISPLAY
+
+PRINT_LOOP:
+
+        CMP DL,255      ;CHACK ASCII = 255 ?
+        JE EXIT         ;IF = 255 GO EXIT
+
+        INT 21H         ;DISPLAY S CHAR
+        INC DL          ;INCREMENT ASCII CODE
+        DEC CX          ;DECREMENT COUNTER
+
+        CMP CX,00       ;CHACK 10 CHAR/ LINE ?
+        JE LINE         ;IF YES GO LINE
+
+        JMP PRINT_LOOP  ;KEEP GOING IF CX NOT 0
+
+LINE:   MOV BL,DL       ;SAVE DATA
+        MOV AH,2      ;FUNCTION SHOW
+        MOV DL,0AH
+        INT 21H
+        MOV DL,0DH
+        INT 21H
+        MOV DL,BL       ;RETURN DATA
+        JMP START1       ;JMP TO DATA
+
+;DOS EXIT
+
+EXIT:   MOV AH,4CH
+        INT 21H
+MAIN    ENDP
+        END     START

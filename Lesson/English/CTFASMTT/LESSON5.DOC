@@ -1,0 +1,99 @@
+LESSON5 - FLAGS AND JUMPS
+
+in the last chapter we talked about fixed points and their limitations
+(assembly has integers you just have to give them neg value)
+of shr,shl,ror,rol and the need to detect zero so what we have is
+flags, 16 bit register the each bit is a different status of something
+that happed.
+major flags :
+
+CF  - Carry flag is set when there is a borrow in some command lets say
+      "sub ax,13" and ax is 21 so a borrow will apear.
+PF  - Parity flag is set when the LSB of the operation is even,
+      lets say "add ax,11" and ax is 11 so the flag will be set (even)
+ZF  - Zero flag is set when the operation is zero lets say "dec ax" and ax
+      is now 0 so ZF will be set.
+OF  - Overflow flag is set when the operation is beyond the limitation of
+      the register lets say "add ax,65535" (ax=100) so the flag will be
+      set.
+
+there are more flags but much of them aren't used so (if you want to know
+open a book or norton guides to assembler)
+
+now before anything else a most important command is :
+
+CMP register,value - Compare a register to a certain value and set all
+                     needed flags.
+
+lets say "cmp ax,0" and ax is 0 so the ZF will be set.
+
+but (you may ask) how do we use those flags well the answer is
+conitional jumps !!
+
+JNE  - Jump if not equal
+JZ   - Jump if zero
+JE   - Jump if equal
+JB   - Jump if below
+JA   - Jump if above
+JAE  - Jump if above and equal
+JBE  - Jump if below and equal
+JC   - Jump if carry
+JNC  - Jump if not carrt
+JS   - Jump if sign
+JNS  - Jump if not sign
+JMP  - Unconditional jump
+
+note : all of these conditional jumps (not jmp) can jump only in the range
+of near (256/0ffh bytes) and only jmp can jump to the entire code !!!
+use - JMP label
+
+example :
+
+mov ax,10
+mov cx,20
+mov dx,0
+
+div cx           ; does 10/20 result is 0 (if you don't know that so go back
+                 ; and repeat the commands.
+
+cmp ax,0         ; is ax 0
+jz @iszero       ; then it is so jump to label
+
+mov cx,ax
+mov dx,0
+div cx           ; it will never reach it cause it will never be larger then
+                 ; zero (if you comment the jz so you will get divide by 0)
+
+@iszero :        ; this is a label the "@" before the label is optional
+
+mov ax,4c00h     ; terminate
+int 21h
+
+now lets get back to our fixed points that we want to convert :
+
+mov ax,100       ; our circle radios
+mov cx,181       ; 181/256 is 0.707 (sin(45))
+mul cx           ; multiply (result : 18,100)
+
+cmp ax,0         ; is ax 0
+jb @neg1         ; jmp below so if neg jump to label
+
+shr ax,8
+jmp @done        ; don't want to get with the div
+
+@neg1 :
+
+mov dx,0
+mov cx,256
+idiv cx          ; ax/256 just use idiv it's a div for integers
+
+@done :
+
+mov ax,4c000h    ; terminate
+int 21h
+
+so that's about it in jumps and flags, I sugest that you will train a bit
+about all the stuff that you have learned in those chapters cause
+it is very important to understand those (those are the needed basic)
+in the next chpaters we will start transfering memory blocks,
+and use graphics.

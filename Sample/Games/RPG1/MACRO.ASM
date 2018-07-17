@@ -1,0 +1,74 @@
+DELAY MACRO TIME                        ;parameter  time to delay
+        LOCAL P1,P2
+        SAVE_REGISTER <AX,CX,DX>
+
+        MOV DX,TIME                     ;pass time to dx
+P1:     MOV CX,65535                    ;save 65535 to cx
+
+P2:     DEC CX                          ;decrease cx
+        JNZ P2                          ;if cx = 0?   no, go to p2
+        DEC DX                          ;decrease dx
+        JNZ P1                          ;if dx = 0?   no, go to p1
+
+        LOAD_REGISTER  <DX,CX,AX>
+ENDM
+
+SAVE_REGISTER MACRO REGS 	;parameter register
+	IRP D,<REGS>		;indefinite repeat
+	PUSH D			;save register 
+	ENDM
+ENDM
+
+
+LOAD_REGISTER MACRO REGS	;parameter register
+	irp d,<regs>		;indefinite repeat
+	POP D                		;load register 
+	ENDM
+ENDM
+DISP_STR MACRO STRING
+	LOCAL START,MSG
+
+	PUSH AX
+	PUSH DX
+	PUSH DS
+	JMP START
+MSG DB STRING,'$'
+START:
+	MOV AX,CS
+	MOV DS,AX
+	MOV AH,9
+	LEA DX,MSG
+	INT 21H
+
+	POP DS
+	POP DX
+	POP AX
+	ENDM
+
+NEW_LINE MACRO
+	PUSH AX
+	PUSH DX
+
+	MOV AH,2
+	MOV DL,0DH
+	INT 21H
+	MOV DL,0AH
+	INT 21H
+
+	POP DX
+	POP AX
+	ENDM
+RANDOM macro min,max    ;output is al
+   mov bl,max
+   mov bh,min
+   inc	  bl
+   sub bl,bh
+   mov ah,2ch			
+   int 21h				
+   mov al,dl
+   xor ah,ah
+   div bl
+   mov al,ah
+   xor ah,ah
+   add al,min
+endm

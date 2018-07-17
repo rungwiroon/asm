@@ -1,0 +1,1381 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                           LxPic V7.3
+           (c)2002 Stefan Peichl, Heidelberg, Germany
+                      http://hplx.pgdn.de
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+LxPic is a very small, powerful and fast DOS picture viewer.
+It has just 20 KB code and runs in 64 KB of memory on any 8086
+compatible computer. It supports all display modes from early
+CGA up to the latest 2048x1536 QXGA True Color (32bit) screens. 
+
+This makes LxPic ideal for use on the HP Palmtops, for which
+it was originally designed. On Windows systems, LxPic runs
+perfectly in a full screen DOS box or in a DOS box window.
+
+LxPic processes BMP, PCX, JPG and GIF files of any kind.
+BMP and PCX files may have 2, 4, 256 or True Colors (16 Mio).
+JPG files may have 256 gray scales or True Colors. GIF files
+may have Version 87a or 89a (including multi images) with up
+to 256 colors.
+
+LxPic has a low, medium and high {JKL} resolution list mode,
+to preview more than one picture as thumbnails on one screen.
+Dependent on your selected display mode, up to 361 thumbnails
+are displayed on one screen. See LIST MODE section for further
+information about this feature.
+
+LxPic needs no configuration. Its default startup mode should
+work for most situations. However you may override every
+default setting through an appropriate command line switch
+and/or you may use an optional configuration file LXPIC.CFG. 
+See the COMMAND LINE SWITCHES and the OPTIONAL LXTEL.CFG
+section of this documentation for further information.
+
+LxPic recognizes your display adapter and sets the display to
+the best standard mode. If your computer is equipped with a
+VESA BIOS which supports direct hardware access, LxPic starts
+in the 640x480x16 VGA mode.
+
+Use {*} to pop up a window with all available display modes to
+select from. Another way of changing the display mode is to use
+{F2} to cycle through the VGA modes and {F3} to cycle through
+the VESA modes. {Shift F2} and {Shift F3} cycle backwards.
+It is very likely, that your graphics card supports more screen
+modes than your monitor does. Press F3 to skip these modes.
+
+LxPic supports the following display modes:
+
+ MODE | WIDTHxHEIGHTxBIT | MEM | BIOS | THUMBNAILS | CMD-LINE
+ -----+------------------+-----+------+------------+-----------
+*HP95 |  240 x  128 x  1 |  4K |  20h |   2/ 4/ 6  | LXPIC /0
+  CGA |  640 x  200 x  1 | 16K |  06h |   3/ 6/15  | LXPIC /1
+  VGA |  320 x  200 x  8 | 64K |  13h |   4/ 9/12  | LXPIC /2
+  EGA |  640 x  350 x  4 | 64K |  10h |   9/16/36  | LXPIC /3
+  VGA |  640 x  480 x  4 |256K |  12h |   9/16/36  | LXPIC /4
+ -----+------------------+-----+------+------------+-----------
+  VGA |  640 x  480 x  8 | «MB | 101h |   9/16/36  | LXPIC /5
+  VGA |  640 x  480 x 16 | 1MB | 111h |   9/16/36  | LXPIC /6
+  VGA |  640 x  480 x 24 | 1MB | 112h |   9/16/36  | LXPIC /7
+ -----+------------------+-----+------+------------+-----------
+ SVGA |  800 x  600 x  8 | «MB | 103h |   9/16/49  | LXPIC /8
+ SVGA |  800 x  600 x 16 | 1MB | 114h |   9/16/49  | LXPIC /9 
+ SVGA |  800 x  600 x 24 | 2MB | 115h |   9/16/49  | LXPIC /10
+ -----+------------------+-----+------+------------+-----------
+  XGA | 1024 x  768 x  8 | 1MB | 105h |   9/36/81  | LXPIC /11
+  XGA | 1024 x  768 x 16 | 2MB | 117h |   9/36/81  | LXPIC /12
+  XGA | 1024 x  768 x 24 | 4MB | 118h |   9/36/81  | LXPIC /13
+ -----+------------------+-----+------+------------+-----------
+ SXGA | 1280 x 1024 x  8 | 2MB | 107h |  25/56/144 | LXPIC /14
+ SXGA | 1280 x 1024 x 16 | 4MB | 11Ah |  25/56/144 | LXPIC /15
+ SXGA | 1280 x 1024 x 24 | 4MB | 11Bh |  25/56/144 | LXPIC /16
+ -----+------------------+-----+------+------------+-----------
+ UXGA | 1600 x 1200 x  8 | 2MB | var. |  36/81/225 | LXPIC /17
+ UXGA | 1600 x 1200 x 16 | 4MB | var. |  36/81/225 | LXPIC /18
+ UXGA | 1600 x 1200 x 32 | 8MB | var. |  36/81/225 | LXPIC /19
+ -----+------------------+-----+------+------------+-----------
+ QXGA | 2048 x 1536 x  8 | 3MB | var. | 36/144/361 | LXPIC /20
+ QXGA | 2048 x 1536 x 16 | 6MB | var. | 36/144/361 | LXPIC /21
+ QXGA | 2048 x 1536 x 32 |12MB | var. | 36/144/361 | LXPIC /22
+ --------------------------------------------------------------
+*HP Palmtop only
+
+Run LXPIC /* to get an offline list of all available display
+modes of your graphics card.
+
+If you don't want LxPic to autodetect the video mode, you may
+use the above listed command line switches to force LxPic to
+use the desired mode at startup. This is important, if you want
+to run LxPic in a window under Windows. All non VESA modes
+should work in Win95 windows but only CGA works under Win3.11
+Indeed you may use all modes in full screen DOS boxes.
+
+If your screen remains blank after startup or displays
+unexpected results, press {F2} or {*} to access the standard
+VGA modes. See TECHNICAL for further information about VESA.
+
+If a picture has more colors than the actual display mode
+allows, the colors are reduced and dithered. If you don't
+want to see colors, you may always switch colors off with
+the {C}olor toggle key. If you don't want to see grayscales,
+you may always enable B&W display using the {W} toggle key.
+
+LxPic does not support printing, but you may use the DOS Print
+Screen function to copy the actual screen to a printer if you
+have the DOS graphics driver GRAPHICS.COM installed.
+
+The special HP Palmtop resize command {H} corrects the dispro-
+portion of the Palmtops pixel ratio and of the colorful VGA
+320x200x8 mode.
+
+LxPic has an interface to use it as a 'subroutine' in other
+programs. See PROGRAMMERS INTERFACE section of this document-
+ation for further information.
+
+     *The Graphics Interchange Format(c) is the Copyright
+      property of CompuServe Incorporated. GIF(sm) is a
+      Service Mark property of CompuServe Incorporated.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                        REVISION HISTORY
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Version 7.3  -Vernon Buerg's enhanced LIST supports now LxPic.
+(12-DEC-02)   Press Ctrl-V on any picture file in LIST to
+              invoke LxPic. Esc returns to LIST.
+              Get LIST from www.buerg.com
+             -Improved BMP, GIF, JPG and PCX display
+             -Improved VESA detection
+             -Alt-F adds a key mask to the file info box
+             -F10 and T keys exchanged. T displays JPG thumbs
+              now if available in an application segment.
+              F10 is the new key for B&W Text zoom out.
+             -800x600x4 display mode removed for compatibility
+              reasons. Therefore all VESA modes decreased by 1
+             -1024x600 special Toshiba resolution removed
+
+Version 7.2  -Optional configuration file LXPIC.CFG
+(09-JUN-02)  -Online display mode selection with {*} key
+             -New command line switches:
+               /= filename annunciator
+               /] decrease slide show delay by 2 seconds
+               /[ increase slide show delay by 2 seconds
+               /& increase slide show delay by 1 minute
+             -Bigger font for all VESA modes >= 1280x1024
+             -Path display while scanning subdirectories 
+             -B&W images are always visible now
+             -Windows long filename bug fixed
+
+Version 7.1  -DOS shell works now for all Windows versions
+(10-MAR-02)  -High and True color bug fixed for some VESAs
+             -Added Windows NT/2000/XP under "HOW TO USE LXPIC"
+
+Version 7.0  -High (64K) and True color (16.7M) display modes
+(02-FEB-02)  -VBE3 (Vesa Bios Extension 3.0) compatible
+             -Improved JPEG display quality
+             -Improved JPEG VESA auto zoom (100% screen fit)
+             -All JPEG subsamlings supported in VESA modes
+             -16 bit dither for true color JPEG in 64K modes  
+             -Multi image GIF improved and running endless 
+             -GIF transparent color supported
+             -New 800x600x4 VGA mode (Command line switch /5)
+             -F5 scans all drives from Z-A for available images
+              (Command line switch /!)
+             -Shift F5 scans all drives from A-Z
+             -ESC skips one drive during drive scans
+             -Ctrl-C exits LxPic immediately from drive scans
+             -{A} autozooms only images bigger than the screen
+             -{a} autozooms all images
+             -{#} toggles between best and startup screen mode
+             -/# starts LxPic in the best available screen mode
+             -/* displays all available screen modes   
+             -TAB shells into the directory of the actual image
+             -Alt-B inverts screen background color
+              (Command line switch /b)
+             -Save screen as B&W PCX moved from F5 to Shift F4
+             -Alt F4 saves the image as B&W Palmtop ICN file
+             -BS key displays previous image (same as {P} key)
+             -Load time displayed in the File Info Box
+             -Picture date displayed in the File Info Box
+             -BitBlt support on the HP Palmtop
+             -Build in Vesa character generator
+             -Alt-6 toggles between 1024x768 and 1024x600 pixel
+              resolution (useful for Toshiba Portege 300CT) 
+             -Alt-A (Art) omits resetting the VESA screen
+             -Alt-R Raster zoom in for JPEG in VESA modes
+             -Alt-G multi image GIF background toggle
+             -F9 UXGA VESA mode enable/disable toggle
+             -Rename {N} works now under Windows
+             -No more Casio CAM and Kodak IMG support
+ 
+Version 6.4  -Support of lynx *.JPE files 
+(21-APR-00)
+
+Version 6.3  -JPEG bug fixed concerning Kodak DC260
+(05-DEC-99)
+
+Version 6.2  -Omnibook DEL key bug fixed
+(08-MAR-99)  -Limited support of Casio CAM and Kodak IMG format
+
+Version 6.1  -Complete command line control of LxPic
+(15-APR-98)  -Command line conversion to B&W PCX with /O or /@
+             -{S}ubdirectory Scan available from within LxPic...
+             -...therefore Slide Show key replacement {Y} 
+             -Scan indicator '' in front of the filename
+             -{Q}uit now leaves picture on the screen
+             -Default palmtop startup mode reset to B&W
+             -Programmers Interface improvements for HV
+
+Version 6.0  -Low, medium, high resolution list modes {J,K,L}
+(06-DEC-97)  -640x200x4 grayscale CGA mode (Palmtop only)
+             -Grayscale/B&W toggle key {W} added on the Palmtop
+             -Save CGA thumbnail screen as B&W PCX file {F5}
+             -Gamma correction added {6,9}
+             -Better text color selection
+             -Low resolution VESA startup mode
+
+Version 5.1  -Multi image (animated) GIF support
+(06-OCT-97)  -Space bar acts as 'single step' in animated GIFs
+             -File name toggle key {X} added
+             -Pixel aspect ratio now from 0.5 - 1.4
+              (useful for converted CAM files)
+             -Zoom factors 16 and 32 added
+             -Compression and Frame entry in file info box
+             -Correct display of SONY JPEG files
+             -F4 (Save as B&W PCX) dither bug fixed
+
+Version 5.0  -Color reduction and color dither
+(14-SEP-97)  -JPEG 'extended sequential DCT' support (SOF1)
+             -JPEG 'progressive DCT' support (SOF2)
+              (only DC coefficients are displayed)
+             -JPEG application segment processing toggle {F10}
+             -Start up with best possible resolution
+
+Version 4.2  -Programmers interface adaptations for LxMap
+(17-JUN-97)  -Minor improvements
+
+Version 4.1  -Improved VESA support (direct hardware access)
+(22-MAY-97)  -{Alt F3} toggles SVGA hardware/VESA pixel output
+             -{U}pside down command added
+             -No more 'zoom in' restrictions concerning width
+             -Zoom now keeps track of the image center
+             -Programmers Interface adjustments
+             -CAM2JPG now also supports CASIO QV-100 CAM format
+             -Intel MMX support
+
+Version 4.0  -VGA, EGA Color/Greyscale display added {F2}
+(24-APR-97)  -VESA SVGA 256 color mode pixel output added {F3}
+             -Mouse support (see COMMAND section of this DOC)
+             -{C}olor display on/off toggle key added
+             -B&{W}   display on/off toggle key added
+             -{E}rase screen toggle key replaces old {C} key 
+             -{F7} convert B&W to Grey  replaces old {F3} key
+             -Show color palette key {F8} added
+
+Version 3.5  -Interlaced GIF support
+(13-MAR-97)  -Cursor keys now move 1/2 screens
+             -Page keys now always move 8 pixel rows/columns
+             -Space{BAR} interrupts output
+             -{Q}uit command added
+             -Palmtop {Menu} key added to work like Help {F1}
+             -Commands from within the Help window are now
+              immediately executed
+             -More logical pixel aspect ratio selection
+             -Stepwidth for contrast etc. reduced from 8 to 4
+
+Version 3.4  -Rename/Move command {N} added
+(26-JAN-97)  -Select pixel aspect ratio command {F6} added
+
+Version 3.3  -Correct display of Fujifilm DS-7 JPEG files
+(07-JAN-97)
+
+Version 3.2  -Version 3.1 bug fixed
+(07-DEC-96)
+
+Version 3.1  -More speed: Output interrupted at any command
+(03-DEC-96)
+
+Version 3.0  -JPEG 'baseline sequential DCT' support (SOF0)
+(29-NOV-96)  -/S switch to scan drives or subdirectorys
+
+Version 2.3  -Zoom out 1:8 and zoom in 8:1 added
+(01-NOV-96)  -Programmers Interface improvements
+
+Version 2.2  -Intrasegment call added to Programmers Interface
+(22-OCT-96)
+
+Version 2.1  -Programmers Interface added
+(22-SEP-96)
+
+Version 2.0  -BMP,GIF,PCX,ICN of any size and dimension
+(31-AUG-96)  -VGA,EGA,CGA,HP95 support
+             -Dither for color pictures
+             -Scrolling
+             -Zoom In/Out
+             -Edit functions
+             -HP resize mode
+             -B&W PCX conversion
+
+Version 1.0  -First release: Only B&W BMP and PCX files
+(24-APR-96)
+
+
+New versions of LxPic will be available on the Internet under:
+
+                 http://hplx.pgdn.de/lxpic.zip
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                  MINIMUM SYSTEM REQUIREMENTS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+- Processor: 8088
+- DOS      : 2.11
+- Adapter  : CGA
+- Memory   : 64 KB
+- Storage  : 20 KB
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                        HOW TO USE LXPIC
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Note: LxPic has no file select feature. If you need one I
+      recommend LIST from Vernon Buerg (www.buerg.com).
+      LIST has LxPic support built in. Press Ctrl-V on any
+      picture file from within LIST and LIST will use LxPic
+      to display the image. Press Esc from the image view and
+      you are back in LIST.
+
+LxPic needs no installation. If called without parameters,
+LxPic searches the current directory for all files with the
+extension BMP,GIF,JPG,JPE,PCX or ICN and displays them in the
+order found in the directory. If no files are found, LxPix
+exits and displays the help screen.
+
+LxPic behaves like the DIR command of DOS and accepts the /S
+command line switch to scan all subdirectories too. Which files
+are displayed depends on how you name them and where you keep
+them. To display a specific picture, use its full or relative
+pathname as parameter for LxPic. The wildcards * and ? are
+allowed in the filename to display a group of pictures with
+similar names.
+
+The general syntax of the LxPic command line is
+
+LXPIC filename /switches
+
+or
+
+LXPIC /switches =filename
+
+that means, if you want to put the filename after the switches
+you have to use the filename annunciator '=' in front of the
+filename.
+
+
+ÄEXAMPLESÄ
+
+  LXPIC
+displays all pictures in the current directory
+
+  LXPIC/!
+displays all pictures on all drives from Z: to A:
+
+  LXPIC/S
+displays all pictures in the current directory and its
+subdirectories
+
+  LXPIC DEMO.*
+displays for example DEMO.PCX, DEMO.GIF and DEMO.JPG in the
+current directory
+
+  LXPIC \PIC\V?.PCX
+displays for example V1.PCX and V2.PCX in the directory PIC of
+the current drive
+
+  LXPIC D:/SLV
+displays all pictures on your D: drive as thumbnails without
+any further input from you. Very useful for CDROMs
+
+  LXPIC C:\DEMO.GIF/SF (or LXPIC /SF =C:\DEMO.GIF)
+searches your whole C: drive for the file DEMO.GIF and
+displays it if present with the file info box
+
+
+If you use the scan switch /S from the command line or the
+equivalent command {S} from within LxPic, the program exits
+after all files have been displayed. Without /S, LxPic loops
+endlessly until you press ESC. If you want to go back one
+picture within a subdirectory you reached in a scan, first
+switch scan off with the {S} toggle key. Later on you may
+switch scan on again to reach further subdirectories.
+
+I recommend to switch filenames ON with {X} during a scan in
+order to not get lost on large drives.
+
+
+ÄWINDOWS 3.x/95/98Ä
+
+If you want to use LxPic under Windows, you have the choice
+to run it in a full screen DOS box or in a window. In a full
+screen DOS box, you have access to all video modes, your
+hardware supports. If you want to run LxPic in a window,
+you are restricted in the video modes and you have to start
+LxPic with an appropriate command line video mode switch:
+
+  Windows 3.x  : LXPIC/1  (CGA only)
+  Windows 95/98: LXPIC/4  (VGA or worse with /3,/2,/1)
+
+You may also create a PIF file to start LxPic from the program
+manager. See your Windows documentation for the details on how
+to create a PIF file for DOS programs.
+
+
+ÄWINDOWS NT4/2000/XPÄ
+
+On all NT based operating systems, VESA is only available in
+full screen DOS boxes. Therefore I recommend to use LxPic only
+in full screen mode on such systems.
+
+However some users reported problems with LxPic on NT systems.
+Tamas Feher suggests to create a custom startup file for LxPic
+which disables loading of DOSX.EXE:
+
+| Copy the file \windows_nt_directory\system32\autoexec.nt
+| to LxPic's directory, rename it to lxpicenv.nt, edit it to
+| comment out the dosx.exe line, then save the file. Right
+| click lxpic.com, properties, Program Tab, press "Windows NT"
+| button, specify <fullpath>\lxpicenv.nt instead of autoexec.nt
+| OK to close. Set "use full screen" in both the Program Tab
+| and the Screen Tab and press OK.
+|
+| You can now start LxPic from Windows Explorer or any other
+| file manager with no need to manually open and maximize a
+| DOS box for LxPic use with VESA.
+|
+| To associate LxPic with opening (doubleclick) a filetype like
+| JPG, use "My Computer", View, Options, File Types tab, Edit,
+| Action-Open: Edit, clear DDE checkbox, enter:
+|
+| <fullpath>\lxpic.com /yourfavouriteswitches =%1
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                   KEYBOARD AND MOUSE COMMANDS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+The Help key {F1} pops up a window with all command keys.
+Command line switches are marked with the ş sign.
+
+            ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+            ³v7.3 (c)2002 Stefan Peichl, Heidelberg³
+            ³LXPIC [file.BMP|GIF|JPG|PCX][/Switchş]³
+            ³* ? Wildcards ok,ş=Command Line Switch³
+            ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+            ³JKLşListMode On/Off³F1  Help Menu   ?ş³
+            ³FX şFileInfo On/Off³F2* VGA  ... 0- 5ş³
+            ³S  şSubDirSc On/Off³F3* VESA ... 6-23ş³
+            ³H  şHPResize On/Off³F4  Save as PCX Oş³
+            ³E  şEraseScr On/Off³F5  Scan Drives !ş³
+            ³I  şInvtPict On/Off³ESC Exit (or Q) Qş³
+            ³U  şUpsiDown On/Off³TAB Path DOS Shell³
+            ³Aa şAutoZoom On/OffÃÄÄÄÄCOLOR/GREYÄÄÄÄ´
+            ³T  şThumbJPG On/Off³C  şCol Dsp On/Off³
+            ³+=-şZoomPict In/Out³W  şB&W Dsp On/Off³
+            ³YV şSlid/Vid On/Off³D  şDither  On/Off³
+            ³> < Slid/Vid Fa/Slo³RGB RGB Col Select³
+            ³BAR Slid/Vid Suspnd³M   Mix RGB Colors³
+            ³DEL Delete  Picture³/   Reset   Values³
+            ³N   Rename  Picture³6 9 Gamma   Gxş- +³
+            ³P   Prev    Picture³7 8 Shadows    - +³
+            ³CR  Next    Picture³4 5 Highlights - +³
+            ³PG..Move  8 Row/Col³1 2 Contrast   - +³
+            ³CU..Move  « Screens³0 . Brightness - +³
+            ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+Press {F1} again or press {ESC} to close the Help window. If
+you press a valid command key, the Help window is closed, and
+the corresponding action is immediately performed.
+
+Almost all commands are single key strokes and I tried to
+assign meaningful keys to the commands. The action taken upon
+a command is valid for the actual and all following images.
+If you have, for example, a sequence of pictures with little
+contrast, you have to adjust contrast only once.
+
+You may enter a command at any time. The command is immediately
+executed, interrupting the actual output. You don't have to
+wait with command input until the picture is completely
+displayed.
+
+If you hear a key click, the pressed key had no function at all
+or did not apply to the actual picture type, or you reached the
+end of a range.
+
+Use the cursor keys or the mouse to scroll an image. Cursor
+keys scroll the image by 1/2 screen in the indicated direction.
+Page keys (Palmtop: Fn+cursor) scroll the image by 8 columns or
+8 lines in the indicated direction. I exchanged the meaning of
+these keys for single key strokes on the Palmtop. I tried to
+keep the x/y offset in consecutive pictures to allow you zoom-
+ing the same position in a slideshow.
+
+
+ÄMOUSE INPUTÄ
+
+LxPic automatically enables mouse support if it finds a mouse
+driver installed and a mouse connected. Mouse and keyboard may
+be used concurrently. The supported mouse functions are:
+
+click left                    Next picture
+
+click right                   Previous picture
+
+press left  + click right     Zoom in
+
+press right + click left      Zoom out
+
+press left  + move mouse      Move picture, as if you put your
+                              hand on the picture. Move the
+                              mouse slowly for best results!
+
+
+ÄKEYBOARD INPUTÄ
+
+L   High resolution thumbnail mode.
+    See LIST MODE section for further information
+
+K   Medium resolution thumbnail mode
+
+J   Low resolution thumbnail mode
+
+F   Display file and parameter information box:
+
+     C:\DEMO.GIF    Drive:\Path\Filename
+    ÚÄÄÄÄÄÄÂÄÄÄÄÄÄ¿
+    ³Size  ³  1244³ Filesize   : in bytes or KB
+    ³Date  ³14DE98³ Date       : DD MM YY  
+    ³Wide  ³   344³ Pixelwidth : actual representation
+    ³High  ³    50³ Pixelheight: actual representation
+    ³Deep  ³     4³ Colordepth : 1|2|3|4|5|6|7|8|24 (in bits)
+    ³Type  ³ COLOR³ Picturetype: COLOR | GREY | B&W
+    ³Comprs³   LZW³ Compression: SOFx_YCbCr|LZW|RLE|NONE
+    ³Frames³     1³ Framenumber: usually 1 except in videos
+    ³Loaded³  0.05³ Load Time  : in 1/100 seconds  
+    ³X_Offs³     0³ Pixelcolumn: of upper left displayed corner
+    ³Y_Offs³     0³ Pixelline  : of upper left displayed corner
+    ³Zoom %³   100³ Zoom in/out: 3% - 3200% or auto zoom rate
+    ³B&wDsp³    ON³ B&W display: ON | OFF
+    ³ColDsp³   OFF³ Col display: ON | OFF
+    ³Dither³    ON³ Dither mode: ON | OFF
+    ³GamCor³     0³ Gamma      : 0=unchanged,   5=max, -  5=min
+    ³Shadow³     0³ Shadow     : 0=unchanged, 127=max, -127=min
+    ³Hlight³     0³ Highlights : 0=unchanged, 127=max, -127=min
+    ³Contra³     0³ Contrast   : 0=unchanged, 127=max, -127=min
+    ³Bright³     0³ Brightness : 0=unchanged, 127=max, -127=min
+    ÃÄÄÄÄÄÄÁÄÄÄÄÄÄ´
+    ³  640ú200ú1  ³ Screenmode : width x height x bitdepth
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+X   Display only file name in the upper left corner.
+
+S   Subdirectory scan toggle key. If subdirectory scan is ON,
+    the arrow '' appears in front of the filename. 
+
+H   Resizes the picture to a pixel aspect ratio of 1:0.8.
+    A picture with 640x240 pixel is resized to 640x200 pixel
+    for example. The actual aspect ratio is displayed in the
+    file info box. HP resize is off by default. See also
+    the more general pixel aspect ratio command {F6}.
+
+E   Erase screen between two pictures (ON by default)
+
+I   Invert screen. LxPic inverts pictures by default,
+    if running on a HP Palmtop
+
+Z   Center picture in the middle of the screen (ON by default)
+
+U   Display picture upside down and mirrored. This has no
+    effect on the save commands {F4} and {Shift F4}.
+
+a   Auto zoom. If switched on, the zoom mode is selected,
+    which displays most of the picture. Auto zoom is OFF by
+    default. If switched on, you see the letter 'a' in the
+    'Zoom' entry of the file info.
+
+A   Auto zoom. Fits only pictures bigger than the screen.
+
++   Zoom in to 200%, 400%, 800%, 1600% and 3200%
+    Use Alt-R to toggle between normal zoom and raster zoom.
+    Raster zoom only works for JPEGs in VESA display modes and
+    yields a subjectively better (but darker) result.
+
+=   Reset Zoom to 100% and start display with the upper left
+    corner set to 0,0. (Use also {*} on desktops)
+
+-   Zoom out to 50%, 25%, 12%, 6% and 3%
+
+#   toggle between best and startup display mode
+
+*   select a screenmode from the popup window. Use the cursor
+    keys to select a new mode and press Enter to set it
+    or press ESC to exit and leave the mode unchanged.
+    
+T   Many JPEG images from digital cameras store thumbnail
+    pictures in Exif application segments. Press T to display
+    the thumbnail if available instead of the fullsize image.
+    If thumbnails are turned on, you will see the letter 'T'
+    on the Zoom line of the file info box.
+    
+Y   Perform a slideshow
+
+V   Perform a video. Same as slideshow, but at maximal speed
+    without erase screen between pictures. Multi image Gif
+    files are also displayed at maximal speed, giving you the
+    illusion of a video.
+
+>   Slideshow/Video faster up to maximal speed
+
+<   Slideshow/Video slower
+
+BAR Enter 'single step' mode for Slideshow/Video/List or multi
+    image GIFs. Press Spacebar again for next picture/frame.
+    Exit single step mode with {CR} or {P}.
+    
+DEL Delete the actual displayed picture. You have to confirm
+    before the file is deleted
+
+N   Rename/Move picture filename. You may not move the file
+    to a different drive because this would be a 'copy',
+    which is not supported. After the rename, the next picture
+    is displayed.
+
+P   Display previous picture, as found in the directory. This
+    command also changes the direction for Slide/Video/List.
+    You cannot use it to run a video backwards.
+
+BS  same as P
+
+CR  Display next picture, as found in the directory. This
+    command resets the direction for Slide/Video/List to
+    forward.
+
+TAB Shells to DOS and uses the directory of the last displayed
+    image. This command is useful during a scan, if you want
+    to see which other files are in the directory of the actual
+    image. You may change the directory and drive in the DOS
+    shell, but upon exiting from the shell LxPic continues at
+    the same spot where it was interrupted.
+
+    You may call a second incarnation of LxPic in the shell,
+    but you should not shell out to DOS again from this second
+    incarnation. Rather close LxPic in the shell and exit from
+    the shell to continue with the first call of the program. 
+
+ESC Exit LxPic. If you exit LxPic with {^C}, an errorlevel
+    of 1 is returned, which is useful in batch files.
+
+Q   Quit LxPic and leave the picture on the screen.
+
+a-A (Art) omits resetting the VESA screen
+
+a-B Invert screen background (default is black)
+
+a-F Dislays a key mask besides the file info box
+
+a-G Multi image GIF background toggle
+
+a-R Raster zoom in for JPEG in VESA modes
+
+F1  Display Help window. (Also {Menu} and {?} on the Palmtop)
+
+F2  Cycle through all standard VGA modes, if supported by
+    your hardware. Use {Shift F2} to cycle backwards.
+
+F3  Cycle through all VESA SVGA modes, if supported by your
+    BIOS and hardware. Use {Shift F3} to cycle backwards.
+
+F4  Save the whole picture -as you see it- to a B&W PCX file.
+    You are asked for a filename. You must use a different
+    filename from the original name and you have to add the
+    extension PCX. The width of the saved picture is restricted
+    to 1280 pixels for JPG images. BMP pictures end mirrored up
+    side down. Use the {U}pside down command for correct
+    display. The {U}pside down command has no effect on the
+    saved picture! To save a frame of a multi image GIF file,
+    use {Spacebar} to select the frame.
+
+F4  Shifted: Same as {F4}, but only the visible part of the
+    picture is saved. If you want to select an even smaller
+    part on the Palmtop, switch with {F2} to the HP95 mode
+    and save from there. To invert a Palmtop topcard, load it,
+    press {I} and then {F4} to save the inverted topcard.
+    Also use this command to save a CGA thumbnail screen to a
+    PCX file.
+
+F4  Alt: Save the actual image as Palmtop ICN file. The width
+    of the image has to be a multiple of 8.
+     
+F5  Scans all drives from Z: to A: and displays all images
+    found. Press Shift F5 to scan from A: to Z:. ESC skips
+    one drive during a scan. Ctrl-C exits LxPic from a scan.
+    Use Spacebar for single step processing, press Enter or
+    F5 again to continue the drive scan. 
+
+F6  Selects pixel aspect ratios in the range 1:0.5 to 1:1.4
+    Enter the number after the decimal point (= 0-9).
+    Useful for distorted camera pictures and CGA monitors.
+    The HP resize command {H} is the shortcut of {F6}{8}.
+
+F7  Converts B&W picture to a 8 bit greyscale picture. This
+    enables you to edit a B&W picture with the commands that
+    are only available for color or greyscale pictures.
+
+F8  Show color palette in the upper right corner. Only works
+    on EGA or better. The palette length depends on the screen
+    mode and is 16 or 256. Show palette is OFF by default.
+
+F9  Supress non standard VESA modes with >= 1600 pixels width.
+
+F10 Text zoom out mode. Zooming out for B&W images is
+    implemented by default as 'drop two, keep two' to prevent
+    moire effects from previously dithered pictures. This
+    command toggles zoom out mode to 'drop one, keep one',
+    which is better for viewing B&W pictures including text.
+    If switched on, you will see a 'ZoomX' entry in the file
+    info box. Text zoom is OFF by default and only available
+    for B&W pictures.
+
+
+ÄCOLOR PICTURES ONLYÄ
+
+The following commands are only available if a picture with
+more than two colors is displayed.
+
+C   Toggles between greyscale and color display.
+    Color display is ON by default.
+
+W   Toggles between B&W and color/greyscale display.
+    B&W display is OFF by default.
+
+D   Switch Dithermode OFF/ON. (ON by default).
+
+R   Display Red   part of the picture only
+
+G   Display Green part of the picture only
+
+B   Display Blue  part of the picture only
+
+M   Mix Red, Green and Blue to Grey = 30%R + 59%G + 11%B
+
+/   Reset Shadow, Highlight, Contrast, Brightness and Gamma
+    to 0. Set color to RGB. Switch dither on. Switch color
+    display on. Switch B&W display off.
+
+6   Decrease Gamma:      nonlinear brightness decrease
+
+9   Increase Gamma:      nonlinear brightness increase
+
+7   Decrease Shadows:    Colors <127 move towards Grey
+
+8   Increase Shadows:    Colors <127 move towards Black
+
+4   Decrease Highlights: Colors >127 move towards Grey
+
+5   Increase Highlights: Colors >127 move towards White
+
+1   Decrease Contrast:   All colors  move towards Grey
+
+2   Increase Contrast:   Colors <127 move towards Black
+                         Colors >127 move towards White
+
+0   Decrease Brightness: All colors  move towards Black
+
+.   Increase Brightness: All colors  move towards White
+    (use also {,} on desktops)
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                     COMMAND LINE SWITCHES
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Almost all command line switches are identical to their online
+counterparts. Adding them to the command line is identical to
+pressing the correspondent key while LxPic is running. Changes
+had to be made for:
+
+- Video mode selection  /0-22
+- Slide show delay time /[/]/&
+- Save as B&W PCX file  /O
+- Save screen only      /@
+- Pixel aspect ratio    /Rx
+- Gamma correction      /Gx
+
+All switches except for 'A' and 'a' are not case sensitive
+and may be used in any order. The separator '/' is only needed
+once to separate the switches from the file names.
+
+Multiple use of the same switch is identical to single use
+except for the zoom switches + and -, which repeatedly zoom
+the picture. Invalid switches are ignored. This allows you
+to build switch 'words' for better recall.
+
+
+ÄSINGLE CHARACTER COMMAND LINE SWITCHESÄ
+
+  ?  Display help screen and exit
+  *  Display all available LxPic display modes of your system
+  #  Start LxPic in the best available display mode
+  0..22: Start with the corresponding display mode.
+     See INTRODUCTION for a list of all display modes.
+  a  Auto zoom ON (all images)
+  A  Auto zoom ON (big images)
+  B  White screen background
+  C  Color display OFF
+  D  Dither OFF
+  E  Erase screen between pictures OFF
+  F  File info box ON
+  H  HPresize ON
+  I  Invert screen ON
+  J  Low    resolution thumbnails ON
+  K  Medium resolution thumbnails ON
+  L  High   resolution thumbnails ON
+  O  Output image  as B&W PCX file under the same name
+  @  Output screen as B&W PCX file under the same name
+  Q  Quit and leave last image on screen
+  S  Scan all subdirectories too
+  !  Scan all drives from Z: to A:
+  T  Thumbnail JPEG display ON
+  U  Upside down display ON
+  V  Video mode ON
+  W  B&W display ON (Palmtop: OFF)
+  X  File names ON
+  Y  Slide show ON
+  Z  Center picture OFF
+  +  Zoom in  1x
+  -  Zoom out 1x
+  =  filename annunciator
+  ]  decrease slide show delay by 2 seconds
+  [  increase slide show delay by 2 seconds
+  &  increase slide show delay by 1 minute
+
+
+ÄDOUBLE CHARACTER COMMAND LINE SWITCHESÄ
+
+  Gx Gamma correction   (x=1-9)
+  Rx Pixel aspect ratio (x=1-9)
+
+
+ÄCONVERTING FILES FROM THE COMMAND LINEÄ
+
+The /O and /@ switches are very powerful if you want to convert
+a series of pictures to the fast B&W PCX format. The pictures
+are stored under the same name in the same directory with the
+extension PCX.
+
+This process runs without displaying the pictures. You may add
+other command line switches to zoom, gamma correct and resize
+the resulting PCX file. You may even convert all pictures of a
+whole drive with just one command. There is one drawback: You
+cannot use the /O  and /@ switches to convert color PCX files
+to B&W PCX files, because this would overwrite your original
+file. Use the online function key conversion with another
+filename in this case.
+
+
+ÄEXAMPLESÄ
+
+  LXPIC C:\QV100\*.JPG/O-HG2
+converts /O all JPEG files in the directory C:\QV100 to B&W
+PCX files at half size /- for the palmtop screen /H with a
+gamma correction of 2 /G2
+
+  LXPIC C:\QV100\*.PCX/J
+displays the converted files as low resolution thumbnails /J
+
+  LXPIC/SAV
+shows all pictures in the current directory and its
+subdirectories /S auto zoomed /A at maximal speed /V
+
+  LXPIC *.GIF/Y&&Q
+shows all GIF's in the current directory in a slide show /Y
+with 2 minutes delay /&& between every slide and quits leaving
+the last image on the screen /Q
+
+  LXPIC D:/SL
+shows all pictures /S on your D: drive (CDROM) as thumbnails /L
+within seconds. Using a standard picture viewer under Windows,
+it would take hours of mouse clicking to do the same job.
+
+
+The switches are very useful for batch programming of demos.
+Especially the /Q switch allows to exit LxPic without any
+user input after a series of pictures has been displayed.
+Use /VQ to exit after the display of a single picture without
+any user input.
+
+NOTE: If you use the /Q switch, the screen mode is changed
+      to graphics. This may cause problems, if you want to
+      run programs in text mode afterwards. Run LXPIC/* to
+      resets your screen to the default 80x25 CGA text mode.
+
+I wish to thank Tamas Feher, who convinced me of the usefulness
+of command line switches and encouraged me to implement high
+and true color display modes for perfect JPEG viewing.
+
+And many thanks to Steve Novosad for compatibility improvements
+concerning the various Windows systems, VESA implementations
+and GIF interpretation.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+            OPTIONAL CONFIGURATION FILE LXPIC.CFG
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+LxPic allows the use of a very simple configuration file with
+the extension CFG. Just put your preferred commandline switches
+including the switch annunciator '/' into the LXPIC.CFG file. 
+
+If you usually call LxPic as
+
+LXPIC /11Ab
+
+you should create the plain ASCII text file LXPIC.CFG and put
+in the single line
+
+/11Ab
+
+From now on you only have to call LXPIC from the command line
+and it is always automatically started with the /11Ab switches.
+
+You cannot put a filename to be displayed into the CFG file,
+this is only possible from the command line.
+
+You may still use additional switches from the command line
+which are processed in addition to the ones in your CFG file.
+
+NOTE: The configuration file has to be in the same directory
+      as the program file and it must have the same name as
+      the program file. If you renamed LXPIC.COM to P.COM for
+      example, you also have to rename LXPIC.CFG to P.CFG
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                           LIST MODE
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+You enter and exit List mode by simply pressing one of the
+three keys {J,K,L}. If you enter list mode, the next image
+in the directory will be the first picture displayed as a
+thumbnail. You may exit list mode at any time. The last
+displayed thumbnail becomes the actual picture.
+
+If one screen is filled with thumbnails, press {Enter} to see
+the next screen. LxPic stops output if all pictures of a
+directory have been displayed as thumbnails. If you run LxPic
+in scan mode (command line switch /S), LxPic stops output after
+the last image of all subdirectories has been displayed. LxPic
+then beeps to signal the end. Press any key to exit LxPic.
+
+By default, LxPic displays filenames in list mode. Press {X} to
+suppress filename output.
+
+During list mode, you may always press {Space Bar} to enter
+single step mode. LxPic then stops after every thumbnail. You
+may now press one of the three keys {J,K,L} to exit list mode
+and view the last thumbnail in full screen mode. Use this
+feature to select a picture from the list.
+
+You may also press TAB to shell to DOS. In the DOS shell you
+may call LxPic again to view one specific image. If you exit
+from the DOS shell, list mode continues with the next image.
+ 
+During list mode, almost all command keys are available, except
+those keys that require input from you, and those keys, that
+perform output, like the help key {F1} and the {F}ile info key.
+All other commands may be entered at any time. You may for
+example press {P} to list backwards or switch dither off to
+have sharper thumbnails.
+
+For display, list mode uses the actual configuration as set by
+you before entering list mode (pixel aspect ratio, contrast,
+brightness etc.).
+
+Under CGA screen mode, you may save a thumbnail screen as a
+B&W PCX file with {F5}. This is useful for creating archives
+from digital camera pictures. On the Palmtop, thumbnails look
+nicer in the 4 grayscale mode. Thumbnails, saved in the 4 gray-
+scale mode, may also be viewed in this mode. In every other
+screen mode, you have to use a screen capture TSR utility to
+perform this task.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                         PALMTOP ADVICE
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Ä4 GRAYSCALE CGAÄ
+
+I implemented a 640x200x2 grayscale CGA mode on the HP Palmtop
+by reprogramming the display controller. You activate this mode
+by pressing the {W} key once. As long as you only view B&W
+pictures you will remark no difference. The new mode is only
+activated for color and grayscale pictures. You may have to
+increase your displays contrast by pressing {On+}. The drawback
+of this mode is, that text output is blurred. If you don't like
+this mode, simply press the {W} toggle key again to enable B&W
+display.
+
+On some speed upgraded Palmtops, the 4 grayscale display may
+flicker. This is because of some clock drivers, constantly
+resetting the frame rate. You may replace your clock driver
+through DSPEED.COM available on my homepage.
+
+
+ÄSTORAGEÄ
+
+If you are concerned about little storage capacity, JPEG will
+be your preferred picture format on the Palmtop. But if you
+want to have output speed, B&W PCX files have the best speed/
+size ratio. In other words, it makes no sense to keep BMP, GIF
+or color PCX files on your Palmtop.
+
+To convert color pictures to the speedy B&W PCX format, proceed
+as follows:
+
+- Press {H} to have the exact width/height proportions
+- Adjust contrast, brightness, shadow, highlight
+- Zoom in/out, if needed
+- Press {F4} to save the whole image or
+- Press {Shift F4} to save only the visible part of the image.
+  If you want to select a smaller part than the HP200 screen,
+  use {F2} to switch to the HP95 mode and make your selection
+  in the HP95 window and press {Shift F4} in the HP95 mode to
+  save this smaller part only.
+- Delete the original color picture.
+
+If you have a series of pictures of the same quality (source),
+you may also convert all pictures together from the command
+line. See COMMAND LINE SWITCHES section for details.
+
+I do not recommend to use B&W GIF files, because GIF's LZW
+decoding is slow compared to PCX's RLE decoding. The slightly
+smaller B&W GIF file size does not compensate for this
+drawback.
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                      JPEG ON THE PALMTOP
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+You have to understand some basics of JPEG in order to use it
+most effectively on the Palmtop. This applies only if you have
+influence on the JPEG pictures you want to display, that is,
+if you have a software to produce the (or convert to the) JPEG
+format.
+
+The LxPic implementation of JPEG supports the baseline and
+progressive (DC values only) mode of operation. These modes are
+lossy, that is, when the JPEG picture is created, the informa-
+tion of the original image is reduced to save storage space.
+The amount of information that is lost may be determined by
+you. Before saving a JPEG file, a good software asks you for a
+quality factor. You may go down to low quality and still have
+a good picture on the palmtop, because most of the quality is
+lost anyway in the B&W representation on the Palmtop.
+
+JPEG supports grayscale and True Color images. True Color is
+represented by luminance and chromatic values instead of red,
+green and blue components. Furthermore, the luminance component
+may be more weighted than the chromatic component of a picture,
+again in order to save space. The luminance component of a JPEG
+image is nothing else than its grayscale representation and
+grayscale JPEG images only have the luminance component. LxPic
+extracts this luminance component and displays it. The
+chromatic components are ignored on the Palmtop. Hence you
+loose no information if you use only greyscale JPEG, but you
+save space.
+
+A True Color JPEG image with low quality may have a compress-
+ion rate of 0.2 bit/pixel, which is about 4K for a full screen
+CGA image. The same BMP image needs 24 bit/pixel, which is 120
+times bigger. Hence you save about 99% of storage capacity and
+loose only little quality. Compression rates with greyscale
+JPEGs are even better. Compared to B&W PCX images, which use
+1 bit/pixel, you still need only 20% of storage space.
+
+LxPic performs best with low quality greyscale JPEG images,
+which also produce the smallest files. The output speed is
+highly correlated with the quality, because the better the
+quality, the more time consuming calculation has to be done
+in the inverse discrete cosine transform (IDCT).
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                           TECHNICAL
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+LxPic uses information provided by the VESA BIOS to access the
+hardware directly for better performance. Your VESA BIOS must
+provide a pointer to a 'bank switch subroutine' and must use a
+64KB memory window. If this is not the case, LxPic starts in
+the standard VGA mode.
+
+According to VBE3 specification, VESA modes are no longer
+assumed to have fixed values. They are auto detected instead.
+
+Color reduction to 256 or 16 colors is done by using a very
+fast 'nearest color' algorithm based on a stuctured palette.
+
+The dither mode uses modified Floyd-Steinberg error diffusion,
+where the color error of a pixel is distributed to the
+adjacent pixels.
+
+Grey values are build from 30% Red + 59% Green + 11% Blue.
+This takes into account the luminescence of the colors instead
+of simply calculating Grey as R+G+B/3. A Grey value of 0 means
+Black, a Grey value of 127 means Grey and a Grey value of 255
+means White.
+
+The inverse discrete cosine transform (IDCT) of JPEG uses an
+algorithm with only 4 multiplications, which I developed to
+make things go at some speed on the Palmtop's 80186.
+
+LxPic does not use internal bitmap representation because of
+restricted memory. It decodes directly to the screen via a line
+buffer. Any action leads to a completely new decoding of the
+picture.
+
+LxPic is developed on a HP200LX. It is written in Assembler.
+This language still exists and tends to produce small and quick
+code.
+
+LxPic is also a demonstration of what can be done in graphics
+with 20KB code in 64KB memory on a 8088. Think of what could
+be done with 1MB code in 64MB memory on a Pentium processor and
+compare it to today's reality!
+
+
+ÄRESTRICTIONSÄ
+
+- no uncompressed PCX files
+- no compressed BMP (=.RLE) files
+- no hierarchical and lossless JPEG modes of operation
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                     PROGRAMMERS INTERFACE
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+LxPic has an internal interface for use with other programming
+languages or batch files. This interface allows you to set up
+virtual screens of any size at a desired position of your
+physical screen. These virtual screens overlay an already
+filled application screen and you may draw a picture or part
+of it into these virtual screens.
+
+You select whether you want to gain back control immediately
+after the picture has been placed on the screen, or whether
+you want to pass intermediate control to LxPic and get back
+control when the ESC key of LxPic is pressed. The application
+may then write around or even into the picture. Multiple
+pictures may be positioned or overlayed on one screen. If you
+want to put more than one color picture on a color screen, you
+either have to use a 16 or 24 bit screen mode or all pictures
+have to use the same color palette, otherwise only the colors
+of the last drawn picture are correct.
+
+The interface uses 16 bytes of the BIOS data area starting at
+the absolute address 00450h (40h:50h relative). The BIOS
+reserves these bytes for the cursor coordinates of the text
+pages 1-8 in an ASCII text mode. In graphic modes, these bytes
+are zeroed and unused. Since LxPic only works in graphic modes,
+these bytes may be used as an interface for LxPic.
+
+
+ÄINTERFACE SPECIFICATIONÄ
+
+byte 00450h   Interface selection flag. This byte is bit coded.
+              If the whole byte is 0, the interface is not used
+
+              7 6 5 4 3 2 1 0   Meaning if bit is set
+              | | | | | | |_|   ---------------------
+              | | | | | |  |    01 = exit via DOS EXIT function
+              | | | | | |  |____10 = exit via RET FAR instruct.
+              | | | | | |       11 = exit via RET instruction
+              | | | | | |
+              | | | | | |_______unused
+              | | | | |_________unused
+              | | | |___________unused
+              | | |_____________display only first gif frame
+              | |_______________allow zoom/scroll keys only
+              |_________________pass interm. control to LxPic
+
+
+              If bit 7 in the interface selection flag is set,
+              all command keys are available except the mode
+              keys {F2} and {F3}. If you only want to enable
+              the zoom and scroll keys, set bit 6 as well.
+              If bit 5 is set, only the first frame of a multi-
+              image GIF picture is displayed.
+
+word 00451h   Mode selection word. This word is bit coded.
+
+              10 9 8 7 6 5 4 3 2 1 0 = bit number
+               | | | | | | | | | | |
+               | | | | | | | | | | |   Meaning if bit is set
+               | | | | | | | | | | |   ---------------------
+               | | | | | | | | | | |___clear screen
+               | | | | | | | | | |_____invert picture
+               | | | | | | | | |_______center picture
+               | | | | | | | |_________auto zoom
+               | | | | | | |___________HP Palmtop resize
+               | | | | | |_____________dither off
+               | | | | |_______________text zoom
+               | | | |_________________convert to B&W
+               | | |___________________convert to greyscale
+               | |_____________________display upside down
+               |_______________________display file info box
+
+byte 00453h   Zoom factor. Valid values are:
+
+              -5 =    3%
+              -4 =    6%
+              -3 =   12%
+              -2 =   25%
+              -1 =   50%
+               0 =  100%
+               1 =  200%
+               2 =  400%
+               3 =  800%
+               4 = 1600%
+               5 = 3200%
+              if the value is not valid, 0 is assumed.
+
+word 00454h   Screen Pixel Column (SPC). If the SPC is not
+              valid in the actual graphic mode, 0 is assumed.
+              NOTE: LxPic output always starts at pixel
+                    columns, that are multiples of 8.
+
+word 00456h   Screen Pixel Row (SPR). If the SPR is not valid
+              in the actual graphic mode, 0 is assumed.
+
+word 00458h   X0 offset (upper left column) within the picture
+
+word 0045Ah   Y0 offset (upper left row) within the picture
+
+word 0045Ch   Virtual Screen Width (VSW) in pixel. If VSW 
+              exceeds the Physical Screen Width (PSW), it is
+              cut to fit on the physical screen. If you don't
+              fill in this value, then VSW = PSW - SPC is
+              assumed.
+              NOTE: LxPic output always starts at pixel
+                    columns, that are multiples of 8.
+
+word 0045Eh   Virtual Screen Height (VSH) in pixel. If VSH 
+              exceeds the Physical Screen Height (PSH), it is
+              cut to fit on the physical screen. If you don't
+              fill in this value, then VSH = PSH - SPR is
+              assumed.
+
+ÄRETURN CODESÄ
+
+LxPic exits via DOS funktion 04Ch or a RET FAR or a RET
+instruction leaving behind return codes in register AL.
+The codes and their meaning are:
+
+          0   errorfree execution
+         -1   (reserved for DOS)
+         -2   file not found
+         -3   invalid screen mode
+         -4   unsupported signature/version of picture file
+         -5   uncompressed PCX file
+         -6   compressed BMP file
+         -7   unknown GIF separator
+         -8   invalid LZW code in GIF file
+         -9   unsupported JPEG mode of operation
+         -10  unsupported arithmetic coding in JPEG
+         -11  unsupported Y sampling factor in JPEG
+         -12  no default DQT table support in JPEG
+         -13  no DNL support in JPEG
+         -14  no OS/2 DIB support in BMP
+         -15  insufficient memory
+
+ÄDETAILSÄ
+
+If LxPic finds at address 00450h a value other than 0, it takes
+it and puts back 0. That is, you always have to fill in the
+interface if you want to use it. If the value was not 0, LxPic
+checks for a valid graphic video mode. If no valid graphic
+video mode has been set by you, LxPic exits without action.
+See INTRODUCTION for valid graphics modes.
+
+Any change of the video mode or any clear screen, performed
+using BIOS or DOS functions, resets the interface to 0. That
+is, fill in the interface *AFTER* you configured the screen.
+
+If you selected 'center picture' in the mode word, the pixel
+row and pixel column values are ignored.
+
+If you selected 'auto zoom' in the mode word, the zoom factor,
+the pixel row and pixel column values are ignored.
+
+ÄTURBO-C SAMPLE CODE FOR USE OF LXPIC VIA SYSTEM CALLÄ
+
+/*-----------------------------------------------------------*/
+/* This example assumes that LXPIC.COM and DEMO.GIF are      */
+/* stored in the directory C:\PIC of your computer.          */
+/* Because of inline assembly, you have to use TCC from the  */
+/* command line, to compile this example                     */
+/*-----------------------------------------------------------*/
+#include <stdio.h>
+#include <string.h>
+#include <process.h>
+
+/* function prototype */
+int picture(char flag,int mode,char zoom,int spc,int spr,int x0,int y0,int vsw,int vsh,char *pic);
+/*-----------------------------------------------------------*/
+main()
+{
+ /* set a valid graphics mode */
+ asm  mov  ax,4F02h     /* VESA function: set mode */
+ asm  mov  bx,0101h     /* select VGA 640x480x8    */
+ asm  int  10h          /* set it                  */
+
+ /* your code goes here */
+ printf("this is DEMO.GIF");
+
+ /* output DEMO.GIF half sized at column 100, row 50  */
+ /* in a virtual screen of dimension 300 x 200 pixel  */
+ picture(1,0,-1,100,50,0,0,300,200,"C:\\PIC\\DEMO.GIF");
+
+ /* your code goes here  */
+}
+/*-----------------------------------------------------------*/
+int picture(char flag,int mode,char zoom,int spc,int spr,int x0,int y0,int vsw,int vsh,char *pic);
+{
+ char lxpic[100]="C:\\PIC\\LXPIC ";  /* full LXPIC pathname  */
+
+ /* fill in the interface */
+ asm  push ax                        /* save AX              */
+ asm  push bx                        /* save BX              */
+ asm  push ds                        /* save DS              */
+ asm  mov  ax,0                      /* load DS...           */
+ asm  mov  ds,ax                     /* ...with segment 0    */
+ asm  mov  bx,0450h                  /* load bx with offset  */
+ asm  mov  al,flag                   /* flag (use DOS EXIT)  */
+ asm  mov  [bx+0],al                 /* set flag             */
+ asm  mov  ax,mode                   /* load mode selection  */
+ asm  mov  [bx+1],ax                 /* set  mode selection  */
+ asm  mov  al,zoom                   /* load zoom factor     */
+ asm  mov  [bx+3],al                 /* set  zoom factor     */
+ asm  mov  ax,spc                    /* load pixelcolumn     */
+ asm  mov  [bx+4],ax                 /* set  pixelcolumn     */
+ asm  mov  ax,spr                    /* load pixelrow        */
+ asm  mov  [bx+6],ax                 /* set  pixelrow        */
+ asm  mov  ax,x0                     /* load x offset in pic */
+ asm  mov  [bx+8],ax                 /* set  x offset        */
+ asm  mov  ax,y0                     /* load y offset in pic */
+ asm  mov  [bx+10],ax                /* set  y offset        */
+ asm  mov  ax,vsw                    /* load vir. scr. width */
+ asm  mov  [bx+12],ax                /* set  screen width    */
+ asm  mov  ax,vsh                    /* load vir. scr. height*/
+ asm  mov  [bx+14],ax                /* set  screen height   */
+ asm  pop  ds                        /* restore DS           */
+ asm  pop  bx                        /* restore BX           */
+ asm  pop  ax                        /* restore AX           */
+
+ /* display the picture */
+ return(system(strcat(lxpic,pic)));
+}
+/*-----------------------------------------------------------*/
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                      DISCLAIMER AGREEMENT
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+LxPic is copyrighted freeware. If you bundle LxPic with your
+software or use the internal interface of LxPic, you have to
+ask me for permission and you have to mention LxPic and the
+copyright somewhere in your product.
+
+Users of LxPic must accept this disclaimer of warranty:
+
+"LxPic is supplied as is. The author disclaims all warranties,
+expressed or implied, including, without limitation, the
+warranties of merchantability and of fitness for any purpose.
+The author assumes no liability for damages, direct or
+consequential, which may result from the use of LxPic."
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ

@@ -1,0 +1,197 @@
+AsmWiz 2.0, 11/03/94:
+
+   The final release of AsmWiz. Misc updates. No more manual,
+   but much lower price. See ORDER.FRM for details.
+
+
+
+AsmWiz 1.7, 09/15/94:
+
+   The registered version of AsmWiz now comes with a complete
+   printed manual. This is 8.5" high by 5.5" wide, to fit neatly
+   in normal bookshelves, and GBC bound to lie flat when open
+   for convenient reference. It contains the entire text of the
+   ASMWIZ.DOC and ASMWIZ.MAN files. The registration price has
+   been raised to $35.00 to cover the additional costs involved.
+
+   Fixed a bug in S0_UPCASES which caused it not to function.
+
+   The FI_MATCH routine was case-sensitive. It isn't any more.
+
+   There were some reports of link errors using AsmWiz with
+   TLINK and with some versions of LINK, apparently due to an
+   incompatibility in either the old MASM or LIB used to create
+   ASMWIZ.LIB. The current build of the library avoids this bug.
+
+
+
+AsmWiz 1.6a, 07/05/93:
+
+   Fixed a bug in FI_COMPLETE which caused it to reject files
+   with extensions that began with capital "A".
+
+
+
+AsmWiz 1.6, 05/24/93:
+
+   Registration can now be done online on CompuServe. See the
+   ORDER.FRM file for details.
+
+   A DESC.SDI file has been added to provide a short description
+   of AsmWiz for BBSes. This complements the longer FILE_ID.DIZ
+   description. REGISTER.TXT has been renamed to ORDER.FRM,
+   since that appears more common. ADD4DOS.BAT has been renamed
+   to ADDFILE.BAT. The CATALOG.TXT, ORDER.FRM, WHERE.BBS and
+   other files have been updated.
+
+   Spruced up the example program (EXAMPLE.ASM, .COM, et al).
+
+   Fixed bugs in TD_GETDATE and TD_GETTIME routines. The logic
+   for 2-digit vs 4-digit years was reversed and there were some
+   formatting errors. Thanks to Dan Sandberg for bringing this
+   to my attention.
+
+   Added small U.S.-only uppercase/lowercase conversions:
+      S0_LOCASES, S0_UPCASES
+
+   Added keyboard support:
+      BKO_GETCAPS, BKO_GETKEY, BKO_GETNUM, BK_GETCAPS,
+      BK_GETKEY, BK_GETNUM, DK_GETKEY, MK_SETCAPS, MK_SETNUM
+
+
+
+AsmWiz 1.5, 06/30/92:
+
+   The granularity of the AsmWiz library has been improved,
+   allowing for smaller programs in some cases.
+
+   The number of countdown timers available has been doubled,
+   giving a total of eight timers. Two of these timers may be
+   used by AsmWiz, leaving six with no strings attached.
+
+   New routines include graphics mode support for the mouse,
+   searching for a substring within a string, and machine-level
+   VGA graphics.
+
+   Doc files have been converted to 64 col x 59 row pages to
+   allow printing on a greater variety of printers. The AsmWiz
+   documentation has been updated for current computers.
+
+   Registration can now be done through Public (software)
+   Library, which allows use of credit cards. See REGISTER.TXT
+   for details.
+
+
+
+AsmWiz 1.4, 09/09/91:
+
+   All source code has been converted from OPTASM to MASM 6.0.
+   While I've been a great fan of OPTASM in the past, SLR hasn't
+   updated it in ages, and it still doesn't support 80386 code.
+   As of v6.0, MASM has improved to the point that I'm willing
+   to use it instead.
+
+
+
+AsmWiz 1.3, 01/29/91:
+
+   The registration fee has been reduced.
+
+   A table of contents was added to the ASMWIZ.DOC manual.
+
+   The EXECOM utility is now included. This is an improved
+   replacement for EXE2BIN which converts .EXE files to .COM
+   files.
+
+   The demo program has been modified to assemble directly under
+   A86, MASM, QuickASM, and TASM. OPTASM, of course, is also
+   still supported.
+
+   A window frame maker has been added. A variety of frames is
+   provided and you may also create your own custom frames.
+      MV_FRAME
+
+
+
+AsmWiz 1.2, 03/10/90:
+
+   The S0_MID service has been fixed to work properly even if
+   you specify more characters than are available in the source
+   string.
+
+   Filename manipulation services have been added. These allow
+   you to split a path into drive, directory, and filename
+   specs, make any path a complete and unambiguous
+   specification, translate a filename through a pattern, etc.
+   The MI_MATCHFILE service has been renamed to FI_MATCH.
+      FI_COMPLETE, FI_PATTERN, FI_SPLIT
+      FI_MATCH (formerly MI_MATCHFILE)
+
+   File handling services have been added. These provide
+   automatic network compatibility, optional input buffering,
+   and other conveniences.
+      DF_CLOSE, DF_DONE, DF_FLUSH, DF_GETTIME, DF_HANDLE, DF_INIT,
+      DF_LOCATE, DF_OPEN, DF_READ, DF_TIME, DF_WHERE, DF_WRITE
+
+   The Exception Services were extended to include critical
+   error handling.
+      EH_CRITDONE, EH_CRITERR, EH_INITCRIT
+
+   Machine-level graphics services were added for Hercules, CGA
+   and EGA.
+      G4_BOX, G4_GETPEL, G4_LINE, G4_PLOT
+      G6_BOX, G6_GETPEL, G6_LINE, G6_PLOT
+      GD_BOX, GD_LINE, GD_PLOT
+      GE_BOX, GE_LINE, GE_PLOT
+      GH_BOX, GH_GETPEL, GH_LINE, GH_PLOT
+
+   The ability to get the current screen mode was added to the
+   various text display services.
+      BV_GETMODE, MV_GETMODE
+
+   The ability to handle files in the BSAVE format (used by
+   BASIC) was added.
+      ME_BINFO, ME_BLOAD, ME_BSAVE
+
+
+
+AsmWiz 1.1, 02/11/90:
+
+   A bug was eliminated from the pop-up window services. It had
+   caused windows to be smaller than expected.
+
+   The example program has been prettied up, inside and out.
+   Since colors are now used, a "/B" option has been added for
+   folks using CGAs attached to monochrome monitors (the one
+   non-color setup AsmWiz can't detect).
+
+   A bibliography of references used in creating AsmWiz has been
+   added.
+
+   You can now find out what kind of display adapter and monitor
+   are in use.
+      MI_GETSCREEN
+
+   The ability to automatically convert colors to their
+   monochrome equivalent has been added to the various text
+   display services.
+      BV_FIXCOLOR, DV_FIXCOLOR, MV_FIXCOLOR
+
+   Exception Handling services have been added. These allow your
+   program to take control over ^C and ^Break.
+      EH_ADDBREAK, EH_INITBREAK, EH_SETBREAK, EH_SUBBREAK
+
+   Machine-level Video services have been added to save or
+   restore any part of the screen.
+      MV_SAVESIZE, MV_SCRREST, MV_SCRSAVE
+
+   Machine-level Video services have been added for Hercules
+   graphics mode. These provide 90x43 text support.
+      HG_CHROUT, HG_CLEOLN, HG_CLS, HG_COLOR, HG_CRLF,
+      HG_GETCOLOR, HG_LOCATE, HG_MODE, HG_STROUT, HG_WHERE
+
+
+
+AsmWiz 1.0, 01/30/90:
+
+   This is the initial release of the Assembly Wizard's Library.

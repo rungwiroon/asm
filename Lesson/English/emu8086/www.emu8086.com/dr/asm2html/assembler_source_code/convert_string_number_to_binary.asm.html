@@ -1,0 +1,241 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/convert_string_number_to_binary.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> convert_string_number_to_binary.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"str2bin"</font>
+
+<font color=#008000>; convert string number to binary! </font>
+
+<font color=#008000>; this program written in 8086 assembly language to </font>
+<font color=#008000>; convert string value to binary form. </font>
+
+<font color=#008000>; this example is copied with major modifications </font>
+<font color=#008000>; from macro "scan_num" taken from  c:\emu8086\inc\emu8086.inc </font>
+<font color=#008000>; </font>
+<font color=#008000>; the original "scan_num" not only converts the string number </font>
+<font color=#008000>; but also reads the string from the keyboard and supports </font>
+<font color=#008000>; backspace key, this example is a shorten version </font>
+<font color=#008000>; of original "scan_num" macro. </font>
+
+<font color=#008000>; here we assume that the string number is already given, </font>
+<font color=#008000>; and the string number does not contain non-digit chars </font>
+<font color=#008000>; and it cannot cause buffer overflow (number is in word range </font>
+<font color=#008000>; and/or has only 4 digits). </font>
+
+<font color=#008000>; negative values are allowed in this example. </font>
+
+<font color=#008000>; the original "scan_num" does not allow to enter non-digits </font>
+<font color=#008000>; and it also checks for buffer overflow. </font>
+
+<font color=#008000>; you can the original file with other macro definitions </font>
+<font color=#008000>;  in c:\emu8086\inc\emu8086.inc </font>
+
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start
+
+<font color=#008000>; text data: </font>
+msg1 <font color=#000064>db</font> 0Dh,0Ah, <font color=#800080>" enter any number from -32768 to 65535 inclusive, or zero to stop: $"</font>
+msg2 <font color=#000064>db</font> 0Dh,0Ah, <font color=#800080>" binary form: $"</font>
+
+<font color=#008000>; buffer for int 21h/0ah </font>
+<font color=#008000>; fist byte is buffer size, </font>
+<font color=#008000>; second byte is number of chars actually read (set by int 21h/0ah). </font>
+buffer <font color=#000064>db</font> 7,?, 5 dup (0), 0, 0
+
+<font color=#008000>; for result: </font>
+binary <font color=#000064>dw</font> ?
+
+start:
+
+<font color=#008000>; print welcome message: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg1
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; input string: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> buffer
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ah
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; make sure the string is zero terminated: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, 0
+<font color=#0000FF>mov</font> <font color=#C80000>bl</font>, buffer<font color=#0064C8>[</font>1<font color=#0064C8>]</font>
+<font color=#0000FF>mov</font> buffer<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>+</font>2<font color=#0064C8>]</font>, 0
+
+
+<font color=#0000FF>lea</font>    <font color=#C80000>si</font>, buffer <font color=#0064C8>+</font> 2  <font color=#008000>; buffer starts from third byte. </font>
+<font color=#0000FF>call</font>    tobin
+
+<font color=#008000>; the number is in cx register. </font>
+<font color=#008000>; for '-1234' it's 0fb2eh </font>
+
+<font color=#0000FF>mov</font> binary, <font color=#C80000>cx</font>
+
+<font color=#0000FF>jcxz</font> stop
+
+<font color=#008000>; print pre-result message: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg2
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+
+<font color=#008000>; print result in binary: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>bx</font>, binary
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 16
+print: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 2   <font color=#008000>; print function. </font>
+       <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'0'</font>
+       <font color=#0000FF>test</font> <font color=#C80000>bx</font>, 1000000000000000b  <font color=#008000>; test first bit. </font>
+       <font color=#0000FF>jz</font> zero
+       <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'1'</font>
+zero:  <font color=#0000FF>int</font> 21h
+       <font color=#0000FF>shl</font> <font color=#C80000>bx</font>, 1
+<font color=#0000FF>loop</font> print
+<font color=#008000>; print binary suffix: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#800080>'b'</font>
+<font color=#0000FF>int</font> 21h
+
+<font color=#0000FF>jmp</font> start  <font color=#008000>; loop </font>
+
+stop:
+
+<font color=#0000FF>ret</font> <font color=#008000>; return control to the operating system. </font>
+
+
+
+<font color=#008000>; this procedure converts string number to </font>
+<font color=#008000>; binary number. number can have a sign ('-'). </font>
+<font color=#008000>; the result is stored in cx register. </font>
+<font color=#008000>; parameters: </font>
+<font color=#008000>; si - address of string number (zero terminated). </font>
+
+tobin   <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>si</font>
+
+
+<font color=#0000FF>jmp</font> process
+
+<font color=#008000>;==== local variables ====       </font>
+make_minus      <font color=#000064>db</font>      ?       <font color=#008000>; used as a flag. </font>
+ten             <font color=#000064>dw</font>      10      <font color=#008000>; used as multiplier. </font>
+<font color=#008000>;========================= </font>
+
+process:
+
+        <font color=#008000>; reset the accumulator: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 0
+
+        <font color=#008000>; reset flag: </font>
+        <font color=#0000FF>mov</font>     <font color=#800000>cs</font>:make_minus, 0
+
+next_digit:
+
+    <font color=#008000>; read char to al and </font>
+    <font color=#008000>; point to next byte: </font>
+    <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+    <font color=#0000FF>inc</font>    <font color=#C80000>si</font>
+
+        <font color=#008000>; check for end of string: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0  <font color=#008000>; end of string? </font>
+        <font color=#0000FF>jne</font>     not_end
+        <font color=#0000FF>jmp</font>     stop_input
+not_end:
+
+        <font color=#008000>; check for minus: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, <font color=#800080>'-'</font>
+        <font color=#0000FF>jne</font>     ok_digit
+        <font color=#0000FF>mov</font>     <font color=#800000>cs</font>:make_minus, 1 <font color=#008000>; set flag! </font>
+    <font color=#0000FF>jmp</font>     next_digit
+
+ok_digit:
+
+        <font color=#008000>; multiply cx by 10 (first time the result is zero) </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>cx</font>
+        <font color=#0000FF>mul</font>     <font color=#800000>cs</font>:ten                  <font color=#008000>; dx:ax = ax*10 </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+
+    <font color=#008000>; it is assumed that dx is zero - overflow not checked! </font>
+
+        <font color=#008000>; convert from ascii code: </font>
+        <font color=#0000FF>sub</font>     <font color=#C80000>al</font>, 30h
+
+        <font color=#008000>; add al to cx: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0
+        <font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, <font color=#C80000>cx</font>      <font color=#008000>; backup, in case the result will be too big. </font>
+        <font color=#0000FF>add</font>     <font color=#C80000>cx</font>, <font color=#C80000>ax</font>
+
+        <font color=#008000>; add - overflow not checked! </font>
+
+        <font color=#0000FF>jmp</font>     next_digit
+
+stop_input:
+
+        <font color=#008000>; check flag, if string number had '-' </font>
+        <font color=#008000>; make sure the result is negative: </font>
+        <font color=#0000FF>cmp</font>     <font color=#800000>cs</font>:make_minus, 0
+        <font color=#0000FF>je</font>      not_minus
+        <font color=#0000FF>neg</font>     <font color=#C80000>cx</font>
+
+not_minus:
+
+        <font color=#0000FF>pop</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>ret</font>
+tobin        endp
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/convert_string_number_to_binary.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,261 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/and.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:58 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>คำสั่ง AND</title>
+</head>
+
+<body background="bgstou.jpg" bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="0" width="100%">
+    <tr>
+        <td><p align="center"><img src="p_guest.jpg" width="321"
+        height="178"></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p align="center"><img src="link1.gif" width="100"
+        height="17"><img src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"></p>
+        <p align="center"><font color="#FF0000" size="7"><strong><u>คำสั่ง
+        AND</u></strong></font></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><table border="4">
+                <tr>
+                    <td><img src="pic_ani.gif" width="140"
+                    height="75"></td>
+                </tr>
+            </table>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font color="#0000FF" size="4"><strong>SYNTAX AND
+            distination,source</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0000" size="4"><strong><u>การคำนวณเชิงตรรก
+    AND</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ตอนนี้เราสามารถพิมพ์เลขหลักบนเลขฐานสิบหกได้แล้วต่อไปเราจะพิมพ์เลขหลักที่สองแต่ก่อนอื่นเราจะศึกษาว่าจะทำการเคลียร์ค่าสี่บิตบนอย่างไรให้เป็นศูนย์โดยไม่ต้องเลื่อนบินเหมือนในตัวอย่างที่เล้วเราจะใช้คำสั่ง
+    And
+    ซึ่งเป็นการกระทำทางลอจิก
+    (logic) เช่นถ้าเราพูดว่า ‘A
+    เป็นจริงถ้า B และ C
+    เป็นจริงทั้งคู่”
+    แต่ถ้า ‘B หรือ C
+    เป็นเท็จ A
+    จะเป็นเท็จทันที” โดยแทนค่า
+    1 ด้วยจริง (true) และค่า 0
+    ด้วยเท็จ (false) จะได้ค่า
+    ตารางความจริงดังนี้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <table border="0">
+            <tr>
+                <td><font size="4"><strong>AND</strong></font></td>
+                <td>&nbsp;</td>
+                <td><font size="4"><strong>F T </strong></font></td>
+                <td><font size="4"><strong>AND</strong></font></td>
+                <td><font size="4"><strong>0 1</strong></font></td>
+            </tr>
+            <tr>
+                <td><p align="center"><font size="4"><strong>F</strong></font></p>
+                </td>
+                <td>&nbsp;</td>
+                <td><font size="4"><strong>F F </strong></font></td>
+                <td><p align="center"><font size="4"><strong>0</strong></font></p>
+                </td>
+                <td><font size="4"><strong>0 0</strong></font></td>
+            </tr>
+            <tr>
+                <td><p align="center"><font size="4"><strong>T</strong></font></p>
+                </td>
+                <td>&nbsp;</td>
+                <td><font size="4"><strong>F T</strong></font></td>
+                <td><p align="center"><font size="4"><strong>1</strong></font></p>
+                </td>
+                <td><font size="4"><strong>0 1</strong></font></td>
+            </tr>
+        </table>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>จากตารางจะเห็นว่า
+    AND
+    จะให้ค่าเป็นจริงเพียงกรณีเดียวคือค่าที่ทำการ
+    AND กันเป็นจริงทั้งคู่ (เป็น
+    1 ทั้งคู่) ในการ AND
+    บิตกันนั้นเราใช้กับไบต์หรือเวิร์ดก็ได้
+    แต่ค่าที่จะนำมา AND
+    กันต้องเป็นชนิดเดียวกัน
+    เช่น ไบต์เหมือนกัน
+    เป็นต้น เราจะทำการ AND
+    กันโดยเขียนถลขทั้งสองให้อยู่ในเลขฐานสองและแต่ละบติที่อยู่หลักเดียวกันจะนำมา
+    AND กัน</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>1 0 1 1 0 1 0 1
+        = B5h</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>AND 0 1 1 1 0 1
+        1 0 = 76h</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>-----------------------------------------------------</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>0 0 1 1 0 1 0 0
+        = 34h</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>คราวนี้ถ้าเรา
+    AND 0Fh เข้ากับตัวเลขต่าง
+    ๆ
+    เราจะพบว่าสี่บิตบนถูกทำให้เป็น
+    0 และสี่บิตล่างจะมีค่าเหมือนเดิม</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>0 1 1 1 1 0 1 1
+        = 7Bh</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>AND 0 0 0 0 1 1 1 1
+    = 0Fh</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>-----------------------------------------------------</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>0 0 0 0 1 0 1 1
+        =0Bh</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>จำนวน
+    clock ( 80286) 2-7, (80386) 2-7</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>แฟลกที่ถูกกระทำ
+    : OF=0,CF=0,PF,SF,ZF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>แฟลกที่ไม่ต้องกำหนด
+    : AF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>ข้อยกเว้นในโหมด
+    protected :
+    ยกเว้นในกรณีที่อยู่ในเซกเมนต์ที่เขียนข้อมูลไม่ได้ถ้าเป็นโอเปอร์แรนต์อยู่ในเซกเมนต์
+    CS,DS หรือ ES
+    จะได้รับการยกเว้น
+    แต่ถ้าเป็นเซกเมนต์ SS
+    จะเกิดความผิดพลาดที่
+    stack ขึ้น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#800080" size="4"><strong>ข้อยกเว้นสำหรับโหมด
+    real address : จะเกิด int 13 ขึ้น
+    เมื่อโอเปอร์แรนด์อยู่ที่ออฟเซ็ต
+    0FFFH
+    เราจะพัฒนาโปรแกรมพิมพ์เลขฐานสิบหกใหม่โดยใช้คำสั่ง
+    AND แทนการหมุน
+    ตัวอย่างโปรแกรม AND </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="3">
+        <tr>
+            <td><img src="And.jpg" width="308" height="712"></td>
+        </tr>
+    </table>
+    <p><font color="#FF8000" size="4"><strong>โพรชิเยอร์นี้จะทำการตรวจสอบโพรชิเยอร์
+    WRITE_DECIMAL
+    ว่าสามารถพิมพ์เลขฐานสิบ
+    12345 ได้หรือไม่</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>นอกจากนี้แล้ว
+    เราต้องแก้ไขคำสั่ง END
+    ที่ท้ายโปรแกรมใน VIDEO_IO.ASM
+    จาก END TEST_WRITE_HEX เป็น END TEST_WRITE_DECIMAL
+    เพราะโรชิเยอร์ REST_WRITE_DECIMAL
+    เป็นโรชิเยอร์หลักตัวใหม่ของเรา</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>เราจะทำการคอมไพล์ลิงค์
+    และเปลี่ยนไฟล์คอม (COM)
+    แล้วก็ทดลองรันโปรแกรมนี้ดูถ้าพบข้อผิดพลาดก็ลองใช้ดีบักตรวจดูการทำงานของโปรแกรมอีกที
+    </strong></font></p>
+</blockquote>
+
+<p align="center"><img src="sabuyline.jpg" width="600"
+height="32"></p>
+
+<blockquote>
+    <p align="left"><a href="Menu.html"><img src="Back.gif"
+    border="0" width="83" height="28"></a></p>
+    <table border="0">
+        <tr>
+            <td><img src="Rosebul.gif" width="17" height="17"></td>
+            <td>&nbsp;</td>
+            <td><font color="#8000FF" size="4"><strong><u>ข้อมูลได้มาจากเอกสารประกอบการเรียน
+            </u></strong></font><font color="#8000FF" size="4"
+            face="CordiaUPC"><strong><u>Assembly.</u></strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/and.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:59 GMT -->
+</html>

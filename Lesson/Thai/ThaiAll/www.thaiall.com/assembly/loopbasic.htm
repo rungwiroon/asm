@@ -1,0 +1,615 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/loopbasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>การทำซ้ำ หรือ วนลูป</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="loop,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="การทำซ้ำ หรือ วนลูป">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:fixedsys;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+การทำซ้ำ หรือ วนลูป</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2548-09-20 (ปรับ encrypt)
+<br> 
+
+<center><font size=6>พื้นฐานการทำซ้ำ แบบต่าง ๆ<br>Looping or Repeating</font></center>
+<ol><pre><font face="courier new">
+<li><font color=blue face="microsoft sans serif"><b>Loop กำหนดรอบ ใช้ debug สร้าง .com พิมพ์ A 16 อักษร</b></font>
+C:\>debug x1.com
+-a
+11BC:0100 mov ah,02    ; <font face="microsoft sans serif">คู่กับ int 21 คือการพิมพ์อักษรใน dl</font>
+11BC:0102 mov cx,0010  ; <font face="microsoft sans serif">กำหนดจำนวน loop ใน Register CX (10h = 16)</font>
+11BC:0105 mov dl,41
+11BC:0107 int 21
+11BC:0109 loop 0105    ; <font face="microsoft sans serif">Loop ทำงานเท่าจำนวนใน CX</font>
+11BC:010B int 20
+11BC:010D
+-rcx
+CX 0000
+:d                    ; <font face="microsoft sans serif">พิมพ์ D เพราะโปรแกรมมีขนาด 13 byte</font>
+-w
+Writing 00010 bytes
+-q
+
+C:\>x1.com
+AAAAAAAAAAAAAAAA
+C:\>
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>Loop พิมพ์ a จนกว่า Ctrl-Break<br>เป็นแนวการเขียนโปรแกรมแบบ .com แต่แฟ้มที่ได้เป็น .exe โปรแกรมที่ได้มีขนาด 534 Byte</b></font>
+        ; a1.asm compile by MASM611
+cseg    segment
+        assume cs:cseg,ds:cseg    <font face="microsoft sans serif">; Code segment, Data segment</font>
+        push    cs
+        pop     ds
+        jmp     start             <font face="microsoft sans serif">; กระโดดไป start label</font>
+msg1    db      'a',0ah,0dh,'$'
+start:  mov     ah,09h
+        lea     dx,msg1
+        int     21h
+        mov     ah,01h
+        int     21h
+        jmp     start
+cseg    ends                      <font face="microsoft sans serif">; ปิด segment</font>
+        end                       <font face="microsoft sans serif">; เลิกการทำงาน</font>
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>Loop รับ 1 อักษร แต่พิมพ์ซ้ำตลอดกาล จนรับ e หรือ E จึงหยุด<br>เป็นแนวการเขียนโปรแกรมแบบ .exe โปรแกรมที่ได้มีขนาด 578 Byte</b></font>
+; Get char and print. It will repeat print char until e or E
+        .model  small   
+        .data
+x1      db      "type e or E to Exit",0ah,0dh,'$'        
+        .code
+pmain   proc    far     <font face="microsoft sans serif">; can not change far to near because non-stop on execute</font>
+        push    ds      <font face="microsoft sans serif">; 1 of 5 line required for end .exe</font>
+        mov     ax,0    <font face="microsoft sans serif">; 2 clear ax by xor  ax,ax</font>
+        push    ax      <font face="microsoft sans serif">; 3 send ax to stack</font>
+        mov     ax,@data
+        mov     ds,ax
+start:  mov     ah,09h
+        lea     dx,x1
+        int     21h
+        mov     ah,6
+top:    mov     dl,0ffh
+        int     21h
+        jz      typeo
+        mov     cl,al
+        cmp     al,'E'
+        je      finish
+        cmp     al,'e'
+        je      finish
+typeo:  mov     dl,cl
+        int     21h
+        jmp     top
+finish: ret             <font face="microsoft sans serif">; Can not use int 20h</font>
+pmain   endp
+        .stack  200h    <font face="microsoft sans serif">; not required</font>
+        end     pmain
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>Loop รับอักษร เมื่อรับ "b" จะแสดง "you pass" <br>แต่ถ้าไม่พิมพ์ b เข้าไป ก็ไม่แสดงอะไรออกมาเลย</b></font>
+        .model  small   
+        .data
+pass    db      "b $"
+txt     db      "you pass $"
+        .code
+pmain   proc    far     <font face="microsoft sans serif">; can not change far to near because non-stop on execute</font>
+        push    ds      <font face="microsoft sans serif">; 1 of 5 line required for end .exe</font>
+        mov     ax,0    <font face="microsoft sans serif">; 2 clear ax by xor  ax,ax</font>
+        push    ax      <font face="microsoft sans serif">; 3 send ax to stack</font>
+        mov     ax,@data
+        mov     ds,ax
+start:  mov     ah,08h  <font face="microsoft sans serif">; รับตัวอักษร 1 ตัวอักษรส่งให้ al โดยไม่แสดงอะไรทางจอภาพเลย</font>
+        int     21h
+        cmp     al,pass
+        je      finish  <font face="microsoft sans serif">; ผลการ cmp ถ้าเท่ากันก็จะทำ finish</font>
+        jmp     start
+finish: mov     ah,09h  <font face="microsoft sans serif">; แสดงสตริงค์ "you pass"</font>
+        lea     dx,txt  
+        int     21h
+        ret             <font face="microsoft sans serif">; Can not use int 20h</font>
+pmain   endp
+        .stack  200h    <font face="microsoft sans serif">; not required. It will no warning if you have.</font>
+        end     pmain
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>รับอักษรเข้า buffer แล้วนำมาแสดงภายหลัง</b></font>
+; when get abc 
+; will show
+; a
+; b
+; c
+        .model  small   
+        .data
+v       db      10 dup(?),00
+        .code
+pmain   proc    far     
+        push    ds      <font face="microsoft sans serif">; 1 of 5 line required for end .exe</font>
+        mov     ax,0    <font face="microsoft sans serif">; 2 clear ax by xor  ax,ax</font>
+        push    ax      <font face="microsoft sans serif">; 3 send ax to stack</font>
+        mov     ax,@data
+        mov     ds,ax
+        mov     es,ax
+start:  cld             <font face="microsoft sans serif">; clear direction</font>
+        mov     di,offset v
+        mov     cx,10   <font face="microsoft sans serif">; maximum is 10 characters</font>
+getc: 
+        mov     ah,01h  <font face="microsoft sans serif">; get character</font>
+        int     21h
+        stosb           <font face="microsoft sans serif">; save in buffer 1 char (FIFO)</font>
+        cmp     al,0dh  <font face="microsoft sans serif">; check for enter</font>
+        je      outc1
+        loop    getc
+outc1:  cld
+        mov     si,offset v
+outc2:  
+        mov     ah,02h
+        mov     dl,0dh
+        int     21h
+        mov     dl,0ah
+        int     21h
+        lodsb           <font face="microsoft sans serif">; load from buffer 1 char</font>
+        cmp     al,00   <font face="microsoft sans serif">; check for last char</font>
+        je      bye
+        mov     dl,al
+        mov     ah,02h
+        int     21h
+        jmp     outc2
+bye:    ret             <font face="microsoft sans serif">; Can not use int 20h</font>
+pmain   endp
+        .stack  200h    <font face="microsoft sans serif">; not required</font>
+        end     pmain
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>รับ string จนกว่าจะพิมพ์คำว่า bye</b></font>
+; when get 7 string 
+; will show 7 string
+; exit when type bye
+        .model  small   
+        .data
+vpar    label   byte     <font face="microsoft sans serif">; byte = 8</font>
+vmax    db      8        <font face="microsoft sans serif">; have 8 but can use 7</font>
+vlen    db      ?
+v       db      8 dup('.'),'$'
+n       db      30h
+l       db      13,10,'$'
+pass    db      'bye'
+lpass   equ  lengthof pass
+        .code
+pmain   proc    far     
+        push    ds      <font face="microsoft sans serif">; 1 of 5 line required for end .exe</font>
+        mov     ax,0    <font face="microsoft sans serif">; 2 clear ax by xor  ax,ax</font>
+        push    ax      <font face="microsoft sans serif">; 3 send ax to stack</font>
+        mov     ax,@data
+        mov     ds,ax
+        mov     es,ax       
+start: 
+      ; get string (required)
+        mov     ah,0ah
+        lea     dx,vpar        
+        int     21h
+      ; check for input, if not will exit (option)
+        test    vlen,0ffh
+        jz      bye
+      ; print break line  (option)
+        mov     ah,09h
+        lea     dx,l
+        int     21h
+      ; print len of input string  (option)
+        mov     dl,n
+        add     dl,vlen 
+        mov     ah,02h
+        mov     al,n
+        int     21h
+      ; print break line  (option)
+        mov     ah,09h
+        lea     dx,l
+        int     21h
+      ; print v in dx (may have .... and no problem on v)  (option)
+        mov     ah,09h
+        lea     dx,v
+        int     21h
+      ; compare string of pass and v (required)
+        mov     cx,lpass
+        mov     si, offset pass
+        mov     di, offset v
+        repe    cmpsb
+        jne     start
+bye:    ret             ; Can not use int 20h
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+<hr color=black>
+
+<li><font color=blue face="microsoft sans serif"><b>ตัวอย่างโปรแกรมตรวจการเป็น PALINDROME
+<br>PALINDROME คือ อักษรซ้ำ (ถ้าอักษรที่ป้อนเหมือนกัน ก็จะเป็น ถ้าไม่เหมือนก็ไม่เป็น PALINDROME)
+<br>จาก http://www.experts-exchange.com/Programming/Programming_Languages/Assembly/Q_20803528.html</b>
+<dd>เช่น p.asm จะได้ p.exe
+<dd>หยุดรอรับ String ลองพิมพ์ <b>abcde</b> เขาบอกว่า <b>ไม่ใช่ PALINDROME</b>
+<dd>หยุดรอรับ String ลองพิมพ์ <b>bbbbb</b> เขาบอกว่า <b>เป็น PALINDROME</b>
+</font><textarea cols=80 rows=20 wrap=off>
+        .MODEL SMALL
+        .STACK 64
+        .DATA
+STRPAR  LABEL   BYTE
+MAXLEN  DB      20
+ACTLEN  DB      ?
+STR1    DB      20 DUP ('-')
+
+REVSTR  DB      20 DUP ('-')
+PROMPT  DB      ' ENTER THE STRING : ','$'
+
+PAMSG   DB      0DH,0AH,' THE ENTERED STRING IS A PALINDROME ! ','$'
+NPAMSG  DB      0DH,0AH,' THE ENTERED STRING IS NOT A PALINDROME ! ','$'
+
+        .CODE
+BEGIN   PROC    NEAR
+        MOV     AX,@DATA
+        MOV     DS,AX
+        MOV     ES,AX
+        CALL    CLRSCR
+        CALL    SETCUR
+        CALL    ACCSTR
+        CALL    REV
+        MOV     AH,02H
+        MOV     BH,00H
+        MOV     DX,1240H
+        CALL    CHECKP
+        MOV     AX,4C00H
+        INT     21H
+BEGIN   endp
+
+CLRSCR  PROC    NEAR
+        MOV     AX,0600H
+        MOV     BH,0CH
+        MOV     CX,0000H
+        MOV     DX,184FH
+        INT     10H
+        RET
+CLRSCR  endp
+
+SETCUR  PROC    NEAR
+        MOV     AH,02H
+        MOV     BH,00H
+        MOV     DX,0000H
+        INT     10H
+        MOV     AH,01H
+        MOV     CH,10
+        MOV     CL,14
+        INT     10H
+        RET
+SETCUR  endp
+
+ACCSTR  PROC    NEAR
+        MOV     AH,09H
+        LEA     DX,PROMPT
+        INT     21H
+        MOV     AH,0AH
+        LEA     DX,STRPAR
+        INT     21H
+        MOV     BH,00H
+        MOV     BL,ACTLEN
+        MOV     AL,'$'
+        MOV     [STR1+BX],AL
+        RET
+ACCSTR  endp
+
+REV     PROC    NEAR
+        MOV     BH,00
+        MOV     BL,ACTLEN
+        LEA     DI,STR1
+        LEA     SI,[DI+BX]
+        LEA     DI,REVSTR
+        MOV     CH,00
+        MOV     CL,ACTLEN
+        DEC     SI
+ACTREV :
+        MOV     AL,[SI]
+        MOV     [DI],AL
+        INC     DI
+        DEC     SI
+        LOOP    ACTREV
+        MOV     AL,'$'
+        MOV     [DI],AL
+        MOV     AH,09H
+        LEA     DX,REVSTR
+        INT     21H
+        MOV     AH,02H
+        MOV     BH,00H
+        MOV     DX,0640H
+        INT     10H
+
+        RET
+REV     endp
+
+CHECKP  PROC    NEAR
+        CLD
+        MOV     CH,00
+        MOV     CL,ACTLEN
+        DEC     CX
+        LEA     SI,STR1
+        LEA     DI,REVSTR
+        REPE    CMPSB
+;       CMP     CX,0000H
+        JE      PMSG
+        MOV     AH,09H
+        LEA     DX,NPAMSG
+        INT     21H
+        JMP     CEND
+PMSG :
+        MOV     AH,09H
+        LEA     DX,PAMSG
+        INT     21H
+CEND :
+        RET
+CHECKP  endp
+        END     BEGIN
+</textarea>
+
+<li><font color=blue face="microsoft sans serif"><b>ตัวอย่างโปรแกรม เข้ารหัสแฟ้มไม่ให้ใครอ่านออก และถอดรหัสแฟ้มคืน<br>จาก http://www.laynetworks.com/Assembly%20Program7.htm</b>
+<dd>เช่น en.asm จะได้ en.exe 
+<dd>ถ้า encrypt ก็กด e แล้วพิมพ์ชื่อแฟ้ม เช่น <b>letter.txt</b> จากนั้นก็พิมพ์ <b>letter.en</b>
+<dd>ถ้า decrypt ก็กด d แล้วพิมพ์ชื่อแฟ้ม เช่น <b>letter.en</b> จากนั้นก็พิมพ์ <b>letter.txt</b></font>
+<dd>ถูกพัฒนาโดย Kailas Jagtap
+<textarea cols=80 rows=20 wrap=off>
+        .model  small
+        .data
+        ;Messages for user
+s0      db      0dh,0ah,'PROGRAM FOR FILE ENCRYPTION AND DECRYPTION ..By Kailas Jagtap$'
+s1      db      0dh,0ah,'Do you want to ENCRYPT(E) or DECRYPT(D) a file ? : $'
+s2      db      0dh,0ah,'Enter Name of File(to be encrypted): $'
+s22     db      0dh,0ah,'Enter Name of File(which will store encrypted data): $'
+s3      db      0dh,0ah,'Enter Name of encrypted File(to be decrypted): $'
+s33     db      0dh,0ah,'Enter Name of File(which will store decrypted data): $'
+s4      db      0dh,0ah,'***************** ERROR!!! - INVALID INPUT ****************** $'
+s44     db      0dh,0ah,'***************** ERROR IN FILE OPERATION !!!!!! ************ $'
+s5      db      0dh,0ah,'$'
+s6      db      0dh,0ah,'.............. File ENCRYPTED Successfully ! ................. $'
+s7      db      0dh,0ah,'.............. File DECRYPTED Successfully ! ................. $'
+        ;buffer for file(to be encrypted/decrypted) name read from kb
+fname   db      80 ;storage for max.no.of char to read, say 80
+        db      0 ;storage for no.of char.actually read
+        db      80 dup(0) ;storage for string read from kb terminated by CR(0dh)
+        ;buffer for file(encrypted/decrypted) name read from kb
+newf1   db      80 ;storage for max.no.of char to read, say 80
+        db      0 ;storage for no.of char.actually read
+        db      80 dup(0) ;storage for string read from kb terminated by CR(0dh)
+save_ax dw      1 dup(0) ;storage for count of no.of char. actually read
+buffer  db      512 dup(0) ;buffer for storing chars. read from file
+endbuffer db    '$' ;$ shows end of buffer
+handle  dw      ? ;storage for handle of file(to be encrypted/decrypted)
+newhandle dw    ? ;storage for handle of file(encrypted/decrypted)
+        .code
+start:
+        mov ax,@data ;initialise ds with data seg. addr.
+        mov ds,ax
+        call disp_nl ;move cursor to new line
+        mov ah,9 ;display initial msg.
+        lea dx,s0 
+        int 21h
+rpt_disp: call disp_nl ;move cursor to new line
+        call disp_nl ;move cursor to new line
+        call disp_nl ;move cursor to new line
+        mov ah,9 ;display encryp/decryp choice msg.
+        lea dx,s1 
+        int 21h
+        mov ah,1 ;get E/D selection from kb(user)
+        int 21h
+        cmp al,'E' ;if E or e entered, excute encr.pgm 
+        je encr
+        cmp al,'e'
+        je encr
+        cmp al,'D' ;if D or d entered, excute decr.pgm 
+        je decr2
+        cmp al,'d'
+        je decr2
+        cmp al,'X' ;if X or x entered, then terminate the pgm 
+        je stop2
+        cmp al,'x'
+        je stop2
+        ;if any other char. entered then
+        call disp_nl ;go to next line on screen
+        call disp_nl ;go to next line on screen
+        mov ah,9 ;display invalid i/p msg.
+        lea dx,s4 
+        int 21h
+        jmp rpt_disp ;and loop again for geting correct i/p char.
+        ;
+decr2: jmp decr1 ;used because jump is going out of range(-127 to 128)
+stop2: jmp stop1 ; --"--
+        ;---------------------open an existing file ------
+encr: call disp_nl ;go to next line on screen
+        mov ah,9 ;display enter file(to be encr) name msg.
+        lea dx,s2
+        int 21h
+        lea dx,fname ;get start addr. of file(to be encr.)name storage
+        call getname ;get file name from kb
+        mov ah,3dh ;open existing file whose name is in fname
+        lea dx,fname+2 ;get file name string start addr.
+        mov al,0 ;ensure al=0, as it is used further
+        int 21h ;after opening, ax contains file handling info.
+        mov handle,ax ;save it in handle(buf)
+        jc err_out2 ;if carry set, go to display err msg.
+        ;-----------------create a new file(for storing encrypted data)------
+        call disp_nl ;go to next line on screen
+        mov ah,9 ;display enter file(encr) name msg.
+        lea dx,s22
+        int 21h
+        lea dx,newf1 ;get start addr. of file(encr.)name storage
+        call getname ;get file name from kb
+        mov ah,3ch ;create new file whose name is in newf1
+        lea dx,newf1+2 ;get file name string start addr.
+        mov cx,0 ;ensure cx=0, as it is used further
+        int 21h ;after creating, ax contains file handling info.
+        mov newhandle,ax ;save it in newhandle(buf)
+        jc err_out ;if carry set, go to display err msg.
+        ;----------------------read the file & transfer the data to buffer-------
+        readnext: lea dx,buffer ;get start addr.of buffer in which file data will be transfered
+        mov cx,512 ;no.of chars.to be read(at a time) is say 512
+        mov bx,handle ;get start addr.of file info. storage
+        mov ah,3fh ;get function no. for read
+        int 21h ;read 512 bytes from file
+        jc err_out ;if carry set, go to display err msg.
+        ;otherwise read is successful,ax=no.of bytes read
+        ;check for end of file
+        mov save_ax,ax ;save the count(no.of bytes read)
+        cmp ax,0 ;end of file? i.e. no.of bytes read is 0?
+        je done1 ;if yes, go to close both files and come out
+        ;------------------------convert the buffer in coded(encrypted) form-----
+        call currupt ;encrypt the data in buf
+        ;------------------write buffer into the new file------------------
+        lea dx,buffer ;get start addr. of buf
+        mov ah,40h ;get function no. for write
+        mov bx,newhandle ;get sart addr.of file(encr) info buf
+        mov cx,save_ax ;get saved read count for writing the same no. of bytes
+        int 21h ;write
+        jc err_out ;if write is not successful, disp.err msg & come out
+        jmp readnext ;otherwise(successful), go to read next 512 bytes
+        ;
+        err_out2: jmp err_out
+decr1: jmp decr ;used because jump is going out of range(-127 to 128)
+stop1: jmp stop ; ----"-----
+        ;
+done1: lea dx,s6 ;display encryp-successful msg.
+        jmp done3
+done2: lea dx,s7 ;display decryp-successful msg.
+done3: mov ah,9 
+        int 21h ;display msg
+        jmp done ;go to close both files
+        ;
+stop: mov ah,4ch ;Hand over control to dos
+        int 21h
+        ;
+getname proc near
+        mov ah,0ah ;read file name from kb
+        int 21h ;after read,dx remains start addr.of file name buf
+        mov si,dx ;use si for indexing first 3 byte locations in buf
+        mov bl,[si+1] ;get no.of char.read count(2nd byte)
+        add si,02 ;point to 3rd byte,where actual name string starts
+        sub bh,bh ;clear bh, as used further
+        mov BYTE PTR[si+bx],0 ;replace cr(0dh) at end of string with 0
+        ret ;to make it useful to other functions 
+getname endp
+        ;---------------------------------------------
+err_out: mov ah,9 ;display err msg.
+        lea dx,s44
+        int 21h
+        jmp stop ;come out
+        ;close both files
+        done: mov ah,3eh ;get function code for closing file
+        mov bx,handle ;get start addr. of file info.(1st file)
+        int 21h ;close 1st file
+        mov bx,newhandle ;get start addr. of file info.(2nd file)
+        int 21h ;close 2nd file
+        jmp stop ;come out
+        ;
+done4: jmp done2 ;used because jump is going out of range(-127 to 128)
+        ;------------------------------------------------------------------------------
+currupt proc near ;procedure for encr.(encoding) data
+        lea si,buffer ;get start addr.of buf containing bytes to be encrypted
+        mov cx,save_ax ;get no.of bytes to be encr.
+        again: mov al,[si] ;get a byte from buf
+        add al,07h ;encr. it
+        mov [si],al ;restore it at same location in buf
+        inc si ;point to next byte in buf
+        loop again ;reapeat until all bytes in buf are encr.
+        ret
+currupt endp
+        ;
+err_out1: jmp err_out
+        ;------------------open an existing currupted file c:\masm51\f1cod.txt------
+decr: call disp_nl ;go to next line on screen
+        mov ah,9 ;display enter file(to be decr) name msg.
+        lea dx,s3
+        int 21h
+        lea dx,fname ;read file(to be decr) name from kb
+        call getname ;further comments are same as that for encr.
+        mov ah,3dh
+        lea dx,fname+2
+        mov al,0
+        int 21h
+        mov handle,ax
+        jc err_out
+        ;-----------------create a new file(for storing decrypted data) c:\masm61\f1dec.txt------
+        call disp_nl ;go to next line on screen
+        mov ah,9 ;display enter file(decr) name msg.
+        lea dx,s33
+        int 21h
+        lea dx,newf1 ;read file(encr) name from kb
+        call getname ;further comments are same as that for encr.
+        mov ah,3ch
+        lea dx,newf1+2
+        mov cx,0
+        int 21h
+        mov newhandle,ax
+        jc err_out 
+        ;--------------read the file & transfer the corrupted data to buffer-------
+readnext1: lea dx,buffer ;get start addr.of buffer in which file data will be transfered
+        mov cx,512 ;further comments are same as that for encr.
+        mov bx,handle
+        mov ah,3fh
+        int 21h
+        jc err_out1
+        ;check for end of file
+        mov save_ax,ax ;save the count(no.of bytes read)
+        cmp ax,0 ;end of file? i.e. no.of bytes read is 0?
+        je done4 ;if yes, go to close both files and come out
+        ;------------------convert the buffer in decoded form-----
+        call decurrupt ;get data decrypted
+        ;------------------write into the new file------------------
+        lea dx,buffer ;get start addr. of buf
+        mov ah,40h ;further comments are same as that for encr.
+        mov bx,newhandle
+        mov cx,save_ax
+        int 21h
+        jc err_out1 ;if write is not successful, disp.err msg & come out
+        jmp readnext1 ;otherwise(successful), go to read next 512 bytes
+        ;-----------------------------------------------------------------------
+decurrupt proc near ;procedure for decr.(decoding) data
+        lea si,buffer ;further comments are same as that for encr.
+        mov cx,512
+        again1: mov al,[si]
+        sub al,07h
+        mov [si],al
+        inc si
+        loop again1
+        ret
+        decurrupt endp
+disp_nl proc near ;move cursor to new line on screen
+        mov ah,9 ;get function code for disp. string
+        lea dx,s5 ;get start addr. of new line msg string
+        int 21h ;display string(cr & lf)
+        ret
+disp_nl endp
+        end      start
+        end
+</textarea>
+<hr color=black>
+
+</font></pre>
+</ol>
+
+<center>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_loopbasic"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/loopbasic.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+</html>

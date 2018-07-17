@@ -1,0 +1,957 @@
+
+***************************** DISK & FILE *******************************
+
+ASM32 disk & file subroutines Copyright (C) 1993 - 1995 Douglas Herr
+All rights reserved
+
+The DOS file attribute byte tells you whether a file is read-only,
+system, a subdirectory, or may provide other information.  File attribute
+bits may be combined.  Each bit of the file attribute means:
+
+        0 = normal files
+        1 = read-only
+        2 = hidden files
+        4 = system files
+        8 = volume label (only one per disk)
+       16 = subdirectories
+       32 = archive bit set
+
+   Thus a file with an attribute of 18 is a hidden subdirectory (16 OR 2)
+
+
+
+                      ASM32 buffered file I/O system
+
+    Several ASM32 subroutines are available for buffered file Input or
+    Output.  Files to be managed by the buffered I/O system must be opened
+    by FOPEN or FCREATE, and must be closed by FCLOSE.  Buffered file I/O
+    will be much faster than unbuffered.  ASM32's default buffer size is
+    4096 bytes; this can be changed by altering FBUFFER_SIZE in FOPEN.ASM
+    and re-assembling.  Up to 20 files can be managed by FOPEN; this can
+    be changed by altering NUMBER_OF_FILES in $handle.asm and reassembling.
+    ASM32's file I/O subroutines assume DS:@data.
+
+    Subroutines: FOPEN        open file & initialize buffer
+                 FCREATE      create file & initialize buffer
+                 FCLOSE       flush & close output buffer; close file
+                 FSEEK        move file pointer & update buffer
+                 FGETSTR      read a string from buffer
+                 FGETCHR      read a character from buffer
+                 FGET         read specified number of bytes from buffer
+                 FPUTSTR      write string to buffer
+                 FPUTCRLF     write CR+LF to buffer
+                 FPUTCHR      write character to buffer
+                 FPUT         write specified number of bytes to buffer
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+DISKSIZE:    determines total and free disk space
+Source:      disksize.asm
+
+Call with:   DL = drive number (drive A: = 0, default drive = -1)
+Returns:     if CF = 0, EAX = total disk space
+                        EDX = free disk space
+             if CF = 1, AX = DOS error code
+              DiskSize does not trap "drive not ready" errors
+Uses:        EAX, EDX, flags
+Supports:    all DOS drives
+Example:
+
+public  example_code
+extrn	disksize:near
+
+include codeseg.inc
+
+; code
+example_code    proc near
+        mov	dl,0
+        call    disksize
+        jc      disk_error
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+diskwp:      determines if a floppy disk is write-protected
+Source:      diskwp.asm
+
+Call with:   DL = floppy disk number (drive A: = 0)
+Returns:     AL = BIOS error code
+                0 = no error
+                1 = invalid disk number
+                3 = disk is write-protected or wrong media
+              128 = drive not ready
+Uses:        EAX, flags
+Supports:    physical drives A: and B:
+Example:
+
+public  check_disk
+extrn   diskwp:near
+
+include codeseg.inc
+
+; code
+check_disk      proc near
+        .
+        .
+        .
+        mov     dl,1              ; drive B:
+        call    diskwp            ; can I write to this disk?
+        jnc     short no_problem
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+DOTBAK:      changes the file extension of an existing file to .BAK
+Source:      dotbak.asm (strrchr.asm)
+
+Call with:   ESI = address of a valid ASCIIZ filename
+             dotbak deletes a previous .BAK file of this name and
+             renames the input filename.ext to filename.bak.
+Returns:     if CF = 0, no error
+             if CF = 1, AL = DOS error code.  If AL = 5, the previous
+             .BAK filename is probably read-only.  All other errors refer
+             to the name change operation.
+Uses:        AX, flags
+Example:
+
+extrn   dotbak:near
+
+include dataseg.inc
+
+; data
+
+disk_doc  db 'DISK.DOC',0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+             .
+             .
+             .
+             mov   esi,offset disk_doc
+             call  dotbak
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FCLOSE:      close a file managed by ASM32's buffered file I/O system
+Source:      fopen.asm ($handle.asm)
+
+Call with:   BX = file handle
+             The file must have been opened by FOPEN or FCREATE;  If the
+             file is not read-only, the output buffer will be written to
+             the disk file before closing the file.
+Returns:     if CF = 0, no error
+             if CF = 1, AX = error code
+Uses:        AX, flags
+Example:     see FOPEN
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FCOPY:       copy a file
+Source:      fcopy.asm
+
+Call with:   ESI = address of source filename
+             EDI = address of destination filename
+             Both filenames must be ASCIIZ strings.  Drive and path need
+             not be fully specified; filenames may not include * or ?
+             wildcards.
+Returns:     if CF = 0, no problem
+             if CF = 1, AX = DOS error code
+Uses:        EAX, CF
+Example:
+
+extrn   fcopy:near
+
+include dataseg.inc
+
+; data
+        db 'b:'
+source  db 'asm32cw.lib',0         ; copy the library to b:
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        lea     esi,source
+        mov     edi,esi               ; EDI also points to source
+        sub     edi,2                 ; back the pointer to the 'B:'
+        call    fcopy
+        jc      oops
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FCOUNT:      counts the number of files matching an ASCIIZ filespec string.
+             The filespec string may include the '*' and '?' wildcards.
+Source:      fcount.asm
+
+Call with:   EDX pointing to filespec string
+             CX = file attributes
+Returns:     EAX = number of files matching the filespec string
+Uses:        EAX
+Example:
+
+extrn   fcount:near
+
+include dataseg.inc
+
+; data
+filespec  db '*.asm',0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        .
+        lea    edx,filespec     ; address of filespec string
+        xor    cx,cx            ; normal files only
+        call   fcount
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FCREATE:     create new file and initialize output buffer
+Source:      fcreate.asm ($handle.asm)
+
+Call with:   EDX pointing to ASCIIZ filename
+             The file is created with write-only access.  If a file with
+             the same name already exists, it is truncated to zero
+             length by FCREATE.
+Returns:     if CF = 0, AX = file handle
+             if CF = 1, AX = error code
+Uses:        AX, flags
+Example:
+
+public   myprog
+extrn    fcreate:near
+
+include  dataseg.inc
+
+; data
+file_name   db 'ANYNEW.FIL',0
+file_handle dw 0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+myprog   proc  near
+         .
+         .
+         .
+         lea   edx,file_name
+         call  fcreate
+         jc    something_went_wrong      ; go to error control code
+         mov   file_handle,ax            ; save the handle
+         .
+         .
+         .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FEXIST:      determines if a file exists and can be opened with read access
+Source:      fexist.asm
+
+Call with:   EDX pointing to ASCIIZ filename
+Returns:     if CF = 0, file exists
+             if CF = 1, AX = DOS error code
+Uses:        AX, CF; all other flags and registers are saved
+Example:
+
+extrn    fexist:near
+
+include  dataseg.inc
+
+; data
+filename db 'asm32.doc',0
+
+@curseg	ends
+
+include  codeseg.inc
+
+; code
+         .
+         .
+         .
+         lea   edx,filename
+         call  fexist
+         jnc   got_the_file      ; if CF = 0, go on
+         jmp   doserror          ; else go to error handling code
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FFLUSH:      flushes the ASM32 and DOS output buffers for specified handle
+Source:      fflush.asm (fseek.asm)
+
+Call with:   BX = file handle
+             flushing the buffers guards against data loss in case of system
+             failure, such as power loss
+Returns:     if CF = 0, no error; function successful
+             if CF = 1, AX = DOS error code
+Uses:        AX, flags
+Example:
+
+include codeseg.inc
+
+extrn   fflush:near
+
+; code
+; program opens file & writes to file
+      .
+      .
+      .
+; flush the buffers to disk
+      mov    bx,handle
+      call   fflush
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FGET:        read specified number of bytes from file buffer
+Source:      fget.asm ($handle.asm, $fget.asm)
+
+Call with:   BX = file handle
+             ECX = number of bytes requested (up to 4096 bytes)
+Returns:     if CF = 0, EAX = number of bytes read
+                        EBX points to data in near buffer
+             if CF = 1, AX = DOS error code
+Uses:        EAX, EBX, flags
+Example:
+
+extrn   fopen:near, fget:near
+
+include dataseg.inc
+
+; data
+file_name   db 'asm32.doc',0
+file_handle dw 0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+          .
+          .
+          .
+          lea   edx,file_name
+          call  fopen
+          jc    fopen_problem
+          mov   file_handle,ax  ; save for later
+
+          mov   bx,ax           ; file handle
+          mov   ecx,8           ; I want 8 bytes
+          call  fget            ;  returned at [EBX]
+          jc    read_problem    ; uh oh, trouble ...
+          cmp   eax,ecx         ; did I get what I wanted?
+          jne   not_enough
+          .
+          .
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FGETCHR:     read a character from a file buffer
+Source:      fgetchr.asm ($handle.asm)
+
+Call with:   BX = file handle
+Returns:     if CF = 0, AL = next character from file buffer
+             if CF = 1, AX = DOS error code
+                        AX = 0 if at end of file
+Uses:        AX, flags
+Example:
+
+extrn   fopen:near, fgetchr:near
+
+include dataseg.inc
+
+; data
+file_name   db 'asm32.doc',0
+file_handle dw 0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+          .
+          .
+          .
+          lea   edx,file_name
+          call  fopen
+          jc    fopen_problem
+          mov   file_handle,ax  ; save for later
+
+          mov   bx,ax           ; file handle
+          call  fgetchr         ; character in AL
+          jc    read_problem
+
+          .
+          .
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FGETSTR:     read an ASCII string from a file buffer
+Source:      fgetstr.asm ($handle.asm, $fget.asm)
+
+Call with:   BX = file handle
+             ASCII strings may be terminated with either 0Dh or 0Dh+0Ah.
+             After reading each string, FGetStr positions the buffer pointer
+             to read the next string.  String length should be less than
+             the buffer size.  See FOPEN.
+             NOTE THAT THE STRING IN THE BUFFER IS NOT ZERO-TERMINATED.
+Returns:     if CF = 0, EBX points to string in buffer
+                        ECX = length of ASCII string
+                     if ECX = byte length of buffer, string >= size of buffer
+                              (default buffer length = 4096 bytes)
+             if CF = 1, AX = DOS error code
+                        AX = 0 if end of file
+Uses:        EBX, EAX, ECX, flags
+Example:
+
+extrn   fopen:near, fgetstr:near
+
+include dataseg.inc
+
+; data
+file_name   db 'asm32.doc',0
+file_handle dw 0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        .
+        lea   edx,file_name
+        call  fopen
+        mov   al,0            ; read-only access
+        jc    fopen_problem
+        mov   file_handle,ax  ; save for later
+
+        mov   bx,ax           ; file handle
+        call  fgetstr
+        jc    read_problem
+        push  es
+        pop   ds              ; string at ES:[EBX]
+        call  strndup         ; make a copy for later
+        .
+        .
+        .
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+filelist:    creates a list of file names matching a filespec mask
+Source:      filelist.asm (fcount.asm)
+
+Call with:   ESI pointing to filespec mask
+             CX = file attribute mask
+Returns:     if CF = 0:
+               EDI = address of list buffer
+               EAX = number of filenames in list
+               ECX = list field width
+             if CF = 1, AX = DOS error code
+             You should use ASM32's HFREE to release the file list
+             buffer when you're done with it.
+Uses:        EAX, ECX, EDI, flags
+Example:
+
+public  myproc
+extrn   filelist:near
+
+include dataseg.inc
+
+; data
+filespec db '*.*',0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        .
+        lea    esi,filespec
+        mov    cx,16            ; normal files and subdirectories
+        call   filelist
+        jc     cant_do_it       ; oops
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FOPEN:       opens existing file and initializes ASM32 buffered I/O
+Source:      fopen.asm ($handle.asm)
+
+Call with:   EDX pointing to name of file to be opened
+             AL = access mode
+              0 = read-only access
+              1 = write-only access
+              2 = read-write access NOT SUPPORTED YET
+Returns:     if CF = 0, AX = file handle
+             if CF = 1, AX = ASM32 or DOS error code; file not opened
+                if AX = 0, insufficient memory available
+                if AX = 0FFFFh, no handles available in ASM32 I/O array;
+                   change NUMBER_OF_HANDLES in $handle.asm and re-assemble
+                   (default = 20 handles)
+Uses:        AX, flags
+Example:
+
+public   myprog
+extrn    fopen:near, fclose:near
+
+include  dataseg.inc
+
+; data
+file_name   db 'ASM32.DOC',0
+file_handle dw 0
+
+@curseg	ends
+
+include  codeseg.inc
+
+; code
+myprog   proc  near
+         .
+         .
+         .
+         lea   edx,file_name
+         xor   al,al          ; read-only access
+         call  fopen
+         jc    something_went_wrong
+         mov   file_handle,ax ; save the handle
+         .
+         .
+         .
+
+; all done with this file
+         mov   bx,file_handle
+         call  fclose
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPUT:        write specified number of bytes to output file buffer
+Source:      fput.asm ($handle.asm)
+
+Call with:   BX = file handle
+             ES:[EDI] pointing to data to write
+             ECX = number of bytes to write
+Returns:     if CF = 0, no error
+             if CF = 1, AX = error code
+Uses:        EAX, flags
+Example:
+
+public  myproc
+extrn   fput:near
+extrn   fputchr:near
+extrn   fputcrlf:near
+
+include dataseg.inc
+
+; data
+data1    db 'several bytes may be written at once'
+data_len equ $-data1
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+         .
+         .
+         .
+        mov    bx,output_handle
+        push   ds
+        pop    es
+        lea    edi,data1              ; EDI -> data1
+        mov    ecx,data_len           ; bytes to write
+        call   fput
+        call   fputcrlf               ; write CR+LF for new line
+                                      ; in ASCII text file
+        mov    al,26                  ; End-of-File byte (optional)
+        call   fputchr
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPUTCHR:     write one character to output file buffer
+Source:      fputchr.asm (fput.asm)
+
+Call with:   BX = output file handle
+             AL = character to write
+Returns:     if CF = 1, AX = DOS error code
+             if CF = 0, no error
+Uses:        AX, flags
+Example:     see FPUT
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPUTCRLF:    write CR+LF pair to output file buffer
+Source:      fputcrlf.asm (fput.asm)
+
+Call with:   BX = output file handle; file must have been opened by
+             FOPEN or FCREATE
+Returns:     if CF = 0, no error
+             if CF = 1, AX = DOS error code
+Uses:        AX, flags
+Example:     see FPUT
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FPUTSTR:     write an ASCIIZ string to output buffer
+Source:      fputstr.asm (strlen.asm, fput.asm)
+
+Call with:   BX = file handle
+             ES:[EDI] pointing to ASCIIZ string
+Returns:     if CF = 0, EAX = bytes written
+             if CF = 1, AX = DOS error code
+Uses:        EAX, flags
+Example:
+
+public  myproc
+extrn   fputstr:near
+extrn   fputcrlf:near
+
+include dataseg.inc
+
+; data
+strptr   dd 0                         ; pointer to string, assigned by program
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+         .
+         .
+         .
+        mov    bx,output_handle
+        push   ds
+        pop    es
+        mov    edi,strptr             ; ES:[EDI] -> string
+        call   fputstr
+        call   fputcrlf               ; write CR+LF for new line
+                                      ; in ASCII text file
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FSEEK:       move file pointer for a file opened by FOPEN
+Source:      fseek.asm ($handle.asm)
+
+Call with:   BX = file handle
+             AL = method code: 0 = absolute offset from start of file
+                               1 = signed offset from current file pointer
+                               2 = signed offset from end of file
+             EDX = dword offset
+Returns:     if CF = 1, AX = DOS error code
+             if CF = 0, EAX = new location of file pointer
+Uses:        EAX, flags
+
+Example:
+
+public  whoknows
+extrn fopen:near, fseek:near
+
+include dataseg.inc
+
+; data
+file0   db 'file0.dat',0
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+whoknows  proc near
+        .
+        .
+        .
+        mov     edx,offset file0
+        mov     al,1              ; write only
+        call    fopen
+        jc      error
+        xor     edx,edx           ; zero offset
+        mov     al,2              ; relative to end of file
+        call    fseek             ; move pointer to end of file
+
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FSIZE:       determines a file's size
+Source:      fsize.asm
+
+Call with:   BX = valid file handle
+Returns:     if CF = 0, EAX = file size
+             if CF = 1, AX = DOS error code
+Uses:        EAX, CF
+Example:
+
+
+extrn   fsize:near
+
+include dataseg.inc
+
+; data
+
+filenam db 'ASM32.DOC',0      ; ASCIIZ filename
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        .
+        lea     edx,filenam    ; point to filename
+        mov     al,0           ;  read-only access (not required by FSIZE)
+        call    fopen          ;  open the file
+        jc      oops           ; jump to error control
+                               ;  else no problem - continue
+        mov     bx,ax          ; file handle in BX
+        call    fsize          ; returns file size in EAX
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FSTRISTR:    search disk file for text string, case-sensetive
+Source:      fstristr.asm (mload.asm, strnlwr.asm, $strstr.asm)
+
+FSTRSTR:     search disk file for text string, case-insensetive
+Source:      fstrstr.asm (mload.asm, $strstr.asm)
+
+Call with:   DS:[EDX] pointing to valid filename
+             DS:[ESI] pointing to ASCIIZ string
+             EAX = starting offset in file
+Returns:     if CF = 1, string not found
+             if CF = 0, EAX = offset of start of string in file
+Uses:        EAX, flags
+Example:
+
+include model.inc
+
+extrn   fstrstr:near
+
+include dataseg.inc
+
+text_str  db 'ASM32',0
+filename  db 'ASM32.DOC',0
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea    edx,filename
+        lea    esi,text_str
+        xor    eax,eax            ; start search at beginning of file
+        call   fstrstr            ; do case-sensetive search
+        jc     short no_good      ; didn't find it
+        .
+        .
+        .
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+GREP:        search specified file(s) for text string
+Source:      grep.asm ($mflist.asm)
+
+Call with:   DS:[ESI] pointing to search text
+             DS:[EDX] pointing to filespec mask
+             EAX = near pointer to FSTRSTR (case-sensetive)
+                                or FSTRISTR (case-insensetive)
+
+             GREP searches the file(s) specified at [EDX] for the string
+             at [ESI], returning a pointer to a list of filenames in which
+             the string was found.  The filename list is in MARKFILE format
+             (see MARKFILE in INPUT.DOC)
+
+Returns:     if CF = 0, EDI points to MARKFILE-format file list
+             if CF = 1, no files match the filespec or the string was not
+             found.
+Uses:        EDI, EAX, flags
+Example:
+
+include model.inc
+
+public  do_grep
+extrn   grep:near
+extrn   fstristr:near             ; do case-insensetive search
+
+; look for all .ASM source code that uses FSTRISTR
+
+include dataseg.inc
+text_string  db 'fstristr',0
+filespec     db '*.asm',0
+@curseg ends
+
+include codeseg.inc
+
+do_grep proc near
+        lea    edx,filespec       ; point to filespec
+        lea    eax,fstristr       ; use case-insensetive routine
+        lea    esi,text_string    ; look for 'fstristr'
+        call   grep               ; returns filename list at [EDI]
+        jc     short oops
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MLOAD:       read a file into near memory
+Source:      mload.asm (fsize.asm)
+
+Call with:   EDX pointing to ASCIIZ filename
+Returns:     if CF = 0, EBX = near pointer to memory block
+                        EAX = bytes loaded from disk
+             if CF = 1, AX = DOS error code
+             CAUTION: prior to ASM32 version 3.4, MLOAD allocated a new
+                      selector in FAR memory, returning the selector as BX.
+                      MLOAD now allocates NEAR memory.
+Uses:        EAX, EBX, CF
+Example:
+
+include model.inc
+
+public  test_mload
+
+extrn   mload:near
+
+include dataseg.inc
+file_ptr        dd ?
+fname           db 'filename.txt',0
+file_size       dd 0
+
+include codeseg.inc
+
+test_mload      proc near
+        .
+        .
+
+        lea     edx,fname
+        call    mload           ; read file into DOS memory
+        jc      short no_good   ;  jump if there was a problem
+
+        mov     file_ptr,ebx    ; save pointer to memory block
+        mov     file_size,eax   ; save file size
+
+no_good:                        ; return with CF = 1 if error
+        ret                     ; CF = 0 if no error
+test_mload      endp
+        end
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MSAVE:       write memory block to file
+Source:      msave.asm
+
+Call with:   EDX pointing to ASCIIZ filename
+             EBX = near address of first byte to write
+             EAX = number of bytes to write
+             CAUTION: prior to ASM32 version 3.4, MSAVE did not assumed the
+                      memory block at EBX was NEAR.  MSAVE now assumes that
+                      EBX is a NEAR pointer.
+Returns:     if CF = 0, no error
+             if CF = 1, AX = DOS error code
+Uses:        EAX, flags
+Example:
+
+include model.inc
+
+public  test_msave
+
+extrn   msave:near
+
+include dataseg.inc
+fname           db 'filename.txt',0
+file_size       dd 0
+file_ptr        dd ?            ; loaded by program
+
+include codeseg.inc
+
+test_msave      proc near
+        .
+        .
+
+        lea     edx,fname
+        mov     eax,file_size
+        mov     ebx,file_ptr    ; start at beginning of memory block
+        call    msave           ; save as disk file
+                                ; return with CF = 1 if error
+        ret                     ; CF = 0 if no error
+test_msave      endp
+        end
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+QFNAME:      qualifies a filename
+Source:      qfname.asm
+
+Call with:   EBX pointing to a filename; the filename may contain
+             drive specification and/or complete or partial path name.
+             Drive specification and path name not required.
+Returns:     ESI pointing to the full DRIVESPEC:\PATH\FILENAME
+             ECX = length of full filename
+             Note that ESI points to QFName's buffer space; the next
+             call to QFName will return a new filename at the same address.
+Uses:        ESI, ECX, flags
+Example:
+
+include dataseg.inc
+
+; data
+docs    db '*.doc',0         ; search for .DOC files in current directory
+
+@curseg	ends
+
+include codeseg.inc
+
+; code
+        .
+        .
+        .
+        lea    ebx,docs
+        call   qfname        ; returns 'drive:\path\*.doc'
+
+
+

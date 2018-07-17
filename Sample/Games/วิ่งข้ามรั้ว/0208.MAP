@@ -1,0 +1,10 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00E48H 00E49H _TEXT              CODE
+ 00E50H 014E1H 00692H _DATA              DATA
+ 014F0H 015EFH 00100H STACK              STACK
+ 015F0H 10FEFH 0FA00H VBUFFERSEG         
+
+Program entry point at 0000:0000
+

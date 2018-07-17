@@ -1,0 +1,1275 @@
+
+*******************************  DATA  *************************************
+
+ASM32 data manipulation subroutines Copyright (C) 1993 - 1995 Douglas Herr
+all rights reserved
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+$SSORT:      generic Shell sort engine; calling program supplies Compare
+             and Exchange code
+Source:      $ssort.asm
+
+Call with:   [ESI] = address of first item to sort
+             [EDI] = address of last item to sort
+             EAX   = length of each item
+             EBX   = address of compare routine
+             EDX   = address of exchange routine
+
+             $SSORT can be used to sort data of any fixed size, including
+             user-defined records.  The calling program specifies the near
+             address of the comparison code, and the near address of the
+             exchange code.  The compare code must save all registers except
+             EAX, and is called with ESI = near address of first record to
+             compare, and EDI = near address of the second record to compare.
+             $SSORT expects integer comparisons to be signed.  $SSORT calls
+             the exchange subroutine with ES:[EDI] and DS:[ESI] pointing to
+             the records to be exchanged, and ECX = number of bytes to
+             exchange.  ASM32's SWAPB subroutine may be used as the exchange
+             code.
+
+Returns:     nothing
+Uses:        nothing; all flags and registers are saved
+
+Example on next page
+
+
+$SSORT Example:
+
+extrn   $ssort:near, swapb:near
+
+include dataseg.inc
+
+intdata dw 12,13,120,160
+        dw 12,13
+        dw 60,110,120,13
+        dw 120,160
+        dw 100,90
+        dw 20,150,12,100
+        dw 118
+lastint dw 25
+nosort  dw ?                       ; anything past lastint not sorted
+                                   ; in this example
+@curseg ends
+
+include codeseg.inc
+
+        .
+        .
+        .
+        lea     esi,intdata        ; point to first integer
+        lea     edi,lastint        ; point to last integer to sort
+        mov     eax,2              ; size of data record
+        lea     ebx,compare        ; point EBX to comparison code
+        lea     edx,swapb          ; use ASM32 subroutine for exchange
+        call    $ssort
+        ret
+
+;
+; For some unexplained reason I want to base the sort on
+; only the lower byte of each integer record.
+; $SSORT expects this to be a signed comparison, but my bytes are
+; unsigned so I'll convert each one to a signed dword.
+; I'm using DWORDS instead of WORDS because DWORDS in a 32-bit segment
+; are faster and produce smaller code.
+;
+; Your data will be sorted low-to-high or high-to-low depending on
+; your comparison.
+;
+compare:
+        push    ebx                ; need to save this register
+        movzx   eax,byte ptr [esi]
+        movzx   ebx,byte ptr [edi]
+        cmp     ebx,eax            ; do the comparison
+        pop     ebx                ; restore register
+        ret
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+CHRDEL:      deletes a character from a string
+             The resulting space is closed by moving the remaining
+             characters forward
+Source:      chrdel.asm (strlen.asm)
+
+Call with:   EBX pointing to an ASCIIZ string
+             EAX = offset from EBX to character to delete
+Returns:     ECX = new string length
+Uses:        ECX
+Example:     lea   ebx,string         ; EBX points to string
+             mov   eax,3              ; delete character at [EBX+3]
+             call  chrdel             ; delete the character, shorten string
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+COLORATTR:   calculate a color attribute for ASM32's text-mode subroutines.
+             Intended for 16-color text modes.
+Source:      coloratt.asm
+Call with:   AL = foreground color (0 - 15)
+             AH = background color (0 - 15)
+Returns:     AH = color attribute
+Uses:        AX
+Example:
+
+include codeseg.inc
+        .
+        .
+        .
+        mov    al,hired            ; bright red
+        mov    ah,blue             ; blue
+        call   colorattr           ; this should get their attention
+        mov    warning,ah          ; save the attribute
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+CSET:        centers a string in a fixed field
+Source:      cset.asm (strlen.asm)
+
+Call with:   EDI pointing to address of field string
+             ESI pointing address of string to be centered in the field
+             Both strings must be zero-terminated (ASCIIZ).  The field
+             string may not contain any nul characters except for the
+             terminator.
+Returns:     CF = 0 if no error
+             CF = 1 if string was truncated to fit in the field
+Uses:        CF; all other flags and registers are saved
+Example:
+
+             lea   edi,field             ; field string
+             lea   esi,source            ; string to be centered in field
+             call  cset
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+DAYNAME:     returns a pointer to an ASCII string for specified day
+             of the week
+Source:      dname.asm ($mname.asm)
+
+Call with:   AX = day of week (1 - 7, Monday = 1)
+Returns:     [EBX] = pointer to day name string
+             ECX = length of new string
+             Note that the day name string is not zero-terminated
+             strndup may be used to copy the string to near data.
+Uses:        EBX, ECX
+Example:     mov    ax,day
+             call   dayname
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FILL4, FILL4b: fill a buffer with specified 4-byte data
+Source:        fill4.asm
+
+Call with:   ESI pointing to 4-byte data (integer, float or other)
+             EDI pointing to buffer
+             ECX = number of 4-byte data blocks to fill in buffer
+             Fill4b: EBX = byte increment between data blocks
+Returns:     nothing
+Uses:        nothing
+Example:
+
+include codeseg.inc
+
+extrn   fill4:near
+
+; data
+wonowon dd 101.      ; float4 value
+buffer  dd ?         ; program allocates buffer, stores address here
+
+; code
+        .
+        .
+        .
+        lea   edi,buffer
+        lea   esi,wonowon  ; fill every other 4-byte block in far segment
+        mov   ebx,8        ; skip 4 bytes between data blocks
+        mov   cx,25        ; do it 25 times
+        cal   fill4
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FILL8, FILL8b: fill a buffer with specified 8-byte data
+Source:        fill8.asm
+
+Call with:   ESI pointing to 8-byte data (integer, float or other)
+             EDI pointing to buffer
+             ECX = number of 8-byte data blocks to fill in buffer
+             Fill8b: EBX = byte increment between data blocks
+Returns:     nothing
+Uses:        nothing
+Example:     see Fill4
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+FSTRISTR:    search for a string in a disk file, case insensetive
+Source:      fstristr.asm (mload.asm, $strstr.asm, strnlwr.asm)
+
+FSTRSTR:     search for a string in a disk file, case sensetive
+Source:      fstrstr.asm (mload.asm, strlen.asm, $strstr.asm)
+
+Call with:   EDX pointing to file name
+             ESI pointing to string to find
+             EAX = initial offset in file
+             CAUTION: Prior to ASM32 version 3.4, FSTRSTR and FSTRISTR
+                      required different parameters.  If you are upgrading
+                      from an earlier version of ASM32 and have used either
+                      of these subroutines, you will need to change
+                      parameters.
+Returns:     if CF = 0, EAX is the offset of the string in the file
+             if CF = 1, EAX = DOS or other error code
+                        EAX = -1 if insufficient memory (unlikely)
+
+Uses:        EAX, flags
+
+Example:
+
+include codeseg.inc
+
+extrn   fstrstr:near
+
+; data
+string   db 'A String In The File',0
+filename db 'anyold.fil',0
+
+; code
+yoursub proc    near
+        mov     edx,offset filename
+        mov     esi,offset string  ; ESI points to the string
+        xor     eax,eax            ; shearch entire file
+        call    fstrstr            ; returns with EAX = string offset
+        jc      short no_good      ;  or error code
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+GETCMD:      isolates command line parameters
+             GetCMD assumes that parameters are separated by
+             one or more spaces
+Source:      getcmd.asm
+
+Call with:   AL = parameter number (first command line parameter = 0)
+
+Returns:     if ECX = 0, no command parameter(AL)
+             if ECX <> 0, ECX = length of parameter string
+(CauseWay FLAT model)
+             [EBX] = near pointer to command line parameter
+(all except CauseWay FLAT model)
+             ES:[EBX] = far pointer to command line parameter
+             Version 2.0: Note that GETCMD does not copy the command
+             parameter string to near data.  It returns a far address to
+             the command string which you may copy to near data with STRNDUP
+             if you wish.
+
+Uses:        ES (except CW FLAT model), EBX, ECX, flags
+Example:
+
+extrn   getcmd:near
+
+include codeseg.inc
+
+         .
+         .
+         .
+
+        mov     al,0        ; get first parameter
+        call    getcmd      ; returns with ES:[EBX] pointing to parameter
+                            ; and ECX = length of parameter
+        jecxz   no_parameters
+IFNDEF  FLATMODEL
+        call    strndup     ; copy to near data
+ENDIF
+         .
+         .
+         .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+I2TOSTR:     convert an integer value to an ASCIIZ string
+Source:      i2tostr.asm (i4tostr.asm)
+
+I4TOSTR:     convert a long integer value to an ASCIIZ string
+Source:      i4tostr.asm
+
+             ASM32's TPrint, GPrint and other 'print' subroutines require
+             a string argument.  Numeric data must be converted to a string
+             before printing.
+
+Call with:   [ESI] pointing to a buffer space; must be 12 bytes or bigger
+             (i2tostr) AX = integer value
+             (i4tostr) EAX = long integer value
+
+Returns:     ASCIIZ string at [ESI]; numerals are right-justified
+Uses:        nothing; all registers and flags are saved
+Supports:    (i2tostr) signed 2-byte integers
+             (i4tostr) signed 4-byte integers
+Example:
+
+include codeseg.inc
+
+extrn  i2tostr:near
+
+; data
+nbuffer  db 12 dup(?)
+
+; code
+
+       .
+       .
+       .
+       lea   esi,nbuffer
+       mov   ax,32750      ; integer value
+       call  i2tostr
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+LSET:        left-justifies a string in a fixed field
+Source:      lset.asm (strlen.asm)
+
+Call with:   EDI = address of field string
+             ESI = address of string to be justified in the field
+             Both strings must be zero-terminated (ASCIIZ).  The field
+             string may not contain any NUL characters except for the
+             terminator.
+Returns:     CF = 0 if no error
+             CF = 1 if string was truncated to fit in the field
+Uses:        CF
+             all other flags and registers saved
+Example:
+             lea   edi,field             ; field string
+             lea   esi,source            ; string to be justified in field
+             call  lset
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+LTRIM:       remove leading blanks from an ASCIIZ string
+Source:      ltrim.asm (strlen.asm)
+
+Call with:   EBX pointing to string
+Returns:     ECX = new string length
+Uses:        ECX
+Example:     lea    ebx,string
+             call   ltrim
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MAXI2, MAXI2b: find maximum value in a signed integer array
+Source:        maxi2.asm
+
+MINI2, MINI2b: find minimum value in a signed integer array
+Source:        mini2.asm
+
+MAXU2, MINU2b: find maximum value in an unsigned integer array
+Source:        maxu2.asm
+
+MINU2, MINU2b: find minimum value in an unsigned integer array
+Source:        minu2.asm
+
+Call with:   EDI pointing to the array
+             ECX = number of array elements
+             For max/min?2b, call with EBX = byte increment between
+             array elements.  Max/min?2 assume increment = 2.
+Returns:     EAX = array element number with maximum value
+             see example to calculate address of maximum value
+             if subroutine was called with ECX = 0, CF = 1
+Uses:        EAX, CF
+Example:
+
+include codeseg.inc
+
+extrn  maxi2:near
+
+; data
+
+integers     dw 140 dup(0)
+
+; code
+             .     ; program establishes array values
+             .
+             .
+             lea    edi,integers
+             mov    ecx,140        ; search the entire array
+             call   maxi2
+             shl    eax,1          ; convert word offset to byte offsest
+             add    edi,eax        ; EDI points to the maximum value
+                                   ; With max/min?2b, the offset of the
+                                   ; value is EDI + (EAX * EBX).
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MAXI4, MAXI4b: find maximum value in a signed 4-byte integer array
+Source:        maxi4.asm
+
+MINI4, MINI4b: find minimum value in a signed 4-byte integer array
+Source:        mini4.asm
+
+MAXU4, MAXU4b: find maximum value in an unsigned 4-byte integer array
+Source:        maxu4.asm
+
+MINU4, MINU4b: find minimum value in an unsigned 4-byte integer array
+Source:        minu4.asm
+
+Call with:   EDI pointing to the array
+             ECX = number of array elements
+             For max/min?4b, call with EBX = byte increment between
+             array elements.  Max/min?4 assume increment = 4.
+Returns:     EAX = array element number with maximum value
+             see example to calculate address of maximum value.
+             if subroutine was called with ECX = 0, CF = 1
+Uses:        EAX, CF
+Example:
+
+include codeseg.inc
+
+extrn  maxi4:near
+
+; data
+
+int4         dd 140 dup(0)
+
+; code
+             .     ; program establishes array values
+             .
+             .
+             lea    edi,int4
+             mov    ecx,140        ; search the entire array
+             call   maxi4
+             shl    eax,2          ; convert dword offset to byte offset
+             add    edi,eax        ; EDI points to the maximum value
+                                   ; With max/min?4b, the offset of the
+                                   ; value is EDI + (EAX * EBX).
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MEMCOPY:     copy data, checking for overlap if ES = DS
+Source:      memcopy.asm
+
+Call with:   DS:[ESI] = source address
+             ES:[EDI] = destination address
+             ECX = bytes to move
+Returns:     nothing
+Uses:        nothing
+
+Example:
+
+extrn   memcopy:near
+
+include dataseg.inc
+
+farmem      dw ?            ; selector of far memory block
+source      dd ?            ; offset in far memory block
+destination dd ?            ; destination offset
+
+@curseg ends
+
+include codeseg.inc
+
+        .
+        .
+        .
+        push   ds
+        push   es
+        mov    esi,source
+        mov    edi,destination
+        mov    ax,farmem
+        mov    ds,ax
+        mov    es,ax
+        call   memcopy
+        pop    es
+        pop    ds
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MONTHNAME:   returns a pointer to an ASCII string for specified month
+Source:      mname.asm ($mname.asm)
+
+Call with:   AX = month (1 - 12, January = 1)
+Returns:     [EBX] = pointer to month name string
+             ECX = length of month string
+             Note that the month name string is not zero-terminated
+             strndup may be used to copy the string to near data.
+Uses:        EBX, ECX
+Example:     mov    ax,month
+             call   monthname
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+PATH:        finds path strings in program enviornment
+             isolates each path in "PATH=" part of enviornment
+Source:      path.asm (strlen.asm)
+
+Call with:   EAX = path number
+Returns:     if ECX =0, path(EAX) does not exist.
+             if ECX <> 0, ECX = length of path string, and
+(CauseWay FLAT model)
+             [EBX] = near pointer to path(EAX).
+(all except CauseWay FLAT model)
+             ES:[EBX] = far pointer to path(EAX).
+
+             The path string is located in the program's environment
+             block.  The first path in the enviornment is path(0).  Note
+             that the path string is NOT zero-terminated.
+
+(all except CauseWay FLAT model)
+             Version 2.0: Note that PATH does not copy the path string to
+             near data.  It returns a far address to the path string which
+             you may copy to near data with STRNDUP if you wish.
+
+Uses:        ES (except CW FLAT model), EBX, ECX, flags
+Example:     
+
+extrn   path:near
+
+include codeseg.inc
+
+         .
+         .
+         .
+
+        xor     eax,eax      ; start with the first path
+find_path:
+        call    path
+        jecxz   no_path      ; exit if no more paths
+IFNDEF  FLATMODEL
+        call    strndup      ; copy to near data
+ENDIF
+         .
+         .
+         .
+        inc     eax          ; look for next path
+        jmp     find_path
+
+no_path:
+         .
+         .
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+RANDOM:      generates a near-random number
+Source:      random.asm
+
+Call with:   no parameters
+Returns:     AX = near-random number between 0 and 65535
+             you may notice repeating patterns every few thousand calls
+             to Random.
+Uses:        AX
+Example:     call   random
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+RSET:        right-justifies a string in a fixed field
+Source:      rset.asm (strlen.asm)
+
+Call with:   EDI = address of field string
+             ESI = address of string to be justified in the field
+             Both strings must be zero-terminated (ASCIIZ).  The field
+             string may not contain any nul characters except for the
+             terminator.
+Returns:     CF = 0 if no error
+             CF = 1 if string was truncated to fit in the field
+Uses:        CF; all other flags and registers saved
+Example:
+             lea   edi,field             ; field string
+             lea   esi,source            ; string to be justified in field
+             call  rset
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+RTRIM:       removes trailing blanks from an ASCIIZ string
+Source:      rtrim.asm (strlen.asm)
+
+Call with:   EBX pointing to string
+Returns:     ECX = new string length
+Uses:        ECX
+Example:     lea    ebx,string
+             call   rtrim
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SORTI2HI:    sort an array of 2-byte signed integers, highest first
+Source:      sorti2hi.asm
+
+SORTI4HI:    sort an array of 4-byte signed integers, highest first
+Source:      sorti4hi.asm
+
+SORTI2LO:    sort an array of 2-byte signed integers, lowest first
+Source:      sorti2lo.asm
+
+SORTI4LO:    sort an array of 4-byte signed integers, lowest first
+Source:      sorti4lo.asm
+
+Call with:   ES:[EDI] = address of first element of array to sort
+             ECX = number of array elements
+              SortI4 assumes ECX < 1 Gigabyte
+              SortI2 assumes ECX < 2 Gigabytes
+
+Returns:     nothing
+Uses:        nothing; all registers and flags are saved
+Example:
+
+extrn   sorti4hi:near
+
+include dataseg.inc
+i4data  dd 1500 dup(0)
+@curseg ends
+
+include codeseg.inc
+
+             .      ; program establishes data values
+             .
+             .
+        lea    edi,i4data
+        push   ds
+        pop    es
+        mov    ecx,1500
+        call   sorti4hi
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SORTU2HI:    sort an array of 2-byte unsigned integers, highest first
+Source:      sortu2hi.asm
+
+SORTU4HI:    sort an array of 4-byte unsigned integers, highest first
+Source:      sortu4hi.asm
+
+SORTU2LO:    sort an array of 2-byte unsigned integers, lowest first
+Source:      sortu2lo.asm
+
+SORTU4LO:    sort an array of 4-byte unsigned integers, lowest first
+Source:      sortu4lo.asm
+
+Call with:   ES:[EDI] = address of first element of array to sort
+             ECX = number of array elements
+              SortI4 assumes ECX < 1 Gigabyte
+              SortI2 assumes ECX < 2 Gigabytes
+
+Returns:     nothing
+Uses:        nothing; all registers and flags are saved
+Example:
+
+extrn   sortu4hi:near
+
+include dataseg.inc
+u4data  dd 1500 dup(0)
+@curseg ends
+
+include codeseg.inc
+
+             .      ; program establishes data values
+             .
+             .
+        lea    edi,u4data
+        push   ds
+        pop    es
+        mov    ecx,1500
+        call   sortu4hi
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRTOI4:     converts an ASCII string to an integer value
+STRNTOI4:    converts n bytes of an ASCII string to an integer value
+Source:      strtoi4.asm
+
+Call with:   ESI = address of string
+             strntoi4 only: ECX = number of bytes to read
+Returns:     EAX = integer value
+             strtoi4:  ESI points to character past terminating byte
+             strntoi4: if ECX = 0, ESI points to next character
+                       if ECX <> 0, ESI points to character past
+                       terminating byte
+             BL = error code
+                bit 0 if set = CR read before reading any numeric characters
+                bit 1 if set = CR was the terminating character
+                bit 6 if set = overflow; result in EAX is unusable
+                bit 7 if set = result is unsigned; result is unusable if the
+                               value represented by the string was negative
+Uses:        EAX, EBX, ECX, ESI, flags
+Example:
+
+include codeseg.inc
+
+; data
+
+number_string  db '1234567',0
+
+; code
+        .
+        .
+        .
+
+        lea    esi,number_string   ; point to '1234567'
+        mov    ecx,7               ; 7-byte field
+        call   strntoi4            ; return result as an integer in EAX
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRCAT:      catenates (combines) two ASCIIZ strings
+Source:      strcat.asm (strdup.asm, strlen.asm)
+
+Call with:   ESI = address of first string
+             EBX = address of second string
+Returns:     if CF = 0, EBX = address of combined ASCIIZ string
+             if CF = 1, insufficient memory available (not likely)
+Uses:        EBX, ECX, CF
+Example:
+
+include codeseg.inc
+
+extrn   strcat:near
+
+; data
+string0 db 'this string goes first',0
+string1 db ' this one is added at the end of the first',0
+
+; code
+       .
+       .
+       .
+       lea    esi,string0       ; address of first string
+       lea    ebx,string1       ; address of second string
+       call   strcat            ; result returned at EBX
+       jc     no_memory         ; original strings are undisturbed
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRCHR:      search an ASCIIZ string for a specified character
+STRNCHR:     search n bytes of an ASCII string for a specified character
+Source:      strchr.asm (strlen.asm)
+
+Call with:   EBX = pointer to ASCIIZ string
+             AL = character to find
+             ECX = number of bytes to search (strnchr only)
+Returns:     ECX = string length
+             if CF = 0, EAX is the offset from EBX to matching character
+             in the source string
+             if CF = 1, no matching character found
+Uses:        ECX, EAX, CF
+
+Example on next page
+
+; use STRNCHR to determine if a key pressed was a legal key
+include codeseg.inc
+
+extrn   strnchr:proc, getkey:proc, toupper:proc
+
+; data
+
+valid_string db 'ABC123',27      ; keys 1,2,3,A,B,C and Esc
+valid_len    equ $-valid_string  ; number of valid keys
+
+dispatch_table label word
+        dd akey, bkey, ckey, onekey, twokey, threekey, esckey
+
+; code
+        .
+        .
+        .
+get_another:
+        lea   ebx,valid_string ; EBX points to a string of valid keys
+        call  getkey           ; keycode returned in EAX
+        shr   ah,1             ; test for extended keycode
+        jc    get_another      ; I'm not interested in extended keycodes today
+
+        call  toupper          ; convert keycode to upper case
+        mov   ecx,valid_len
+        call  strnchr
+        jc    get_another      ; CF = 1 if key pressed is not among the
+                               ; keys in the validation string
+        mov   ebx,eax
+        shl   ebx,1            ; convert byte offset to word offset
+        jmp   dispatch_table[ebx]
+
+akey:   .
+        .
+        .
+
+bkey:   .
+        .
+        .
+
+ckey:   .
+        .
+        .
+
+; etc
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRCMP:      compare strings, case-sensetive
+Source:      strcmp.asm (strlen.asm)
+
+Call with:   DS:[ESI] pointing to string1
+             ES:[EDI] pointing to string2
+Returns:     if string1 < string2, SF = 1
+             if string1 = string2, ZF = 1
+             if string1 > string2, SF = 0, ZF = 0
+             Note that 'A' < 'a',  and that 'a' < 'z'.  Both strings must
+             be NUL-terminated ASCII strings.
+Uses:        flags; all registers are saved
+See also:    STRICMP, case-insensetive string comparison
+
+Example:
+
+include model.inc
+
+extrn   strcmp:near
+
+include dataseg.inc
+
+string1 db 'Maple',0
+string2 db 'Oak',0
+
+@curseg ends
+
+include codeseg.inc
+
+       .
+       .
+       .
+; make sure ES = DS
+       mov      ax,ds
+       mov      es,ax
+       lea      esi,string1        ; DS:[SI] points to string1
+       lea      edi,string2        ; ES:[DI] points to string2
+       call     strcmp
+       je       short they_are_the_same
+       jns      short string2_GT_string1
+
+; string1 < string2
+       .
+       .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRCPY:      copy an ASCIIZ string to existing buffer
+Source:      strcpy.asm (strlen.asm, strncpy.asm)
+
+Call with:   ES:[EBX] pointing to ASCIIZ string
+             DS:[ESI] pointing to destination buffer
+             STRCPY assumes that the buffer is long enough to hold the
+             entire string.  The string's terminating NUL byte is not
+             copied to the buffer.
+Returns:     ECX = string length
+Uses:        ECX
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRNCPY:     copy ECX bytes to an existing buffer
+Source:      strncpy.asm
+
+Call with:   ES:[EBX] pointing to ASCII string
+             DS:[ESI] pointing to destination buffer
+             ECX = number of bytes to copy
+             STRNCPY assumes that the buffer is long enough to hold the
+             entire string
+Returns:     nothing
+Uses:        nothing; all registers and flags are saved
+Example:
+
+; I want to copy a command line parameter to DGROUP
+
+include asm.inc
+extrn   getcmd:near
+extrn   strncpy:near
+
+include dataseg.inc
+
+extrn   pspseg:word             ; PSP segment address was saved by STARTUP
+string_buffer   db 128 dup (?)
+
+@curseg ends
+
+include codeseg.inc
+       .
+       .
+       .
+       xor      eax,eax         ; first command line parameter
+       call     getcmd          ; returns parameter at ES:[EBX], length as ECX
+       jcxz     no_parameters
+       lea      esi,string_buffer
+       call     strncpy
+
+; make it zero-terminated
+       add      esi,ecx
+       mov      byte ptr [esi],0
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRICMP:     compare strings, case-insensetive
+Source:      strcmp.asm (strlen.asm)
+
+Call with:   DS:[ESI] pointing to string1
+             ES:[EDI] pointing to string2
+Returns:     if string1 < string2, SF = 1
+             if string1 = string2, ZF = 1
+             if string1 > string2, SF = 0, ZF = 0
+             Note that 'A' = 'a',  and that 'a' < 'z'.  Both strings must
+             be NUL-terminated ASCII strings.
+Uses:        flags; all registers are saved
+See also:    STRCMP, case-sensetive string comparison
+
+Example:
+
+include model.inc
+
+extrn   stricmp:near
+
+include dataseg.inc
+
+string1 db 'Maple',0
+string2 db 'Oak',0
+
+@curseg ends
+
+include codeseg.inc
+
+       .
+       .
+       .
+; make sure ES = DS
+       mov      ax,ds
+       mov      es,ax
+       lea      esi,string1        ; DS:[SI] points to string1
+       lea      edi,string2        ; ES:[DI] points to string2
+       call     strcmp
+       je       short they_are_the_same
+       jns      short string2_GT_string1
+
+; string1 < string2
+       .
+       .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRINS:      inserts string1 in string0 at specified offset.
+             Creates new string in near memory; first part of new string
+             is n bytes of string0; middle of new string is string1; end
+             of new string is remainder of string0.
+Source:      strins.asm (strlen.asm)
+
+Call with:   ESI pointing to string0
+             EBX pointing to string1
+             EAX = offset in string0 to insert string1
+Returns:     if CF = 1, insufficient memory (not likely)
+             if CF = 0, EBX points to new string
+Uses:        EBX, CF
+Example:
+
+include codeseg.inc
+
+extrn  strins:near
+
+; data
+string0 db '1234567890',0
+string1 db 'abcdefghij',0
+
+; code
+       .
+       .
+       .
+       lea    esi,string0       ; address of first string
+       lea    ebx,string1       ; address of second string
+       mov    eax,3             ; string1 inserted after '123'
+       call   strins            ; result returned at EBX
+       jc     no_memory         ; original strings are undisturbed
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRDUP:      duplicates an ASCIIZ string
+Source:      strdup.asm (strlen.asm)
+
+STRNDUP:     duplicates n bytes of a string
+Source:      strdup.asm
+
+Call with:   ES:[EBX] = address of source string
+             (strndup) ECX = number of bytes to duplicate
+             assumes DS:dataseg
+
+             strdup requires an ASCIIZ string; strndup duplicates ECX
+             characters at ES:[EBX] whether zero-terminated or not.  The
+             duplicate created by strdup or strndup will be an ASCIIZ
+             string.
+
+             Version 2.0: Note that ES is not nessesarily = DS.  STRNDUP
+             may be used to copy a string returned by EXENAME, PATH,
+             or GETCMD to near data.
+
+Returns:     if CF = 0, EBX = address of string copy in near memory
+                        ECX = string length
+             if CF = 1, insufficient memory in near memory (not likely)
+Uses:        EBX, ECX, flags
+Example:
+             call  exename           ; get name of this program
+                                     ; returns ES:[EBX] pointing to
+                                     ; program name in environment
+             call strdup             ; copy program name to near data
+             jc   oops               ; not enough memory if CF = 1
+                                     ; otherwise, EBX = address
+                                     ; of string copy
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+             
+STRIPCHR:    remove all occurances of a character from an ASCIIZ string.
+Source:      stripchr.asm (strlen.asm)
+
+Call with:   EBX = string address
+             AL = character to remove from the string
+Returns:     ECX = new string length
+Uses:        ECX
+Example:     lea    ebx,string        ; EBX -> string
+             mov    al,'$'            ; remove "$" character from string
+             call   stripchr
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRLEN:      finds length of an ASCIIZ string
+Source:      strlen.asm
+
+Call with:   EBX = address of the string
+Returns:     ECX = length of string excluding the terminating NUL
+Uses:        ECX
+Example:     lea   ebx,string
+             call  strlen
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRLWR:      changes upper-case characters in a string to lower case
+Source:      strlwr.asm
+
+STRNLWR:     changes a string of known length to lower case
+Source:      strnlwr.asm
+
+Call with:   EBX = address of an ASCIIZ string
+             ECX = number of bytes (strnlwr only)
+Returns:     nothing
+Uses:        nothing
+Example:     lea    ebx,string
+             call   strlwr
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRRCHR:     find the last byte in a string matching AL
+STRNRCHR:    find the last byte in n bytes matching AL
+Source:      strrchr.asm (strlen.asm)
+
+Call with:   EBX pointing to the first character of the string
+             AL = byte to find
+             (strnrchr only) ECX = number of bytes to search
+Returns:     if CF = 1, no match
+             if CF = 0, EAX = offset of the last matching byte from EBX
+Uses:        EAX, CF; all other flags and registers are saved
+Example:
+
+include model.inc
+
+extrn   strrchr:near
+
+dataseg.inc
+string  db 'my old computer was a real slug',0
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+
+        mov   al,'w'         ; look for the lower-case "w"
+        lea   ebx,string
+        call  strrchr
+        jc    oops           ; cut outta here if not in the string
+                             ; else go on
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRREV:      reverses all characters in a string
+STRNREV:     reverses n characters in a string
+Source:      strrev.asm (strlen.asm)
+
+Call with:   EBX pointing to the first character of the string
+             ECX = number of bytes in string to reverse (strnrev only)
+Returns:     ECX = string length
+Uses:        ECX; all other registers and flags saved
+Example:     lea   ebx,string         ; EBX points to ASCIIZ string
+             call  strrev             ; also returns ECX = string length
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRSPACE:    creates an ASCIIZ string filled with the space character,
+             terminated with NUL
+Source:      strspace.asm
+
+Call with:   EAX = string length (not including terminating NUL)
+Returns:     if CF = 1, insufficient memory (not likely)
+             if CF = 0, EBX points to the new string
+                        ECX = string length (should be same as EAX)
+Uses:        ECX, EBX, CF
+Example:     mov   eax,14              ; make a new string 14 characters long
+             call  strspace
+             jc    short oops          ; not enough memory if CF = 1
+             mov   string14,ebx        ; else save pointer to string
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRSET:      sets all bytes of an ASCIIZ string to a specified character
+STRNSET:     sets n bytes of an ASCIIZ string to a specified character
+Source:      strset.asm (strlen.asm)
+
+Call with:   EBX pointing to a valid ASCIIZ string
+             AL = character
+             ECX = number of bytes to set (strnset only)
+Returns:     ECX = string length
+Uses:        ECX
+Example:     lea   ebx,string          ; EBX points to an ASCIIZ string
+             mov   al,'*'
+             call  strset
+
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRSTR:      finds the first match with a target string in a source string
+             case sensetive
+Source:      strstr.asm ($strstr.asm, strlen.asm)
+
+STRISTR:     finds the first match with a target string in a source string
+             case insensetive
+Source:      stristr.asm (strstr.asm, strdup.asm, strupr.asm)
+
+STRRSTR:     finds the last match with a target string in a source string
+             case sensetive
+Source:      strrstr.asm (strrev.asm, $strstr.asm)
+
+Call with:   DS:[EDI] pointing to source string
+             DS:[ESI] pointing to target string.
+Returns:     if CF = 0, EAX = offset of target in source string.
+             if CF = 1, no match
+
+Uses:        EAX, CF; all other flags and registers are saved
+Example:
+
+include model.inc
+
+include dataseg.inc
+
+string     db 'Monday',0
+substring  db 'day',0
+
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        lea   edi,string       ; source = 'monday',0
+        lea   esi,substring    ; target = 'day',0
+                               ; find the offset of 'day' in 'Monday'
+        call  strstr           ; in this example, strstr returns EAX = 3
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+STRUPR:      changes lower-case characters in an ASCIIZ string to upper case
+Source:      strupr.asm
+
+STRNUPR:     changes lower-case characters in an n-length string to upper case
+Source:      strnupr.asm
+
+Call with:   EBX pointing to string
+             (strnupr only) ECX = number of bytes in string
+Returns:     nothing
+Uses:        nothing
+Example:     mov    ebx,offset string
+             mov    ecx,bytes
+             call   strnupr
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SWAPB:       swaps ECX bytes at DS:[ESI] with the bytes at ES:[EDI]
+Source:      swapb.asm
+
+Call with:   ESI pointing to one of the data areas, EDI pointing
+             to the other
+             ECX = number of bytes to swap
+Returns:     nothing
+Uses:        nothing; all registers and flags are saved
+Example:
+
+include model.inc
+
+extrn   swapb:near
+
+include dataseg.inc
+
+string1 db 'this is string 1',0
+string2 db 'this is string 2',0
+
+strings dw string1, string2         ; addresses of the strings
+                                    ; this trivial example will swap
+                                    ; the string pointers
+@curseg ends
+
+include codeseg.inc
+
+public  stringswap
+stringswap   proc near
+         .
+         .
+         .
+         lea   esi,strings
+         mov   edi,esi
+         mov   eax,2                 ; each string pointer is 2 bytes
+         add   edi,eax               ; point to 2nd pointer
+         call  swapb
+

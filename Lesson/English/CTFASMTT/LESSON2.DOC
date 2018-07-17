@@ -1,0 +1,38 @@
+LESSON 2 - BASIC OPERATORS
+
+after we learned how a basic assembly program is built, we will
+learn some basic operators.
+
+MOV destination,source : lets say "mov ax,bx" ax will become the value
+                         which bx stores.
+ADD destination,count  : lets say "add ax,bx" ax will be increased
+                         according to the value in bx - lets say
+                         ax = 10, bx = 2 then ax will become 12 (10+2)
+SUB destination,count  : lets say "add ax,bx" ax will be decreased
+                         according to the value in bx - lets say
+                         ax = 10, bx = 2 then ax will become 8 (10-2)
+INC destination        : lets say "inc ax" then ax will be ax+1
+DEC destination        : lets say "dec ax" then ax will be ax-1
+AND destination,count  : lets say "and ax,bx" then ax will be anded
+                         with bx, lets say ax = 1, bx = 0 then ax will
+                         be 0.
+OR  destination,count  : lets say "or ax,bx" then ax will be ored
+                         with bx, lets say ax = 1, bx = 0 then ax will
+                         be 1.
+
+know after we learnt the basic command, what happend about the size of
+those registers well, you can't do one of those between registers
+which aren't not the same size : "mov ax,bl", "mov al,bx", "add cx,cl"
+and so on.
+
+simple example, if we want to preform subtraction, what will do,
+(before each example check if you can do it your self) :
+mov ax,20        ; ax will be 20
+mov cx,10        ; cx will be 10
+sub ax,cx        ; ax will be 10 (ax-cx,20-10)
+
+know if we have a number in hex or bin and we want to put it as it is so
+we will have to put "h" after the number for hex and "b" for bin :
+
+mov ax,0a000h  ; you must have a zero before a letter in hex
+mov ax,010010b ; a simple number in binary

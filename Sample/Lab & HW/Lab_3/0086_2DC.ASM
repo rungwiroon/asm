@@ -1,0 +1,28 @@
+TITLE PGM :THANWA 0086
+.MODEL SMALL
+.CODE
+        ORG 100H
+START:
+        JMP  MAIN
+        MSG1 DB 0AH,0DH,' **********$'
+
+MAIN PROC
+
+;DISPLAY MESSAGE
+        LEA DX,MSG1     ;GET MESSAGE
+        MOV AH,9        ;DISPLAY STRING FUNCTION
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+        INT 21H         ;DISPLSY MESSAGE
+;DOS EXIT
+        MOV AH,4CH
+        INT 21H         ;DOS EXIT
+MAIN ENDP
+     END START   

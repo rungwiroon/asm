@@ -1,0 +1,512 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/float.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> float.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; calculate equation with high precision without math coprocessor </font>
+
+<font color=#008000>; this program calculates linear equation: ax + b = 0 </font>
+<font color=#008000>; the result is printed with floating point. </font>
+
+<font color=#008000>; for example: a = 7, b = 2 </font>
+<font color=#008000>;              x = -0.28571428.... </font>
+
+name <font color=#800080>"float"</font>
+
+precision = 30  <font color=#008000>; max digits after the dot. </font>
+
+
+dseg    <font color=#0000FF>segment</font> <font color=#800080>'data'</font>
+cr              <font color=#000064>equ</font>     0Dh
+lf              <font color=#000064>equ</font>     0Ah
+new_line        <font color=#000064>equ</font>     0Dh,0Ah, <font color=#800080>'$'</font>
+mess0           <font color=#000064>db</font>      <font color=#800080>'calculation of ax + b = 0'</font>, new_line
+mess1           <font color=#000064>db</font>      <font color=#800080>'enter a (-32768..32767)!'</font>, new_line
+mess2           <font color=#000064>db</font>      lf, cr, <font color=#800080>'enter b (-32768..32767)!'</font>, new_line
+mess3           <font color=#000064>db</font>      cr, lf, cr, lf, <font color=#800080>'data:'</font>, <font color=#800080>'$'</font>
+mess4           <font color=#000064>db</font>      cr, lf, <font color=#800080>' a = '</font>, <font color=#800080>'$'</font>
+mess5           <font color=#000064>db</font>      cr, lf, <font color=#800080>' b = '</font>, <font color=#800080>'$'</font>
+mess6           <font color=#000064>db</font>      cr, lf, <font color=#800080>'result: '</font>, cr, lf, <font color=#800080>' x = '</font>, <font color=#800080>'$'</font>
+mess7           <font color=#000064>db</font>      cr, lf, cr, lf, <font color=#800080>'no solution!'</font>, new_line
+mess8           <font color=#000064>db</font>      cr, lf, cr, lf, <font color=#800080>'infinite number of solutions!'</font>, new_line
+error           <font color=#000064>db</font>      cr, lf, <font color=#800080>'the number is out of range!'</font>, new_line
+twice_nl        <font color=#000064>db</font>      new_line, new_line
+make_minus      <font color=#000064>db</font>      ?       <font color=#008000>; used as a flag in procedures. </font>
+a               <font color=#000064>dw</font>      ?
+b               <font color=#000064>dw</font>      ?
+ten             <font color=#000064>dw</font>      10      <font color=#008000>; used as multiplier. </font>
+four            <font color=#000064>dw</font>      4       <font color=#008000>; used as divider. </font>
+dseg    ends
+
+sseg    <font color=#0000FF>segment</font> stack   <font color=#800080>'stack'</font>
+                <font color=#000064>dw</font>      100h    dup(?)
+sseg    ends
+
+cseg    <font color=#0000FF>segment</font> <font color=#800080>'code'</font>
+
+<font color=#008000>;******************************************************************* </font>
+
+start           <font color=#0000FF>proc</font>    far
+
+<font color=#008000>; store return address to os: </font>
+                <font color=#0000FF>push</font>    <font color=#800000>ds</font>
+                <font color=#0000FF>xor</font>     <font color=#C80000>ax</font>, <font color=#C80000>ax</font>
+                <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+
+<font color=#008000>; set segment registers:                 </font>
+                <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, dseg
+                <font color=#0000FF>mov</font>     <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+                <font color=#0000FF>mov</font>     <font color=#800000>es</font>, <font color=#C80000>ax</font>
+
+<font color=#008000>; welcome message: </font>
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess0
+                <font color=#0000FF>call</font>    puts            <font color=#008000>; display the message. </font>
+
+<font color=#008000>; ask for 'a' : </font>
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess1
+                <font color=#0000FF>call</font>    puts            <font color=#008000>; display the message. </font>
+                <font color=#0000FF>call</font>    scan_num        <font color=#008000>; input the number into cx. </font>
+                <font color=#0000FF>mov</font>     a, <font color=#C80000>cx</font>
+
+<font color=#008000>; ask for 'b' : </font>
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess2
+                <font color=#0000FF>call</font>    puts            <font color=#008000>; display the message. </font>
+                <font color=#0000FF>call</font>    scan_num        <font color=#008000>; input the number into cx. </font>
+                <font color=#0000FF>mov</font>     b, <font color=#C80000>cx</font>
+
+<font color=#008000>; print the data: </font>
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess3
+                <font color=#0000FF>call</font>    puts
+
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess4
+                <font color=#0000FF>call</font>    puts
+                <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, a
+                <font color=#0000FF>call</font>    print_num               <font color=#008000>; print ax. </font>
+
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess5
+                <font color=#0000FF>call</font>    puts
+                <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, b
+                <font color=#0000FF>call</font>    print_num               <font color=#008000>; print ax. </font>
+
+
+<font color=#008000>; check data: </font>
+                <font color=#0000FF>cmp</font>     a, 0
+                <font color=#0000FF>jne</font>     soluble         <font color=#008000>; jumps when a&lt;&gt;0. </font>
+                <font color=#0000FF>cmp</font>     b, 0
+                <font color=#0000FF>jne</font>     no_solution     <font color=#008000>; jumps when a=0 and b&lt;&gt;0. </font>
+                <font color=#0000FF>jmp</font>     infinite        <font color=#008000>; jumps when a=0 and b=0. </font>
+soluble:
+
+<font color=#008000>; calculate the solution: </font>
+<font color=#008000>; ax + b = 0  -&gt;  ax = -b  -&gt;  x = -b/a </font>
+
+                <font color=#0000FF>neg</font>     b
+
+                <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, b
+
+                <font color=#0000FF>xor</font>     <font color=#C80000>dx</font>, <font color=#C80000>dx</font>
+
+                <font color=#008000>; check the sign, make dx:ax negative if ax is negative: </font>
+                <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+                <font color=#0000FF>jns</font>     not_singned
+                <font color=#0000FF>not</font>     <font color=#C80000>dx</font>
+not_singned:
+                <font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, a   <font color=#008000>; divider is in bx. </font>
+
+                <font color=#008000>; '-b' is in dx:ax. </font>
+                <font color=#008000>; 'a' is in bx. </font>
+
+                <font color=#0000FF>idiv</font>    <font color=#C80000>bx</font>      <font color=#008000>; ax = dx:ax / bx       (dx - remainder). </font>
+
+                <font color=#008000>; 'x' is in ax. </font>
+                <font color=#008000>; remainder is in dx. </font>
+
+                <font color=#0000FF>push</font>    <font color=#C80000>dx</font>      <font color=#008000>; store the remainder. </font>
+
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess6
+                <font color=#0000FF>call</font>    puts
+
+                <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+
+                <font color=#008000>; print 'x' as float: </font>
+                <font color=#008000>; ax - whole part </font>
+                <font color=#008000>; dx - remainder </font>
+                <font color=#008000>; bx - divider </font>
+                <font color=#0000FF>call</font>    print_float
+
+                <font color=#0000FF>jmp</font>     end_prog
+no_solution:
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess7
+                <font color=#0000FF>call</font>    puts
+                <font color=#0000FF>jmp</font>     end_prog
+infinite:
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, mess8
+                <font color=#0000FF>call</font>    puts
+end_prog:
+                <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, twice_nl
+                <font color=#0000FF>call</font>    puts
+
+                <font color=#008000>; wait for any key.... </font>
+                <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0
+                <font color=#0000FF>int</font>     16h
+
+
+                <font color=#0000FF>ret</font>
+ start          endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; prints number in ax and it's fraction in dx. </font>
+<font color=#008000>; used to print remainder of 'div/idiv bx'. </font>
+<font color=#008000>; ax - whole part. </font>
+<font color=#008000>; dx - remainder. </font>
+<font color=#008000>; bx - the divider that was used to get the remainder from divident. </font>
+print_float     <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>cx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+
+        <font color=#008000>; because the remainder takes the sign of divident </font>
+        <font color=#008000>; its sign should be inverted when divider is negative </font>
+        <font color=#008000>; (-) / (-) = (+) </font>
+        <font color=#008000>; (+) / (-) = (-) </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>bx</font>, 0
+        <font color=#0000FF>jns</font>     div_not_signed
+        <font color=#0000FF>neg</font>     <font color=#C80000>dx</font>              <font color=#008000>; make remainder positive. </font>
+div_not_signed:
+
+        <font color=#008000>; print_num procedure does not print the '-' </font>
+        <font color=#008000>; when the whole part is '0' (even if the remainder is </font>
+        <font color=#008000>; negative) this code fixes it: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jne</font>     checked         <font color=#008000>; ax&lt;&gt;0 </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>jns</font>     checked         <font color=#008000>; ax=0 and dx&gt;=0 </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#800080>'-'</font>
+        <font color=#0000FF>call</font>    write_char      <font color=#008000>; print '-' </font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+checked:
+
+        <font color=#008000>; print whole part: </font>
+        <font color=#0000FF>call</font>    print_num
+
+        <font color=#008000>; if remainder=0, then no need to print it: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>je</font>      done
+
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#008000>; print dot after the number: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#800080>'.'</font>
+        <font color=#0000FF>call</font>    write_char
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+
+        <font color=#008000>; print digits after the dot: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, precision
+        <font color=#0000FF>call</font>    print_fraction
+done:
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>cx</font>
+        <font color=#0000FF>ret</font>
+print_float     endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; prints dx as fraction of division by bx. </font>
+<font color=#008000>; dx - remainder. </font>
+<font color=#008000>; bx - divider. </font>
+<font color=#008000>; cx - maximum number of digits after the dot. </font>
+print_fraction  <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+next_fraction:
+        <font color=#008000>; check if all digits are already printed: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>cx</font>, 0
+        <font color=#0000FF>jz</font>      end_rem
+        <font color=#0000FF>dec</font>     <font color=#C80000>cx</font>      <font color=#008000>; decrease digit counter. </font>
+
+        <font color=#008000>; when remainder is '0' no need to continue: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>je</font>      end_rem
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>dx</font>
+        <font color=#0000FF>xor</font>     <font color=#C80000>dx</font>, <font color=#C80000>dx</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jns</font>     not_sig1
+        <font color=#0000FF>not</font>     <font color=#C80000>dx</font>
+not_sig1:
+
+        <font color=#0000FF>imul</font>    ten             <font color=#008000>; dx:ax = ax * 10 </font>
+
+        <font color=#0000FF>idiv</font>    <font color=#C80000>bx</font>              <font color=#008000>; ax = dx:ax / bx   (dx - remainder) </font>
+
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>              <font color=#008000>; store remainder. </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>jns</font>     not_sig2
+        <font color=#0000FF>neg</font>     <font color=#C80000>dx</font>
+not_sig2:
+        <font color=#0000FF>add</font>     <font color=#C80000>dl</font>, 30h         <font color=#008000>; convert to ascii code. </font>
+        <font color=#0000FF>call</font>    write_char      <font color=#008000>; print dl. </font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+
+        <font color=#0000FF>jmp</font>     next_fraction
+end_rem:
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>ret</font>
+print_fraction  endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; this procedure prints number in ax, </font>
+<font color=#008000>; used with print_numx to print "0" and sign. </font>
+<font color=#008000>; this procedure also stores the original ax, </font>
+<font color=#008000>; that is modified by print_numx. </font>
+print_num       <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jnz</font>     not_zero
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#800080>'0'</font>
+        <font color=#0000FF>call</font>    write_char
+        <font color=#0000FF>jmp</font>     printed
+
+not_zero:
+        <font color=#008000>; the check sign of ax, </font>
+        <font color=#008000>; make absolute if it's negative: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jns</font>     positive
+        <font color=#0000FF>neg</font>     <font color=#C80000>ax</font>
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#800080>'-'</font>
+        <font color=#0000FF>call</font>    write_char
+positive:
+        <font color=#0000FF>call</font>    print_numx
+printed:
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>ret</font>
+print_num       endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; prints out a number in ax (not just a single digit) </font>
+<font color=#008000>; allowed values from 1 to 65535 (ffff) </font>
+<font color=#008000>; (result of /10000 should be the left digit or "0"). </font>
+<font color=#008000>; modifies ax (after the procedure ax=0) </font>
+print_numx      <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>bx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>cx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+
+        <font color=#008000>; flag to prevent printing zeros before number: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, 1
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, 10000       <font color=#008000>; 2710h - divider. </font>
+
+        <font color=#008000>; check if ax is zero, if zero go to end_show </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, 0
+        <font color=#0000FF>jz</font>      end_show
+
+begin_print:
+
+        <font color=#008000>; check divider (if zero go to end_show): </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>bx</font>,0
+        <font color=#0000FF>jz</font>      end_show
+
+        <font color=#008000>; avoid printing zeros before number: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>cx</font>, 0
+        <font color=#0000FF>je</font>      calc
+        <font color=#008000>; if ax&lt;bx then result of div will be zero: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>ax</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>jb</font>      skip
+calc:
+        <font color=#0000FF>xor</font>     <font color=#C80000>cx</font>, <font color=#C80000>cx</font>  <font color=#008000>; set flag. </font>
+
+        <font color=#0000FF>xor</font>     <font color=#C80000>dx</font>, <font color=#C80000>dx</font>
+        <font color=#0000FF>div</font>     <font color=#C80000>bx</font>      <font color=#008000>; ax = dx:ax / bx   (dx=remainder). </font>
+
+        <font color=#008000>; print last digit </font>
+        <font color=#008000>; ah is always zero, so it's ignored </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>dl</font>, <font color=#C80000>al</font>
+        <font color=#0000FF>add</font>     <font color=#C80000>dl</font>, 30h    <font color=#008000>; convert to ascii code. </font>
+        <font color=#0000FF>call</font>    write_char
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>dx</font>  <font color=#008000>; get remainder from last div. </font>
+
+skip:
+        <font color=#008000>; calculate bx=bx/10 </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>xor</font>     <font color=#C80000>dx</font>, <font color=#C80000>dx</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>div</font>     ten     <font color=#008000>; ax = dx:ax / 10   (dx=remainder). </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+
+        <font color=#0000FF>jmp</font>     begin_print
+
+end_show:
+
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>cx</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>bx</font>
+        <font color=#0000FF>ret</font>
+print_numx      endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; displays the message (dx-address) </font>
+puts    <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 09h
+        <font color=#0000FF>int</font>     21h
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>ret</font>
+puts    endp
+
+<font color=#008000>;******************************************************************* </font>
+
+<font color=#008000>; reads char from the keyboard into al </font>
+<font color=#008000>; (modifies ax!!!) </font>
+read_char       <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 01h
+        <font color=#0000FF>int</font>     21h
+        <font color=#0000FF>ret</font>
+read_char       endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; gets the multi-digit signed number from the keyboard, </font>
+<font color=#008000>; result is stored in cx </font>
+scan_num        <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+
+        <font color=#0000FF>xor</font>     <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+
+        <font color=#008000>; reset flag: </font>
+        <font color=#0000FF>mov</font>     make_minus, 0
+
+next_digit:
+
+        <font color=#0000FF>call</font>    read_char
+
+        <font color=#008000>; check for minus: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, <font color=#800080>'-'</font>
+        <font color=#0000FF>je</font>      set_minus
+
+        <font color=#008000>; check for enter key: </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, cr
+        <font color=#0000FF>je</font>      stop_input
+
+        <font color=#008000>; multiply cx by 10 (first time the result is zero) </font>
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>cx</font>
+        <font color=#0000FF>mul</font>     ten                     <font color=#008000>; dx:ax = ax*10 </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+
+        <font color=#008000>; check if the number is too big </font>
+        <font color=#008000>; (result should be 16 bits) </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>dx</font>, 0
+        <font color=#0000FF>jne</font>     out_of_range
+
+        <font color=#008000>; convert from ascii code: </font>
+        <font color=#0000FF>sub</font>     <font color=#C80000>al</font>, 30h
+
+        <font color=#008000>; add al to cx: </font>
+        <font color=#0000FF>xor</font>     <font color=#C80000>ah</font>, <font color=#C80000>ah</font>
+        <font color=#0000FF>add</font>     <font color=#C80000>cx</font>, <font color=#C80000>ax</font>
+        <font color=#0000FF>jc</font>      out_of_range    <font color=#008000>; jump if the number is too big. </font>
+
+        <font color=#0000FF>jmp</font>     next_digit
+
+set_minus:
+        <font color=#0000FF>mov</font>     make_minus, 1
+        <font color=#0000FF>jmp</font>     next_digit
+
+out_of_range:
+        <font color=#0000FF>lea</font>     <font color=#C80000>dx</font>, error
+        <font color=#0000FF>call</font>    puts
+
+stop_input:
+        <font color=#008000>; check flag: </font>
+        <font color=#0000FF>cmp</font>     make_minus, 0
+        <font color=#0000FF>je</font>      not_minus
+        <font color=#0000FF>neg</font>     <font color=#C80000>cx</font>
+not_minus:
+
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>pop</font>     <font color=#C80000>dx</font>
+        <font color=#0000FF>ret</font>
+scan_num        endp
+
+<font color=#008000>;*************************************************************** </font>
+
+<font color=#008000>; prints out single char (ascii code should be in dl) </font>
+write_char      <font color=#0000FF>proc</font>    near
+        <font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 02h
+        <font color=#0000FF>int</font>     21h
+        <font color=#0000FF>pop</font>     <font color=#C80000>ax</font>
+        <font color=#0000FF>ret</font>
+write_char      endp
+
+<font color=#008000>;*************************************************************** </font>
+
+cseg    ends
+        <font color=#000064>end</font>     start
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/float.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

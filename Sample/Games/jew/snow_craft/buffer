@@ -1,0 +1,49 @@
+begin_screen macro
+	local title
+	save_register <cx>
+	xor cx,cx
+	mov cx,05h
+	pixel 0,0,320,200,15,15
+	pixel 5,181,315,195,0,0
+	square 1,1,318,198,88,88
+	square 3,3,316,196,92,92
+	square 5,5,314,194,88,88
+	square 5,5,314,180,88,88
+	
+	showmessage 1,23,mesg12
+	showmessage 15,23,mesg11
+	showmessage 69,23,mesg10
+
+	showpicture 170,181,16,13,heart
+	showpicture 185,181,16,13,heart
+	showpicture 200,181,16,13,heart
+
+	showpicture 70,80,40,25,snow3
+	showpicture 200,90,40,25,snow4
+	
+title:
+	showpicture 30,50,40,32,green1
+	delay 2000
+	showpicture 30,50,40,32,green3
+	delay 2000
+	showpicture 30,50,40,32,green4
+	delay 2000
+	showpicture 30,50,40,32,green2
+	delay 2000	
+
+	showpicture 250,80,40,32,red1
+	delay 2000
+	showpicture 250,80,40,32,red2
+	delay 2000
+	showpicture 250,80,40,32,red3
+	delay 2000
+	showpicture 250,80,40,32,red4
+	delay 2000
+
+	dec cx
+	cmp cx,0
+	jnz title
+	load_register <cx>
+endm
+;----------------------------------------
+;----------------------------------------

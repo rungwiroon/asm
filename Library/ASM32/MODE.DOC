@@ -1,0 +1,440 @@
+
+****************************  VIDEO MODES  ***********************************
+
+ASM32 video mode subroutines (C) Copyright 1993 Douglas Herr
+All rights reserved
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+HGRAPH:      establishes Hercules graphics mode, pages 0 & 1
+HGRAPH0:     establishes Hercules graphics mode, clear page 0 only
+Source:      hgraph.asm ($herc.asm, $hmode.asm)
+
+Hercules or compatible required
+(including Hercules InColor)
+
+Call with:   no parameters
+Returns:     if CF = 1, no Hercules installed
+             if CF = 0, AX = code for Hercules model
+             128 = HGC
+             144 = HGC+
+             208 = InC
+Uses:        AX, ECX, CF
+Supports:    Hercules graphics cards and compatibles: graphics mode
+             see also Use64k in SYSTEM.DOC
+Example:     call    hgraph      ; establish graphics mode
+             jc      no_hercules ; drat!
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+HRAM8029:    establish an 80-column, 29-row RamFont mode, loading a
+             standard 8x12 character font in RAM
+Source:      hram8029.asm ($herc.asm, $hmode.asm, $h8x12.asm, f8x12rle.asm,
+                           $rld.asm)
+
+HRAM8043:    establish an 80-column, 43-row RamFont mode, loading a
+             standard 8x8 character font in RAM
+Source:      hram8043.asm ($herc.asm, $hmode.asm, $h8x8.asm, f8x8.asm)
+
+HRAM9025:    establish a 90-column, 25-row RamFont mode using
+             standard ROM characters
+Source:      hram9025.asm ($herc.asm, $hmode.asm)
+
+HRAM9029:    establish a 90-column, 29-row RamFont mode, loading a
+             standard 8x12 character font in RAM
+Source:      hram9029.asm ($herc.asm, $hmode.asm, $h8x12.asm, f8x12lre.asm,
+                           $rld.asm)
+
+HRAM9043:    establish a 90-column, 43-row RamFont mode, loading a
+             standard 8x8 character font in RAM
+Source:      hram9043.asm ($herc.asm, $hmode.asm, $h8x8.asm, f8x8.asm)
+
+Hercules RamFont card required
+(including Hercules InColor)
+
+Note:        use htext to restore normal 80 x 25 text mode
+
+Call with:   no parameters
+Returns:     if CF = 1, no RamFont card installed
+             if CF = 0, AX = code for Hercules model
+             144 = HGC+
+             208 = InC
+Uses:        AX, CF; all other flags and registers are saved
+Supports:    HGC+ and InC cards: 4k RamFont mode
+Example:     call  hram8043      ; RamFont mode: 80x43
+             jc    no_ramfont    ; drat!
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+HTEXT:       establish (or restore) Hercules text mode
+Source:      htext.asm ($herc, $hmode)
+
+Call with:   no parameters
+Returns:     if CF = 1, no Hercules installed
+             if CF = 0, AX = code for Hercules model
+             128 = HGC
+             144 = HGC+
+             208 = InC
+Uses:        AX, CF
+Supports:    Hercules graphics cards and compatibles: text mode
+             (including Hercules InColor)
+Example:     call  htext         ; Hercules text mode
+             jc    no_herc       ; drat!
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+TOCOLOR:     switches system to color text mode; may be used to switch
+             monitors on a 2-monitor system, or to switch to the standard
+             80-column, 25-rows color mode from other color modes
+Source:      tocolor.asm ($6845.asm)
+
+Call with:   no parameters
+Returns:     CF = 1 if no color monitor
+             CF = 0 if successful
+Uses:        CF; all registers and all other flags are saved
+Example:
+
+extrn   tocolor:near
+
+include codeseg.inc
+
+        .
+        .
+        .
+        call  tocolor
+        jc    no_color
+        .
+        .
+        .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+TOMONO:      switches system to monochrome text mode; may be used either
+             to switch active monitors on a 2-monitor sysem or to switch
+             to monchrome text mode (80x25) from graphics mode (EGA or
+             Hercules).
+Source:      tocolor.asm ($6845.asm)
+
+Call with:   no parameters
+Returns:     CF = 1 if no monochrome or InColor monitor
+             CF = 0 if successful
+Uses:        CF; all registers and all other flags are saved
+Example:
+
+extrn   tomono:near
+
+include codeseg.inc
+
+        .
+        .
+        .
+        call  modemono
+        jc    no_mono
+        .
+        .
+        .
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MODE43:      switch EGA to 80x43 text mode or VGA to 80x50 text mode
+             Mode43 switches an EGA to the 80-column, 43-row text mode from
+             any color mode or any EGA monochrome mode, or switches a color
+             VGA to 80x50 text mode from any other color mode.
+Source:      mode43.asm
+
+Call with:   no parameters
+Returns:     if CF = 1, AX = 0 if no EGA or VGA in system
+                        AX = -1 if EGA connected to CGA monitor
+             if CF = 0, AX = 3 if EGA or VGA connected to color monitor
+                        AX = 7 if EGA or VGA connected to monochrome monitor
+Uses:        AX, CF; all other registers and flags are saved
+Example:     call  mode43
+             jc    noega
+
+
+ °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SVGA132:     set 132-column text mode on supported SEGA and SVGA systems
+Source:      svga132.asm ($sega.asm, $svga.asm)
+
+Call with:   AX = mode number
+              0 = 25 rows
+              1 = 30 rows (approx)
+              2 = 43 rows (approx)
+              3 = 50 rows (SVGA only)
+              4 = 60 rows (SVGA only)
+Returns:     if CF = 0, no error
+             if CF = 1, mode not supported
+Uses:        flags
+Example:
+
+include model.inc
+
+public  set132mode
+extrn   svga132:near
+
+include codeseg.inc
+
+set132mode      proc near
+        mov	ax,4
+try_to_set_mode:
+        call    svga132
+        jnc     short all_done   ; all done if it worked
+        sub     ax,1             ;  else try next lower mode number
+        jnc     try_to_set_mode  ;  unless modes exhausted
+                                 ;  then exit with CF = 1
+all_done:
+        ret
+
+
+ °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SVGA16:      set Super VGA mode
+Source:      svga16.asm (banks.asm, $graph.asm)
+
+Call with:   AX = 16-color mode desired
+             AX = 0 for 800x600
+             AX = 1 for 1024x768
+
+             ASM32's SVGA subroutines are derived from John Bridges'
+             public domain VGAKIT board identification and bank switching code.
+             Boards supported are:
+
+             Ahead Technologies
+             ATI
+             Chips & Technologies
+             Cirrus
+             Everex
+             Genoa GVGA
+             NCR
+             Oak Technologies
+             Paradise (Western Digital)
+             Trident
+             Trident 8900
+             Tseng (Genoa, Orchid, Willow)
+             Tseng 4000
+             VESA standard
+             Video 7
+
+             I have not been able to test SVGA16 on all boards; please
+             let me know if you encounter difficulties.  Note that not
+             all modes are supported by all boards; be sure to check CF
+             after calling SVGA16.
+
+Returns:     if CF = 0, AX = extended BIOS mode number
+             if CF = 1, requested mode is not available
+             SVGA16 cannot determine if the monitor you are using will
+             work with the requested mode.  Monitor damage may result
+             from improper use of SVGA16.
+
+Example:
+
+public mygraph
+extrn  svga16:near
+
+include codeseg.inc
+
+mygraph proc   near
+; I want to use a 16-color 1024x768 mode if available
+        mov    ax,1             ; specify 1024x768 mode
+        call   svga16
+        jc     short no_svga
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SVGA256:     set Super VGA 256-color mode
+Source:      svga256.asm (banks.asm)
+
+Call with:   AX = 256-color mode desired
+             AX = 0 for  640x400
+             AX = 1 for  640x480
+             AX = 2 for  800x600
+             AX = 3 for 1024x768
+
+             ASM32's SVGA256 subroutines are derived from John Bridges'
+             public domain VGAKIT board identification and bank switching code.
+
+             Equipment supported is listed under SVGA16, plus:
+
+             Compaq (640x480 only)
+
+
+Returns:     if CF = 0, AX = extended BIOS mode number
+             if CF = 1, requested mode is not available
+             SVGA256 cannot determine if the monitor you are using will
+             work with the requested mode.  Monitor damage may result
+             from improper use of SVGA256.
+
+Example:     see SVGA16
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+SVGA32k:     set Super VGA 32k-color mode
+Source:      svga32k.asm (banks.asm)
+
+Call with:   AX = 32k-color mode desired
+             AX = 0 for  320x200
+             AX = 1 for  640x480
+             AX = 2 for  800x600
+             AX = 3 for 1024x768
+             AX = 4 for 1280x1024
+
+             Equipment supported is:
+
+             Trident 8900 (640x480, 800x600)
+             VESA
+
+
+Returns:     if CF = 0, AX = extended BIOS mode number
+             if CF = 1, requested mode is not available
+             SVGA32k cannot determine if the monitor you are using will
+             work with the requested mode.  Monitor damage may result
+             from improper use of SVGA32k.
+
+Example:     see SVGA16
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+VGA13X:      changes standard VGA systems to undocumented 256-color graphics
+             modes.  ASM32 graphics subroutines support 4 VGA13X modes
+             with up to 4 pages.  See also XModeClear.
+             VGA13X is derived from public domain code from John Bridges
+             and Themie Gouthas.
+Source:      vga13x.asm (crtc.13x, $graph.asm)
+
+Call with:   AX = VGA13X mode number
+              0 = 320 x 200, 4 pages
+              1 = 320 x 240, 3 pages
+              2 = 320 x 400, 2 pages
+              3 = 360 x 480, 1 page
+Returns:     nothing
+Uses:        nothing
+Supports:    VGA or SVGA only: graphics mode
+Example:
+
+extrn   vga13x:proc
+
+include codeseg.inc
+        .
+        .
+        .
+        call   getcrt
+        cmp    al,3
+        jne    short oops            ; do something else if no VGA
+        mov    ax,2                  ; 320 x 400, 2 pages
+        call   vga13x
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+XMODE16:     establish SuperEGA/SuperVGA graphics mode and configure
+             ASM32 graphics subroutines to work with the mode.
+XMODECLEAR:  restore ASM32's default graphics configuration
+Source:      xmode16.asm ($graph.asm)
+
+Parameters:  maximum x, maximum y, registers as required to set mode.
+             XMode16 assumes that the mode is set with AH = 0.
+Returns:     nothing
+Uses:        All registers and flags saved.
+Supports:    16-color EGA/VGA-style graphics modes, up to 800 x 600 pixels.
+             Various equipment.  You must have the required equipment and
+             use the correct mode number;  hardware damage may result from
+             improper use of XMode16.  I cannot be held responsible for
+             damage resulting from use or misuse of XMode16.  Use XMode16
+             if your equipment is not supported by SVGA16.
+
+             If 800 horizontal pixels are available, maxX% should be 799.
+             Similarly, if 600 vertical pixels are possible, maxY% should
+             be 599.
+
+             Your graphics card manual lists mode numbers, monitor
+             requirements, and the number of horizontal and vertical
+             pixels corresponding to the mode.  Mode numbers are usually
+             in hex format.  Some modes and corresponding mode numbers
+             are listed on the next pages.
+
+
+
+    Equipment            mode     mode number   Example
+
+    Orchid ProDesigner   800x600        29h     mov   ax,799
+    STB EM/16                                   push  ax
+    Genoa                                       mov   ax,599
+    Sigma X16                                   push  ax
+    (Tseng chip set)                            mov   al,29h
+                                                call  xmode16
+
+
+    Everex MED EGA       640X480   AL = 70h, BL = 00h
+    (Micro Enhancer Deluxe)
+                         752x410   AL = 70h, BL = 01h
+                                                mov   ax,751
+                                                push  ax
+                                                mov   ax,409
+                                                push  ax
+                                                mov   al,70h
+                                                mov   bl,01h
+                                                call  xmode16
+
+
+    ATI VGA Wonder       800x600        54h     mov   ax,799
+                                                push  ax
+                                                mov   ax,599
+                                                push  ax
+                                                mov   al,54h
+                                                call  xmode16
+
+
+    ATI VIP              800x560        53h     mov   ax,799
+                                                push  ax
+                                                mov   ax,559
+                                                push  ax
+                                                mov   al,53h
+                                                call  xmode16
+
+(continued)
+
+    Paradise Plus-16     800x600        58h     mov   ax,799
+    Paradise Professional                       push  ax
+                                                mov   ax,599
+                                                push  ax
+                                                mov   al,58h
+                                                call  xmode16
+    
+
+    Video 7 Fastwrite    800x600        62h     mov   ax,799
+    Video 7 VRAM                                push  ax
+                                                mov   ax,599
+                                                push  ax
+                                                mov   al,62h
+                                                call  xmode16
+
+
+    Western Digital      800x600   6Ah (color)  mov   ax,799
+                                   6Bh (mono)   push  ax
+    (VESA modes)                                mov   ax,599
+                                                push  ax
+                                                mov   al,6Ah   ; color
+                                                call  xmode16
+    
+
+    If any of this information conflicts with the specifications in your
+    video card's instruction manual, the manual's recommendation is a safer
+    bet.  Note that all the above modes require a multi-frequency monitor.
+
+    When you're all done with Graphics mode, CALL ModeColor to return to
+    80x25 text mode, and CALL XModeClear to reset ASM32's graphics mode
+    flags.
+
+
+
+

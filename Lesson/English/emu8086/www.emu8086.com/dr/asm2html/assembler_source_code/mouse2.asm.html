@@ -1,0 +1,143 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/mouse2.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> mouse2.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; mouse drawing. </font>
+<font color=#008000>; press left mouse button to draw. </font>
+
+<font color=#008000>; for a real test click external-&gt;run from the emulator's menu. </font>
+
+name <font color=#800080>"mouse2"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start
+
+oldX <font color=#000064>dw</font> <font color=#0064C8>-</font>1
+oldY <font color=#000064>dw</font> 0
+
+
+start:
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 00
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 13h       <font color=#008000>; set screen to 256 colors, 320x200 pixels.  </font>
+<font color=#0000FF>int</font> 10h
+
+<font color=#008000>; reset mouse and get its status: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0
+<font color=#0000FF>int</font> 33h
+<font color=#0000FF>cmp</font> <font color=#C80000>ax</font>, 0
+<font color=#008000>; display mouse cursor: </font>
+<font color=#008000>;mov ax, 1 </font>
+<font color=#008000>;int 33h </font>
+
+
+
+check_mouse_button:
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 3
+<font color=#0000FF>int</font> 33h
+<font color=#0000FF>shr</font> <font color=#C80000>cx</font>, 1       <font color=#008000>; x/2 - in this mode the value of CX is doubled. </font>
+<font color=#0000FF>cmp</font> <font color=#C80000>bx</font>, 1
+<font color=#0000FF>jne</font> xor_cursor:
+<font color=#0000FF>mov</font> <font color=#C80000>al</font>, 1010b   <font color=#008000>; pixel color </font>
+<font color=#0000FF>jmp</font> draw_pixel
+xor_cursor:
+<font color=#0000FF>cmp</font> oldX, <font color=#0064C8>-</font>1
+<font color=#0000FF>je</font> not_required
+<font color=#0000FF>push</font> <font color=#C80000>cx</font>
+<font color=#0000FF>push</font> <font color=#C80000>dx</font>
+<font color=#0000FF>mov</font> <font color=#C80000>cx</font>, oldX
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, oldY
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0dh     <font color=#008000>; get pixel. </font>
+<font color=#0000FF>int</font> 10h
+<font color=#0000FF>xor</font> <font color=#C80000>al</font>, 1111b   <font color=#008000>; pixel color </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch     <font color=#008000>; set pixel </font>
+<font color=#0000FF>int</font> 10h
+<font color=#0000FF>pop</font> <font color=#C80000>dx</font>
+<font color=#0000FF>pop</font> <font color=#C80000>cx</font>
+not_required:
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0dh     <font color=#008000>; get pixel. </font>
+<font color=#0000FF>int</font> 10h
+<font color=#0000FF>xor</font> <font color=#C80000>al</font>, 1111b   <font color=#008000>; pixel color </font>
+<font color=#0000FF>mov</font> oldX, <font color=#C80000>cx</font>
+<font color=#0000FF>mov</font> oldY, <font color=#C80000>dx</font>
+draw_pixel:
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch     <font color=#008000>; set pixel </font>
+<font color=#0000FF>int</font> 10h
+check_esc_key:
+<font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 255
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 6
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>cmp</font> <font color=#C80000>al</font>, 27      <font color=#008000>; esc? </font>
+<font color=#0000FF>jne</font> check_mouse_button
+
+
+stop:
+<font color=#008000>;mov ax, 2  ; hide mouse cursor. </font>
+<font color=#008000>;int 33h </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 3 <font color=#008000>; back to text mode: 80x25 </font>
+<font color=#0000FF>int</font> 10h
+<font color=#008000>; show box-shaped blinking text cursor: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 1
+<font color=#0000FF>mov</font> <font color=#C80000>ch</font>, 0
+<font color=#0000FF>mov</font> <font color=#C80000>cl</font>, 8
+<font color=#0000FF>int</font> 10h
+<font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+<font color=#0000FF>int</font> 21h
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+<font color=#0000FF>ret</font>
+
+msg <font color=#000064>db</font> <font color=#800080>" press any key....     $"</font>
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/mouse2.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

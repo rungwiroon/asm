@@ -1,0 +1,152 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/print.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> print.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this example shows how to print string. </font>
+<font color=#008000>; the string is defined just after the call instruction. </font>
+<font color=#008000>; this example does not use emu8086.inc library. </font>
+
+name <font color=#800080>"print"</font>
+
+<font color=#000064>org</font>    100h
+
+<font color=#008000>; set these values to registers for no particular reason, </font>
+<font color=#008000>; we just want to check that the procedure does not destroy them. </font>
+<font color=#0000FF>mov</font> <font color=#C80000>si</font>, 1234h
+<font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 9876h
+
+<font color=#008000>; 0Dh,0Ah - is the code </font>
+<font color=#008000>;          for standard new </font>
+<font color=#008000>;          line characters: </font>
+<font color=#008000>;   0Dh - carriage return. </font>
+<font color=#008000>;   0Ah - new line. </font>
+
+<font color=#0000FF>call</font> printme
+<font color=#000064>db</font> <font color=#800080>'hello'</font>, 0
+
+<font color=#008000>; gets here after print: </font>
+<font color=#0000FF>mov</font>    <font color=#C80000>cx</font>, 1
+
+<font color=#0000FF>call</font>   printme
+<font color=#000064>db</font> <font color=#800080>' world!'</font>, 0Dh,0Ah, 0
+
+<font color=#008000>; gets here after print: </font>
+<font color=#0000FF>mov</font>    <font color=#C80000>cx</font>, 2
+
+<font color=#0000FF>call</font>   printme
+       <font color=#000064>db</font> <font color=#800080>'hi there!'</font>, 0Ah
+       <font color=#000064>db</font> <font color=#800080>"what's up?"</font>, 0Dh,0Ah
+       <font color=#000064>db</font> <font color=#800080>'printing!'</font>, 0
+
+<font color=#008000>; printme returns here: </font>
+<font color=#0000FF>xor</font>    <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+
+<font color=#0000FF>call</font>   printme
+       <font color=#000064>db</font> 0xd,0xa,<font color=#800080>"press any key..."</font>, 0
+
+
+<font color=#008000>; wat for any key.... </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+
+<font color=#0000FF>ret</font>    <font color=#008000>; return to os. </font>
+
+<font color=#008000>;******************************* </font>
+<font color=#008000>; this procedure prints a null terminated </font>
+<font color=#008000>; string at current cursor position. </font>
+<font color=#008000>; the zero terminated string should </font>
+<font color=#008000>; be defined just after </font>
+<font color=#008000>; the call. for example: </font>
+<font color=#008000>; </font>
+<font color=#008000>; call printme </font>
+<font color=#008000>; db 'hello world!', 0 </font>
+<font color=#008000>; </font>
+<font color=#008000>; address of string is stored in the </font>
+<font color=#008000>; stack as return address. </font>
+<font color=#008000>; procedure updates value in the </font>
+<font color=#008000>; stack to make return </font>
+<font color=#008000>; after string definition. </font>
+
+printme:
+
+<font color=#0000FF>mov</font>     <font color=#800000>cs</font>:temp1, <font color=#C80000>si</font>  <font color=#008000>; protect si register. </font>
+
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>            <font color=#008000>; get return address (ip). </font>
+
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>            <font color=#008000>; store ax register. </font>
+
+next_char:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#800000>cs</font>:<font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>            <font color=#008000>; next byte. </font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh       <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     next_char     <font color=#008000>; loop. </font>
+printed:
+
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>            <font color=#008000>; re-store ax register. </font>
+
+<font color=#008000>; si should point to next command after </font>
+<font color=#008000>; the call instruction and string definition: </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>            <font color=#008000>; save new return address into the stack. </font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>si</font>, <font color=#800000>cs</font>:temp1  <font color=#008000>; re-store si register. </font>
+
+<font color=#0000FF>ret</font>
+<font color=#008000>; variable to store original </font>
+<font color=#008000>; value of si register. </font>
+temp1  <font color=#000064>dw</font>  ?
+<font color=#008000>;******************************* </font>
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/print.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

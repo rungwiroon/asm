@@ -1,0 +1,5 @@
+.DATA
+	MENU1	DB	'.\PIC\main.PIC',0
+	MENU2	DB	'.\PIC\main2.PIC',0
+	MENU3	DB	'.\PIC\main3.PIC',0
+	MENU4	DB	'.\PIC\main4.PIC',0

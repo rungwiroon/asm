@@ -1,0 +1,143 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/0_sample_vga_graphics.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> 0_sample_vga_graphics.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"vga"</font>
+
+<font color=#008000>; this program draws a tiny rectangle in vga mode. </font>
+
+<font color=#000064>org</font>  100h
+
+<font color=#0000FF>jmp</font> code
+
+<font color=#008000>; dimensions of the rectangle: </font>
+<font color=#008000>; width: 10 pixels </font>
+<font color=#008000>; height: 5 pixels </font>
+
+w <font color=#000064>equ</font> 10
+h <font color=#000064>equ</font> 5
+
+
+<font color=#008000>; set video mode 13h - 320x200 </font>
+
+code:   <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+        <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 13h
+        <font color=#0000FF>int</font> 10h
+
+
+<font color=#008000>; draw upper line: </font>
+
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 100<font color=#0064C8>+</font>w  <font color=#008000>; column </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, 20     <font color=#008000>; row </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 15     <font color=#008000>; white </font>
+u1: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch    <font color=#008000>; put pixel </font>
+    <font color=#0000FF>int</font> 10h
+
+    <font color=#0000FF>dec</font> <font color=#C80000>cx</font>
+    <font color=#0000FF>cmp</font> <font color=#C80000>cx</font>, 100
+    <font color=#0000FF>jae</font> u1
+
+<font color=#008000>; draw bottom line: </font>
+
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 100<font color=#0064C8>+</font>w  <font color=#008000>; column </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, 20<font color=#0064C8>+</font>h   <font color=#008000>; row </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 15     <font color=#008000>; white </font>
+u2: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch    <font color=#008000>; put pixel </font>
+    <font color=#0000FF>int</font> 10h
+
+    <font color=#0000FF>dec</font> <font color=#C80000>cx</font>
+    <font color=#0000FF>cmp</font> <font color=#C80000>cx</font>, 100
+    <font color=#0000FF>ja</font> u2
+
+<font color=#008000>; draw left line: </font>
+
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 100    <font color=#008000>; column </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, 20<font color=#0064C8>+</font>h   <font color=#008000>; row </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 15     <font color=#008000>; white </font>
+u3: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch    <font color=#008000>; put pixel </font>
+    <font color=#0000FF>int</font> 10h
+
+    <font color=#0000FF>dec</font> <font color=#C80000>dx</font>
+    <font color=#0000FF>cmp</font> <font color=#C80000>dx</font>, 20
+    <font color=#0000FF>ja</font> u3
+
+
+<font color=#008000>; draw right line: </font>
+
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, 100<font color=#0064C8>+</font>w  <font color=#008000>; column </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, 20<font color=#0064C8>+</font>h   <font color=#008000>; row </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>al</font>, 15     <font color=#008000>; white </font>
+u4: <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0ch    <font color=#008000>; put pixel </font>
+    <font color=#0000FF>int</font> 10h
+
+    <font color=#0000FF>dec</font> <font color=#C80000>dx</font>
+    <font color=#0000FF>cmp</font> <font color=#C80000>dx</font>, 20
+    <font color=#0000FF>ja</font> u4
+
+
+<font color=#008000>; pause the screen for dos compatibility: </font>
+
+<font color=#008000>;wait for keypress </font>
+  <font color=#0000FF>mov</font> <font color=#C80000>ah</font>,00
+  <font color=#0000FF>int</font> 16h
+
+<font color=#008000>; return to text mode: </font>
+  <font color=#0000FF>mov</font> <font color=#C80000>ah</font>,00
+  <font color=#0000FF>mov</font> <font color=#C80000>al</font>,03 <font color=#008000>;text mode 3 </font>
+  <font color=#0000FF>int</font> 10h
+
+
+
+<font color=#0000FF>ret</font>
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/0_sample_vga_graphics.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

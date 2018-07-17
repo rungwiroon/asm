@@ -1,0 +1,117 @@
+;======================================================
+;Save screen to vga buffer segment
+;use MOVSD for faster ,easier load and store and reduce loop 
+;you can chaeng to use 16bit for 286 cpu
+;======================================================
+SAV_SCR	PROC
+	PUSHA
+	PUSH	DS
+	PUSH	ES	
+	
+	MOV	AX,0A000H
+	MOV	DS,AX
+	XOR	SI,SI
+	
+	MOV	AX,VBUFFERSEG
+	MOV ES,AX
+	LEA	DI,VBUFFER
+	
+	CLD
+	MOV	CX,16000
+	REP MOVSD	;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+		
+	POP	ES
+	POP	DS
+	POPA
+	RET
+SAV_SCR	ENDP
+;============================================
+;Restore screen from vga buffer segment
+;============================================
+RE_SCR	PROC
+	PUSHA
+	PUSH 	DS
+	PUSH	ES
+		
+	MOV AX,VBUFFERSEG
+	MOV	DS,AX
+	LEA SI,VBUFFER
+	
+	MOV	AX,0A000H
+	MOV	ES,AX
+	XOR DI,DI
+	
+	CLD
+	MOV	CX,16000
+	REP MOVSD	;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+	
+	POP	ES
+	POP	DS
+	POPA
+	RET
+RE_SCR	ENDP
+
+;;==================================================
+;RESTORE SCREEN IN SPECIFIC POSITION
+; DX	START 	X POSITION
+;BL	START	Y POSITION
+;CX	SCREEN	WIDTH
+;BH	SCREEN	HEIGHT 
+;*FOR 320*200 256 COLOR ONLY
+;==================================================
+RESTORE_SCR2	PROC
+	;PUSHA
+	PUSH 	DS
+	PUSH	ES			;SAVE DS AND ES 
+		
+	MOV AX,VBUFFERSEG
+	MOV	DS,AX			;DS POINT TO VGA BUFFER SEGMENT
+	
+	MOV	AX,0A000H
+	MOV	ES,AX			;ES POINT TO SCREEN SEGMENT
+	
+	CLD
+	
+	;MOV	BX,0			;X START POSITION
+	;MOV	DL,0			; Y START POSITION
+	;MOV	DH,20		;Y END POSITION
+	;MOV	DX,0
+	;MOV	BX,0
+	
+	MOV	DS:SCR_Y2,0
+	MOV	BYTE PTR DS:SCR_Y2,BL	; Y END POSITION
+	ADD	BYTE PTR DS:SCR_Y2,BH
+	MOV	DS:SCR_WIDTH,CX
+	XOR	BH,BH
+	;ADD	BH,BL
+	
+RS_Y_LOOP:
+	PUSH	DX
+	LEA	SI,VBUFFER
+	MOV	AX,320		;CALCULATE ROW
+	MUL	BX			;MUL AX BY DL ,RESULT HIGH WORD IN DX,LOW WORD IN AX
+	POP	DX
+	ADD	AX,DX		;ADD X  CORDINATE
+	ADD	SI,AX
+	MOV	DI,AX		;DI POINT TO SCREEN BUFFER
+	
+RS_X_LOOP1:
+	MOV	CX,DS:SCR_WIDTH		;X WIDTH
+	SHR	CX,2		;DIVIDE BY 4 FOR LOOP DOUBLE WORD
+	REP	MOVSD		;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+	
+RS_X_LOOP2:
+	MOV	CX,DS:SCR_WIDTH		;X WIDTH
+	AND	CX,03H		;MOD 4 LOOP REMAINDER BYTE
+	REP	MOVSB		;move data from DS:[SI] to ES:[DI] AND INC SI,DI
+	
+RS_NEXT_LINE:	
+	INC	BX			;INC TO NEXT LINE OF PICTURE
+	CMP	BX,DS:SCR_Y2;CHECK HEIGHT
+	JB	RS_Y_LOOP	;LOOP UNTIL IT END OF HEIGHT
+	
+	POP	ES			;RESTORE DS,ES
+	POP	DS
+	;POPA
+	RET
+RESTORE_SCR2 ENDP

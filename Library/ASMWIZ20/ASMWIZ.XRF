@@ -1,0 +1,209 @@
+            ASMWIZ Services and Interdependencies
+
+
+
+For some services which are extensively interrelated, multiple
+services will be kept in a single module. The services and
+modules in which they can be found are listed below, for your
+convenience.
+
+In order to keep the size of routines reasonably small, a number
+of services will call other services in the course of their
+work. If you build your own custom library, you'll need to keep
+this in mind so you can include all of the required services.
+The interdependencies are listed below.
+
+The names of the routines and .OBJ files will be consistent from
+one version of AsmWiz to the next. I will not alter this
+arbitrarily.
+
+
+ Routine         Object File        Other required object files
+
+BC_ASC2INT         BC_ASC2I          ---
+BC_ASC2LONG        BC_ASC2L          MATH32
+BC_ASC2SINT        BC_ASC2I          ---
+BC_ASC2SLONG       BC_ASC2L          MATH32
+BC_INT2ASC         BC_INT2A          ---
+BC_LONG2ASC        BC_LONG2          MATH32
+BC_SINT2ASC        BC_INT2A          ---
+BC_SLONG2ASC       BC_LONG2          MATH32
+BKO_GETCAPS        BKO_GETC          ---
+BKO_GETKEY         BKO_GETK          ---
+BKO_GETNUM         BKO_GETN          ---
+BK_GETCAPS         BK_GETCA          ---
+BK_GETKEY          BK_GETKE          ---
+BK_GETNUM          BK_GETNU          ---
+BV_CHROUT          BIOSVID           BV_LOCATE, BV_WHERE
+BV_CLS             BIOSVID           BV_LOCATE, BV_WHERE
+BV_COLOR           BIOSVID           BV_LOCATE, BV_WHERE
+BV_CLEOLN          BIOSVID           BV_LOCATE, BV_WHERE
+BV_CRLF            BV_CRLF           ---
+BV_DELLINE         BIOSVID           BV_LOCATE, BV_WHERE
+BV_GETCOLOR        BIOSVID           BV_LOCATE, BV_WHERE
+BV_GETMODE         BV_GETMO          ---
+BV_FIXCOLOR        BIOSVID           BV_LOCATE, BV_WHERE
+BV_INSLINE         BIOSVID           BV_LOCATE, BV_WHERE
+BV_HIDECURSOR      BV_CURSO          ---
+BV_LOCATE          BV_LOCAT          ---
+BV_MODE            BIOSVID           BV_LOCATE, BV_WHERE
+BV_POPUP           BV_POPUP          BIOSVID, BV_GETCOLOR,
+                                     BV_LOCATE, BV_WHERE,
+                                     S0_DUPE, S0_LEFT,
+                                     S0_LENGTH
+BV_SHOWCURSOR      BV_CURSO          ---
+BV_STROUT          BIOSVID           BV_LOCATE, BV_WHERE
+BV_WHERE           BV_WHERE          ---
+CG_CHROUT          CGAVID            CG_LOCAT, CG_WHERE
+CG_CLS             CGAVID            CG_LOCAT, CG_WHERE
+CG_COLOR           CGAVID            CG_LOCAT, CG_WHERE
+CG_CLEOLN          CGAVID            CG_LOCAT, CG_WHERE
+CG_CRLF            CGAVID            CG_LOCAT, CG_WHERE
+CG_GETCOLOR        CGAVID            CG_LOCAT, CG_WHERE
+CG_INIT            CGAVID            CG_LOCAT, CG_WHERE
+CG_LOCATE          CG_LOCAT          ---
+CG_MODE            CGAVID            CG_LOCAT, CG_WHERE
+CG_STROUT          CGAVID            CG_LOCAT, CG_WHERE
+CG_WHERE           CG_WHERE          ---
+DF_CLOSE           DOSFILE           EH_CRITI, S0_LENGTH
+DF_DONE            DOSFILE           EH_CRITI, S0_LENGTH
+DF_FLUSH           DOSFILE           EH_CRITI, S0_LENGTH
+DF_GETTIME         DOSFILE           EH_CRITI, S0_LENGTH
+DF_HANDLE          DOSFILE           EH_CRITI, S0_LENGTH
+DF_INIT            DOSFILE           EH_CRITI, S0_LENGTH
+DF_LOCATE          DOSFILE           EH_CRITI, S0_LENGTH
+DF_OPEN            DOSFILE           EH_CRITI, S0_LENGTH
+DF_READ            DOSFILE           EH_CRITI, S0_LENGTH
+DF_TIME            DOSFILE           EH_CRITI, S0_LENGTH
+DF_WHERE           DOSFILE           EH_CRITI, S0_LENGTH
+DF_WRITE           DOSFILE           EH_CRITI, S0_LENGTH
+DK_GETKEY          DK_GETKE          ---
+DV_CHROUT          DV_CHROU          ---
+DV_CLEOLN          DV_CLEOL          ---
+DV_CLS             DV_CLS            ---
+DV_COLOR           DV_COLOR          ---
+DV_CRLF            DV_CRLF           ---
+DV_DELLINE         DV_DELLI          ---
+DV_FIXCOLOR        DV_COLOR          ---
+DV_INSLINE         DV_INSLI          ---
+DV_LOCATE          DV_LOCAT          ---
+DV_MODE            DV_MODE           ---
+DV_STROUT          DV_STROU          ---
+EH_ADDBREAK        EH_BREAK          ---
+EH_CRITDONE        EH_CRITI          ---
+EH_CRITERR         EH_CRITI          ---
+EH_INITBREAK       EH_BREAK          ---
+EH_INITCRIT        EH_CRITI          ---
+EH_SETBREAK        EH_BREAK          ---
+EH_SUBBREAK        EH_BREAK          ---
+FI_COMPLETE        FI_COMPL          S0_LEFT, S0_LENGTH,
+                                     S0_MID
+FI_MATCH           FI_MATCH          ---
+FI_PATTERN         FI_PATTE          ---
+FI_SPLIT           FI_SPLIT          S0_LENGT
+G10_BOX            G10_BOX           G10_LINE
+G10_GETPEL         G10_GETPE         ---
+G10_LINE           G10_LINE          G10_PLOT
+G10_PLOT           G10_PLOT          ---
+G4_BOX             G4_BOX            G4_LINE
+G4_GETPEL          G4_GETPE          ---
+G4_LINE            G4_LINE           G4_PLOT
+G4_PLOT            G4_PLOT           ---
+G6_BOX             G6_BOX            G6_LINE
+G6_GETPEL          G6_GETPE          ---
+G6_LINE            G6_LINE           G6_PLOT
+G6_PLOT            G6_PLOT           ---
+GD_BOX             GD_BOX            GD_LINE
+GD_LINE            GD_LINE           GD_PLOT
+GD_PLOT            GD_PLOT           ---
+GE_BOX             GE_BOX            GE_LINE
+GE_LINE            GE_LINE           GE_PLOT
+GE_PLOT            GE_PLOT           ---
+GH_BOX             GH_BOX            GH_LINE
+GH_GETPEL          GH_GETPE          ---
+GH_LINE            GH_LINE           GH_PLOT
+GH_PLOT            GH_PLOT           ---
+HG_CHROUT          HERCVID           ---
+HG_CLEOLN          HERCVID           ---
+HG_CLS             HERCVID           ---
+HG_COLOR           HERCVID           ---
+HG_CRLF            HERCVID           ---
+HG_GETCOLOR        HERCVID           ---
+HG_LOCATE          HERCVID           ---
+HG_MODE            HERCVID           ---
+HG_STROUT          HERCVID           ---
+HG_WHERE           HERCVID           ---
+MA_ADD32           MATH32            ---
+MA_DIV32           MATH32            ---
+MA_MUL32           MATH32            ---
+MA_SUB32           MATH32            ---
+MD_DELAY           MD_DELAY          ---
+MD_DONE            MD_DELAY          ---
+MD_GETTIMER        MD_DELAY          ---
+MD_INIT            MD_DELAY          ---
+MD_SETTIMER        MD_DELAY          ---
+MD_TICK            MD_TICK           ---
+ME_BINFO           ME_BLOAD          ---
+ME_BLOAD           ME_BLOAD          ---
+ME_BSAVE           ME_BSAVE          ---
+ME_HIGHOFS         MEMORY            ---
+ME_LOWOFS          MEMORY            ---
+ME_MOVE            ME_MOVE           MEMORY
+MI_BOOT            MI_BOOT           ---
+MI_GETSCREEN       MI_GETSC          ---
+MI_PARSE           MI_PARSE          ---
+MI_RANDOM          MI_RANDO          ---
+MI_RANDOMIZE       MI_RANDO          ---
+MI_SCANENV         MI_SCANE          ---
+MK_SETCAPS         MK_SETCA          ---
+MK_SETNUM          MK_SETNU          ---
+MO_GLOCATE         MO_GLOCA          ---
+MO_GWHERE          MO_GWHER          ---
+MO_HIDECURSOR      MO_HIDEC          ---
+MO_INIT            MO_INIT           ---
+MO_LOCATE          MO_LOCAT          ---
+MO_RANGE           MO_RANGE          ---
+MO_SHOWCURSOR      MO_SHOWC          ---
+MO_WHERE           MO_WHERE          ---
+MU_SOUND           MU_SOUND          ---
+MV_CHROUT          MACHVID           ---
+MV_CLEOLN          MACHVID           ---
+MV_CLS             MACHVID           ---
+MV_COLOR           MACHVID           ---
+MV_CRLF            MACHVID           ---
+MV_DELCHR          MACHVID           ---
+MV_DELLINE         MACHVID           ---
+MV_FIXCOLOR        MACHVID           ---
+MV_FRAME           MACHVID           ---
+MV_GETCOLOR        MACHVID           ---
+MV_GETMODE         MV_GETMO          ---
+MV_HIDECURSOR      MV_CURSO          ---
+MV_INIT            MACHVID           ---
+MV_INSCHR          MACHVID           ---
+MV_INSLINE         MACHVID           ---
+MV_LOCATE          MACHVID           ---
+MV_MODE            MACHVID           ---
+MV_POPUP           MV_POPUP          MACHVID, S0_DUPE,
+                                     S0_LEFT, S0_LENGTH
+MV_SAVESIZE        MACHVID           ---
+MV_SCRREST         MACHVID           ---
+MV_SCRSAVE         MACHVID           ---
+MV_SHOWCURSOR      MV_CURSO          ---
+MV_STROUT          MACHVID           ---
+MV_WHERE           MACHVID           ---
+S0_COMPARE         S0_COMPA          S0_LENGT
+S0_DUPE            S0_DUPE           ---
+S0_FIND            S0_FIND           S0_LENGT
+S0_LEFT            S0_LEFT           ---
+S0_LENGTH          S0_LENGT          ---
+S0_LOCASE          S0_LOCAS          ---
+S0_LOCASES         S0_LOCSS          ---
+S0_MID             S0_MID            S0_LENGT
+S0_RIGHT           S0_RIGHT          S0_LENGT
+S0_TRIM            S0_TRIM           S0_LENGT
+S0_UPCASE          S0_UPCAS          ---
+S0_UPCASES         S0_UPCSS          ---
+TC_CHKSUM          TC_CHECK          ---
+TC_CRC             TC_CRC            ---
+TD_GETDATE         TD_GETDT          ---
+TD_GETTIME         TD_GETTI          ---

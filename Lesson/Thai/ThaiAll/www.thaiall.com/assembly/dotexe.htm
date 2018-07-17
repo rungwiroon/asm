@@ -1,0 +1,157 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/dotexe.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>โปรแกรมสกุล exe</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="exe,execute,assembly,computer,organization,programming,language,principles">
+<meta name="description" content="โปรแกรมสกุล exe">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+โปรแกรมสกุล exe</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2548-02-21 ()
+<br> 
+
+<table width=90% border=2 cellspacing=2 bordercolor=gray align=center><tr><td bgcolor=#ddffff>
+<b>x1.asm</b> [แนวการเขียน .com]
+<dd>โปรแกรมแสดงอักษร aaa แล้วหยุดรอรับค่าจากแป้นพิมพ์ 1 ตัวอักษร และพิมพ์ aaa ใหม่ โปรแกรมจะเลิกทำงานต่อเมื่อกดปุ่ม Ctrl-C ผลการแปล x1.asm จะได้ x1.exe ขนาด 536 Byte 
+<dd>warnning 2 บรรทัดนี้ เกิดเพราะโปรแกรมถูกแปลเป็น exe แต่หลักการของโปรแกรมนี้มีการทำงานแบบ .com ไม่จำเป็นต้องใช้ stack segment ซึ่งโปรแกรม link จะเตือนเช่นนี้เสมอเมื่อโปรแกรมไม่มี stack segment
+<dd><b>After compiling by MASM6.11 :</b>
+<dd>LINK : warning L4021: no stack segment
+<dd>LINK : warning L4038: program has no starting address
+<br>ในการประมวลผลจะวน loop ไม่รู้จบให้กดปุ่ม CTRL-C เพื่อเลิกการทำงาน
+</td></tr><tr><td>
+<pre><font face="courier new"><ul>
+        title  x1.asm
+cseg    segment
+        assume cs:cseg,ds:cseg
+        push    cs
+        pop     ds
+        jmp     start
+msg1    db      'aaa',0ah,0dh,'$'
+start:  mov     ah,09h
+        lea     dx,msg1
+        int     21h
+        mov     ah,01h
+        int     21h
+        jmp     start
+cseg    ends
+        end
+</ul></font></pre></td></tr></table>
+<br>
+
+<table width=90% border=2 cellspacing=2 bordercolor=gray align=center><tr><td bgcolor=#ddffff>
+<b>x2.asm</b> [แนวการเขียน .com]
+<dd>นำโปรแกรม x มาปรับ แล้วให้หยุดรับอักษรเพียง 2 ครั้ง จึงเลิกทำงานด้วย interrupt 20H จะได้ x2.exe ขนาด 548 Byte 
+<br>[โปรแกรมนี้ error เมื่อจบการทำงานเพราะ int 20h และเกิด error ใน Win98 ไม่พบ error ใน WinXP ต้องใช้ exe2bin แปลงเป็น .com จึงจะไม่มีปัญหา]
+</td></tr><tr><td>
+<pre><font face="courier new"><ul>
+cseg    segment
+        assume cs:cseg,ds:cseg
+        push    cs
+        pop     ds
+        jmp     start
+msg1    db      'aaa',0ah,0dh,'$'
+start:  mov     ah,09h
+        lea     dx,msg1
+        int     21h
+        mov     ah,01h
+        int     21h
+        mov     ah,09h
+        lea     dx,msg1
+        int     21h
+        mov     ah,01h
+        int     21h
+        int     20h
+cseg    ends
+        end
+</ul></font></pre></td></tr></table>
+<br>
+
+<table width=90% border=2 cellspacing=2 bordercolor=gray align=center><tr><td bgcolor=#ddffff>
+<b>x3.asm</b> :: การสั่งประมวลผลเช่น c:\x3.exe test.doc [แนวการเขียน .com]
+<dd>โปรแกรมเปลี่ยน attribute ของแฟ้มเป็น R อย่างเดียว สามารถตรวจสอบแฟ้มด้วยการพิมพ์ attrib หากต้องการลบแฟ้มต้องพิมพ์ attrib -r test.doc จึงจะลบแฟ้มนี้ได้ จะได้ x3.exe ขนาด 796 Byte 
+<br>[โปรแกรมนี้ error เมื่อจบการทำงานเพราะ int 20h และเกิด error ใน Win98 ไม่พบ error ใน WinXP ต้องใช้ exe2bin แปลงเป็น .com จึงจะไม่มีปัญหา]
+</td></tr><tr><td>
+<pre><font face="courier new"><ul>
+        .model small
+        .code
+        org     100h
+protect proc    near
+        mov     dx,82h	; point DS:DX to filename
+        mov     di,82h	; start looking in PSP
+        mov     al,13	; Look for carriege return
+        mov     cx,12	; Scan up to 12 characters
+        repne   scasb	; Find end of input
+        mov     byte ptr [di - 1],0		; Make string ASCII
+        mov     al,1	; Function code
+        mov     cx,1	; This is to protect
+       ;mov     cx,0	; This is to Unprotect
+        mov     ah,43h	; Use service 43H
+        int     21h		
+        mov     ah,01h
+        int     21h		; Ctrl-C to exit
+        int     20h
+protect endp
+        end     protect
+</ul></font></pre></td></tr></table>
+
+<table width=90% border=2 cellspacing=2 bordercolor=gray align=center><tr><td bgcolor=#ddffff>
+<b>x4.asm</b> 
+<dd>โปรแกรมพิมพ์ a และไม่ error เมื่อจบการทำงาน เป็นการเขียนโปแรกรมแบบ .exe เพราะถ้าเขียนแบบ .com โปรแกรมจะ error เหมือน 3 โปรแกรมด้านบน 
+<br>[โปรแกรมนี้ไม่ error เมื่อเป็น .exe]
+</td></tr><tr><td>
+<pre><font face="courier new"><ul>
+        .model  small
+        .data
+        x1      db  "abc",0ah,0dh,'$'
+        .code
+pmain   proc    far
+        push    ds      ; 1 of 5 line required for end .exe
+        mov     ax,0    ; 2 clear ax by xor  ax,ax
+        push    ax      ; 3 send ax to stack
+        mov     ax,@data
+        mov     ds,ax
+;
+        mov     ah,09h
+        lea     dx,x1
+        int     21h
+        ret             ; Can not use int 20h
+pmain   endp
+        .stack  200h    ; not required
+        end     pmain
+</ul></font></pre></td></tr></table>
+
+
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_dotexe"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/dotexe.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+</html>

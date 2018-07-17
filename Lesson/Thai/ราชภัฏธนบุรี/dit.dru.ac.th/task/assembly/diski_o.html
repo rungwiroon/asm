@@ -1,0 +1,1020 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/diski_o.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:00 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>DISK I/</title>
+</head>
+
+<body background="bluebg.gif" bgcolor="#FFFFFF">
+
+<blockquote>
+    <blockquote>
+        <div align="center"><center><table border="0" width="80%">
+            <tr>
+                <td><p align="center"><font color="#FF0000"
+                size="7"><strong><u>บทเรียน Disk I/O.</u></strong></font></p>
+                <p align="center"><font color="#FF0080" size="7"><strong><u><img
+                src="summer2.gif" width="100" height="66"></u></strong></font></p>
+                <p align="center"><font color="#FF0080" size="7"><strong><u><img
+                src="link1.gif" width="100" height="17"><img
+                src="link1.gif" width="100" height="17"></u></strong></font></p>
+                </td>
+                <td><p align="center"><img src="magiccp.gif"
+                width="195" height="225"></p>
+                </td>
+            </tr>
+        </table>
+        </center></div>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#8000FF" size="4"><strong><u>ANATOMY
+            OF A DISKETTE</u></strong></font><font size="4"><strong>
+            </strong></font><font color="#8000FF" size="4"><strong>หมายถึง
+            รายละเอียดเกี่ยวกับ
+            DISK</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#800080" size="4"><strong>1.JACKET</strong></font></p>
+            </blockquote>
+            <blockquote>
+                <p><font color="#800080" size="4"><strong>2.INNER
+                SHEET</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font color="#0080FF" size="4"><strong><u>DISK
+            ACCESS MECHANISMS</u></strong><strong>
+            หมายถึง กระบวนการ
+            หรือกลไกในการเข้าถึง
+            DISK</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>1 DISK = 40 TRACK</strong></font></p>
+            </blockquote>
+            <blockquote>
+                <p><font size="4"><strong>1 TRACK = 9 SECTOR
+                หรือ 8 SECTOR</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>ในเครื่อง
+            PC ใช้ DOS ในการจัดการ
+            DISK ใช้ INT 21</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>ในเครื่อง
+            MACINTOS CPU 60008 ใช้ SYSTEM SEVEN
+            ในการจัดการ DISK
+            ถ้าจะให้ใช้กับ PC.
+            ต้องผ่านการ TRANSLATOR</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0080" size="4"><strong><u>DISK I/O
+            UNDER DOS</u></strong></font><font size="4"><strong>
+            หมายถึง DISK ในการ INPUT/OUTPUT
+            ภายใต้ DOS ทำอย่างไรสิ่งที่ควรรู้</strong></font></td>
+        </tr>
+        <tr>
+            <td><font color="#008080" size="4"><strong>1. FCB =
+            FILE CONTROL BLOCK หมายถึง
+            การจัดการควบคุม FILE
+            เป็น BLOCK เป็นระบบเก่าที่ใช้กันอยู่ในปัจจุบัน
+            FCBเป็นการจัดการ FILE
+            ที่แน่นอน
+            เพราะเป็นการจักการระบบเก่า
+            หรือ FILE HANDLE FCB มี RANGE
+            ยาวทั้งหมด 37 BYTE
+            แต่ละ BYTEจะมีหน้าที่ของแต่ละ
+            BYTE</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td colspan="9"><font size="4"><strong>ดูรายละเอียดชีทหน้า
+            DISK I/O UNDER DOS คู่กับ รูป 11-2
+            ของชีทอีกชุดหนึ่ง</strong></font></td>
+        </tr>
+        <tr>
+            <td><p align="left"><font size="4"><strong>BYTE
+            ที่(HEX)</strong></font></p>
+            </td>
+            <td><font size="4"><strong>ความยาวของฟิวด์</strong></font></td>
+            <td><p align="center"><font size="4"><strong>BYTE
+            ที่</strong></font><font size="4"
+            face="CordiaUPC"><strong> </strong></font><font
+            size="4"><strong>(DEC)</strong></font></p>
+            </td>
+            <td><p align="center"><font size="4"><strong>OFFSET (HEX)</strong></font></p>
+            </td>
+            <td><p align="left"><font size="4"><strong>รายละเอียดฟิลด์</strong></font></p>
+            </td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>00H</strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+            <td><font size="4"><strong>0</strong></font></td>
+            <td><font size="4"><strong>5C </strong></font></td>
+            <td><font size="4"><strong>บอกเลขที่
+            DRIVE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>01H</strong></font></td>
+            <td><font size="4"><strong>8</strong></font></td>
+            <td><font size="4"><strong>1-8</strong></font></td>
+            <td><font size="4"><strong>5D-64 </strong></font></td>
+            <td><font size="4"><strong>บอกชื่อ FILE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>09H</strong></font></td>
+            <td><font size="4"><strong>3</strong></font></td>
+            <td><font size="4"><strong>9-11</strong></font></td>
+            <td><font size="4"><strong>65-67</strong></font></td>
+            <td><font size="4"><strong>บอกนามสกุล
+            FILE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>0CH</strong></font></td>
+            <td><font size="4"><strong>2 </strong></font></td>
+            <td><font size="4"><strong>12-13</strong></font></td>
+            <td><font size="4"><strong>68-69</strong></font></td>
+            <td><font size="4"><strong>BLOCK
+            ที่ใช้ในปัจจุบันอยู่ตำแหน่งไหน</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>0EH </strong></font></td>
+            <td><font size="4"><strong>2</strong></font></td>
+            <td><font size="4"><strong>14-15 </strong></font></td>
+            <td><font size="4"><strong>6A-6B</strong></font></td>
+            <td><font size="4"><strong>ขนาดของ
+            RECORD</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>10H</strong></font></td>
+            <td><font size="4"><strong>4</strong></font></td>
+            <td><font size="4"><strong>16-17 </strong></font></td>
+            <td><font size="4"><strong>6C-6D</strong></font></td>
+            <td><font size="4"><strong>ขนาดของ FILE
+            (LOW)</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>18-19 </strong></font></td>
+            <td><font size="4"><strong>6E-6F</strong></font></td>
+            <td><font size="4"><strong>ขนาดของ FILE
+            (HIGH)</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>14H</strong></font></td>
+            <td><font size="4"><strong>2 </strong></font></td>
+            <td><font size="4"><strong>20-21</strong></font></td>
+            <td><font size="4"><strong>70-71</strong></font></td>
+            <td><font size="4"><strong>วันที่ทำการบันทึก
+            FILE</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>16H</strong></font></td>
+            <td><font size="4"><strong>10</strong></font></td>
+            <td><font size="4"><strong>22-31</strong></font></td>
+            <td><font size="4"><strong>72-7B </strong></font></td>
+            <td><font size="4"><strong>ให้DOS ใช้ (SYSTEM
+            USE)</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>20H</strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+            <td><font size="4"><strong>32</strong></font></td>
+            <td><font size="4"><strong>7C</strong></font></td>
+            <td><font size="4"><strong>RECORD
+            ที่ใช้ปัจจุบัน</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>21H</strong></font></td>
+            <td><font size="4"><strong>4</strong></font></td>
+            <td><font size="4"><strong>33-34</strong></font></td>
+            <td><font size="4"><strong>7D-7E</strong></font></td>
+            <td><font size="4"><strong>เลขที่ RECORD
+            แบบ RANDOM(LOW)</strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <p>&nbsp;</p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong>2. DTA = DATA TRANSFER
+            AREA หมายถึง
+            เนื้อที่ของข้อความที่ควบคุมได้
+            หรือตำแหน่งของ MEMORY</strong></font><p><font
+            size="4"><strong>ที่เก็บข้อมูลเข้าหรืออ่านข้อมูลออก
+            คือ เป็นพื้นที่ MEMORY
+            ที่ทำหน้าที่ถ่ายเทข้อมูลเข้าออก
+            โดย 128 BYTE = 1 BLOCK</strong></font></p>
+            </td>
+        </tr>
+    </table>
+    <p align="left">&nbsp;</p>
+    <p align="left"><font size="4"><strong><img src="cmri01.jpg"
+    width="100" height="39"></strong></font></p>
+    <p align="left"><font size="4"><strong><u>DOS FILE STRUCTURE</u></strong><strong>
+    คือ จาก FILE แยกเป็น BLOCK
+    และจาก BLOCK แยกเป็น RECORD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p align="left"><font color="#FF0080" size="4"><strong><u>DISK-ACCESS
+    METHODS</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0080FF" size="4"><strong>DISK-ACCESS METHODS
+    คือ
+    หลักการเขียนโปรแกรมในการเข้าถึง
+    DISK</strong></font></p>
+    <p><font color="#FF0080" size="4"><strong>1. SEQUENTAL </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>1.
+        เปิดหรือสร้างไฟล์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>2. CLEAR
+        ค่าRECORD-SIZE FIELD
+        เป็นค่าที่ต้องการ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>3. CLEAR
+        ค่า CURRENT-BLOCK และ CURRENT-RECORD FIELD
+        เป็นศูนย์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>4.
+        ไปทำการใน FUNCTION
+        อ่านหรือบันทึก แบบ
+        SEQUENTAL </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>5. ทำ
+        ข้อ 4 จนกระทั่ง
+        จัดการ FILE สมบูรณ์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#408080" size="4"><strong>6.
+        ปิดไฟล์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>2. RANDOM </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>1.
+        เปิดหรือสร้างไฟล์</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>2. CLEAR
+        ค่า RECORD-SIZE FIELD
+        เป็นค่าที่ต้องการ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>3.
+        กำหนด RELATIVE-RECORD FIELD
+        เพื่อชี้ RECORD ที่ต้องการ
+        </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>4.
+        ไปทำการใน FUNCTION
+        อ่านหรือบันทึก แบบ
+        RANDOM </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>5. ทำ
+        ข้อ 3 และ4 จนกระทั่ง
+        จัดการ FILE สมบูรณ์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>6.
+        ปิดไฟล์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>3. RANDOM BLOCK </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>1.เปิดหรือสร้างไฟล์
+        </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>2. CLEAR
+        ค่า RECORD-SIZE FIELD
+        เป็นค่าที่ต้องการ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>3.
+        กำหนด RELATIVE-RECORD FIELD
+        เพื่อชี้ RECORDที่ต้องการ</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>4.
+        กำหนด CX=
+        จำนวนของเรคอร์ดที่ต้องการ
+        </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>5.
+        ไปทำการใน FUNCTION
+        อ่านหรือบันทึก แบบ
+        RANDOM BLOCK</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>6. ทำ
+        ข้อ 3,4 และ5 จนกระทั่ง
+        จัดการ FILE สมบูรณ์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>7.
+        ปิดไฟล์ </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>การประยุกต์ใช้งาน</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8080FF" size="4"><strong>ควรดู
+    UNDOCUMENT คือ
+    เอกสารที่ปิกบังไว้
+    เช่น โปรแกรมภายใน WINDOWS
+    ถ้าทำเองจะช้าแต่ถ้า
+    MICROSOFT ทำจะเร็วเพราะเข้าเก็บUNDOCUMENT
+    คือ TRIC ของ OS ไว้ </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8080FF" size="4"><strong>-
+    หนังสือที่ควรศึกษา
+    คือ UNDOCUMENT MICROSOFT
+    ร้านดอกหญ้าก็มี</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8080FF" size="4"><strong>- การทำ .COMไม่ต้อง
+    ORG 100 ก็ได้เพียงแต่อยู่
+    SEGMENT เดียวกัน</strong></font></p>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    AND</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>เป็นคำสั่งคำนวนทางตรรกศาสตร์
+    ระหว่าง OPERAND 2 ตัว โดย 1AND 1 =
+    1</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>คำสั่ง ADC</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>รูปแบบ DESTINATION=DESTINATION+SOURCE+CARRY</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    AND</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>รูปแบบ </strong></font></p>
+    <blockquote>
+        <p><font size="4"><strong>1. REGISTER กับ REGISTER</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>2. CONSTANT กับ REGISTER</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>3. REGISTER กับ MENORY</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    XOR</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>คุณสมบัติ
+    คือ ต่างกันเป็น 1
+    ระหว่าง 2 OPERAND</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>0 XOR 0=0</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>0 XOR 1=1</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>1 XOR 0=1</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>1 XOR 1=0</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    MOV</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>รูปแบบ </strong></font></p>
+    <blockquote>
+        <p><font size="4"><strong>1. MOV REG,REG</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>2. MOV REG,MEN</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>3. MOV MEN,REG</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>4. MOV REG,IMM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>5. MOV MEN,IMM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>6. MOV SEG_REG,REG</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>7. MOV REG, SEG_REG</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>คำสั่ง
+    SUB</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>รูปแบบ </strong></font></p>
+    <blockquote>
+        <p><font size="4"><strong>SUB DEST,SOURCE</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>DEST = ตัวตั้ง</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>SOURCE = ตัวลบ</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>ผลลัพธ์เก็บไว้ที่
+        DEST</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>คำสั่ง
+    MUL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>รายละเอียด
+    ดูชีทและหนังสือ</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>หมายเหตุ -ดูเรื่อง
+    FLAG</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>การสร้าง
+    SCRIPT FILE</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>1.สร้างโปรแกรม
+        ASSEMBLY</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>2.กำหนดค่า
+        รีจีเตอร์ CX
+        ด้วยคำสั่ง RCX
+        โดยบอกเนื้อที่โปรแกรม</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>3.ตั้งชื่อโปรแกรมเป็น
+        .COM
+        และบันทึกข้อมูลด้วยคำสั่ง
+        W</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>4.ออกจาก DEBUG
+        ด้วยคำสั่ง Q</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;Q (เขียนด้วย
+        EDITOR ที่ไม่ติด CONTROL CODE)</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A100</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>MOV CX,0305</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>INT 16H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>INT 20H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>เว้น 1
+        บรรทัด</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>RCX</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>7</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>N F.COM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>W</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>Q</strong></font></p>
+        <hr>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>SAVE
+    เป็นไฟล์ชื่อ F.DES
+    แล้วใช้ DEBUG แปลงเป็น .COM</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;DEBUG &lt; F.DES</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-A100</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0100 MOV CX,0305</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0103 INT 16H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0105 INT 20H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0107</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-RCX</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>:7</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-N F.COM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-W</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-Q</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;Q</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<hr>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A100</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>MOV AH,1</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>MOV CX,10C</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4" face="Times New Roman"><strong>i</strong></font><font
+        size="4"><strong>NT 10H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>INT 20H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>เว้น 1
+        บรรทัด</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>RCX</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>9</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>N BCUR.COM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>W</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>Q</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<hr>
+
+<blockquote>
+    <p><font size="4"><strong>SAVE
+    เป็นไฟล์ชื่อ BCUR.DES
+    แล้วใช้ DEBUG แปลงเป็น .COM</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;DEBUG &lt; BCUR.DES</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-A100</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0100 MOV AH,1</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0103 MOV CX,10C</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0105 INT 10H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0107 INT 20H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>XXXX:0109</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>RCX</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-9</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-N BCUR.COM</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-W</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>-Q</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;BCUR (ENTER)</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong><u>การนับไบต์</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>A&gt;DEBUG F.COM -U100 -D </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<hr>
+
+<p><a href="Menu.html"><img src="Back.gif" border="0" width="83"
+height="28"></a></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/diski_o.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:05 GMT -->
+</html>

@@ -1,0 +1,2629 @@
+CauseWay for Assembly Language pre-release documentation
+
+---
+
+Copyright 1992-1993 by Michael Devore and John Wildsmith.  All rights
+reserved.
+
+All company and/or product names are trademarks and/or registered
+trademarks of their respective holders.
+
+Last document revision 11/13/93, Michael Devore.  Information contained
+within this document is subject to change without notice.
+
+
+
+CAUSEWAY LICENSE AGREEMENT
+==========================
+
+Michael Devore and John Wildsmith, the CauseWay authors, authorize you
+to make archival copies of CauseWay only for the purpose of backing up
+your software and thus protecting your investment.  You are bound by
+this agreement to ensure that no unauthorized copies of CauseWay are
+distributed, installed, or used in any manner.  Treat your copy of
+CauseWay much like a book; you can use it anywhere but only in one
+place at a time.
+
+CauseWay carries a copyright (Copyright 1992-1993) by Michael Devore
+and John Wildsmith.  Use of code or proprietary algorithms within
+CauseWay, or disassembly of CauseWay code for purposes of using its
+code or determining the nature of its algorithms for use in competition
+with CauseWay, is an infringement of CauseWay's copyright.  All
+copyright infringements will be prosecuted to the fullest extent of the
+law.
+
+
+
+CAUSEWAY WARRANTY
+=================
+
+Michael Devore and John Wildsmith warrant the CauseWay material to be
+free from physical defects in material and workmanship for a period of
+ninety (90) days from date of purchase.  If a defect occurs during this
+period, you may return the faulty material and it will be replaced free
+of charge.
+
+Michael Devore and John Wildsmith grant no other warranties, express or
+implied, regarding CauseWay's fitness for any application, use, or
+purpose.  Under no conditions will Michael Devore or John Wildsmith be
+held liabl for any special or consequential damages, either in contract
+or tort, arising out of use of, or inability to use, CauseWay.
+
+This license agreement and warranty is governed by the laws of the
+State of Illinois.
+
+
+
+RETURN POLICY
+=============
+
+Should you experience a problem using CauseWay, the developers want to
+know.  If they cannot resolved the problem to your satisfaction, they
+do not expect you to spend money for a product you cannot use.  If you
+are dissatisfied with the operation of CauseWay for any reason and have
+not redistributed applications which use CauseWay, you may return the
+CauseWay package for a full refund of purchase price.  The developers
+would rather lose a sale than have a dissatisfied customer.
+
+
+
+     ==========
+      OVERVIEW
+     ==========
+
+
+
+INTRODUCTION
+============
+
+What Is CauseWay?
+
+CauseWay is a 386 DOS extender package for use with assembly language
+programs.  It consists of a DOS extender and a protected mode linker,
+bound together in one executable file (WL32.EXE), as well as several
+support utilities.
+
+CauseWay provides a simple method of allowing 16-bit DOS environments
+to support very large memory models for applications on PC compatibles
+with an 80386SX processor or above.  To do this, the DOS extender runs
+CauseWay processed applications in protected mode, rather than the real
+mode normally used in the DOS environment.  Support for both 16-bit and
+32-bit protected mode applications operating under a DOS environment is
+provided.  CauseWay makes full use of 386-level chip capabilities
+including demand paging of code and data, variable-sized segments up to
+4G in length, mixed 16- and 32-bit segments within the same program, as
+well as supporting the flat, nonsegmented, or NEAR addressing model.
+
+Applications created using CauseWay are compatible with the VCPI & DPMI
+standards, as well as with systems with no other protected mode
+programs running.  This means that CauseWay applications will work with
+DesqView, Windows 3.0 and above in all three modes, as well as DOS
+windows within OS/2 2.0 and above.  CauseWay allocates extended memory
+from DPMI, VCPI, XMS, and INT 15h.  Any available conventional memory
+is also allocated.  The created application can then allocate memory
+using CauseWay's services without the need to detect or use any other
+memory type.
+
+The primary concern during development of CauseWay was to ensure
+minimum effort would be needed by programmers to adapt their code to
+work with the CauseWay DOS extender.  As a result, many real mode
+programs only need to be re-linked with WL32 to produce a 16-bit
+protected mode version. Full advantage of CauseWay's capabilities can
+only be realized by producing 32-bit programs, but CauseWay's ability
+to mix 16 and 32-bit code should ensure that this transition is as
+painless as possible.
+
+
+
+MINIMUM SYSTEM REQUIREMENTS
+===========================
+
+CauseWay requires a 386SX based computer or better and 250K free
+conventional memory.  The required operating environment is
+MS-DOS or PC-DOS 3.1 or higher, Windows 3.0 or higher, or OS/2
+2.0 within a DOS window.
+
+
+
+ENVIRONMENT VARIABLES
+=====================
+
+CauseWay can make use of four environment variables.
+
+The WL32 protected mode linker will use two environment variables when
+linking: OBJ and LIB.
+
+OBJ Environment Variable
+------------------------
+
+The OBJ environment variable contains the name of one or more
+directories that are used if WL32 does not find an object module in the
+current directory.  The OBJ environment variable is identical to the
+LIB environment variable except WL32 searches for object modules with
+the OBJ environment variable instead of searching library files.
+
+For example, assume your current directory is C:\ASMWORK.  The
+following command links DISPLAY.OBJ and DRIVER.OBJ with SA.LIB:
+
+WL32 DISPLAY DRIVER,,,SA
+
+Without an OBJ environment variable, if DISPLAY.OBJ or DRIVER.OBJ are
+not in the C:\ASMWORK directory, WL32 issues a DOS error 2 (file not
+found) error.  To specify that object modules may also be found in the
+\ASMWORK\SUPPORT directory on the current drive or the \HARDWARE directory
+on the F drive, set the OBJ environment variable as follows:
+
+SET OBJ=\ASMWORK\SUPPORT;F:\HARDWARE
+
+If DISPLAY.OBJ or DRIVER.OBJ are not found in the C:\ASMWORK directory,
+WL32 will also search the current drive's \ASMWORK\SUPPORT directory
+and the F drive's \HARDWARE directory for the object modules.
+
+
+LIB Environment Variable
+------------------------
+
+The LIB environment variable contains the name of one or more
+directories that are used if WL32 does not find a library file in the
+current directory.  The LIB environment variable is identical to the
+OBJ environment variable except WL32 searches for library files with
+the LIB environment variable instead of searching library files.
+
+To use the previous OBJ environment variable example, assume your
+current directory is C:\ASMWORK.  The following command links
+DISPLAY.OBJ and DRIVER.OBJ with SA.LIB:
+
+WL32 DISPLAY DRIVER,,,SA
+
+Without a LIB environment variable, if SA.LIB is not in the C:\ASMWORK
+directory, WL32 issues a DOS error 2 (file not found) error.  To
+specify that library files may also be found in the \SA or \LIB
+directories, set the LIB environment variable as follows:
+
+SET LIB=\SA;\LIB
+
+If SA.LIB is not found in the C:\ASMWORK directory, WL32 will also
+search the current drive's \SA and \LIB directories for the object
+modules.
+
+
+TEMP and TMP Environment Variables
+----------------------------------
+
+The DOS extender can make use of the TEMP or TMP environment variable
+when a CauseWay application is run.  This environment variable
+determines the directory, and optionally the drive, where a swap file
+is built by the virtual memory manager (VMM). The path indicated by
+TEMP will be used if both are present.  For example:
+
+SET TMP=C:\SWAP
+
+directs the DOS extender to create its swap file, if any, in the
+C:\SWAP directory.  Since WL32 itself contains the CauseWay DOS
+extender, you may use the TEMP or TMP environment variable to specify a
+swapfile directory when linking a program.
+
+If neither of these environment variables are present then the current
+drive is used. If free drive space is less than physical memory
+available at startup then the VMM will be automatically disabled.
+
+
+
+OPERATING CAUSEWAY
+==================
+
+Use of CauseWay follows the standard edit-compile/assemble-link
+programming cycle.  CauseWay applications are created by first
+assembling or compiling the CauseWay-compliant source code to produce
+object modules.  These object modules, and optionally support
+libraries, are then linked using the WL32 protected mode linker.  The
+linker automatically adds the DOS extender to the executable file
+created.
+
+When your application is executed, CauseWay is loaded first by DOS.
+Once CauseWay has established the protected mode environment, your
+application is retrieved from the same .EXE file and executed.
+
+
+
+     ==============
+      DOS EXTENDER
+     ==============
+
+
+WRITING CAUSEWAY-COMPLIANT PROGRAMS
+===================================
+
+Switching from programming in real mode to protected mode using
+CauseWay should be a simple process.  Most aspects of the DOS
+enviroment are retained and for simple programs little or no alteration
+to source code will be required.  With the exception of segment
+arithmetic and code segment variables you won't need to change the way
+you program unless you need to allocate memory in >1Meg chunks or
+install your own hardware interrupt handlers.
+
+Because the segment registers in protected mode are actually an index
+into a table which holds the real segment information, protected mode
+segment register values cannot be used directly in math operations.
+There are API services to obtain the real address referenced by a
+segment register should this information be needed.
+
+The most common alteration needed to get an existing application
+working under CauseWay is removal of the code to shrink the
+application's memory block. Because this needs segment arithmetic to
+work in real mode it cannot be used in protected mode. Fortunately you
+only need to remove the code, not rewrite it because CauseWay allocates
+a block of memory that contains your application exactly and does not
+need shrinking.
+
+Segments in protected mode have several attributes which control their
+use. The most important aspect of this is whether the segment is code
+or data. Unlike real mode, a code segment can only be executed or read
+from and a data segment can be read only or read/write. This means that
+code segment variables will need special consideration before your
+application will work with CauseWay. You can either move all the
+variables into a data segment or use the API AliasSel service to
+allocate a data selector that referances the same memory region as the
+code segment and use the selector allocted to access your code segment
+variables instead of CS.
+
+CauseWay supports several programing models, the simplest being 16-bit
+multi segment programs much the same as you would produce for real
+mode. A 32-bit version of the multi segment model is also supported
+which offers more efficient code if you use the extended registers a
+lot or need very large segments. The final model supported is refered
+to as 'NEAR', also commonly known as the 'flat' model. In this model
+only a single segment is used to contain code, data and stack. Combined
+with the related API services this model removes the complication of
+segment registers almost completely with all relevant API dynamic
+memory manipulation being specified using 32-bit near pointers.
+
+It should be pointed out here that there are no instructions available
+to 32-bit applications that cannot also be used in a 16-bit
+application. The distinction between the two types of application
+relates to the default operation size of segments and the stack frame
+for interrupt handlers. In a 16-bit code segment use of the extended
+registers or dword variables requires a prefix byte to be added to the
+instruction code generated by the assembler, which both increases
+memory usage and slows the code down. It is still possible to form
+addresses >64k in 16-bit mode. Use of 16-bit registers or memory
+variables in a 32-bit segment has the same effect on code generation
+and speed.
+
+String instructions such as MOVSB and the LOOP instruction behave
+differently in 16 and 32-bit code segments. In a 16-bit code segment
+SI, DI and CX are the default registers used whereas the defaults in a
+32-bit code segment are ESI, EDI and ECX. These defaults can be changed
+for a single instruction using manual prefix byte generation. A "db
+67h" before a MOVSB will change the address size (SI,DI or ESI,EDI) and
+a "db 66h" before a LOOP will change the iteration size (CX or ECX).
+Manual use of these prefix bytes makes it possible to perform the same
+operations in both modes and this difference between 16 and 32-bit code
+segments is another common cause of problems.
+
+The CauseWay functions provided are based on the DPMI 1.0 specification
+and additionally offer enhancements not provided by DPMI. This means
+that %99 of the DPMI 1.0 functions are available to the CauseWay
+programmer in all systems providing access to lower level functions
+than the CauseWay API should they ever be needed.
+
+Hardware interrupts are always reflected to protected mode handlers even
+when signaled during real mode operations ensuring that your protected
+mode applications always retain control without resorting to patching
+real mode interrupt vectors yourself. The remaining interrupts will be
+serviced via the vector table appropriate to the mode but the real to
+protected mode Call Back services can be used to provide real mode code
+with access to protected mode code, effectively allowing any interrupt
+to be re-signaled in protected mode.
+
+With the exception of int's that require segment&|offset pointers as
+parameters, all interrupts can be issued as normal. The most common INT
+?? API's that require segment&|offset pointers are intercepted by
+CauseWay to provide normal access to these services.  Any other real
+mode int services that require segment&|offset pointers can still be
+acessed using CauseWay's simulate real mode interrupt/far call
+services.
+
+Unhandled exceptions will terminate the program with a register
+display dump to screen and a text file called CW.ERR.
+
+If you add your own hardware interrupt handlers, such as the timer tick
+at vector 08h, any memory touched by the handler, including its code,
+must reside in locked memory (a locked stack will be provided by
+CauseWay). This limitation is imposed by DOS not being re-entrant and
+the simple fact that hardware interrupts can occur at any time,
+including during DOS activity which would prevent CauseWay's virtual
+memory manager accessing its swap file.  Locked memory will never be
+moved to the swap file.
+
+
+CAUSEWAY SERVICES
+=================
+
+CauseWay provides an API for assembly language programmers as an
+extension of the DPMI API.  Programmers may include the file CW.INC in
+their program for easy access to this API through appropriately named
+functions.  Additional modules provide access to the CauseWay API for
+other languages.
+
+CauseWay also provides a large number of the DPMI 1.0 API services on
+systems without a true DPMI server. The function numbers supported are
+as follows:
+
+0000h-0001h, 0003h, 0006h-000Ch, 0100h-0102h, 0200h-0205h, 0300h-0301h,
+0303h-0304h, 0400h, 0500h-0503h, 0600h-0604h, 0702h-0703h, 0800h-0801h,
+0900h-0902h.
+
+CauseWay provides an API for asm programmers as an extension of the
+DPMI API. Additional modules provide access to the CauseWay API for
+other languages.
+
+Some of the API services require pointers to a "real mode register
+list". The format of this list is as follows:
+
+     dword  EDI
+     dword  ESI
+     dword  EBP
+     dword  Reserved
+     dword  EBX
+     dword  EDX
+     dword  ECX
+     dword  EAX
+     word   Flags
+     word   ES
+     word   DS
+     word   FS
+     word   GS
+     word   IP
+     word   CS
+     word   SP
+     word   SS
+
+The values will be passed to the target routine without any
+interpretation of its contents so there is no need to set the high
+words of the extended register entries unless the target routine
+requires them.
+
+Stack frames for 16 bit interrupts are the same as for real mode.
+
+Stack frames for 32-bit interrupts use dword entries, eg,
+
+     dword  EFlags
+     dword  CS, high word undefined.
+     dword  EIP
+
+The default CauseWay API is as follows:
+
+
+Info        Get system selectors/flags.
+
+Inputs:     AX= 0ff00h
+
+Outputs:    AX= Selector for real mode segment address of 00000h, 4G limit.
+            BX= Selector for current PSP segment. 100h limit.
+            [E]CX= Dos transfer buffer size. Always <64k.
+            DX= Dos transfer buffer real mode segment address.
+            ES:[E]SI= Dos transfer buffer address. ESI+ECX ALWAYS <64k.
+            EDI= System flags. Bits significant if set.
+                 0 - 32 bit code default.
+                 1 - Virtual memory manager functional.
+                 2 \ Mode, 0 - raw, 1 - VCPI, 2 - DPMI.
+                 3 /
+                 4 - DPMI available.
+                 5 - VCPI available.
+                 6 - No memory managers.
+                 7 - Descriptor table type. 0 - GDT, 1 - LDT.
+                15 - Debug engine present.
+
+Errors:     None
+
+Notes:      Bits 1-2 of DI indicate the interface type being used by
+            CauseWay.
+
+            Bits 4-5 indicate the interface types that are
+            available.
+
+            Bit 7 indicates the descriptor table being used to allocate
+            selectors to the application when on a raw/vcpi system. The
+            Dos transfer buffer is the area CauseWay uses to transfer
+            data between conventional and extended memory during DOS
+            interrupts.  This memory can be used as temporary work
+            space for your own access to real mode code as long as you
+            remember it may be over written the next time you issue an
+            INT in protected mode that requires segment&|offset pointers.
+
+
+IntXX       Simulate real mode interrupt.
+
+Inputs:     AX= 0ff01h
+            BL= Interupt number.
+            ES:[E]DI= Real mode register list.
+
+Outputs:    Register list updated.
+
+Errors:     None.
+
+Notes:      The real mode register list referenced by ES:[E]DI should
+            contain the register values you want passing to the real
+            mode interrupt handler.  The SS:SP & Flags entries are
+            filled in by CauseWay to ensure legal values are used and
+            the CS:IP entries are ignored. This function bypasses
+            protected mode interrupt handlers and provides access to
+            INT API's that require segment &| offset pointers.
+
+
+FarCallReal Simulate real mode far call.
+
+Inputs:     AX= 0ff02h
+            ES:[E]DI= Real mode register list.
+
+Outputs:    Register list updated.
+
+Errors:     None.
+
+Notes:      This function works much the same as IntXX but provides a
+            16 bit FAR stack frame and the CS:IP values are used to
+            pass control to the real mode code.
+
+
+GetCallBack Allocate real mode call back address.
+
+Inputs:     AX= 0303h
+            DS:[E]SI= Call address.
+            ES:[E]DI= Real mode register structure.
+
+Outputs:    Carry set on error, else,
+            CX:DX= Real mode address to trigger mode switch.
+
+Errors:     CallBack's are a limited resource. There will normaly only
+            be 16 available per virtual machine so they should be used
+            carefully and released as soon as they are no longer
+            required.
+
+Call-Back:  Interrupts disabled.
+            DS:[E]SI = Selector:Offset of real mode SS:SP.
+            ES:[E]DI = Selector:Offset of real mode call structure.
+            SS:[E]SP = Locked protected mode stack.
+            All other registers undefined
+
+            To return from Call-Back Procedure,
+            Execute an IRET to return
+            ES:[E]DI =  Selector:Offset of real mode call structure to
+                        restore.
+
+Notes:      Real mode CallBack's provide a means of switching from real
+            mode to protected mode. The address returned by this
+            function is a unique real mode address that when given
+            control in real mode will switch to protected mode and pass
+            control to the protected mode routine supplied at entry to
+            this function.  On entry to the protected mode code the
+            "Real mode register structure" will contain all the real
+            mode register values.
+
+
+RelCallBack Release a real mode call back entry.
+
+Inputs:     AX= 0304h
+            CX:DX= Real mode address returned by GetCallBack
+
+Outputs:    None.
+
+Notes:      This function should be used to release CallBack addresses
+            once they are no longer needed.
+
+
+GetVect     Get Protected mode interrupt handler address.
+
+Inputs:     AX= 0204h
+            BL= Interupt vector number.
+
+Outputs:    CX:[E]DX= selector:offset of handler.
+
+Errors:     None.
+
+
+SetVect     Set Protected mode interrupt handler address.
+
+Inputs:     AX= 0205h
+            BL= Interupt vector number.
+            CX:[E]DX= selector:offset of new handler.
+
+Outputs:    None.
+
+Errors:     None.
+
+
+GetRVect    Get real mode interrupt handler address.
+
+Inputs:     AX= 0200h
+            BL= Interupt vector number.
+
+Outputs:    CX:DX= selector:offset of handler.
+
+Errors:     None.
+
+
+SetRVect    Set real mode interrupt handler address.
+
+Inputs:     AX= 0201h
+            BL= Interupt vector number.
+            CX:DX= selector:offset of new handler.
+
+Outputs:    None.
+
+Errors:     None.
+
+
+GetEVect    Get Protected mode exception handler address.
+
+Inputs:     AX= 0202h
+            BL= Exception vector number.
+
+Outputs:    Carry set on error else,
+            CX:[E]DX= selector:offset of handler.
+
+Errors:     The number in BL must be in the range 0-1Fh.  Anything
+            outside this range will return carry set.
+
+
+SetEVect    Set Protected mode exception handler address.
+
+Inputs:     AX= 0203h
+            BL= Exception vector number.
+            CX:[E]DX= selector:offset of new handler.
+
+Outputs:    Carry set on error.
+
+Errors:     The number in BL must be in the range 0-1Fh. Anything
+            outside this range will return carry set.
+
+
+GetSel      Allocate a new selector.
+
+Inputs:     AX= 0ff03h
+
+Outputs:    Carry set on error else,
+            BX= Selector.
+
+Errors:     Approximatly 8192 selectors are initially available.  This
+            is quite a lot but it is obviously possible to run out.
+
+Notes:      A selector is allocated and initialised with a base of 0, a
+            limit of 0 and as read/write expand up data. Use SetSelDet
+            to make the selector useful.
+
+
+RelSel      Release a selector.
+
+Inputs:     AX= 0ff04h
+            BX= Selector.
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+Notes:      Use this function to release selectors allocated by GetSel
+            or AliasSel.
+
+
+CodeSel     Make a selector execute/read type.
+
+Inputs:     AX= 0ff05h
+            BX= Selector.
+            CL= Default operation size. (0=16 bit,1=32 bit)
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+Notes:      Allows a selector to be converted to a type suitable for
+            execution.
+
+
+AliasSel    Create a read/write data selector from source selector.
+
+Inputs:     AX= 0ff06h
+            BX= Source selector
+
+Outputs:    Carry set on error else,
+            AX= New data selector
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+Notes:      This function always creates a read/write data selector
+            regardless of the source selector's type. Can be used to
+            provide access to variables in a code segment.
+
+
+GetSelDet   Get selector linear base and limit.
+
+Inputs:     Carry set on error else,
+            AX= 0ff07h
+            BX= Selector
+
+Outputs:    Carry set on error else,
+            CX:DX= Linear base.
+            SI:DI= Byte granular limit.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+
+GetSelDet32 Get selector linear base and limit.
+
+Inputs:     AX= 0ff08h
+            BX= Selector
+
+Outputs:    Carry set on error else,
+            EDX= Linear base.
+            ECX= Byte granular limit.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+
+SetSelDet   Set selector linear base and limit.
+
+Inputs:     AX= 0ff09h
+            BX= Selector.
+            CX:DX= Linear base.
+            SI:DI= Byte granular limit.
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+
+SetSelDet32 Set selector linear base and limit.
+
+Inputs:     AX= 0ff0ah
+            BX= Selector.
+            EDX= Linear base.
+            ECX= Byte granular limit.
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX this function will
+            return with carry set.
+
+
+GetMem      Allocate a block of memory.
+
+Inputs:     AX= 0ff0bh
+            CX:DX= Size of block required in bytes. (-1:-1 to get
+                   maximum memory size)
+
+Outputs:    Carry set on error else,
+            BX= Selector to access the block with.
+            or if CX:DX was -1, CX:DX= size of largest block available.
+
+Errors:     The amount of memory available is limited by physical
+            memory present and free disk space of the drive being used
+            by the VMM.  If CauseWay is unable to find a large enough
+            block this function will return carry set.
+
+Notes:      This function allocates a block of extended (application)
+            memory, and also a selector with a suitable base & limit.
+
+
+GetMem32    Allocate a block of memory.
+
+Inputs:     AX= 0ff0ch
+            ECX= Size of block required in bytes. (-1 to get maximum
+                 memory size)
+
+Outputs:    Carry set on error else,
+            BX= Selector to access the block with.
+            or if ECX was -1, ECX= size of largest block available.
+
+Errors:     See GetMem
+
+Notes:      This function allocates a block of extended (application)
+            memory, and also a selector with a suitable base & limit.
+
+
+ResMem     Resize a previously allocated block of memory.
+
+Inputs:     AX= 0ff0dh
+            BX= Selector for block.
+            CX:DX= New size of block required in bytes.
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX or not enough memory
+            is available when increasing the block size then this
+            function will return carry set.
+
+Notes:      If the memory block can't be resized in its current
+            location, but a free block of memory of the new size
+            exists, the memory will be copied to a new block and the
+            old one released. This is transparent to the application as
+            long as only the selector origionaly allocated with GetMem
+            is being used to access the memory.
+
+
+ResMem32    Resize a previously allocated block of memory.
+
+Inputs:     AX= 0ff0eh
+            BX= Selector for block.
+            ECX= New size of block required in bytes.
+
+Outputs:    Carry set on error.
+
+Errors:     See ResMem
+
+Notes:      If the memory block can't be resized in its current
+            location, but a free block of memory of the new size
+            exists, the memory will be copied to a new block and the
+            old one released. This is transparent to the application as
+            long as only the selector originally allocated with GetMem
+            is being used to access the memory.
+
+
+RelMem      Release memory allocated by either GetMem or GetMem32.
+
+Inputs:     AX= 0ff0fh
+            BX= Selector for block to release.
+
+Outputs:    Carry set on error.
+
+Errors:     If an invalid selector is passed in BX or the memory was
+            not allocated via GetMem or GetMem32 this function will
+            return carry set.
+
+
+GetMemLinear    Allocate a block of memory without a selector.
+
+Inputs:     AX= 0ff10h
+            CX:DX= Size of block required in bytes.
+
+Outputs:    Carry set on error else,
+            SI:DI= Linear address of block allocated.
+
+Errors:     If not enough memory is available to satisfy the request
+            then this function will return carry set.
+
+Notes:      Addresses returned by this function may be >16M
+
+
+GetMemLinear32 Allocate a block of memory without a selector.
+
+Inputs:     AX= 0ff11h
+            ECX= Size of block required in bytes.
+
+Outputs:    Carry seet on error else,
+            ESI= Linear address of block allocated.
+
+Errors:     See GetMemLinear
+
+Notes:      Addresses returned by this function may be >16M
+
+
+ResMemLinear    Resize a previously allocated block of memory without a
+                selector.
+
+Inputs:     AX= 0ff12h
+            SI:DI= Linear address of block to resize.
+            CX:DX= Size of block required in bytes.
+
+Outputs:    Carry set on error else,
+            SI:DI= New linear address of block.
+
+Errors:     If not enough memory is available when extending the block
+            size this function will return carry set.
+
+Notes:      If the memory block cannot be expanded to the desired size,
+            and a free block of sufficient size exists, the existing
+            memory will be copied to the free block and released, the
+            new block then being alocated in place of the old.
+
+
+ResMemLinear32  Resize a previously allocated block of memory without a
+                selector.
+
+Inputs:     AX= 0ff13h
+            ESI= Linear address of block to resize.
+            ECX= Size of block required in bytes.
+
+Outputs:    Carry set on error else,
+            ESI= New linear address of block.
+
+Errors:     See ResMemLinear
+
+Notes:      If the memory block cannot be expanded to the desired size,
+            and a free block of sufficient size exists, the existing
+            memory will be copied to the free block and released, the
+            new block then being alocated in place of the old.
+
+
+RelMemLinear    Release previously allocated block of memory (linear
+                address).
+
+Inputs:     AX= 0ff14h
+            SI:DI= Linear address of block to release.
+
+Outputs:    Carry set on error.
+
+Errors:     If the address passed in SI:DI is not a valid memory block
+            this function will return carry set.
+
+
+RelMemLinear32  Release previously allocated block of memory (linear
+                address).
+
+Inputs:     AX= 0ff15h
+            ESI= Linear address of block to release.
+
+Outputs:    Carry set on error.
+
+Errors:     See RelMemLinear
+
+
+GetMemNear  Allocate an application relative block of memory.
+
+Inputs:     AX= 0ff16h
+            EBX= Size of block required in bytes.
+
+Outputs:    Carry set on error else,
+            ESI= Application relative linear address of block allocated.
+
+Errors:     If there is not enough memory available to satisfy the
+            request then this function will return carry set.
+
+Notes:      Addresses returned by this function are as an offset from
+            the start of the applications memory and is intended to be
+            used with the "NEAR" memory  model.
+
+
+ResMemNear  Resize a previously allocated application relative
+            block of memory.
+
+Inputs:     AX= 0ff17h
+            EBX= Size of block required in bytes.
+            ESI= application relative linear address of block to resize.
+
+Outputs:    Carry set on error else,
+            ESI= New application relative linear address of block.
+
+Errors:     If the address passed in ESI is not a valid memory block or
+            there is not enough memory available when expanding the
+            block this function will return carry set.
+
+Notes:      If the memory block cannot be expanded to the desired size,
+            and a free block of sufficient size exists, the existing
+            memory will be copied to the free block and released, the
+            new block then being allocated in place of the old.
+
+
+RelMemNear  Release previously allocated application relative block of
+            memory.
+
+Inputs:     AX= 0ff18h
+            ESI= Application relative linear address of block to release.
+
+Outputs:    Carry set on error.
+
+Errors:     If the address passed in ESI is not a valid memory block
+            this function will return carry set.
+
+
+Linear2Near Convert linear address to application relative address.
+
+Inputs:     AX= 0ff19h
+            ESI= Linear address to convert.
+
+Outputs:    ESI= Application relative linear address.
+
+Errors:     None
+
+
+Near2Linear Convert application relative address to linear address.
+
+Inputs:     AX= 0ff1ah
+            ESI= Application relative linear address.
+
+Outputs:    ESI= Linear address.
+
+Errors:     None
+
+
+LockMem     Lock a region of memory.
+
+Inputs:     AX= 0ff1bh
+            BX:CX= Starting linear address of memory to lock.
+            SI:DI= Size of region to lock in bytes.
+
+Outputs:    Carry set on error.
+
+Errors:     If any of the region specified is invalid or if not enough
+            physical memory is available to fill the region specified
+            then none of the memory will be locked and this function
+            will return carry set.
+
+Notes:      Memory that is locked cannot be swapped to disk by the VMM.
+            You should note that locking is applied to memory on 4k
+            boundaries, so areas of memory below and above the memory
+            being locked will also be locked if the specified region is
+            not 4K aligned.
+
+
+LockMem32   Lock a region of memory.
+
+Inputs:     AX= 0ff1ch
+            ESI= Starting linear address of memory to lock.
+            ECX= Size of region to lock in bytes.
+
+Outputs:    Carry set on error.
+
+Errors:     See LockMem.
+
+Notes:      Memory that is locked cannot be swapped to disk by the VMM.
+            You should note that locking is applied to memory on 4k
+            boundaries, so areas of memory below and above the memory
+            being locked will also be locked if the specified region is
+            not 4K aligned.
+
+
+UnLockMem   Unlock a region of memory.
+
+Inputs:     AX= 0ff1dh
+            BX:CX= Starting linear address of memory to unlock
+            SI:DI= Size of region to unlock in bytes
+
+Outputs:    Carry set on error.
+
+Errors:     If any of the memory region specified is invalid this
+            function will return carry set.
+
+Notes:      This will allow the memory to be swapped to disk by the VMM
+            if necessary.  Areas below and above the specified memory
+            will also be unlocked if the specified region is not page
+            aligned.
+
+
+UnLockMem32 Unlock a region of memory.
+
+Inputs:     AX= 0ff1eh
+            ESI= Starting linear address of memory to unlock
+            ECX= Size of region to unlock in bytes
+
+Outputs:    Carry set on error.
+
+Errors:     See UnLockMem
+
+Notes:      This will allow the memory to be swapped to disk by the VMM
+            if necessary.  Areas below and above the specified memory
+            will also be unlocked if the specified region is not page
+            aligned.
+
+
+LockMemNear Lock a region of memory using application relative address.
+
+Inputs:     AX= 0ff1fh
+            ESI= Starting linear address of memory to lock.
+            EBX= Size of region to lock in bytes.
+
+Outputs:    Carry set on error.
+
+Errors:     See LockMem
+
+Notes:      Memory that is locked cannot be swapped to disk by the VMM.
+            You should note that locking is applied to memory on 4k
+            boundaries, so areas of memory below and above the memory
+            being locked will also be locked if the specified region is
+            not 4K aligned.
+
+
+UnLockMemNear   Unlock a region of memory using application relative
+                address.
+
+Inputs:     AX= 0ff20h
+            ESI= Starting linear address of memory to unlock
+            EBX= Size of region to unlock in bytes
+
+Outputs:    Carry set on error.
+
+Errors:     See UnLockMem
+
+Notes:      This will allow the memory to be swapped to disk by the VMM
+            if necessary.
+
+            Areas below and above the specified memory will also be
+            unlocked if the specified region is not page aligned.
+
+
+GetMemDOS   Allocate a region of DOS (conventional) memory.
+
+Inputs:     AX= 0ff21h
+            BX= Number of paragraphs (16 byte blocks) required.
+
+Outputs:    Carry set on error and BX= largest block size, AX=DOS error else,
+            AX= Initial real mode segment of allocated block
+            DX= Initial selector for allocated block
+
+Errors:     If there are not enough selectors or memory available then
+            this function will return carry set.
+
+Notes:      If the size of the block requested is greater than 64K
+            bytes (BX > 1000h) then contiguous descriptors will be
+            allocated.  If more than one descriptor is allocated under
+            32-bit applications, the limit of the first descriptor will
+            be set to the size of the entire block.  All subsequent
+            descriptors will have a limit of 64K except for the final
+            descriptor which will have a limit of Block size MOD 64K.
+            16-bit applications will always set the limit of the first
+            descriptor to 64K.
+
+
+ResMemDOS   Resize a block of DOS (conventional) memory allocated with
+            GetMemDOS.
+
+Inputs:     AX= 0ff22h
+            BX= New block size in paragraphs
+            DX= Selector of block to modify
+
+Outputs:    Carry set on error, AX= DOS error code, BX= Maximum para
+            block size.
+
+Errors:     If an invalid block is passed or if not enough selectors or
+            memory are available when expanding the block this function
+            will return carry set.
+
+Notes:      Growing a memory block is often likely to fail since other
+            DOS block allocations will prevent increasing the size of
+            the block.  Also, if the size of a block grows past a 64K
+            boundary then the allocation will fail if the next
+            descriptor in the LDT is not free.
+
+
+RelMemDOS   Release a block of DOS (conventional) memory allocated by
+            GetMemDOS.
+
+Inputs:     AX= 0ff23h
+            DX= Selector of block to free.
+
+Outputs:    Carry set on error and AX= DOS error code.
+
+Errors:     If an invalid block is passed this function will return
+            carry set.
+
+Notes:      All descriptors allocated for the memory block are
+            automatically freed and therefore should not be accessed
+            once the block is freed by this function.
+
+
+ExecOverlay Load, relocate and optionally execute application
+            code.
+
+Inputs:     AX= 0fffdh
+            EBX= Flags, bit significant if set.
+                 0 - Don't execute.
+                 1 - Don't preserve segment/relocation memory.
+            ES:EDX= File name.
+            FS:ESI= Command line. ESI=0 for none. First byte is length.
+            GS:EDI= Name (/o:? option in CW). EDI=0 for none (Not used yet).
+
+Outputs:    Carry set on error and AX= Error code else,
+            If bit 1 of EBX was set on entry then:
+               CX:EDX = Entry CS:EIP
+               SI= PSP segment.
+            if bit 0 set & bit 1 not set of EBX on entry:
+               BX:EAX= entry SS:ESP
+               EDI= High word - base segment, low word - number of segments.
+               EBP= Start of segment definitions.
+
+Errors:     1 - DOS file access error.
+            2 - Not a CauseWay 3P file.
+            3 - Not enough memory.
+
+
+GetDOSTrans  Get current address and size of the buffer used for DOS
+             memory transfers.
+
+Inputs:   AX = 0ff25h
+
+Outputs:  BX = Real mode segment of buffer.
+          DX = Protected mode selector for buffer.
+          ECX = Buffer size
+
+Errors:   None
+
+Notes:    This buffer is used by the built in INT API translation
+          services, e.g., INT 21h, AH=40h (write to file). The default
+          buffer is 8k and uses memory that would otherwise be wasted.
+          This default is sufficient for most file I/O but if you are
+          writing a program that reads/writes large amounts of data you
+          should consider allocating your own larger buffer and pass
+          the address to CauseWay to speed this file I/O.
+
+
+SetDOSTrans  Set new address and size of the buffer used for DOS memory
+             transfers.
+
+Inputs:   AX = 0ff26h
+          BX = Real mode segment of buffer.
+          DX = Protected mode selector for buffer.
+          ECX = Buffer size (should be <=64K)
+
+Outputs:  None
+
+Errors:   None
+
+Notes:    The buffer must be in conventional memory and only the first
+          64K will be used even if a bigger buffer is specified.
+          CauseWay will automatically restore the previous buffer
+          setting when the application terminates but GetDOSTrans can
+          be used to get the current buffer's settings if you only want
+          the change to be temporary.
+
+          You can still use the default buffer for your own puposes
+          even after setting a new address.
+
+NOTES
+-----
+
+A fixed segment selector at 40h is always available to the application.
+This selector maps the real mode memory at 400h where most of the BIOS
+variables can be found. Their is a possibility of this selector being
+dropped in future DPMI specifications so complete compatibility with
+DPMI can only be ensured by allocating your own selector for this
+memory region.
+
+When not running under a DPMI server CauseWay provides selectors at
+addresses 0B000h, 0B800h and 0A000h to ease conversion of real mode
+code.
+
+DS & ES are set to the programs PSP at entry. The environment variable
+in the PSP is a valid protected mode selector.
+
+CauseWay allocates a block of memory that contains the application and
+its PSP exactly. It is not necesary to shrink the programs memory.
+
+The application should terminate using int 21h function 4Ch. The error
+level passed to this function will be returned to any parent programs
+in the normal way.
+
+If the application needs to TSR you can use int 21h function 31h but no
+memory value is required, all memory owned by the application when the
+TSR is issued will remain the programs property. You should note that
+there is currently no way of removing the application from memory once
+it is TSR.
+
+Interrupt handlers in a 32-bit application will need to do an IRETD
+rather than the normal IRET. I've not come across an assembler that
+automatically generates the right size from a normal IRET instruction
+yet.
+
+
+
+INTERRUPT SERVICES EXTENDED OR ALTERED BY CAUSEWAY
+==================================================
+
+The size of register used will depend on the limit of the selector
+supplied.  Unspecified registers should be set up in the normal way.
+INT API's not listed here that require segment &| offset pointers will
+need to be handled using IntXX or your own interrupt translation code.
+
+INT 10h
+-------
+
+10h sub function 02h, [E]DX instead of DX.
+10h sub function 09h, [E]DX instead of DX.
+10h sub function 12h, [E]DX instead of DX.
+10h sub function 17h, [E]DX instead of DX.
+13h [E]BP instead of BP.
+1Ch sub function 01h, [E]BX instead of BX.
+1Ch sub function 02h, [E]BX instead of BX.
+
+
+INT 21h
+-------
+
+09h [E]DX instead of DX
+0Ah [E]DX instead of DX
+1Ah [E]DX instead of DX
+25h [E]DX instead of DX. Protected mode vector will be set.
+2Fh [E]BX instead of BX
+31h No value is required in DX.
+35h [E]BX instead of BX. Protected mode vector will be returned.
+39h [E]DX instead of DX
+3Ah [E]DX instead of DX
+3Bh [E]DX instead of DX
+3Ch [E]DX instead of DX
+3Dh [E]DX instead of DX
+3Fh [E]DX instead of DX
+40h [E]DX instead of DX
+41h [E]DX instead of DX
+43h [E]DX instead of DX
+44h sub function 02h, use [E]DX instead.
+44h sub function 03h, use [E]DX instead.
+44h sub function 04h, use [E]DX instead.
+44h sub function 05h, use [E]DX instead.
+47h [E]SI instead of SI
+48h Protected mode memory will be allocated.
+49h Protected mode memory will be released.
+4Ah Protected mode memory will be resized.
+4Bh [E]DX & [E]BX instead of DX & BX. Parameter block offset entries are w|d.
+4Eh [E]DX instead of DX
+56h [E]DX & [E]DI instead of DX & DI
+5Ah [E]DX instead of DX
+5Bh [E]DX instead of DX
+62h Protected mode selector will be returned.
+6Ch [E]SI instead of SI
+
+
+INT 33h
+-------
+
+09h [E]DX instead of DX.
+0Ch [E]DX instead of DX.
+16h [E]DX instead of DX.
+17h [E]DX instead of DX.
+
+The size of register used will depend on the limit of the selector
+supplied.  Unspecified registers should be set up in the normal way.
+
+
+INT 23h
+-------
+
+This interrupt is always reflected back to the protected mode handler
+to ensure your program can deal with it correctly.  The default handler
+will abort your application in the same manner as DOS. If you need to
+terminate your application in your own handler, perform an int 21h,
+ah=4ch as normal.
+
+
+INT 24h
+-------
+
+This interrupt is always reflected back to the protected mode handler
+to ensure your program can deal with it correctly.  The default handler
+behaves in the same way as the DOS handler, aborting your application
+if appropriate.  If you install your own handler, all memory touched by
+this interrupt must be locked.  The register values normally placed on
+the stack by DOS before entry to the interrupt handler will not be
+present in protected mode, only the register values will be valid.  You
+may terminate your application from within this interrupt with int 21h,
+ah=4ch as normal.
+
+
+
+USING THE FLAT OR NEAR MODEL
+============================
+
+If you declare a single 32-bit segment within your program and specify
+a class of NEAR, any segment name references will assume a selector of
+DATA is required. If you should need to reference the CODE selector,
+load it from CS. The segment will be extended by either the default
+stack size of 1K or the value specified by WL32's /ST option.  The
+program's entry ESP value will be set to the end of this segment with
+the entry SS value using the segment defined as 'near'. This means that
+SS/ESP/EBP addressing will also be near.
+
+For example,
+
+A_SEGMENT  segment para 'near'
+
+     mov  ax,A_SEGMENT   ;A selector with a type of DATA will be loaded.
+     mov  ds,ax          ;Could get this value from SS instead though.
+     mov  es,ax
+     mov  fs,ax          ;Now all segment registers will map the same
+     mov  gs,ax          ;region of memory and have a limit of 4G.
+
+A_SEGMENT  ends
+
+Only a single segment definition is allowed when a class of NEAR is
+used.
+
+
+
+     ==============
+      WL32 LINKER
+     ==============
+
+
+USING WL32
+==========
+
+Operate WL32 from the DOS command line or a batch or make file.  There
+are no menus and operating modes.  You simply type WL32 followed by
+your specific command options and one or more filenames.  WL32 will be
+very familiar to users of Borland's TLink or Microsoft Link.
+
+Use the following format for running WL32 from the DOS prompt:
+
+WL32 [command options] OBJECT_FILES,[program_file],[map_file],[library_files]
+
+WL32 uses default extensions for the object files, program file, map
+file, and library files.  You may omit a file extension and WL32 will
+look for a file by using the name given with the appropriate default
+extension.
+
+The default extension for various files are:
+
+Program File   .EXE
+Library File   .LIB
+Map File       .MAP
+Object File    .OBJ
+
+You can override the default extension by the explicit use of a
+different extension in the file name.
+
+If no executable file name is listed, WL32 will use the first .OBJ file
+name with a .EXE extension.  If no map file name is listed and the /m
+option is specified, Wl32 will use the .EXE file name with a .MAP
+extension.
+
+
+
+RESPONSE FILES
+==============
+
+You can store command options and file names that you entered on the
+DOS command in a response file.  Response files are often referred to
+as link files, command scripts, or script files.  Use response files to
+ease repetitive linking tasks and to allow longer commands than can be
+typed on the DOS command line.
+
+See also the Configuration File chapter for more information on
+response files.
+
+
+Response File Format
+--------------------
+
+Use the following format for using a response file with WL32:
+
+WL32 @FILENAME.EXT
+
+The @ symbol designates the file as a response file instead of a .OBJ
+file or .LIB file.  You may list more than one response file when
+linking and can nest one response file inside another (this is most
+useful when linking in freeformat mode described in the Configuration
+File chapter).
+
+The line length for a response file must be 125 characters or less.
+
+When using response files, you must specify the file extension if one
+is desired.  WL32 does not assume a .LNK or .RSP file extension.
+
+Using A Response File
+---------------------
+
+A response file contains exactly what you would type after WL32 on the
+DOS command line.  To break up a response file into several lines in
+default linker behavior (nonfreeformat), use a plus sign at the end of
+the line for lists of .OBJ and .LIB files.
+
+Comments In A Response File
+---------------------------
+
+You can add comments to WL32's response files to help make them clearer
+or for documentation purposes.  Use the pound sign (#) in a line to
+insert comments into a response file.  All characters on a line after
+the pound sign will be ignored by WL32.
+
+
+CONFIGURATION FILES
+===================
+
+WL32 supports linker script "morphing" commands.  Morphing capability
+allows WL32 to read link files and scripts of any linker without
+changing those files.  This includes both positional and freeformat
+link files and scripts.
+
+To use this feature, place the morphing commands in a linker
+definitions file and specify the file through the /lc:<filename>
+option.  With all morphing commands, case is significant and the linker
+will return an error for a lowercase command.  However, case is not
+significant for the <string> or <option> listing that is translated or
+morphed into an instruction understood by WL32.  For example,
+"LIB=LIBNAME" and "lib=LIBNAME" are valid linker definition file lines,
+"LIB=libname" and "lib=libname" are not.  Only one definition may be
+made per linker definition file line.
+
+A '*' character at the end of <string> will instruct the linker to
+ignore the entire response file or command line after processing
+<string>.  This is most often used to ignore characters after a
+superfluous command, such as MODULE.
+
+'[' and ']' commands in a <string> have special meaning.  Characters
+within a bracket are optional when parsing <string>.  If they are not
+present, <string> will still be parsed correctly to the proper command.
+
+Following are all currently supported morphing commands with a
+description of their use:
+
+<character>=TERMINATION
+-----------------------
+
+Specify one character to terminate linker processing.  Typically for
+Microsoft Link users this will be ';'.  For example:
+
+;=TERMINATION
+
+If more than one termination command line is listed, only the last one
+specified will be used.
+
+
+<character>=IGNORE
+------------------
+
+Specify one character to ignore when adjacent to or part of a file name
+in a linker response file or command line.  This allows ignoring
+parentheses or brackets around overlaying file names without modifying
+the script file.  Up to 16 ignore characters can be specified in
+separate lines.  After 16 ignore characters are processed in the
+definitions file, the 17th character listed will overwrite the first
+ignore character stored, and so on.  The following two commands are
+common with the IGNORE command:
+
+(=IGNORE
+)=IGNORE
+
+
+<character>=COMMENT
+-------------------
+
+Specify one character that is recognized as a comment line in a linker
+script file.  WL32 defaults to '#', but this command will allow
+changing it to the comment character you desire.  If more than one
+comment line is listed, only the last one specified will be used.
+
+
+<WL32 option>=DEFAULT
+---------------------
+
+Specify a WL32 that is on by default.  For example:
+
+/b=DEFAULT
+
+
+<string>=NULL
+-------------
+
+Any string of characters that should be ignored by the linker can be
+specified in the definitions file using the NULL command.  A '*'
+character at the end of <string> will instruct the linker to ignore the
+entire response file or command line.  For example:
+
+/DOSSEG=NULL
+
+means ignore /DOSSEG in the linker script file or command line.  This
+command:
+
+MOD[ULE]*=NULL
+
+means ignore the entire line starting with MODULE, with the "ULE"
+characters optional.
+
+
+FREEFORMAT
+----------
+
+Switch the linker into freeformat parsing mode used by RTLink, PLink,
+and Blinker as opposed to the positional format used by Microsoft Link,
+TLink, WarpLink, and Symantec's BLink.  You cannot switch back to
+positional parsing mode after entering freeformat.  Several linker
+definition commands are only valid in freeformat mode.
+
+
+<string>=OBJNAME
+----------------
+
+Specify a string when in freeformat mode that tells WL32 it is parsing
+a list of object modules.  This should the most common use with in the
+definitions file with freeformat link files:
+
+FI[LE]=OBJNAME
+
+
+<string>=LIBNAME
+----------------
+
+Specify a string when in freeformat mode that tells WL32 it is parsing
+a list of libraries.  The following three commands should be the most
+common in a definitions file with freeformat link files:
+
+LIB[RARY]=LIBNAME
+SEA[RCH]=LIBNAME
+ALL[OCATE]=LIBNAME
+
+
+<string>=EXENAME
+----------------
+
+Specify a string when in freeformat mode that tells WL32 it is parsing
+the executable file name.  In most cases, the following command line
+will be used.
+
+OUTPUT=EXENAME
+
+
+<string>=<WL32 option>
+----------------------
+
+Translate <string> to the WL32 option.  Most useful for when a linker
+script has an option which directly corresponds to a WL32 option but is
+formatted differently.  Following are a few examples:
+
+STACK=/st:
+VERBOSE=/i
+/nod=/nd
+
+
+<file name>=OBJADD
+------------------
+
+Specify an object module that will always be linked into a program.
+This file will be added as soon as it is encountered in the
+configuration file, so if you list the configuration file before any
+object modules and do not specify an EXE file name, the EXE file name
+will be based on the object module file name in the first OBJADD.  If
+the object module is not present in the current directory or found
+using the OBJ environment variable, WL32 will terminate with a file not
+found error.
+
+This command is most useful for languages which need replacement object
+modules to go along with the DOS extender.
+
+
+<file name>=LIBADD
+------------------
+
+Specify a library file that will always be linked into a program.  This
+file will be added as soon as it is encountered in the configuration
+file.  If the library file is not present in the current directory or
+found using the LIB environment variable, WL32 will terminate with a
+file not found error.
+
+This command is most useful for languages which need replacement
+libraries to go along with the DOS extender.
+
+
+<file name>=FILEDELETE
+----------------------
+
+Specify a file that will be removed from the link process if it
+is encountered in a link file or command line.  The file will be
+deleted even if it is listed with a drive or directory
+specification in the link file.  Do not list <file name> with a
+drive or directory specification.  <file name> must contain an
+extension if the file to be removed has either an explicit or
+default extension.  Multiple FILEDELETE commands are supported.
+
+This command is most useful to removing superfluous object
+modules or libraries from link files without directly editing
+them.  For example, overlay managers and libraries are not
+needed with the DOS extender and will only add unnecessary code
+to the program, at best.  If your link files list an overlay
+manager called OVLMGR.OBJ, the following command will remove it
+from the link process:
+
+OVLMGR.OBJ=FILEDELETE
+
+
+Configuration File Examples
+---------------------------
+
+Three sample definitions files have been included.  MSLINK.DEF will
+ignore or translate several Microsoft Link options, WARPLINK.DEF will
+do the same with WarpLink script files, and RTLINK.DEF will engage
+freeformat parsing and translate or ignore commands.  The command lists
+are not exhaustive, but do cover the most commonly used commands and
+options by those, and compatible, linkers.  Definition files are
+accessed via this format:
+
+WL32 <definitions file> <link file>
+
+as in WL32 /lc:RTLINK.DEF @LINKFILE.LNK.  Once a definitions file is
+properly set for a particular link script style you need not modify any
+of the link scripts associated with that linker.
+
+You may use the /wu option to see which options or commands are being
+ignored by the linker as unknown.
+
+Note that the morphing ability allows you to set up link scripts that
+are extremely opaque and impossible for other linkers to understand.
+If you want your link file to look like line noise and still create a
+real executable, it certainly is possible with the proper linker
+definition file setup.  For example, create a configuration file with
+the following commands:
+
+FREEFORMAT
+/COW=/ex
+LINKTHISFILE=OBJNAME
+MYFILE3=OBJADD
+LINKTHISONETOO=OBJNAME
+HEREARELIBRARIES=LIBNAME
+IGNORE[THIS]*=NULL
+/DOESNOTHINGBUTLONGIMPRESSIVELOOKINGOPTION*=NULL
+@=IGNORE
+-=IGNORE
+"=IGNORE
+MR-STACK=/st:
+CREATE=EXENAME
+~=COMMENT
+/b=DEFAULT
+
+Using this configuration file, the following is a link file that links
+together MYFILE.OBJ, MYFILE2.OBJ, MYFILE3.OBJ, MYLIB1.LIB, MYLIB2.LIB,
+and MYLIB3.LIB, created a standard DOS EXE-format file name MYEXE.EXE
+with a stack of 2K, beeping the speaker at the end of the link.
+
+/COW LINKTHISFILE @@myfile--
+LINKTHISONETOO -myfile2"
+HEREARELIBRARIES @mylib1@ -mylib2- @mylib3- ~ 3 libraries
+IGNORETHIS line altogether
+/DOESNOTHINGBUTLONGIMPRESSIVELOOKINGOPTION
+MR-STACK 2048
+IGNORE as well
+CREATE MYEXE ~ make EXE name MYEXE.EXE
+
+
+
+WL32 OPTIONS
+============
+
+WL32 options allow you to control how your programs are linked.  You
+can specify these options from the DOS command line, in a batch or make
+file, or in a response file.  If you are using the option morphing
+feature described in the Configuration Files chapter, the options
+listed may appear differently in your command line, or response or make
+file.  The option format listed in this chapter, however, will always
+be valid.
+
+All options are case insensitive, e.g. both /b and /B refer to the beep
+when link is complete option.  Enter WL32 without parameters at the DOS
+command line for a summary of linker options.
+
+ /b          Beep the speaker at linker completion
+
+This option will cause WL32 to beep your speaker three times at the
+completion of the linking process by writing three Control-G characters
+to the standard output device.
+
+ /ex         create DOS EXE-format file
+
+This option instructs WL32 to create a standard DOS EXE-format file,
+similar to those created by non-DOS extended linkers such as TLink or
+Microsoft Link.  Creating a standard DOS EXE-format file will only work
+for programs which do not exceed DOS's memory limit when fully loaded
+into memory.  Medium to large-sized  programs which require a DOS
+extender or overlays will probably not work when linked using the /ex
+option.
+
+ /i          display link process Information
+
+This option provides information about the linker while it is working.
+When this option is specified, WL32 displays the current file or
+library module being processed and the segments being written to the
+executable file, as well as identifying the start of major link phases.
+
+The /i option may help you troubleshoot any problems that occur when
+using WL32 by narrowing down where the trouble spot lies.  Technical
+support will often request a redirected output of the link process when
+using the /i option if you experience a problem in WL32.
+
+ /il         display link process Information, Limit information
+             displayed
+
+This option is very similar to the /i option except that it only
+displays the file being read and the major link phases.  The /i option
+display is quite exhaustive and provides much more information than is
+needed in many cases.  The /il option makes the information display
+more manageable.  Also, because of the limited information display,
+linker execution speed using the /il option is not so negatively
+impacted as with the /i option.
+
+ /lc:<name>  Link options Configuration file name
+
+This /lc option supplies a configuration file name to WL32 for use with
+the option morphing feature.  If no configuration file name is listed,
+no option morphing will occur.  The configuration file must be in the
+current directory or be listed with the drive and directory in which it
+resides.  Multiple configuration files are allowed, they will be
+processed in the order that they are encountered.
+
+ /m          create MAP file
+
+The /m option creates a map file.  This option is also set if a map
+file name is explicitly listed in a linker response file or command
+line.
+
+Map files contain the size, name, and class of segments in the created
+program, the time and date created, the name of the executable file,
+and the program entry point.  They also list the names and addresses of
+public symbols in the program.  This information is useful for
+debugging your program and identifying space requirements for each
+segment.  The CauseWay debugger CWD uses map files to display symbolic
+addresses of the CauseWay executable file being debugged.
+
+ /nd         do Not use Default library names in object modules
+
+Most language compilers and assemblers insert the name of one or more
+runtime libraries directly into their .OBJ files so that these
+libraries do not have to be explicitly specifed on the linker command
+line.  These .LIB files are called the default libraries.  You can
+prevent WL32 from using the default libraries by using the /nd option.
+
+The /nd option allows you to link program without automatically linking
+in the default libraries.  This may be useful when linking in
+replacement libraries or if you rename default libraries.
+
+ /st:<size>  set program STack size in bytes
+
+This option allows you to modify the linked program's stack size.  It
+will override the default stack set by the programming language if the
+default stack is smaller than the size specified by the /st option.
+The value may range from 1 to 65535 bytes.
+
+If no stack is set by this option or by the program, a default stack of
+size 1K (1024 bytes) is created by WL32.  Executable programs should
+always have a stack.
+
+ /sy         create SYM file for CWD debugger
+ 
+The /sy option is only useful when operating a CauseWay application
+with the CWD debugger.  It creates a .SYM file containing information
+on the public symbols within the application.  When using MAP files
+with many public symbols, CWD may take a long time to process all of
+the symbolic information.  The .SYM contains this information in an
+optimized form, allow an application to load under CWD more quickly.
+CWD will first check for a .SYM file, then use a .MAP file (if present)
+for symbolic information if no .SYM file is available.
+
+NOTE:  This option may noticeably affect WL32 link speed and should not
+be specified if it is not needed.
+
+ /w1         Warnings generate exit code of 1, not zero
+
+Unlike errors, warnings do not normally generate a nonzero exit code
+(also known as the DOS ERRORLEVEL or the return code) when WL32
+finishes the link.  When the /w1 option is used, warnings will cause a
+exit code of 1 rather than 0.  This can be useful for those who create
+programs using make or batch files and wish to detect warning
+conditions.
+
+ /wu         issue Warning on Unknown linker options or commands
+
+WL32 will normally ignore without feedback an unknown linker option or
+command provided that the unknown text is not preceded by a '/'.  When
+this option is set, all ignored text is listed by WL32.  This option is
+most useful if you are using configuration files with the FREEFORMAT
+option to detect when an unknown command or option is being bypassed by
+WL32.
+
+
+
+     ====================
+      CAUSEWAY UTILITIES
+     ====================
+
+
+CAUSEWAY FILE COMPRESSOR
+========================
+
+The CauseWay file compressor (CWC.EXE) compresses CauseWay format
+applications to reduce their disk space consumption.
+
+The command line should look like this:
+
+CWC MYPROG
+
+Where MYPROG is the name of the CauseWay executable file to compress.
+If MYPROG has no extension .EXE will be appended.
+
+Good compression should be achieved on most files with no noticeable
+load time delay for the decompression.  Files that are mostly
+executable code may load slightly slower than normal.  In the rare
+event that load time becomes unacceptable, use of CWC should be
+abandoned.
+
+NOTE:  It is not possible to use a real mode standard DOS EXE-format
+file compressor such as PKLITE or LZEXE on CauseWay applications.
+
+
+CAUSEWAY SYMBOLIC DEBUGGER
+==========================
+
+To use CWD.EXE, CWD.OVL must be present in the same directory as
+CWD.EXE.  The command line should look like this:
+
+ CWD [CWD OPTIONS] MYPROG [MYPROG COMMAND LINE]
+
+where MYPROG.EXE is the program being debugged with CWD.  Notice that
+the command line after MYPROG is passed to MYPROG as if that were all
+that was provided. Any CWD options MUST be specified before MYPROG.
+
+Options:
+
+/dm      - CWD will use a mono monitor for its output.
+/eSYMBOL - CWD will run the program until SYMBOL is reached.
+           e.g., /e_main for C.
+
+If a MYPROG.MAP file exists CWD searches it for a list of symbols to
+improve readability of your application.  The CauseWay debugger
+(CWD.EXE) only supports symbols found in a .MAP file.
+
+
+CS:EIP Window
+-------------
+
+Most of the available keypresses are listed across the bottom of the
+screen on the quick help bar. To move the current view use the cursor
+keys but remember that this doesn't alter CS:EIP.
+
+The current CS:EIP position is marked by a > symbol and also a green bar.
+
+The current display position is marked by a blue bar.
+
+Breakpoints are marked with a * symbol and a red bar.
+
+F1-User     Displays the user/application screen.
+
+F2-Break    Sets or resets a break point at the current view point.
+
+F3-Goto     Moves the display point to the expression specified when
+            prompted.  Expression used may contain symbols, numbers or
+            registers.  Segment & offset should be separated by a colon
+            (:).  For example, SS:ESP and DS:80h are both valid
+            expressions. It is not possible to specify a register AND a
+            numeric/symbolic expression for the offset, eg, EBP+10h.
+
+ALT-F3      Displays a list of symbols. Highlight the symbol you want
+            to move the display to and press enter. Symbols are listed
+            with names on the left and values on the right. The C or D
+            displayed adjacent to the value indicates the address type
+            is CODE or DATA.  A speed search is available by typing
+            the desired symbol text.
+
+F4-Here     Executes instructions until the current view position is
+            reached.
+
+F5-Data     Opens a data window with default assignments.
+
+F6-Skip     Steps CS:EIP over the current instruction without executing
+            it.
+
+F7-Trace    Executes the next instruction only.
+
+F8-Step     Executes instructions until the next instruction is
+            reached.
+
+F9-Run      Starts normal execution which will continue until either
+            the program terminates or a breakpoint condition is
+            satisfied.
+
+F10-Flip    Toggles the display flipping method between fast (default)
+            and complete (slow). Use complete mode when debugging
+            applications that change the screen mode.
+
++           When on a break point this will increment the breakpoint's
+            trigger count.
+
+-           When on a break point this will decrement the breakpoint's
+            trigger count.
+
+ALT-X       Exit to DOS.
+
+
+Data #?? Window
+---------------
+
+Most of the available keypresses are listed across the bottom of the
+screen on the quick help bar. Use the cursor keys to move around the
+display and keys '0' to '9' and 'A' to 'F' to change values in any of
+the hex display formats. The text display format will allow any value
+to be entered, including using ALT and the numeric keypad to generate
+values.
+
+F1-Address  Toggles display of address down left of window.
+
+F3-Goto     Moves the display point to the expression specified when
+            prompted.  Expression used may contain symbols, numbers or
+            registers.  Segment & offset should be seperated by a colon
+            (:). If a register is used then the display will track that
+            register.  eg, SS:ESP is a valid expression as is DS:80h.
+            It is not possible to specify a register AND a
+            numeric/symbolic expression for the offset, eg, EBP+10h.
+
+ALT-F3      Displays a list of symbols. Highlight the symbol you want
+            to move the display to and press enter. Symbols are listed
+            with names on the left and values on the right. The C or D
+            displayed adjacent to the value indicates the address type
+            is CODE or DATA.  A speed search is available by typing
+            the desired symbol text.
+
+F4-Bytes    Display list of bytes.
+
+F5-Words    Display list of words.
+
+F6-Dwords   Display list of dwords.
+
+F7-Text     Display ASCII string.
+
+F8-Mixed    Display list of bytes followed by a list of ASCII
+            representations.
+
+F10-Close   Closes the Data window.
+
+ALT-X       Exit to DOS.
+
+
+Register Window
+---------------
+
+Most of the available keypresses are listed across the bottom of the
+screen on the quick help bar. Use the cursor keys to move around the
+display and keys '0' to '9' and 'A' to 'F' to change values
+
+F3-Expr     Allows entry of an expression to set register value.
+
+ALT-F3      Displays a list of symbols. Highlight the symbol you want
+            to move the display to and press enter. Symbols are listed
+            with names on the left and values on the right. The C or D
+            displayed adjacent to the value indicates the address type
+            is CODE or DATA.  A speed search is available by typing
+            the desired symbol text.  Using this function on EIP will
+            also set CS and move the CS:EIP window to the chosen
+            address.
+
++           Increments the current register value.
+
+-           Decrements the current register value.
+
+ALT-X       Exit to DOS.
+
+
+General
+-------
+
+Selecting any window other than the current foreground window with the
+mouse will bring it to the foreground and make it the current focus.
+The mouse button will have to be released again before further
+selections can be made.
+
+Selecting the title bar of the foreground window and holding the mouse
+button down will allow you to move the window.
+
+Selecting the bottom right corner of the current window will allow you
+to adjust the windows size.
+
+TAB cycles through available windows.
+
+SHIFT-TAB cycles through windows in reverse order.
+
+Applications that make use of graphics modes may prove difficult to
+debug without a monochrome monitor. Mode 13h is directly supported but
+with the proliferation of SVGA mode usage it is not really viable to
+offer support for all modes likely to be encountered so a monochrome
+monitor is really a must for those applications.
+
+
+
+WARPWRAP ENVIRONMENT VARIABLE BURN-IN UTILITY
+=============================================
+
+WARPWRAP Introduction
+---------------------
+
+WARPWRAP (WW.EXE) is a utility that allows control over the environment
+variables accessible by an EXE program, as well giving the ability to
+set uninitialized memory to a particular value upon program startup.
+Environment variables can be preset to a particular value, deleted if
+already present, or added if they do not already exist.  All of this is
+under the control of the individual creating the EXE program, without
+enduser intervention or the need for batch files.
+
+WARPWRAP works by modifying an EXE file, adding code that is
+immediately called when the EXE file is loaded by DOS.  This code
+changes the program's environment variable block (if necessary) to
+contain settings specified by the WARPWRAP user, and optionally sets
+uninitialized memory to a selected value.  The code then transfers
+operation back to the original program without the enduser noticing any
+difference from normal EXE operation.  In effect, WARPWRAP "wraps" a
+seamless shell around the EXE file to achieve these results.
+
+
+Using WARPWRAP
+--------------
+
+WARPWRAP operates in two different ways.  The simplest and least
+powerful is to specify one environment variable that you want to be
+added, or replaced, on the command line with the EXE file name to be
+modified.  The environment variable setting comes first and is prefixed
+with a "!" to differentiate the setting from an EXE or definition file
+name, described later.
+
+For example:
+
+WW !COW=MOO MYPROG
+
+would always present the environment variable setting COW=MOO to
+MYPROG.EXE as if the user had typed SET COW=MOO prior to running the
+program.  If the environment variable COW previously existed with a
+different setting, for example COW=MILK, it would be changed to
+COW=MOO.  If it did not previously exist, it would be created.  No
+other environment variables are modified.  Note that the .EXE extension
+on the EXE file name is optional.
+
+This first mode of operation allows replacing only one environment
+variable, similar to the burn-in capabilities of other products.  There
+is a second mode of WARPWRAP operation that allows replacing multiple
+environment variables, as well as other tasks.
+
+In the second mode, WARPWRAP users may specify a definition or script
+file to list the environment variable and memory setting manipulations
+desired.  The definition file is preceded with a "@".  A default
+extension of .DEF is assigned if none is given by the user.
+
+For example:
+
+WW @STUFF MYPROG
+
+will use the contents of the definition file STUFF.DEF to modify the
+environment variables passed to MYPROG.EXE.
+
+If no environment setting or definition file name is listed, that is,
+no "!" or "@" text precedes an EXE file name, WARPWRAP defaults to
+using a definitions file called WARPWRAP.DEF.  If that file does not
+exist, WARPWRAP will abort processing.
+
+For example:
+
+WW MYPROG
+
+will use the contents of the definition file WARPWRAP.DEF to modify the
+environment variables passed to MYPROG.EXE.
+
+There are six commands that are recognized by WARPWRAP within a
+definition file, in addition to environment variable settings.  All
+commands are preceded with a "~".  They are as follows:
+
+1.  ~NEW.  All environment variables on subsequent lines of the
+definition file will be added to the EXE file environment block ONLY if
+they do not already exist.  If the environment variable already exists,
+regardless of setting, then there will be no change.  ~NEW environment
+variables must have a setting or else WARPWRAP will abort with an error
+at the incorrect line.  ~NEW stays in effect for all following
+environment variables until a ~REPLACE or ~DELETE command is
+encountered.
+
+2.  ~REPLACE.  All environment variables on subsequent lines of the
+definition file will be added to the EXE file environment block
+REGARDLESS of whether they already exist or not.  If they already
+exist, they will be replaced.  ~REPLACE environment variables must have
+a setting or else WARPWRAP will abort with an error at the incorrect
+line.  ~REPLACE stays in effect for all following environment variables
+until a ~NEW or ~DELETE command is encountered.  ~REPLACE is the
+default condition in a definition file if no other command is present,
+as if the definitions file started with a ~REPLACE command.
+
+3.  ~DELETE.  All environment variables on subsequent lines of the
+definition file that match a pre-existing environment variable will be
+removed from the EXE file environment block.  If a ~DELETE environment
+variable is specified but does not exist, then the ~DELETE command is
+ignored for that variable without error.  ~DELETE environment variables
+must NOT have a setting or else WARPWRAP will abort with an error at
+the incorrect line.  ~DELETE stays in effect for all following
+environment variables until a ~NEW or ~REPLACE command is encountered.
+
+4.  ~SAVECASE.  By default, all environment variables and their
+settings are changed to uppercase.  The ~SAVECASE command directs
+WARPWRAP to keep the exact case of all following environment variables.
+
+5.  ~NOSAVECASE.  The ~NOSAVECASE commands restores WARPWRAP to its
+default operation of changing environment variables and their setting
+to uppercase.
+
+6.  ~CLEAR.  The ~CLEAR command directs WARPWRAP to clear all
+uninitialized memory owned by the program to zero or the hexadecimal
+value optionally listed following the ~CLEAR command.  If no value is
+listed, then zero is used.  Memory is initialized in 2-byte (word)
+increments, so the value may range from 0 to FFFF.  Invalid values will
+result in either a zero value or an overflow setting of unknown value
+used to clear memory.
+
+Any line in a definition file which begins with a '#' is a comment
+line.  Such lines are ignored by WARPWRAP when processing and are
+useful for inserting remarks about the definition file.
+
+Environment variables can optionally be preceded with the text "SET",
+mimicking the DOS prompt means of setting environment variables.  This
+is most useful is you want to set environment variables that match a
+WARPWRAP command without WARPWRAP interpreting the environment variable
+setting as a command.
+
+Definition files and WARPWRAP itself are only necessary when modifying
+an EXE file.  After an EXE file has been modified, it can be
+distributed without any WARPWRAP files.  All code and data to perform
+the tasks specified by the WARPWRAP user are contained with the EXE
+file.
+
+
+WARPWRAP Examples
+-----------------
+
+The files SHOWEVAR.ASM and SHOWEVAR.OBJ allow testing of WARPWRAP's
+operations.  SHOWEVAR.ASM is the source code to a small assembly
+language program that displays the current environment variables passed
+to it.  SHOWEVAR.ASM is simply for reference purposes on what the
+SHOWEVAR program does and is not needed for testing WARPWRAP.
+
+Link SHOWEVAR.OBJ to an actual executable to use with WARPWRAP.  Since
+you cannot unmodify a modified EXE file, you must relink SHOWEVAR.OBJ
+to try a new WARPWRAP setting.
+
+The WARPWARP.DEF file demonstrates many of the features one might find
+in a WARPWRAP definition file.  Since this is the default definition
+file name, it can be used by WARPWRAP via either this command line:
+
+WW <EXE program>
+
+or explicitly specified like this:
+
+WW @WARPWRAP <EXE program>
+
+where <EXE program> is the name of the EXE file to modify.
+
+The included WARPWRAP.DEF file also contains a few tips about using
+definition files.
+
+
+WARPWRAP Notes
+--------------
+
+Leading and trailing spaces are typically ignored by WARPWRAP, though
+they are not allowed within an environment variable setting.  Multiple
+commands or variables on the same line will be ignored after the first
+one is parsed by WARPWRAP.
+
+WARPWRAP should co-exist peacefully with other EXE-modifying programs
+(e.g. PKLITE) as long as WARPWRAP is the final program used.  WARPWRAP
+expects its data to exist at the very end of the EXE file.  If another
+EXE-modifying program appends additional data at the end of the EXE
+file after WARPWRAP has processed the EXE file, WARPWRAP will not
+operate correctly.
+
+Do not modify WW.EXE.  Data is embedded in the WW.EXE file and any
+modifications will probably lead to program failure.
+
+WARPWARP contains several error-checking features.  In the rare event
+that an EXE file is too small to hold the environment variable
+modifications and associated code, WARPWARP will abort the process with
+an error.  WARPWRAP will also check for previous processing and abort
+the process if an EXE file has already been processed by WARPWRAP.  You
+cannot -- and would not want to -- process an EXE file more than once
+with WARPWRAP.  To restore an EXE file to unprocessed status or to
+change the WARPWRAP environment variables and memory clearing
+information within an EXE file, you need to rebuild the EXE file.
+Usually this simply consists of re-linking the program's object modules
+and libraries to a new EXE.
+
+WARPWRAP does not modify the master environment variable block changed
+at the DOS prompt.  Only the environment variables inherited by running
+programs are modified.
+
+WARPWRAP and WARPWRAP processed files will only work under MS-DOS or
+PC-DOS version 3.0 and higher, or compatible operating system.
+
+You must list any environment variables that contain quotes in a
+definition file rather than use the one string "!" mode.
+
+
+
+     ======
+      HELP
+     ======
+
+
+TROUBLESHOOTING
+===============
+
+This chapter provides a description of error messages that may be
+encountered when using CauseWay, frequently with suggested solutions to
+correct the error.
+
+DOS extender error messages are messages displayed by the DOS extender
+when a CauseWay application is running.  This messages are always
+followed by the DOS extender terminating the application.  All DOS
+extender errors are fatal, they terminate operation of the CauseWay
+application.
+
+DOS Extender Error Messages And Return Values
+---------------------------------------------
+
+01 - "Unable to resize program memory block."
+
+     Generated if DOS reports an error when CauseWay tries to resize
+     its real mode memory block. As the block is always shrunk the only
+     possible cause of this is corrupted MCB's. Will probably need to
+     re-boot the system to correct this one.
+
+02 - "386 or better required."
+
+     Generated if CauseWay is run on anything below a 386.  You need
+     another machine to correct this.
+
+03 - "Non-standard protected mode program already active."
+
+     Generated if the system is already operating under the control of
+     another protected mode program which doesn't conform to either
+     VCPI or DPMI standards. Will need to identify and remove the other
+     application before CauseWay can run.
+
+04 - "DOS 3.1 or better required."
+
+     Generated if DOS version is less than 3.1.  You will need to
+     upgrade the DOS version to correct this.
+
+05 - "Not enough memory for CauseWay."
+
+     Generated if the system doesn't have enough free physical memory
+     for the CauseWay kernal code and data to be initialized. Memory
+     will need to be free'd before CauseWay will run but it can be any
+     of the types supported.
+
+06 - "VCPI failed to switch into protected mode."
+
+     Generated if a VCPI server is detected and the server fails to
+     switch into protected mode when requested. The only likely cause
+     of this is a corrupted system so a re-boot will be needed to get
+     CauseWay running.
+
+07 - "Unable to control A20."
+
+     Generated if CauseWay detects an A20 line that doesn't respond to
+     the control methods normally adopted. This may either be a
+     hardware fault or a none standard system. Not much can be done to
+     solve the former but installing an XMS driver should cure the later.
+
+08 - "Selector allocation error."
+
+     Generated if DPMI refuses to allocate enough selectors for
+     CauseWay to function. Removing other program(s) that are using
+     DPMI should sort this one out.
+
+09 - "Unrecoverable exception. Program terminated."
+
+     Generated if a none recoverable exception occures. This indicates
+     a bug in the application and the register dump displayed with this
+     message should help to track down the problem.
+
+10 - "Unable to find application to load."
+
+     Generated if CauseWay is unable to find the application on the end
+     of the normal .EXE file. This indicates a corrupted file and can
+     only be cured by obtaining another copy of the application.
+
+11 - "DOS reported error while accessing application."
+
+     Generated if any kind of error is detected while accessing the
+     application file. This indicates a corrupted file and can only be
+     cured by obtaining another copy of the application.
+
+12 - "Not enough memory to load application."
+
+     Generated if CauseWay is unable to provide enough memory to load
+     the application.  Memory and/or disk space will need to be freed
+     before the application will run.
+
+13 - "DPMI failed to switch to protected mode."
+
+     Generated if using a DPMI server and it fails to switch to
+     protected mode.  If the DPMI server only supports multiple clients
+     of the same type (16/32) then the problem is probably that
+     different type applications are being run already. Will need to
+     remove other DPMI application(s) before CauseWay will run.
+
+14 - "Memory structures destroyed. Program terminated."
+
+     Generated if internal memory management structures become
+     corrupted. This is caused by the application writing to memory
+     regions it doesn't own and indicates a bug in the application.
+     Will need an corrected version of the application to fix this one.
+
+
+WL32 linker error and warning messages are messages displayed by the
+WL32 protected mode linker when it is linking a CauseWay application.
+Error messages are always immediately followed by WL32 terminating the
+link.  Warning messages are nonfatal, they do not terminate the link
+process.
+
+WL32 Warning Messages
+---------------------
+
+Symbol defined more than once: <symbol name>
+Defined in <filename>, duplicated in <filename>
+
+This situation occurs ina program that has two or more globally visible
+symbols with the same name.  Renaming or making private (or local) one
+of the symbols may solve this problem.  Also, check for two or more
+listings of the same object module in the object module list.  The
+first definition of the symbol has precedence over any definitions
+which may follow.
+
+Unresolved externally declared symbol: <symbol name>
+Declared in <filename>
+
+This message usually appears when a needed object module or library
+file was not specified on the linker command line or when the name of a
+function or procedure has been misspelled or not made publicly
+accessible for another module's use.  Thie linker cannot find a symbol
+needed by the program to resolve an external reference in a module.
+
+Unknown linker option or command, ignored: <command or option text>
+
+The linker has encountered text which it doesn't understand.  As long
+as this text is not preceded by a '/', this condition is not fatal.
+This warning message will only display if the /wu, warn on unknown
+options, option is set.
+
+
+WL32 Error Messages And Return Values
+-------------------------------------
+
+143 - 32-bit segment in DOS EXE file: <file name>
+
+CauseWay supports 32-bit segments.  Standard DOS does not.  You linked
+with the /ex option and one of the segments in an object module was
+flagged as 32-bit.  This will not work, you must create a DOS-extended
+EXE file or change the segment to 16-bit.
+
+133 - Allocate memory attempt failed.  Probably out of virtual memory.
+
+This error is most often caused when the virtual memory manager runs
+out of conventional and extended memory and disk space is very low.
+Free up more disk space or extended memory.
+
+135 - At least one object module file must be specified when linking.
+
+One or more options and possibly an EXE file name, MAP file name, or
+library files were listed in the linker command line or response file.
+However, no object module was listed.  Supply at least one object
+module file name when linking.
+
+136 - Bad object record type in <filename>, value <number>
+
+CauseWay did not recognize an object record type in the file
+<filename>.  The value of the unrecognized object record is listed as
+<number>.
+
+142 - Bad or invalid library (.LIB) file format in <file name>
+
+The library file listed has an unrecognizable format or is corrupted.
+WL32 supports the industry standard Microsoft LIB format.  Proprietary
+formats incompatible with this standard will not work with WL32.
+
+144 - Configuration file line length exceeds 125 characters in <file name>
+
+Configuration files have no size limit, but the length of any particular
+line in the file cannot be larger than 125 characters.  Reduce the size
+of the offending line.
+
+Variable - DOS error, value <number>, File: <file name> (<explanatory text>)
+
+A DOS error has occured when linking.  The DOS error number is listed
+after value.  If a file is associated with the DOS error it is listed
+as well.  Several common DOS error have short explanatory text (e.g.
+'file not found') in parentheses at the end of the feedback.  Not all
+DOS errors will have this explanatory text.
+
+128 - Internal linker error occurred during linking process, value <number>
+
+WL32 misbehaved.  Either a badly corrupted object module has confused
+Wl32 beyond its ability to gracefully recover or else you have
+discovered an error in the linker.  If an error in the linker is
+suspected, please call technical support for help.  The reported
+<number> value will help technical narrow down where the error
+occurred.
+
+145 - Invalid configuration file line: <line text>
+
+131 - Invalid option: <option text>
+
+An invalid option or option setting was passed to WL32 either at the
+DOS prompt or through a response file.  Refer to the WL32 options
+chapter for a complete description of all valid WL32 options and their
+allowed values.  This error most often occurs when a configuration file
+"morphed" option does not match the option listed in a response file.
+
+129 - MS-DOS or PC-DOS version must be 3.0 or above.
+
+You must use MS-DOS or PC-DOS version 3.0, or compatible, to operate
+WL32.  Either upgrade the machine's version of DOS or link the program
+on a different machine.
+
+139 - Object record length too large in <file name>
+
+To protect against internal buffer overflow, WL32 checks for object
+records that are extremely large.  Since the 4K size threshold is well
+above that generated by any compiler or assembler under normal
+conditions, this message will typically only occur when attempting to
+link a corrupted or invalid object module.
+
+140 - Poorly formed object record in <file name>, value <number>
+
+WL32 recognized the object record type, but the internal structure of
+the object record deviated from expected behavior.  Probably due to
+either an obsolete or brand new record type, or a corrupted object
+module.  The number value can be used by technical support to narrow
+down the record's problem.
+
+139 - Release memory attempt failed.
+
+134 - Resize memory attempt failed.  Probably out of virtual memory.
+
+130 - Response file line length exceeds 125 characters in <file name>
+
+Response files have no size limit, but the length of any particular
+line in the file cannot be larger than 125 characters.  Break up the
+line, using '+' signs or repeating the command in a following line as
+appropriate.
+
+132 - Response files nested more than 10 levels deep in <file name>
+
+The number of response files supplied to WL32 has no effective limit,
+but you cannot nest them deeper than ten levels.  Move the offending
+response files out of the tenth nesting level.
+
+141 - Segment size exceeds 64K: <segment name>
+
+A 16-bit segment has become larger than 64K after combination of the
+same segment types.  You will either need to reduce the code or data
+associated with that segment, or make the segment 32-bit.
+
+Variable - Unknown error occurred during linking process.
+
+This message should never appear.  It means that an error has
+snuck past WL32's normal error-reporting routines and the
+feedback display routines have no idea what manner of error
+occured.
+
+137 - Unsupported object record type in <file name>, value <number>
+
+CauseWay recognizes this object record type, but cannot process it.
+The most common reason for this feedback is an obsolete record type
+created by a very old or nonstandard compiler or assembler.  If
+possible, inhibit generation of the unsupported object record type.
+
+
+
+     ============
+      APPENDICES
+     ============
+
+
+APPENDIX A   Rules For Protected Mode Operation
+===============================================
+
+Using protected mode does mean some simple rules need to be followed to
+prevent processor faults from being generated.  These processor faults
+occur when an application breaks protected mode programming rules.
+These rules are:
+
+1.  A selector value (referred to as a segment value in real mode)
+    loaded into a segment register references an area of memory that
+    may occur anywhere within the physical address space.  This area of
+    memory can be dynamically moved around by the operating system.
+    Therefore, when dealing with selector values:
+
+    a. Never use segment registers as general purpose registers that
+       can be loaded with arbitrary values.  Every time a segment
+       register is loaded with a value the processor checks to make
+       sure it is a valid selector value and generates a fault if it is
+       not.
+
+    b. Never perform segment arithmatic on a selector value.  This is
+       done in real mode code to either normalize a pointer or to
+       access a single area of memory that is greater than 64K in size.
+
+    c. All selectors have a size associated with them and attempts to
+       access data at an offset greater than that size will result in a
+       fault.  This is one of the greatest strengths of a DOS Extender
+       because most obscure bugs in real mode code occur when a bad
+       pointer is used.
+
+    d. Segment registers can be loaded with a value of 0 but do not
+       attempt to write to or read from a NULL (zero value) pointer or
+       a fault will be generated.
+
+2.  You cannot execute code in a data segment and you cannot write to
+    data in the code segment.  If you absolutely need to do this, use
+    the CauseWay AliasSel function to map a data selector to the same
+    physical memory area shared by a code selector.  Even in this case,
+    however, you can never write to memory using a cs: override.
+
+3)  CauseWay handles most of the standard DOS interrupts transparently,
+    but when passing pointers to buffers for software interrupt calls
+    not handled transparently by CauseWay, the buffers must exist in
+    low DOS memory.  In addition, the pointers must be converted from
+    protected mode selector:offset pairs to real mode segment:offset
+    pairs.
+
+
+
+APPENDIX B   CauseWay File Format
+=================================
+
+This section describes the executable file format used by CauseWay.  It
+is provided for reference only.
+
+Main header
+-----------
+
+  NewHeaderStruc   struc
+  NewID            db '3P'     ;identifier.
+  NewSize          dd 0        ;byte size of header data.
+  NewLength        dd 0        ;byte size of exe image data.
+  NewAlloc         dd 0        ;byte size of program memory needed.
+  NewSegments      dw 0        ;number of segment definitions.
+  NewRelocs        dd 0        ;number of relocation table entries.
+  NewEntryEIP      dd 0        ;entry offset.
+  NewEntryCS       dw 0        ;segment list entry number for entry CS.
+  NewEntryESP      dd 0        ;ESP offset.
+  NewEntrySS       dw 0        ;segment list entry number for SS.
+  NewEntryFlags    dd 0        ;Control flags.
+  NewEntryAutoESP  dd 0        ;Automatic stack size if ESP entry = 0.
+  NewNameLen       db 0         ;Length of name if any.
+  NewEntryReserved db 64-NewEntryReserved dup (0)
+  NewHeaderStruc   ends
+
+
+Bits in NewEntryFlags:
+
+  0 - 16-bit interrupt stack frame if set.
+  7 - Descriptor table type. 0 - GDT, 1 - LDT.
+ 14 - 16-bit default for application segments D bit if set.
+ 31 - EXE image is compressed.
+
+ Note that bits 0 & 14 should always have the same value.
+
+Followed by:
+
+Segment definition * NewSegments
+--------------------------------
+
+dword - Start offset within program.
+dword - Length + type
+          0-19  Length.
+          20    Length granularity. If set then real length is
+                Length*4096 otherwise Length is byte granular.
+          21-24 Type.
+                00=Code
+                01=Data
+                02=Stack
+                03=Read only data.
+                Remaining values reserved.
+
+          25-Force segment D bit to 0. Overides default size in 3P flags.
+          26-Force segment D bit to 1. Overides default size in 3P flags.
+
+          Remaining bits reserved.
+
+Followed by:
+
+Relocation entry * NewRelocs
+----------------------------
+
+dword - Offset within program of relocation item. The word indicated
+        by this offset holds the segment number as listed in the
+        segment definitions starting at 0 (This is where real mode
+        normally has a segment offset from program start, eg, value of
+        _DATA).
+
+Followed by:
+
+NewLength bytes of program image
+--------------------------------
+
+Followed by:
+
+NewNameLen bytes of ASCII name text
+-----------------------------------

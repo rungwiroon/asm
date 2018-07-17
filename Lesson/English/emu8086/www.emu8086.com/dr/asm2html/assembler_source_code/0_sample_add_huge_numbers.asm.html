@@ -1,0 +1,165 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/0_sample_add_huge_numbers.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> 0_sample_add_huge_numbers.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+name <font color=#800080>"huge"</font>
+
+<font color=#008000>; this example shows how to add huge unpacked bcd numbers. </font>
+
+<font color=#008000>; this allows to over come the 16 bit and even 32 bit limitation. </font>
+<font color=#008000>; because 32 digit decimal value holds over 100 bits! </font>
+<font color=#008000>; with some effort the number of digits can be increased. </font>
+
+<font color=#000064>org</font>     100h
+
+<font color=#008000>; skip data: </font>
+<font color=#0000FF>jmp</font>     code
+
+<font color=#008000>; the number of digits in numbers: </font>
+<font color=#008000>; it's important to reserve 0 as most significant digit, to avoid overflow. </font>
+<font color=#008000>; so if you need to operate with 250 digit values, you need to declare len = 251 </font>
+len     <font color=#000064>equ</font>     32
+
+<font color=#008000>; every decimal digit is stored in a separate byte. </font>
+
+<font color=#008000>; first number is: 423454612361234512344535179521 </font>
+num1    <font color=#000064>db</font>      0,0,4,2,3,4,5,4,6,1,2,3,6,1,2,3,4,5,1,2,3,4,4,5,3,5,1,7,9,5,2,1
+<font color=#008000>; second number is: 712378847771981123513137882498 </font>
+num2    <font color=#000064>db</font>      0,0,7,1,2,3,7,8,8,4,7,7,7,1,9,8,1,1,2,3,5,1,3,1,3,7,8,8,2,4,9,8
+
+<font color=#008000>; we will calculate this: </font>
+
+<font color=#008000>; sum = num1 + num2 </font>
+
+<font color=#008000>; 423454612361234512344535179521 + 712378847771981123513137882498 = </font>
+<font color=#008000>;              = 1135833460133215635857673062019 </font>
+
+sum     <font color=#000064>db</font>      len dup(0) <font color=#008000>; declare array to keep the result. </font>
+
+<font color=#008000>; you may check the result on paper, or click Start , then Run, then type "calc" and hit enter key. </font>
+
+code:   <font color=#0000FF>nop</font> <font color=#008000>; entry point (nop does nothing, it's nope). </font>
+
+<font color=#008000>; digit pointer: </font>
+<font color=#0000FF>xor</font>     <font color=#C80000>bx</font>, <font color=#C80000>bx</font>
+
+<font color=#008000>; setup the loop: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, len
+<font color=#0000FF>mov</font> 	<font color=#C80000>bx</font>, len<font color=#0064C8>-</font>1  <font color=#008000>; point to lest significant digit! </font>
+
+next_digit:
+
+        <font color=#008000>; add digits: </font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, num1<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>
+        <font color=#0000FF>adc</font>     <font color=#C80000>al</font>, num2<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>
+
+        <font color=#008000>; this is a very useful instruction that </font>
+        <font color=#008000>; adjusts the value of addition </font>
+        <font color=#008000>; to be string compatible </font>
+        <font color=#0000FF>aaa</font>
+
+        <font color=#008000>; aaa stands for ascii add adjust. </font>
+        <font color=#008000>; --- algorithm behind aaa --- </font>
+        <font color=#008000>; if low nibble of al &gt; 9 or af = 1 then: </font>
+	<font color=#008000>;     al = al + 6  </font>
+	<font color=#008000>;     ah = ah + 1  </font>
+	<font color=#008000>;     af = 1  </font>
+	<font color=#008000>;     cf = 1  </font>
+	<font color=#008000>; else </font>
+	<font color=#008000>;     af = 0  </font>
+        <font color=#008000>;     cf = 0  </font>
+        <font color=#008000>; </font>
+        <font color=#008000>; in both cases: clear the high nibble of al.          </font>
+        <font color=#008000>; --- end of aaa logic --- </font>
+
+        <font color=#008000>; store result: </font>
+        <font color=#0000FF>mov</font>     sum<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>, <font color=#C80000>al</font>
+
+        <font color=#008000>; point to next digit: </font>
+        <font color=#0000FF>dec</font>     <font color=#C80000>bx</font>
+
+        <font color=#0000FF>loop</font>    next_digit
+
+<font color=#008000>; include carry in result (if any): </font>
+<font color=#0000FF>adc</font>     sum<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>, 0
+
+
+<font color=#008000>; print out the result: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cx</font>, len
+
+<font color=#008000>; start printing from most significant digit: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, 0
+
+print_d:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, sum<font color=#0064C8>[</font><font color=#C80000>bx</font><font color=#0064C8>]</font>
+        <font color=#008000>; convert to ascii char: </font>
+        <font color=#0000FF>or</font>      <font color=#C80000>al</font>, 30h
+
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh
+        <font color=#0000FF>int</font>     10h
+
+        <font color=#0000FF>inc</font>     <font color=#C80000>bx</font>
+
+        <font color=#0000FF>loop</font>    print_d
+
+<font color=#008000>; wait for any key press: </font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+<font color=#0000FF>ret</font>  <font color=#008000>; stop </font>
+
+
+
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- other assembly language source codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/0_sample_add_huge_numbers.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

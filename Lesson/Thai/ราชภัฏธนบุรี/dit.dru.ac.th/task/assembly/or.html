@@ -1,0 +1,422 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/or.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:05 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>คำสั่ง OR</title>
+</head>
+
+<body background="back45.gif" bgcolor="#FFFFFF">
+
+<p align="center"><font color="#FF0080" size="7"><strong><u>คำสั่ง
+OR</u></strong></font></p>
+
+<p align="center"><font color="#FF0080" size="7"><strong><u><img
+src="up2.gif" width="161" height="43"></u></strong></font></p>
+
+<p align="center"><font color="#FF0080" size="7"><strong><u><img
+src="link1.gif" width="100" height="17"><img src="link1.gif"
+width="100" height="17"><img src="link1.gif" width="100"
+height="17"><img src="link1.gif" width="100" height="17"><img
+src="link1.gif" width="100" height="17"></u></strong></font></p>
+
+<p><font color="#8000FF" size="4"><strong>SYNTAX destination ,source</strong></font></p>
+
+<p><font color="#FF0080" size="4"><strong><u>คำอธิบายคำสั่งทางตรรกของ
+OR</u></strong></font></p>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>การลบด้วยตัวมันเองก็จะเซตค่าเป็นศูนย์ได้เหมือนกัน
+    ยังมีคำสั่งที่เป็นญาติกับเอ็กซ์คลูซีฟออร์
+    คือ ออร์ (OR)
+    อยู่อีกที่เราสามารถนำมาใช้แทนคำสั่งบางคำสั่งได้
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>การตรวจข้อมูลในรีจิสเตอร์
+    AX ว่าเป็นศูนย์หรือไม่
+    เราอาจใช้คำสั่ง CMP AX,0
+    แต่เราสามารถใช้คำสั่งแทนที่มีประสิทธิภาพกว่าคือการใช้คำสั่ง
+    OR,AX,AX เพราะว่า ออร์ (OR)
+    มีตารางความจริงเป็นดังนี้
+    </strong></font></p>
+    <table border="4">
+        <tr>
+            <td><font size="4"><strong>OR</strong></font></td>
+            <td><font size="4"><strong>0</strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+        <tr>
+            <td><p align="center"><font size="4"><strong>0</strong></font></p>
+            </td>
+            <td><font size="4"><strong>0 </strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+        <tr>
+            <td><p align="center"><font size="4"><strong>1</strong></font></p>
+            </td>
+            <td><font size="4"><strong>1</strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>จะเห็นได้ว่าผลที่ได้จะเป็นศูนย์ก็ต่อเมื่อข้อมูลเป็นศูนย์
+    นอกนั้นเป็นหนึ่ง (จริง)
+    หมด เพราะฉะนั้นจากคำสั่ง
+    OR,AX,AX รีจิสเตอร์ AX
+    มีค่าเท่าเดอม
+    แต่จะมีผลต่อแฟลก Z
+    เท่านั้น </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF8000" size="4"><strong>นอกจากการใช้คำสั่ง
+    OR
+    ในการเปรียบเทียบค่าแล้ว
+    เรายังสามารถใช้ในการเซตบิตที่ต้องการให้เป็นหนึ่งได้อีกด้วยเช่น
+    ต้องการเซตบิตที่สามให้เป็นหนึ่งก็สั่งได้ดังนี้
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>1011</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>0101</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>OR</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>0000</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>0000</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>--------</strong></font></td>
+            <td><font size="4"><strong>---</strong></font></td>
+            <td><font size="4"><strong>--------</strong></font></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>1011</strong></font></td>
+            <td>&nbsp;</td>
+            <td><font size="4"><strong>0101</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>สมมติให้
+    AX มีข้อมูล 1011 0101
+    หลังจากการ OR AX,0000 100b
+    แล้วจะทำให้บิตที่สาม
+    AX เป็นหนึ่งเสมอ </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>จำนวน
+    clock : (80286)2-7,(80386)2-7 </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ถูกกระทำ
+    : OF=0,CF=0,PF,SF,ZF</strong></font></p>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ไม่ต้องกำหนด
+    : AF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นในโหมด
+    protected :
+    ถ้าผลลัพธ์ที่ได้อยู่ในเซกเมนต์ที่เขียนข้อมูลได้
+    ยกเว้นการผิดพลาดนั้นเกิดขึ้น
+    ถ้าใช้เซกเมนต์ CS,DS หรือ
+    ES
+    เก็บค่าหน่วยความจำของโอเปอร์แรนด์
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นในโหมด
+    real address :
+    เมื่อโอเปอร์แรนด์อยู่ที่ตำแหน่งออฟเซ็ต
+    OFFFH ทำให้เกิด int 13 </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>80386 note :
+    ใช้กับเวิร์ดขนาด v1K </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>สำหรับการทำให้เข้าใจโปรแกรมขึ้นนั้นข้อมูลควรจะอยู่ในรูปของเลขฐานสอง
+    ซึ่งจะเก็บขนาด 1 ไบต์ (DB
+    ถ้ามีการใช้ซอฟแวร์ดีบัก
+    เซกเมนต์ข้อมูลจะปรากฎให้เห็นรูปของเลขฐานสิบหก
+    ส่วนโปรแกรมสำหรับการจำลอง
+    วงจรนั้นมีตัวอย่างดังนี้คือ
+    </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>;FOR 8088/80386 MACHINES</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>;PROGRAM TO ILLUSTRATE THE LOGIC
+    OPERATIONS ;AND/OR/XOR/NOT </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>STACK SEGMENT PARA STACK</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <p><font size="4"><strong>DB 64 DUP(MYSTACK) </strong></font></p>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>STACK ENDS </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYDATA SEGMENT PARA ‘DATA’ </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>IN1 DB 10111010B</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>IN2 DB 11111100B</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>IN3 DB 00010100B</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>IN4 DB 00010011B </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>IN5 DB 7</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYDATA ENDS </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYCODE SEGMENT PARA ‘CODE’ ;DEFINE
+    CODE SEG OFR MASM</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYPROC PROC FAR ;PROCEDURE IS NAMES
+    MYPROC</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>ASSUME CS:MYCODE,DS ;MYDATA,SS:STACK</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>PUSH DS ;SAVE LOCATION OF
+            DS REG.</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>SUB AX,AX ;GET A ZERO IN AX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>PUSH AX ;SAVE ZERO ON STACK,
+            TOO</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV AX,MYDATA ;GET DATA
+            LOCATION IN AX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV DA,AX ;PUT IT IN DA
+            REGISTER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>;EXAMPLE OF LOGICAL GATE SYNTHESIS</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV AL,IN1 ;LOAD FIRST
+            INPUT INTO AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>NOT AL ;INVERT BITS IN AL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV AH,IN2 ;LOAD SECOND
+            INPUT INTO AH</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>OR AL,AH ;ORTHE TWO</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV BL,IN3 ;LOAD THIRD
+            INPUT INTO BL</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>AND BL,IN4 ;AND THE TWO</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>XOR AL,BL ;EX-OR OUTPUTS OF
+            GATES</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>MOV ANS,AL ;SAVE RESULT IN
+            ANS(WER)</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>;COMPLETION OF GETE SYNTHESIS
+    EXAMPLE </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>RET ;RETURN CONTROL TO DOS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYPROC ENDP ;END PROCEDURE NAMED
+    MYPROC</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>MYCODE ENDS ;END CODE SEGMENT NAMED</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>;MYCODE</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>END ;END WHOLE PROGRAM</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ในโปรแกรมเซกเมนต์ที่แสดงนี้
+    ขั้นตอนของโปรแกรมนั้นเรียบง่าย
+    โดยอินพุทถูกอ่านโดยรีจิสเตอร์
+    8 บิต
+    และการกระทำทางตรรกจะเกิดขึ้น
+    โดยได้ผลลัพธ์เก็บในตัวแปร
+    ANS ซึ่งเมื่อมีการตรวจสอบข้อมูลที่ได้
+    EXECURE
+    แล้วจะพบว่าข้อมูลถูกเก็บในรูปของฐานสิบหก</strong></font></p>
+</blockquote>
+
+<p align="center">&nbsp;</p>
+
+<p align="center"><img src="line2.gif" width="435" height="15"></p>
+
+<p align="center"><a href="Menu.html"><img src="home2.gif"
+border="0" width="83" height="30"></a></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/or.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:05 GMT -->
+</html>

@@ -1,0 +1,280 @@
+SETUP_INT	PROC
+;SAVES OLD VECTOR AND SETS UP NEW VECTOR
+;INPUT  AL = INTERRUPT TYPE
+;	DI = ADDRESS OF BUFFER FOR OLD VECTOR
+;	SI = ADDRESS OF BUFFER CONTAINING NEW VECTOR
+;SAVE OLD INTERRUPT VECTOR
+	PUSH	ES
+ 	MOV	AH,35H		;FUNCTION 35H, GET VECTOR
+	INT	21H		;ES:BX = VECTOR
+	MOV	[DI],BX		;SAVE OFFSET
+	MOV	[DI+2],ES	;SAVE SEGMENT
+;SETUP NEW VECTOR
+	MOV	DX,[SI]		;DX HAS OFFSET
+	PUSH	DS		;SAVE IT
+	MOV	DS,[SI+2]	;DS HAS SEGMENT NUMBER
+	MOV	AH,25H		;FUNCTION 25H, SET VECTOR
+	INT	21H		
+	POP	DS		;RESTORE DS
+	POP	ES		;RESTORE ES
+	RET
+SETUP_INT	ENDP
+
+TIMER_TICK	PROC
+;SAVE REGISTERS
+	PUSH	DS		;SAVE DS
+	PUSH	AX
+	PUSH	BX
+	PUSH	DX
+
+	MOV	AX,SEG TIMER_FLAG	;GET SEGMENT OF FLAG
+	MOV	DS,AX			;PUT IN DS
+	MOV	TIMER_FLAG,1		;SET FLAG
+	
+;RESTORE REGISTERS
+	POP	DX
+	POP	BX
+	POP	AX
+	POP	DS		;RESTORE DS
+	IRET
+TIMER_TICK	ENDP		;END TIMER ROUTINE
+
+KEYBOARD_INT	PROC
+;KEYBOARD INTERRUPT ROUTINE
+;SAVE REGISTER
+	PUSH	DS
+	PUSH	AX
+;SET UP DS
+	MOV	AX,SEG SCAN_CODE
+	MOV	DS,AX
+;INPUT SCAN CODE
+	IN	AL,60H
+	PUSH	AX
+	IN	AL,61H
+	MOV	AH,AL
+	OR	AL,80H
+	OUT	61H,AL
+	XCHG	AH,AL
+	OUT	61H,AL
+	POP	AX
+	MOV	AH,AL
+	TEST	AL,80H
+	JNE	KEY_0
+;MAKE CODE
+	MOV	SCAN_CODE,AL
+	MOV	KEY_FLAG,1
+KEY_0:
+	MOV	AL,20H
+	OUT	20H,AL
+;RESTORE REGISTER
+	POP	AX
+	POP	DS
+	IRET
+KEYBOARD_INT	ENDP
+
+;==========================================================
+;SHOW TIME HR:MIN:SEC
+;==========================================================
+TIME_INT	PROC
+;INTERRUPT PROCEDURE
+;ACTIVATED BY THE TIMER
+	;PUSH	DS		;SAVE CURRENT DS
+	;MOV	AX,@DATA	;SET IT TO DATA SEGMENT
+	;MOV	DS,AX
+;GET NEW TIME
+	LEA	BX,TIME_BUF	;BX POINTS TIME BUFFER
+	CALL	GET_TIME	;STORE TIME IN BUFFER
+	;CALL	COUNT_TIME
+;DISPLAY TIME
+	GOTOXY	0,24
+	LEA	DX,TIME_BUF	;DX POINTS TO TIME_BUF
+	MOV	AH,09H		;DISPLAY STRING
+	INT	21H
+;RESTORE CURSOR POSITION
+	;MOV	AH,2		;FUNCTION 2, MOVE CURSOR
+	;MOV	BH,0		;PAGE 0
+	;MOV	DX,CURSOR_POS	;CURSOR POSITION,DH=ROW,DL=COL
+	;INT	10H		;
+	;POP	DS		;RESTORE DS
+	RET
+TIME_INT	ENDP		;END OF INTERRUPT PROCEDURE
+
+GET_TIME        PROC
+;GET TIME OF DAY AND STORE ASCII DIGITS IN TIME BUFFER
+;INPUT:  BX = ADDRESS OF TIME BUFFER
+        MOV     AH,2CH          ;GETTIME
+        INT     21H             ;CH = HR, CL =  MIN, DH = SEC, DL = MSEC
+;CONVERT HOURS INTO ASCII AND STORE
+        MOV     AL,CH           ;HOUR
+        CALL    CONVERT         ;CONVERT TO ASCII
+        MOV     [BX],AX         ;STORE
+;CONVERT MINUTES INTO ASCII AND STORE
+        MOV     AL,CL           ;MINUTE
+        CALL    CONVERT         ;CONVERT TO ASCII
+        MOV     [BX+3],AX       ;STORE
+;CONVERT SECONDS INTO ASCII AND STORE
+        MOV     AL,DH           ;SECOND
+        CALL    CONVERT         ;CONVERT TO ASCII
+        MOV     [BX+6],AX       ;STORE
+        RET
+GET_TIME        ENDP
+
+
+CONVERT PROC
+;CONVERTS BYTE NUMBER (0-59) INTO ASCII DIGITS
+;INPUT: AL = NUMBER
+;OUTPUT: AX = ASCII DIGITS, AL = HIGH DIGIT, AH = LOW DIGIT
+
+        MOV     AH,0            ;CLEAR AH
+        MOV     DL,10           ;DIVIDE AX BY 10
+        DIV     DL              ;AH HAS REMAINDER, AL HAS QUOTIENT
+        OR      AX,3030H        ;CONVERT TO ASCII, AH HAS LOW DIGIT
+        RET                     ;AL HAS HIGH DIGIT
+CONVERT ENDP
+
+;=============================================================================
+;SET RAND_NUM FROM TIME MILISECOND FOR RANDOMIZE IN FIRST TIME START PROGRAM
+;=============================================================================
+RANDOMIZE	PROC
+	;PUSH	AX
+	;PUSH	CX
+	;PUSH	DX
+	
+	MOV	AH,2CH          ;GET TIME
+	INT	21H
+	MOV	RAND_NUM,DX
+	
+	;POP	DX
+	;POP	CX
+	;POP	AX
+	RET
+RANDOMIZE	ENDP
+	
+;===================================================================
+;RANDOM NUMBERS THAT ARE UNIFORMLY DISTRIBUTED BETWEEN 0 AND 65535
+;SOUREC FROM WEBSITE
+;===================================================================
+RANDOM	PROC
+	PUSH	BX
+	PUSH	DX
+	
+	MOV	DX,RAND_NUM
+	MOV     BX,DX
+	SHL     DX,2
+	ADD     DX,BX
+	XCHG    DL,DH
+	MOV	RAND_NUM,DX	;0-65535 IN DX
+	
+	POP	DX
+	POP	BX
+	RET
+RANDOM	ENDP
+
+
+;===========================================
+;PRINTS AX AS A UNSIGNED DECIMAL INTEGER
+;INPUT: AX
+;OUTPUT : NONE
+;=========================================
+OUTDEC PROC
+	
+	PUSH	AX
+	PUSH	BX
+	PUSH	CX
+	PUSH	DX
+
+	;OR	AX,AX
+	;JGE	@END_IF1
+
+	;PUSH	AX
+	;MOV	DL,'-'
+	;MOV	AH,2
+	;INT	21H
+	;POP	AX
+	;NEG	AX
+
+@END_IF1:
+	XOR	CX,CX
+	MOV	BX,10D
+
+@REPEAT1:
+	XOR	DX,DX
+	DIV	BX
+	PUSH	DX
+	INC	CX
+	OR	AX,AX
+	JNE	@REPEAT1
+
+	;MOV	AH,2
+
+@PRINT_LOOP:
+	POP	DX
+	OR	DL,30H
+	;INT	21H
+	PUT_CHR	DL,253,253
+	LOOP	@PRINT_LOOP
+
+	POP	DX
+	POP	CX
+	POP	BX
+	POP	AX
+	
+	RET
+OUTDEC ENDP
+
+;===========================================================================
+;FADE OUT SCREEN
+;===========================================================================
+FADE	PROC
+	PUSHA
+		
+        CALL    VRET            ; WAIT FOR VERTICAL RETRACE
+        LEA     DI,COLOR_BUFFER ; DI = BUFFER
+        MOV     DL,0C7H         ; DX = DAC READ SELECT PORT
+        XOR     AL,AL           ; SELECT DAC REGISTER 0
+        OUT     DX,AL
+        MOV     DL,0C9H         ; DX = DAC DATA PORT
+        MOV     CX,768          ; READ 768 BYTES FROM THE DAC DATA PORT INTO
+        REP     INSB            ; THE BUFFER (READ THE ORIGINAL PALETTE)
+
+        MOV     BX,63           ; 63 ITERATIONS ALWAYS CLEAR ALL COLORS
+M_1:    LEA     SI,COLOR_BUFFER	; SI, DI = BUFFER
+        LEA	DI,COLOR_BUFFER
+        MOV     CX,768          ; FOR EACH OF 768 DATA BYTES:
+
+M_2:    LODSB                   ; LOAD BYTE
+        CMP     AL,1            ; IF IT'S GREATER THAN ZERO, REDUCE IT BY 1
+        ADC     AL,-1
+        STOSB                   ; STORE BYTE
+        LOOP    M_2             ; LOOP
+
+        MOV     CL,4            ; WAIT FOR VERTICAL RETRACE 4 TIMES
+M_3:    CALL    VRET            ; FOR A DELAY OF ABOUT 0.06 SECONDS
+        LOOP    M_3
+        LEA     SI,COLOR_BUFFER ; SI = BUFFER
+        MOV     DL,0C8H         ; DX = DAC WRITE SELECT PORT
+        XOR     AL,AL           ; SELECT DAC REGISTER 0
+        OUT     DX,AL
+        INC     DX              ; DX = DAC DATA PORT
+        MOV     CX,768          ; SEND 768 BYTES FROM THE BUFFER TO THE DAC
+        REP     OUTSB           ; DATA PORT (SET THE CURRENT PALETTE)
+
+        DEC     BX              ; LOOP
+        JNZ     M_1
+
+	POPA
+	RET                     ; RETURN
+
+;------------------------------------------------------------
+
+VRET:   MOV     DX,03DAH        ; DX = IS1 PORT, WAITING FOR RETRACE
+V_1:    IN      AL,DX           ; WAIT FOR BIT 3 TO GO OFF (ACTIVE PERIOD)
+        TEST    AL,8
+        JNZ     V_1
+V_2:    IN      AL,DX           ; WAIT FOR BIT 3 TO COME ON (RETRACE PERIOD)
+        TEST    AL,8
+        JZ      V_2
+        RET                     ; RETURN
+
+FADE	ENDP
+		

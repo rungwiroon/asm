@@ -1,0 +1,199 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/include.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> include.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+
+<font color=#008000>; this sample shows the use of emu8086.inc </font>
+<font color=#008000>; this is library of predefined macros and procedures for easy input/output. </font>
+
+name <font color=#800080>"inc"</font>
+
+<font color=#000064>include</font> <font color=#800080>"emu8086.inc"</font>
+
+<font color=#008000>; it is also possible to just copy and paste ready procedures from emu8086.inc </font>
+<font color=#008000>; and use them in your program, this way it is possible to step through original </font>
+<font color=#008000>; source code. </font>
+
+
+<font color=#008000>; note, that some declarations of "emu8086.inc" </font>
+<font color=#008000>; are macro procedure declarations, and you </font>
+<font color=#008000>; have to use "define_..." macro somewhere </font>
+<font color=#008000>; in your program if you want to use </font>
+<font color=#008000>; these functions: </font>
+
+<font color=#008000>;   call scan_num </font>
+<font color=#008000>;   call print_string </font>
+<font color=#008000>;   call pthis </font>
+<font color=#008000>;   call get_string </font>
+<font color=#008000>;   call clear_screen </font>
+<font color=#008000>;   call print_num </font>
+<font color=#008000>;   call print_num_uns </font>
+
+<font color=#008000>; you can define all these procedures in your </font>
+<font color=#008000>; source code, but compilation time may slow down </font>
+<font color=#008000>; sufficiently because of that, only declare </font>
+<font color=#008000>; functions that you plan to use: </font>
+
+
+<font color=#008000>;   define_scan_num </font>
+<font color=#008000>;   define_print_string </font>
+<font color=#008000>;   define_pthis </font>
+<font color=#008000>;   define_get_string </font>
+<font color=#008000>;   define_clear_screen </font>
+<font color=#008000>;   define_print_num </font>
+<font color=#008000>;   define_print_num_uns </font>
+
+<font color=#008000>;  the above declarations should be made in </font>
+<font color=#008000>;  your code once only! better somewhere </font>
+<font color=#008000>;  in the end of your file, but before "end" </font>
+<font color=#008000>;  directive. you can also declare them </font>
+<font color=#008000>;  in the beginning of the file, but it should </font>
+<font color=#008000>;  be after "org 100h" directive (for com files). </font>
+
+
+
+
+
+
+
+
+<font color=#000064>org</font>     100h
+
+
+<font color=#0000FF>jmp</font> start  <font color=#008000>; skip over the declarations </font>
+
+<font color=#008000>;================================= </font>
+<font color=#008000>; here we define the functions </font>
+<font color=#008000>; from emu8086.inc </font>
+
+<font color=#008000>; scan_num reads a </font>
+<font color=#008000>; number from the user and stores </font>
+<font color=#008000>; it in cx register: </font>
+define_scan_num
+
+<font color=#008000>; print_string prints a null </font>
+<font color=#008000>; terminated string, the address </font>
+<font color=#008000>; of the string is in ds:si  </font>
+define_print_string
+
+<font color=#008000>; print_num prints a signed </font>
+<font color=#008000>; number in ax. </font>
+<font color=#008000>; (print_num requires the declaration </font>
+<font color=#008000>; of print_num_uns). </font>
+<font color=#008000>; print_num_uns prints an unsigned </font>
+<font color=#008000>; number in ax: </font>
+
+define_print_num
+define_print_num_uns
+
+<font color=#008000>;================================= </font>
+
+
+start:
+
+<font color=#008000>; print out some chars, </font>
+<font color=#008000>; using macro: </font>
+putc    <font color=#800080>'h'</font>
+putc    <font color=#800080>'i'</font>
+putc    <font color=#800080>' '</font>
+putc    <font color=#800080>'t'</font>
+putc    <font color=#800080>'h'</font>
+putc    <font color=#800080>'e'</font>
+putc    <font color=#800080>'r'</font>
+putc    <font color=#800080>'e'</font>
+putc    <font color=#800080>'!'</font>
+
+<font color=#008000>; new line: </font>
+putc    0Dh
+putc    0Ah
+
+<font color=#008000>; print string using macro </font>
+<font color=#008000>; with carriage return in the end: </font>
+printn <font color=#800080>"assembly language programming is fun!"</font>
+
+<font color=#008000>; print string using procedure: </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>si</font>, msg
+<font color=#0000FF>call</font>    print_string
+
+<font color=#008000>; input a number into cx </font>
+<font color=#008000>; using procedure: </font>
+<font color=#0000FF>call</font>    scan_num
+
+<font color=#008000>; new line: </font>
+putc    0Dh
+putc    0Ah
+
+print <font color=#800080>"your lucky number is: "</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, <font color=#C80000>cx</font>
+<font color=#008000>; print out the number in ax </font>
+<font color=#008000>; using procedure: </font>
+<font color=#0000FF>call</font>    print_num
+
+
+printn <font color=#800080>""</font>
+printn <font color=#800080>""</font>
+
+printn <font color=#800080>"press any key..."</font>
+<font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font> 16h
+
+
+
+
+
+<font color=#0000FF>ret</font>
+
+msg     <font color=#000064>db</font>      <font color=#800080>"enter a number: "</font>, 0
+
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/include.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

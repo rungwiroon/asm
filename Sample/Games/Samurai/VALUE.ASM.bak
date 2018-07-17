@@ -1,0 +1,11 @@
+.DATA
+	BMP_X	  DW ?
+	BMP_Y	  DW ?
+	gpw1	  DW ?
+	gpw2	  DW ?
+	filehandle DW ?
+	byte_buffer DB ?
+	MENU1	DB	'.\PIC\MENU1.PIC',0
+	MENU2	DB	'.\PIC\MENU2.PIC',0
+	MENU3	DB	'.\PIC\HOME1.PIC',0
+	MENU4	DB	'.\PIC\GREEN1.PIC',0

@@ -1,0 +1,644 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/xor.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:59 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>คำสั่ง XOR</title>
+</head>
+
+<body background="bg.gif" bgcolor="#FFFFFF">
+
+<p align="center"><font color="#FF0080" size="7"><strong><u>คำสั่ง
+XOR</u></strong></font></p>
+
+<blockquote>
+    <blockquote>
+        <p align="center"><font color="#FF0080" size="7"><strong><u><img
+        src="thailand.gif" width="68" height="50"></u></strong></font></p>
+        <p align="center"><font color="#FF0080" size="7"><strong><u><img
+        src="line2.gif" width="435" height="15"></u></strong></font></p>
+    </blockquote>
+</blockquote>
+
+<p><a href="Menu.html"><img src="Back.gif" border="0" width="83"
+height="28"></a></p>
+
+<p><font color="#0000FF" size="5"><strong>AYNTAX XOR destination,source</strong></font></p>
+
+<p><font color="#FF0000" size="5"><strong><u>คำอธิบายทางตรรก</u></strong></font></p>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>ทีนี้ลองมาดูว่าทำไมคำสั่ง
+    XOR,AX,AX
+    จึงสามาารถเซตข้อมูลในรีจิสเตอร์เป็นศูนย์ได้
+    คำสั่งนี้เป็นคำสั่งทางลอจิก
+    อ่านว่า
+    เอ็กซ์คลูซีฟออร์ (Exclusive
+    OR)
+    ซึ่งมีค่าตารางความจริง
+    (true table) ดังนี้ </strong></font></p>
+    <table border="3">
+        <tr>
+            <td><font size="4"><strong>XOR</strong></font></td>
+            <td><font size="4"><strong>0</strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+        <tr>
+            <td><p align="center"><font size="4"><strong>0</strong></font></p>
+            </td>
+            <td><font size="4"><strong>0 </strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+        <tr>
+            <td><p align="center"><font size="4"><strong>1</strong></font></p>
+            </td>
+            <td><font size="4"><strong>1 </strong></font></td>
+            <td><font size="4"><strong>1</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>จะเห็นว่าถ้าบิตใดบิตหนึ่งเป็นจริงเพียงบิตเดียว
+    แต่ไม่จริงทั้งสองบิตพร้อมกัน
+    จะได้ค่าเป็นจริง
+    ดังนั้นถ้า AX มีข้อมูล
+    1011 0101 อยู่ เมื่อพบคำสั่ง
+    XOR,AX,AX
+    ผลลัพธ์จะเป็นศูนย์เสมอ</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <table border="0">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>1011</strong></font></td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>0101
+                    </strong></font></td>
+                </tr>
+                <tr>
+                    <td><font color="#FF0080" size="4"><strong>XOR</strong></font></td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>1011</strong></font></td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>0101</strong></font></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>-------</strong></font></td>
+                    <td><font color="#FF0080" size="4"><strong>--</strong></font></td>
+                    <td><font color="#FF0080" size="4"><strong>-------</strong></font></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>0000</strong></font></td>
+                    <td>&nbsp;</td>
+                    <td><font color="#FF0080" size="4"><strong>0000
+                    </strong></font></td>
+                </tr>
+            </table>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>จำนวน
+    clock : (80286)2-3,(80386)2-7</strong></font></p>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ถูกกระทำ
+    : OF=0,CF=0,PF,SF,ZF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>แฟลกที่ไม่ต้องกำหนด
+    : AF</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นในโหมด
+    protected :
+    ถ้าผลลัพธ์ที่ได้อยู่ในเซกเมนต์ที่เขียนข้อมูลได้ยกเว้นการผิดพลาดนั้นเกิดขึ้น
+    ถ้าใช้เซกเมนต์ CS,DS หรือ
+    ES
+    เก็บค่าหน่วยความจำของโอเปอร์แรนด์
+    EA ก็จะเกิดการยกเว้น
+    แต่ถ้าเป็นเซกเมนต์ SS</strong></font><font
+    color="#0000FF" size="4" face="CordiaUPC"><strong> </strong></font><font
+    color="#0000FF" size="4"><strong>จะเกิดความผิดพลาดที่
+    stack ขึ้น </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>ข้อยกเว้นในโหมด
+    real address :
+    เมื่อโอเปอร์แรนด์อยู่ที่ตำแหน่งออฟเซ็ต
+    OFFFH ทำให้เกิด int 13 80386 note :
+    ใช้กับเวิร์ดขนาด 32 บิต</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p align="center"><font color="#FF0000" size="5"><strong><u><img
+    src="post.gif" width="53" height="51"></u></strong></font></p>
+    <p><font color="#FF0000" size="5"><strong><u>ตัวอย่างโปรแกรม</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>การจัดเก็บกลุ่มของมาโครที่ใช้ง่ายบ่อย
+    ๆ เข้าไว้ในไฟล์ชื่อ
+    MACLIB.MAC </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>PUSHA MACRO ;SAVES
+    SYSTEM’S REGISTER </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH AX ;NOT
+            NEEDED BY 80286/80386</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH CX ;MACHINES</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH DX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH BX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH BP</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH SI</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH DI</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDM</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>POPA MACRO ;RESTORES
+    SYSTEM REGISTER</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH DI ;NOT
+            NEEDED BY 80286/80386</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH SI ;MACHINES</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH BP</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH BX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH DX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH CX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH AX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDM </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>DELAY MACRO TIME ;SOFTWARE
+    RIME DELAY CONIROLLED</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>LOGICAL P1,P2
+            ;BY (TIME) AND SYSTEM CLOCK TATE</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSHA ;SAVE
+            REGISTER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV DX,TIME
+            ;MOVE LARCE UNITS INTO DX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>P1 : MOV CX0F00H ;SMALL
+    INCREMENTS SET IN CX</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>P2 : DEC CX ;DECREMENT
+    CX</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>JNZ P2 ;IFNOTZERO,P2</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>DEC DX ;IF
+            ZERO,DECREMENT DX</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>JNZ P1 ;IF
+            DX NOT ZERO, P1</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PAPA ;RESTORE
+            REGIXTER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDM ;END
+            MACRO</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>CLEARSCREEN MACRE ;CLEARS
+    COLOR SCREEN</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSHA ;SAVE
+            REGISTER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV CX,0 ;SET
+            UPPER CORNER OF WINDOW</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV DX,2479H
+            ;SET LOWER CORNER OF WINDOW</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV BH,7 ;SET
+            SCREEN ATTRIBYTE(NORMAL)</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AX,0600H
+            ;INTERRUPT PARAMETERS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>INT 10H ;CALL
+            INTERRUPT</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>POPA ;RESTORE
+            TEGISTERS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDM ;END
+            MACRO </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>PRINTNUM MACRO ;PRINTS
+    ASCII NUMBER ON SCREEN</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSHA ;SAVE
+            REGISTER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSH AX ;SAVE
+            AX IT WILL BE DESTROVED</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AH,15 ;GET
+            CURRENT SCREEN</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>INT 10H ;CALL
+            INTERRUPT, SET BX VALUES</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>POP AX ;RESTORE
+            AX VALUES</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>AND AL,0FH
+            ;KEEP ONLY LOWER 4 BITS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>OR AL,30H ;MAKE
+            IT ASCII</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AH,10 ;SET
+            INTERRUPT PARAMETER</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV CX,1 ;NUMBER
+            OF CHAR, TO WRITE</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>INT 10H ;CALL
+            THE INTERRUPT</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>POPA ;RESTORE
+            THE REGISTERS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDN ;END
+            MACRO </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>PRINTCHAR MACRO
+    TEXT ;PRINT CHARACTERS FROM DATA</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>PUSHA ;SEGMENT,
+            STRING TO BE PASSED</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>LEA DX,TEXT
+            ;IN (TEXT),PRINTF UNTIL ($)</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>MOV AH,9 ;IS
+            LOCATED, PRONTS FROM CURRENT</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>INT 21H ;CURSOR
+            POSITION</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>POPS ;RESTORE
+            THE REGISTERS</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font color="#0000FF" size="4"><strong>ENDM ;END
+            MACRO</strong></font><font size="4"><strong> </strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<p align="center"><a href="Menu.html"><img src="home2.gif"
+border="0" width="83" height="30"></a></p>
+
+<p align="center"><img src="link1.gif" width="100" height="17"><img
+src="link1.gif" width="100" height="17"><img src="link1.gif"
+width="100" height="17"><img src="link1.gif" width="100"
+height="17"></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/xor.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 06:00:00 GMT -->
+</html>

@@ -1,0 +1,109 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/PrinterDemo.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> PrinterDemo.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; the printer demonstration. </font>
+
+<font color=#008000>; this is simplified/ms-dos complatible version. </font>
+
+<font color=#008000>; this example may not work on Windows XP, however it may work for Windows 95/98: </font>
+<font color=#008000>; http://support.microsoft.com/default.aspx?scid=kb;en-us;Q258878 </font>
+
+<font color=#008000>; the printer device is created by Andrew Nelis. </font>
+
+<font color=#008000>; the original example that uses i/o ports that are unique to the emulator is located here: </font>
+<font color=#008000>; c:\emu8086\DEVICES\DEVELOPER\sources\Printer_emulation_demo.asm </font>
+
+
+name <font color=#800080>"printer"</font>
+
+<font color=#000064>org</font> 100h
+
+<font color=#0000FF>jmp</font> start
+msg <font color=#000064>db</font> <font color=#800080>"Hello, Printer!"</font>, 0Ah, 0Dh
+    <font color=#000064>db</font> <font color=#800080>"***************"</font>
+    <font color=#000064>db</font> 13, 9    <font color=#008000>; carriage return and vertical tab </font>
+    <font color=#000064>db</font> <font color=#800080>"Have a nice printing day!"</font>
+
+msg_end <font color=#000064>db</font> 0
+msg2 <font color=#000064>db</font> <font color=#800080>"press any key to eject the page.$"</font>
+
+start:
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 12      <font color=#008000>; form feed code. new page. </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 5
+    <font color=#0000FF>int</font> 21h
+
+
+    <font color=#0000FF>mov</font> <font color=#C80000>si</font>, <font color=#000064>offset</font> msg
+    <font color=#0000FF>mov</font> <font color=#C80000>cx</font>, <font color=#000064>offset</font> msg_end <font color=#0064C8>-</font> <font color=#000064>offset</font> msg
+print:
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 5       <font color=#008000>; MS-DOS print function. </font>
+    <font color=#0000FF>int</font> 21h
+    <font color=#0000FF>inc</font> <font color=#C80000>si</font>	        <font color=#008000>; next char. </font>
+    <font color=#0000FF>loop</font> print
+
+    <font color=#0000FF>mov</font> <font color=#C80000>dx</font>, <font color=#000064>offset</font> msg2
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 9
+    <font color=#0000FF>int</font> 21h
+
+    <font color=#0000FF>mov</font> <font color=#C80000>ax</font>, 0       <font color=#008000>; wait for any key... </font>
+    <font color=#0000FF>int</font> 16h
+
+    <font color=#0000FF>mov</font> <font color=#C80000>dl</font>, 12      <font color=#008000>; form feed code. page out! </font>
+    <font color=#0000FF>mov</font> <font color=#C80000>ah</font>, 5
+    <font color=#0000FF>int</font> 21h
+
+<font color=#0000FF>ret</font>
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/PrinterDemo.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

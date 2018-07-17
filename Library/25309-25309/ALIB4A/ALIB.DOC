@@ -1,0 +1,198 @@
+        
+                            ALIB Version 4.0
+                           ==================
+               Un-Copyright (C) 1994 Owens Consulting and
+                         Jeff Owens,  10-09-94
+                          24551 Metzler Park
+                          Estacada, OR 97023
+
+                          kowens@teleport.com
+                                  
+
+        What is it?
+        -------------
+
+        ALIB is a (FREE) library of common functions needed by assembly
+        language programmers.  Some of the functions included in
+        ALIB are:
+
+           * Database   * Compression   * Memory Manager
+           * Menuing    * Floating Math * Hyper text
+           * Windowing  * Hardware analysis
+
+        This package consists of three zip files as follows:
+
+          ALIB4a.ZIP - Library and Documentation
+          ALIB4b.ZIP - Sample Programs
+          ALIB4c.ZIP - Source files
+
+
+        Why was it written?
+        -------------------
+
+        For years assembly language has been regarded as somewhat
+        tedious and difficult, but its small size, unlimited
+        freedom, and performance have kept it very much alive.
+        This library attempts to remove some of the tedium by
+        adding a set of high level functions to the programmers
+        arsenal.  With ALIB it is possible to write DOS programs
+        in a few minutes.
+
+
+        What hardware and software is needed?
+        -------------------------------------
+
+        For use with IBM PS/2, XT, PC and compatibles with DOS 2.1
+        or greater capability.  The following software will be
+        needed to make use of ALIB:
+
+        1.  Assembler for 8088,8086,80386, etc.  Known assemblers
+            are:  A86 (Shareware), MASM (Microsoft), TASM
+            (Borland), OPTASM (SLR Systems).
+
+        2.  Linker to handle the .OBJ file produced by
+            the assembler.  Linkers are usually sold
+            with the assembler except in the case of
+            A86.
+
+        3.  Debugger for testing.  Many assemblers have
+            a companion debugger which is sold separately.
+            All of these debuggers are adequate.  The
+            old standby DOS DEBUG program will work, but
+            it needs symbolic capability for serious
+            work.  The independently produced Periscope
+            debuggers are also very good.
+            
+
+        How do I install it?
+        --------------------
+
+        To initially explore ALIB it is best to place it in a
+        separate directory and work with it there.  No special
+        installation process is necessary.  Eventually, the
+        library itself (ALIB.LIB) can be placed in a common
+        directory of assembly tools and the remaining files
+        archived.
+
+        What files make up ALIB4a.ZIP ?
+        -------------------------------
+    
+        ALIB.LIB         Library of functions
+        ALIB.DOC         General information
+        SUMMARY.DOC      Summary of library functions 
+        CALLS.DOC        Detailed description of library functions
+        TEMPLATE.ASM     Sample format for most programs
+        HINTS.DOC        How to use ALIB
+        SAMPLE.DOC       Sample programs
+        SPEED.DOC        Notes on performance
+        COMMON.INC       Inputs for sample programs
+        MAC.INC          Macros for sample programs
+        FILE_ID.DIZ      Short description for BBS usage
+
+        What files help with understanding ALIB?
+        ----------------------------------------
+
+        Assembly language programmers can get started by looking at
+        TEMPLATE.ASM and then using SUMMARY.DOC, CALLS.DOC and the sample
+        programs as reference maternal.  Novice programmers should probably
+        execute the sample program called HYPER and study the material,
+        then study the sample programs, starting with TEMPLATE.ASM.  
+        
+
+        Is registration necessary?
+        --------------------------
+         
+        Registration of ALIB is not required for personal or
+        commercial use.  However, ALIB will not grow and improve
+        without some support.  If you have a useful piece of code
+        or comment, please send it to the author for future updates.
+          
+         
+                  Program and Manual by Jeff Owens
+                       Owens Consulting, 24551 Metzler Park
+                       Estacada Oregon  97023
+
+                       kowens@teleport.com
+         
+
+        Can I distribute ALIB to others?
+        --------------------------------
+
+        You are free to distribute this program, provided that
+        neither the program nor this document are changed, and the
+        program and this document are kept together.  Only a
+        marginal fee may be asked for shipment and handling when
+        distributing.  You are not allowed to sell this program.
+                 
+
+        What if problems occur?
+        -----------------------
+
+        Problems?  What problems?  After two years of work no
+        programmer wants to talk about problems.  But, the truth
+        is that problems will occur.  Either the documentation
+        will not be adequate, bugs will be found, or necessary
+        features will be missing.  The answer to all these
+        problems is the same, either discard ALIB or support it.
+        My pledge is to support ALIB without any monetary gain as
+        long as there is a reasonable interest level. 
+
+
+        Legal disclaimer
+        ---------------
+      
+        THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+        KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+        LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+        FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS TO
+        THE QUALITY AND PERFORMANCE OF THE PRODUCT IS WITH YOU.
+        SHOULD THE PRODUCT PROVE DEFECTIVE, YOU ASSUME THE COST OF
+        ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+        IN NO EVENT WILL OWENS CONSULTING, OR ANY OTHER PARTY WHO
+        MAY HAVE REDISTRIBUTED THE PRODUCT AS PERMITTED ABOVE, BE
+        LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL,
+        INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE
+        OR INABILITY TO USE THE PRODUCT (INCLUDING BUT NOT LIMITED
+        TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR
+        LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF
+        THE PRODUCT TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF
+        SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
+        POSSIBILITY OF SUCH DAMAGES.
+
+
+
+        Limitations:
+        -------------
+
+        ALIB is definitely not for everyone.  If you are interested in
+        graphic screens, buttons, etc. then look elsewhere.  This
+        library is not for graphic applications.  On the other
+        hand, lack of graphics greatly increases compatibility,
+        speed, and reduces code size.
+
+        ALIB is not designed to be accessed from other languages.
+        It is possible, but not advised.  The use of registers,
+        memory, and display all are designed as if ALIB is the
+        main program.
+
+        ALIB is not designed for use with TSR (Terminate and
+        Stay Resident) programs.  Most of the functions will
+        work with TSR's but those calling the memory manager
+        will not function.
+        
+        And last but not least, the documentation for ALIB is
+        very breif and does not explain some of the more complicated
+        functions in sufficient detail for all audiences.
+
+
+        Future
+        ------
+
+        I would like ALIB to be NASM based in the future and utilize
+        freeware links.  When time is available functions and programs
+        will be rewritten and tested.  Others who are also interested in
+        this are invited to email and share resources.
+
+        Also, adapting some of this for LINUX is of interest.
+

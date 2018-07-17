@@ -1,0 +1,237 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/micro-os_loader.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> micro-os_loader.asm </font></center>
+
+
+
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+     name <font color=#800080>"loader"</font>
+<font color=#008000>; this is a very basic example of a tiny operating system. </font>
+
+<font color=#008000>; directive to create boot file: </font>
+   #make_boot#
+
+<font color=#008000>; this is an os loader only! </font>
+<font color=#008000>; </font>
+<font color=#008000>; it can be loaded at the first sector of a floppy disk: </font>
+
+<font color=#008000>;   cylinder: 0 </font>
+<font color=#008000>;   sector: 1 </font>
+<font color=#008000>;   head: 0 </font>
+
+
+
+<font color=#008000>;================================================= </font>
+<font color=#008000>; how to test micro-operating system: </font>
+<font color=#008000>;   1. compile micro-os_loader.asm </font>
+<font color=#008000>;   2. compile micro-os_kernel.asm </font>
+<font color=#008000>;   3. compile writebin.asm </font>
+<font color=#008000>;   4. insert empty floppy disk to drive a: </font>
+<font color=#008000>;   5. from command prompt type: </font>
+<font color=#008000>;        writebin loader.bin </font>
+<font color=#008000>;        writebin kernel.bin /k </font>
+<font color=#008000>;================================================= </font>
+
+
+<font color=#008000>; </font>
+<font color=#008000>; The code in this file is supposed to load </font>
+<font color=#008000>; the kernel (micro-os_kernel.asm) and to pass control over it. </font>
+<font color=#008000>; The kernel code should be on floppy at: </font>
+
+<font color=#008000>;   cylinder: 0 </font>
+<font color=#008000>;   sector: 2 </font>
+<font color=#008000>;   head: 0 </font>
+
+<font color=#008000>; memory table (hex): </font>
+<font color=#008000>; ------------------------------- </font>
+<font color=#008000>; 07c0:0000 |   boot sector </font>
+<font color=#008000>; 07c0:01ff |   (512 bytes) </font>
+<font color=#008000>; ------------------------------- </font>
+<font color=#008000>; 07c0:0200 |    stack </font>
+<font color=#008000>; 07c0:03ff |   (255 words) </font>
+<font color=#008000>; ------------------------------- </font>
+<font color=#008000>; 0800:0000 |    kernel </font>
+<font color=#008000>; 0800:1400 |  </font>
+<font color=#008000>;           |   (currently 5 kb, </font>
+<font color=#008000>;           |    10 sectors are </font>
+<font color=#008000>;           |    loaded from </font>
+<font color=#008000>;           |    floppy) </font>
+<font color=#008000>; ------------------------------- </font>
+
+
+<font color=#008000>; To test this program in real envirinment write it to floppy </font>
+<font color=#008000>; disk using compiled writebin.asm </font>
+<font color=#008000>; After sucessfully compilation of both files, </font>
+<font color=#008000>; type this from command prompt:   writebin loader.bin    </font>
+
+<font color=#008000>; Note: floppy disk boot record will be overwritten. </font>
+<font color=#008000>;       the floppy will not be useable under windows/dos until </font>
+<font color=#008000>;       you reformat it, data on floppy disk may be lost. </font>
+<font color=#008000>;       use empty floppy disks only. </font>
+
+
+<font color=#008000>; micro-os_loader.asm file produced by this code should be less or </font>
+<font color=#008000>; equal to 512 bytes, since this is the size of the boot sector. </font>
+
+
+
+<font color=#008000>; boot record is loaded at 0000:7c00 </font>
+<font color=#000064>org</font> 7c00h
+
+<font color=#008000>; initialize the stack: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 07c0h
+<font color=#0000FF>mov</font>     <font color=#800000>ss</font>, <font color=#C80000>ax</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>sp</font>, 03feh <font color=#008000>; top of the stack. </font>
+
+
+<font color=#008000>; set data segment: </font>
+<font color=#0000FF>xor</font>     <font color=#C80000>ax</font>, <font color=#C80000>ax</font>
+<font color=#0000FF>mov</font>     <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+
+<font color=#008000>; set default video mode 80x25: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 00h
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 03h
+<font color=#0000FF>int</font>     10h
+
+<font color=#008000>; print welcome message: </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>si</font>, msg
+<font color=#0000FF>call</font>    print_string
+
+<font color=#008000>;=================================== </font>
+<font color=#008000>; load the kernel at 0800h:0000h </font>
+<font color=#008000>; 10 sectors starting at: </font>
+<font color=#008000>;   cylinder: 0 </font>
+<font color=#008000>;   sector: 2 </font>
+<font color=#008000>;   head: 0 </font>
+
+<font color=#008000>; BIOS passes drive number in dl, </font>
+<font color=#008000>; so it's not changed: </font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 02h <font color=#008000>; read function. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>al</font>, 10  <font color=#008000>; sectors to read. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ch</font>, 0   <font color=#008000>; cylinder. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>cl</font>, 2   <font color=#008000>; sector. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>dh</font>, 0   <font color=#008000>; head. </font>
+<font color=#008000>; dl not changed! - drive number. </font>
+
+<font color=#008000>; es:bx points to receiving </font>
+<font color=#008000>;  data buffer: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, 0800h
+<font color=#0000FF>mov</font>     <font color=#800000>es</font>, <font color=#C80000>bx</font>
+<font color=#0000FF>mov</font>     <font color=#C80000>bx</font>, 0
+
+<font color=#008000>; read! </font>
+<font color=#0000FF>int</font>     13h
+<font color=#008000>;=================================== </font>
+
+<font color=#008000>; integrity check: </font>
+<font color=#0000FF>cmp</font>     <font color=#800000>es</font>:<font color=#0064C8>[</font>0000<font color=#0064C8>]</font>,0E9h  <font color=#008000>; first byte of kernel must be 0E9 (jmp). </font>
+<font color=#0000FF>je</font>     integrity_check_ok
+
+<font color=#008000>; integrity check error </font>
+<font color=#0000FF>lea</font>     <font color=#C80000>si</font>, err
+<font color=#0000FF>call</font>    print_string
+
+<font color=#008000>; wait for any key... </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font>     16h
+
+<font color=#008000>; store magic value at 0040h:0072h: </font>
+<font color=#008000>;   0000h - cold boot. </font>
+<font color=#008000>;   1234h - warm boot. </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 0040h
+<font color=#0000FF>mov</font>     <font color=#800000>ds</font>, <font color=#C80000>ax</font>
+<font color=#0000FF>mov</font>     w.<font color=#0064C8>[</font>0072h<font color=#0064C8>]</font>, 0000h <font color=#008000>; cold boot. </font>
+<font color=#0000FF>jmp</font>	0ffffh:0000h	     <font color=#008000>; reboot! </font>
+
+<font color=#008000>;=================================== </font>
+
+integrity_check_ok:
+<font color=#008000>; pass control to kernel: </font>
+<font color=#0000FF>jmp</font>     0800h:0000h
+
+<font color=#008000>;=========================================== </font>
+
+
+
+print_string <font color=#0000FF>proc</font> near
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>      <font color=#008000>; store registers... </font>
+<font color=#0000FF>push</font>    <font color=#C80000>si</font>      <font color=#008000>; </font>
+next_char:
+        <font color=#0000FF>mov</font>     <font color=#C80000>al</font>, <font color=#0064C8>[</font><font color=#C80000>si</font><font color=#0064C8>]</font>
+        <font color=#0000FF>cmp</font>     <font color=#C80000>al</font>, 0
+        <font color=#0000FF>jz</font>      printed
+        <font color=#0000FF>inc</font>     <font color=#C80000>si</font>
+        <font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0eh <font color=#008000>; teletype function. </font>
+        <font color=#0000FF>int</font>     10h
+        <font color=#0000FF>jmp</font>     next_char
+printed:
+<font color=#0000FF>pop</font>     <font color=#C80000>si</font>      <font color=#008000>; re-store registers... </font>
+<font color=#0000FF>pop</font>     <font color=#C80000>ax</font>      <font color=#008000>; </font>
+<font color=#0000FF>ret</font>
+print_string endp
+
+
+
+
+<font color=#008000>;==== data section ===================== </font>
+
+msg  <font color=#000064>db</font> <font color=#800080>"Loading..."</font>,0Dh,0Ah, 0
+
+err  <font color=#000064>db</font> <font color=#800080>"invalid data at sector: 2, cylinder: 0, head: 0 - integrity check failed."</font>, 0Dh,0Ah
+     <font color=#000064>db</font> <font color=#800080>"refer to tutorial 11 - making your own operating system."</font>, 0Dh,0Ah
+     <font color=#000064>db</font> <font color=#800080>"System will reboot now. Press any key..."</font>, 0
+
+<font color=#008000>;====================================== </font>
+
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 4.00-Beta-27    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/micro-os_loader.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

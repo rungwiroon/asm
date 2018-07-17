@@ -1,0 +1,3 @@
+link game+stdm;
+GAME
+

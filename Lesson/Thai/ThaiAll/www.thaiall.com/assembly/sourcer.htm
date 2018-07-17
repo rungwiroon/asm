@@ -1,0 +1,126 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/sourcer.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:54 GMT -->
+<head><title>sourcer แปลง exe เป็น asm</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name=keywords content="sourcer,asm,exe">
+<meta name=description content="sourcer แปลง exe เป็น asm">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+sourcer แปลง exe เป็น asm</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2549-11-17 (ทดสอบแปลงแฟ้ม)
+<br>
+
+<ul>
+<center><b>ขั้นตอนการทดสอบ</b>
+<br>คัดลอก SRMACROS.INC และทั้งหมดของ Sourcer ไปในห้อง c:\masm611\bin
+</center>
+<font face="courier new">
+<ol><b><font face="microsoft sans serif" color=blue>สร้าง seg1.exe จาก seg1.asm ด้วย Macro Assembler 611</font></b>
+<li>c:\masm611\bin>masm seg1.asm
+<li>c:\masm611\bin>link seg1,,seg1,,,,
+<li>c:\masm611\bin>seg1
+<li>c:\masm611\bin>copy seg1.exe seg11.exe
+<br><b><font face="microsoft sans serif" color=blue>แปลง seg11.exe เป็น seg11.asm ด้วย Sourcer 6.51</font></b>
+<li>c:\masm611\bin>sr seg11 แล้วกด f,t,g
+<li>c:\masm611\bin>masm seg11.asm
+<li>c:\masm611\bin>link seg11,,seg11,,,,
+<li>c:\masm611\bin>seg11
+</font>
+</ol>
+<hr>
+<ol><b>ปุ่มใน Sourcer</b>
+<li>I, Input file = seg1.exe
+<li>F, File Format = .asm
+<li>T, Target Assembler = MASM-6.11
+<li>G = Go begin processing
+</ol>
+<img src=sourcer.gif>
+<pre><font size=6>Input File : seg1.asm</font><font color=red face="courier new">
+sseg  segment
+      db      64 dup(?)   
+sseg  ends
+dseg  segment
+a     db      61h
+dseg  ends
+cseg  segment
+main  proc    far
+      assume  cs:cseg,ds:dseg,ss:sseg
+      mov     ax,dseg
+      mov     ds,ax
+      mov     dl,a
+      mov     ah,2
+      int     21h
+      mov     ah,4ch
+      int     21h
+main  endp
+cseg  ends
+      end     main
+</font><hr><font size=6>Output File : seg11.asm</font><font color=blue face="courier new">
+target		EQU   'M6'                      ; Target assembler: MASM-6.11
+include  srmacros.inc
+seg_a		segment	byte public
+		assume cs:seg_a  , ds:seg_a
+		db	64 dup (0)
+seg_a		ends
+seg_b		segment	byte public
+		assume cs:seg_b  , ds:seg_b
+data_2		db	61h
+		db	15 dup (0)
+seg_b		ends
+seg_c		segment	byte public
+		assume cs:seg_c  , ds:seg_c
+seg11		proc	far
+start::
+		mov	ax,seg_b
+		mov	ds,ax
+		assume	ds:seg_b
+		mov	dl,data_2
+		mov	ah,2
+		int	21h			; DOS Services  ah=function 02h
+						;  display char dl
+		mov	ah,4Ch
+		int	21h			; DOS Services  ah=function 4Ch
+						;  terminate with al=return code
+seg11		endp
+seg_c		ends
+		end	start
+</font>
+</pre>
+</ul>
+
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red width=780>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_sourcer"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+if(url == "www.thaiabc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0014200.js'></script>")
+if(url == "202.29.78.1") document.write("<script LANGUAGE='javascript1.1' src='../../hits1.truehits.net/data/i0015336.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/sourcer.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:54 GMT -->
+</html>

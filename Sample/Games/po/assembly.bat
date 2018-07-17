@@ -1,0 +1,2 @@
+doskey
+command.com

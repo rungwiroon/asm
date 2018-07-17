@@ -1,0 +1,23 @@
+The following files are included in the AsmWiz package:
+
+   ADDFILE.BAT        add 4DOS-style file descriptions to AsmWiz
+   ASMWIZ.DOC         introduction and overview of services
+   ASMWIZ.LIB         AsmWiz programming library
+   ASMWIZ.MAN         detailed manual for services
+   ASMWIZ.NEW         new features and bug fixes since the previous version
+   ASMWIZ.XRF         cross-reference of services, object files, dependencies
+   BIBLIO.TXT         bibliography of references used in creating AsmWiz
+   DESC.SDI           short description of AsmWiz for BBSes
+   EXAMPLE.ASM        source code for example program
+   EXAMPLE.COM        executable code for example program
+   EXECOM.COM         EXE to COM converter (EXE2BIN replacement)
+   FILE_ID.DIZ        long description of AsmWiz for BBSes
+   ORDER.FRM          order form for AsmWiz
+   PACKING.LST        list of included files (this file)
+
+   OCREATE.BAT        batch file to create example program (OPTASM vers.)
+   8CREATE.BAT        batch file to create example program (A86 version)
+   MCREATE.BAT        batch file to create example program (MASM version)
+   TCREATE.BAT        batch file to create example program (TASM version)
+   QCREATE.BAT        batch file to create example program (QuickASM vers.)
+   EXAMPLE.MAK        make file to assemble example inside QuickC/QuickASM

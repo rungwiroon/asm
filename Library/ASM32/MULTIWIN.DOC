@@ -1,0 +1,678 @@
+
+************************  MULTI-WINDOW SUBSYSTEM  ****************************
+
+ASM32 Multi-Window text mode video subroutines
+Copyright (C) 1993 - 1995 Douglas Herr þ All rights reserved
+
+ASM32's multi-window system allows several pop-up windows to be stored
+at any given time, and permits any one window or any group of overlapping
+or non-overlapping windows to be displayed on the screen in any position
+and in any order.  Pop-up windows may be created, printed to, cleared or
+moved whether displayed or hidden.  Up to 10 pop-up windows may be open at
+any time.  To change the maximum number of windows available, change
+mwindow_count in MWINIT.ASM an re-assemble.
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWBORDER:    puts single- or double-lined border, or character border,
+             around an open window; sets border flag.
+             The Multi-Window border flag prevents MWClear, MWFill, MWPrint
+             and MWCenter from over-writing the border for the selected
+             window.
+Source:      mwborder.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+             AH = border color attribute
+             AL = border type: -1 = double line
+                                0 = single line
+                    1 through 254 = ASCII character
+Returns:     if CF = 0, no error
+             if CF = 1, handle not valid or window dimensions too small
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near, mwborder:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39            ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call    mwinit
+        lea     ebx,wdata       ; point to window corner data
+        call    mwopen          ; open window in multi-window system
+        jc      problem         ; if error, go take care of it
+        mov     whandle,eax     ;  else save window handle
+
+; give the window a single-lined border in red
+        mov     ebx,eax         ; handle in EBX
+        mov     al,0
+        mov     ah,12
+        call    mwborder
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWCENTER:    centers a string in selected window
+Source:      mwcenter.asm (mwprint.asm, mwinit.asm)
+
+Call with:   EBX = window handle
+             DS:[ESI] -> ASCIIZ string
+             DH = window row
+             AH = color attribute
+Returns:     DL = window column used by MWPrint
+Uses:        AL, DL, flags
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWCLEAR:     clears a window managed by the MultiWindow system
+source:      mwclear.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+             AH = color attribute
+             if the window's border is enabled, it is not cleared
+Returns:     nothing
+Uses:        AX, flags
+Example:     see example for MWNoBorder
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWCLOSE:     releases a window's memory buffer
+Source:      mwinit.asm
+
+Call with:   EBX = valid window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwtop:near, mwclose:near
+
+include codeseg.inc
+        .
+        .
+        .
+
+        mov    ebx,window_handle
+; all done with this window
+; first I want to move it to the top of the window "stack"
+; so the next window I open will be on top
+
+        call   mwtop
+
+; then get rid of it
+        call   mwclose
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWCLOSEALL   close all open windows, releasing buffers
+Source:      mwclose.asm (mwinit.asm)
+
+Call with:   no parameters
+Returns:     nothing
+Uses:        nothing; all registers and flags are saved
+Example:
+
+        call   mwcloseall
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWDEFAULT:   change default status of opened windows
+Source:      mwdef.asm (mwinit.asm)
+
+Call with:   AL = option bits
+              bit 0  if zero, hide windows
+                     if one, display window
+              bit 2  if zero, no shadow
+                     if one, shadow enabled
+             MWDefault affects only windows opened AFTER MWDefault is called.
+             Does not change the status of previously-opened windows.
+Returns:     nothing
+Uses:        AL
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near
+extrn   mwdefault:near
+
+include codeseg.inc
+        .
+        .
+        .
+        call    mwinit
+        mov     al,101b            ; all windows with shadow and unhidden
+        call    mwdefault          ; update defaults
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWFILL:      fills a window managed by the MultiWindow system
+source:      mwclear.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+             AH = color attribute
+             AL = fill character
+             if the window's border is enabled, it is not changed
+Returns:     nothing
+Uses:        AX, flags
+Example:     see example for MWNoBorder
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWDISPLAY:   display open windows on the screen
+Source:      mwinit.asm
+
+Call with:   no parameters
+             MWDisplay updates the screen by displaying all unhidden
+             open windows.  No windows will ever show up on the screen
+             if you don't call MWDisplay.  You must call MWInit before
+             using MWDisplay.
+Returns:     nothing
+Uses:        nothing
+Example:     see example code for MWPrint
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWHIDE:      hide selected window
+             a "hidden" window is ignored by MWDISPLAY
+Source:      mwinit.asm
+
+Call with:   EBX = window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle number
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near, mwhide:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39           ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call   mwinit
+        lea    ebx,wdata       ; point to window corner data
+        call   mwopen          ; open window in multi-window system
+        jc     problem         ; if error, go take care of it
+        mov    whandle,eax     ;  else save window handle
+        mov    ebx,eax         ; copy handle to EBX
+        call   mwhide          ; don't display window when MWDisplay is called
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWHIDEALL:   hide all open windows
+Source:      mwhide.asm (mwinit.asm)
+
+Call with:   no parameters
+Returns:     nothing
+Uses:        nothing
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwhideall:near
+extrn   mwopen:near, mwdisplay:near
+
+include codeseg.inc
+        call    mwinit
+
+; program opens several windows
+        .
+        .
+        .
+
+; make all open windows disappear
+        call    mwhideall
+        call    mwdisplay
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWINIT:      initializes multi-window system.  Several pop-up windows may
+             be popped onto or removed from a base screen in any order.
+             You must re-initialize the multi-window system each time the
+             base screen changes.  MWInit does not affect any open windows.
+Source:      mwinit.asm (screen.asm, smem.asm)
+
+Call with:   no parameters
+Returns:     EAX = near address of saved base screen
+Uses:        EAX
+Example:
+
+include model.inc
+
+extrn   mwinit:near
+
+include codeseg.inc
+        .
+        .
+        call   mwinit
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWNOBORDER:  clears the border flag for the associated window
+Source:      mwborder.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle number
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near
+extrn   mwborder:near, mwnoborder:near
+extrn   mwclear:near
+
+include dataseg.inc
+window_handle dd 0
+wdata         dw 0,0,19,39            ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call    mwinit
+        lea     ebx,wdata          ; point to window corner data
+        call    mwopen             ; open window in multi-window system
+        jc      problem            ; if error, go take care of it
+        mov     window_handle,eax  ;  else save window handle
+
+; give the window a single-lined border in red
+        mov     ebx,eax            ; handle in EBX
+        mov     al,0
+        mov     ah,12
+        call    mwborder
+        .
+        .
+
+; some time later, I want to clear the ENTIRE window, including the border
+        mov     ebx,window_handle
+        call    mwnoborder
+        mov     ah,any_old_color
+        call    mwclear
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWNOSHADOW:  disables "shadow" effect for selected window
+Source:      mwshadow.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle number
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near, mwnoshadow:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39           ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call   mwinit
+        lea    ebx,wdata       ; point to window corner data
+        call   mwopen          ; open window in multi-window system
+        jc     problem         ; if error, go take care of it
+        mov    whandle,eax     ;  else save window handle
+        mov    ebx,eax         ; copy handle to EBX
+        call   mwnoshadow      ; disable shadow for this window
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWOPEN:      opens a pop-up window for subsequent display
+Source:      mwinit.asm (screen.asm, smem.asm)
+
+Call with:   DS:[EBX] pointing to window corner data
+
+             Up to 10 windows may be open at any time; if you need more,
+             you will need to change MWINDOW_COUNT in mwinit.asm and
+             re-assemble.  If two or more windows overlap on the screen,
+             the one opened last will be displayed on top of the other(s).
+             The window appearing on top may be changed with MWTop.
+
+             Note the default status of all opened windows:
+               hidden
+               no shadow
+               no border
+
+             You may change the status of any open window with
+             MWUnHide, MWHide, MWShadow, MWNoShadow, MWBorder and MWNoBorder;
+
+             All open windows may be hidden or un-hidden with
+             MWHideAll or MWUnHideAll;
+
+             The default status of newly-opened windows may be changed
+             with MWDefault.
+
+Returns:     if CF = 0, EAX = multi-window handle
+             if CF = 1, insufficient memory for window
+Uses:        AX, flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39           ; 20 rows, 40 columns
+                               ; upper left corner of screen
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call   mwinit
+        lea    ebx,wdata       ; point to window corner data
+        call   mwopen          ; open window in multi-window system
+        jc     problem         ; if error, go take care of it
+        mov    whandle,eax     ;  else save window handle
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWPRINT:     print an ASCIIZ string to an open window
+Source:      mwprint.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+             DS:[ESI] pointing to an ASCIIZ string
+             AH = color attribute
+             DH = window row, DL = window column
+Returns:     nothing
+Uses:        AL
+Example:
+
+include  model.inc
+
+extrn   mwinit:near, mwopen:near
+extrn   mwprint:near, mwdisplay:near
+
+include dataseg.inc
+window_handle dd 0
+wdata         dw 0,0,19,39            ; 20 rows, 40 columns
+row           db 1
+column        db 1
+color         db 23
+window_string db 'Print this in the window',0
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call    mwinit
+        lea     ebx,wdata          ; point to window corner data
+        call    mwopen             ; open window in multi-window system
+        jc      problem            ; if error, go take care of it
+        mov     window_handle,eax  ;  else save window handle
+
+        lea     esi,window_string  ; point to text
+        mov     ebx,eax            ; EAX is still the handle
+        mov     dh,row             ; offset from top of window
+        mov     dl,column          ; offset from left side of window
+                                   ; ROW and COLUMN are relative to BORDER
+                                   ; if border is enabled
+        mov     ah,color
+        call    mwprint
+        call    mwdisplay          ; show all unhidden windows on the screen
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWPRINTCE:   prints a string in selected window & clears to edge of window
+             clears to border if the window's border is enabled
+Source:      mwprint.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+             DS:[ESI] pointing to an ASCIIZ string
+             AH = color attribute
+             DH = window row, DL = window column
+Returns:     nothing
+Uses:        AL
+Example:     see MWPrint
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWSELECT:    determines which window is visible at screen coordinate
+Source:      mwselect.asm (mwinit.asm)
+
+Call with:   DH = screen row, DL = screen column
+Returns:     if CF = 0, EBX = handle of window visible at these coordinates
+             if CF = 1, no window visible at these coordinates
+Uses:        EBX, flags
+Example:
+
+include model.inc
+
+extrn   mwselect:near, mwtop:near
+
+include codeseg.inc
+        .
+        .
+        .
+
+; the mouse has been scurrying around the screen
+; and the program has detected a mouse button press
+; the mouse cursor is at row 3, column 14
+
+; determine which window the mouse has landed on
+        mov     dh,3
+        mov     dl,14
+        call    mwselect              ; get window visible at (3,14)
+        jc      no_window             ;  error? mouse must have had an itch
+        call    mwtop                 ; put this window on top of all others
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWSHADOW:    enables "shadow" effect for selected window
+Source:      mwshadow.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near, mwshadow:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39           ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call   mwinit
+        lea    ebx,wdata       ; point to window corner data
+        call   mwopen          ; open window in multi-window system
+        jc     problem         ; if error, go take care of it
+        mov    whandle,eax     ;  else save window handle
+        mov    ebx,eax         ; copy handle to EBX
+        call   mwshadow        ; enable shadow for this window
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWTITLE:     center an ASCIIZ string at the top of an open window
+Source:      mwtitle.asm (mwcenter.asm, mwinit.asm)
+
+Call with:   EBX = window handle
+             DS:[ESI] pointing to an ASCIIZ string
+             AH = color attribute
+             MWTitle prints the window title at the top of the window,
+             overwriting the border (if it is enabled).
+Returns:     nothing
+Uses:        AL
+Example:
+
+include  model.inc
+
+extrn   mwinit:near, mwopen:near
+extrn   mwtitle:near, mwdisplay:near
+
+include dataseg.inc
+window_handle dd 0
+wdata         dw 0,0,19,39            ; 20 rows, 40 columns
+row           db 1
+column        db 1
+color         db 23
+window_string db 'Window Title',0
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call    mwinit
+        lea     ebx,wdata          ; point to window corner data
+        call    mwopen             ; open window in multi-window system
+        jc      problem            ; if error, go take care of it
+        mov     window_handle,eax  ;  else save window handle
+
+        lea     esi,window_string  ; point to text
+        mov     ebx,eax            ; EAX is still the handle
+        mov     ah,color
+        call    mwtitle
+        call    mwdisplay          ; show all unhidden windows on the screen
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWTOP:       displays selected window on top of all others
+Source:      mwtop.asm (mwinit.asm)
+
+Call with:   EBX = window handle
+Returns:     DF = 0
+             if CF = 0, no error
+             if CF = 1, bad handle number
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwselect:near, mwtop:near
+
+include codeseg.inc
+        .
+        .
+        .
+
+; the mouse has been scurrying around the screen
+; and the program has detected a mouse button press
+; the mouse cursor is at row 3, column 14
+
+; determine which window the mouse has landed on
+        mov     dh,3
+        mov     dl,14
+        call    mwselect              ; get window visible at (3,14)
+        jc      no_window             ;  error? mouse must have had an itch
+        call    mwtop                 ; put this window on top of all others
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWUNHIDE:    allow selected window to be displayed
+Source:      mwinit.asm
+
+Call with:   EBX = window handle
+Returns:     if CF = 0, no error
+             if CF = 1, bad handle number
+Uses:        flags
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwopen:near, mwunhide:near
+
+include dataseg.inc
+whandle dd 0
+wdata   dw 0,0,19,39           ; 20 rows, 40 columns
+@curseg ends
+
+include codeseg.inc
+        .
+        .
+        .
+        call   mwinit
+        lea    ebx,wdata       ; point to window corner data
+        call   mwopen          ; open window in multi-window system
+        jc     problem         ; if error, go take care of it
+        mov    whandle,eax     ;  else save window handle
+        mov    ebx,eax         ; copy handle to EBX
+        call   mwunhide        ; display window when MWDisplay is called
+
+
+
+°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+MWUNHIDEALL: unhide all open windows
+Source:      mwunhide.asm (mwinit.asm)
+
+Call with:   no parameters
+Returns:     nothing
+Uses:        nothing
+Example:
+
+include model.inc
+
+extrn   mwinit:near, mwunhideall:near
+extrn   mwopen:near, mwdisplay:near
+
+include codeseg.inc
+        .
+        call    mwinit
+        .
+; program opens several windows
+        .
+        .
+        .
+
+; make all open windows visible
+        call    mwunhideall
+        call    mwdisplay
+
+
+

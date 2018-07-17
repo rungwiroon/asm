@@ -1,0 +1,544 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/ma.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:58 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>MA</title>
+</head>
+
+<body background="Bk.gif" bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="0" width="100%">
+    <tr>
+        <td><div align="center"><center><table border="3">
+            <tr>
+                <td><p align="center"><img src="all1.gif"
+                width="190" height="150"></p>
+                </td>
+            </tr>
+        </table>
+        </center></div></td>
+        <td><p align="center"><font color="#FF0080" size="7"><strong><u>MACOR
+        ASSEMBLER</u></strong></font></p>
+        <p align="center"><a href="Menu.html"><font
+        color="#FF0080" size="7"><strong><u><img src="home2.gif"
+        border="0" width="83" height="30"></u></strong></font></a></p>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><p align="center"><img src="link1.gif" width="100"
+        height="17"><img src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"><img
+        src="link1.gif" width="100" height="17"></p>
+        </td>
+    </tr>
+</table>
+</center></div>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>ASSEMBLER</u></strong></font><font
+    size="4"><strong> </strong></font><font color="#8000FF"
+    size="4"><strong>คือตัวแปลภาษา
+    NEMONIC CODE เป็นภาษาเครื่องในASSEMBLER
+    จะมี DATA TYPE มีจุด DB เป็น DATA
+    TYPE</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>การกำหนดข้อมูลในภาษาแอสเซมบลี</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>DB
+    กำหนดข้อมูลชนิดเป็น
+    BYTE จำนวนไบท์ = 1(8 BITS)
+    สถานะภาพ BYTE DEFINE BYTE</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>DW
+    กำหนดข้อมูลชนิดเป็น
+    WORD จำนวนไบท์ = 2 สถานะภาพ
+    WORD DEFINE WORD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>DD
+    กำหนดข้อมูลชนิดเป็น
+    DOUBLE จำนวนไบท์ = 4
+    สถานะภาพ DOUBLE DEFINE DOUBLE</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>Q
+    กำหนดข้อมูลชนิดเป็น
+    QUAD จำนวนไบท์ = 8 สถานะภาพ
+    QUAD DEFINE QUAD</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>T
+    กำหนดข้อมูลชนิดเป็น TEN
+    จำนวนไบท์ = 10 สถานะภาพ TEN
+    DEFINE TEN</strong></font></p>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>THE MODEL
+    DIRECTIVE.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>MOEL DESCRIPTION</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>TINY
+    โปรแกรมและข้อมูลรวมกันไม่เกิน
+    64 K</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>SMALL
+    โปรแกรมหรือไม่ก็ข้อมูลอย่างใดอย่างหนึ่งไม่เกิน
+    64 K</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>MEDIUM
+    โปรแกรมเท่านั้นที่เกิน
+    64 K</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>COMPACT
+    ข้อมูลเท่านั้นที่เกิน
+    64 K</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>LARGE
+    ทั้งโปรแกรมและข้อมูลเกิน
+    64 K ได้</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>HUGE MEMORY
+    ที่มีค่าใช้ได้ทั้งหมด
+    ถูกใช้เพื่อ
+    โแรกรมและข้อมูล</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <hr>
+    <p><font color="#FF0080" size="5"><strong><u>CONDITIONAL JUMP
+    INSTRUCT.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>JCOND DESTINATION</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>COMPARE
+    INSTRUCTION.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>CMP OP1,OP2</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>IF STATEMENT.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>CMP OP1,OP2 ; IF OP1 = OP2 THEN</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>JE NEXT_LABEL ; JUMP TO NEXT_LABEL</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>; ELSE</strong></font></p>
+                </blockquote>
+            </blockquote>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>JMP END_IF ; JUMP TO END_IF</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>NEXT_LABEL : ; ENDIF</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>&lt; STATEMENT1 &gt;</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <blockquote>
+            <p><font size="4"><strong>&lt; STATEMENT2 &gt;</strong></font></p>
+        </blockquote>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>END_IF </strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>SINGLE IF</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>CMP OP1,OP2</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>JNE NEXT_LABEL</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>&lt; STATEMENT1&gt;</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>&lt; STATEMENT2&gt;</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>NEXT_LSBEL : </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>WHILE STRUCTURE.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>DO_WHILE ;</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>CMP OP1,OP2</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>JNE ENDDO</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>&lt; STATEMENT1 &gt;</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>&lt; STATEMENT2 &gt;</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font size="4"><strong>JMP DO_WHILE</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ENDDO;</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>THE INT
+    INSTRUCTION.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>1. ต้อง
+    DEFINE ชื่อของ FUNCTION และ SERVICE
+    ให้ DOS โดยบอก INT</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>2. หา ADDRESS
+    ของ INT ใน TABLE</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>3. ไป ADDRESS
+    ที่ ROM BIOS แล้วทำ Sub program
+    นั้น</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#8000FF" size="4"><strong>4. IRET = INTRUPT
+    RETURN กลับไป Main program
+    ที่คำสั่งถัดไป โดยไปดู
+    Stack ก่อนใน Assembly ตัว Compile
+    จะเก็บ POP Stack Address ของคำสั่งถัดไปก่อนเสอมจึงจะไปที่คำสั่ง
+    Address
+    ที่ตนอยู่เพื่อให้กลับมาถูก
+    Address เรียนว่า Look Ahead Forword. </strong></font></p>
+</blockquote>
+
+<blockquote>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>คำสั่งปฏิบัติการของภาษาแอสเซมบลี้มี
+    4 ชนิด.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>1.
+    ภาษาเครื่อง</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>2.
+    ตัวแปลภาษา</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>3.ชุดคำสั่ง</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>4.ตัวบอก
+    ADDRESS DATA</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>คำสั่งภาษาแอสเซมบลี้ถุกแบ่งออกเป็น
+    4 เขต คือ.</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>LABEL การกระทำ
+    ตัวถูกกระทำ ; COMMENT</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>ASM ยาวได้ 31 ตัว</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>BISIC ยาวได้ 8
+    ตัว</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>ไมโครโปรเซสเซอร์
+    8088 จะเกิดการย้าย 2 ข้อ.</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>1.
+    ต้องตามด้วย : CODE SEGMENT
+    เดียวกัน CS ไม่เปลี่ยน
+    OFFSET ใส่ใน IP</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font size="4"><strong>2. ต่าง CODE SEGMENT
+    กับคำสั่งควบคุม OFFSET
+    ของ LABEL จำใส่ใน IP และ CS</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>การ GET
+    ASCII โดยใช้ LOOP NEXT.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>MAIN SEGMANT</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>ASSUME CS:MAIN</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>MOV CX,100H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>MOV DL,0</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>NEXT : MOV AH,02H</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>INT 21H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>INC DL</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>LOOP NEXT</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>MOV AH,4CH</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>INT 21H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#008080" size="4"><strong>MAIN ENDS</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#008080" size="4"><strong>END NEXT</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <hr>
+</blockquote>
+
+<blockquote>
+    <p><font color="#FF0080" size="5"><strong><u>ดึงตัวอักษรจาก
+    ASCII CODE.</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>1. ASCCCII 0-255</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>2. เลือก
+    Loop โดยใช้รีจีสเตอร์ CX (
+    COUNTER,LOOP ลด จนเป็น 0 จึงหยุด
+    )</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>3.
+    เลือกการแสดงผล INT 21h</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- FUNCTION 02H</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- REGISTER DL</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <p><font color="#0000FF" size="4"><strong>4. TERMINATE
+    PROGRAM โดยใช้ INT 21H</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#0000FF" size="4"><strong>- FUNCTION 4CH</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+    <p><font color="#FF0080" size="4"><strong>INT 21H FUNCTION 20H
+    กับ 09H ต่างกันอย่างไร.</strong></font></p>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- AH 09H
+        จะจบด้วย $</strong></font></p>
+    </blockquote>
+</blockquote>
+
+<blockquote>
+    <blockquote>
+        <p><font color="#8000FF" size="4"><strong>- AH 02H
+        จะจบด้วย ODH ( ENTER ), OAH ( LINEFEED )
+        ดีกว่า </strong></font></p>
+        <p>&nbsp;</p>
+    </blockquote>
+</blockquote>
+
+<p align="center"><img src="line2.gif" width="435" height="15"></p>
+
+<p align="center"><a href="Menu.html"><img src="Back.gif"
+border="0" width="83" height="28"></a></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/ma.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:58 GMT -->
+</html>

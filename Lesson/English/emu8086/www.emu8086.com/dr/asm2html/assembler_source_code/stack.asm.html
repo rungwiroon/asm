@@ -1,0 +1,124 @@
+<html>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/stack.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+<head>
+       <title>Assembler Source Code</title>
+       <meta name="description" content="Assembly Language Source Codes">
+       <style>
+           a:link {text-decoration: none}
+           a:visited {text-decoration: none}
+           a:hover {text-decoration: none; color:#ff0000}
+       </style>
+</head>
+<body leftmargin=20  rightmargin=20 topmargin=20 bgcolor=#FFFFFF text=#000000 link=blue vlink=blue alink=blue>
+
+
+<!-- * -->
+
+
+
+
+
+
+&nbsp; &nbsp;<center> <font color=#FFFFFF> ;</font> <font size=3 face="Terminal"> stack.asm </font></center>
+
+
+
+
+
+
+<!-- START AUTOMATIC ASM TO HTML EXPORT -->
+<pre><font size=3 face="Terminal">
+<font color=#008000>; this sample shows how the stack works.  </font>
+<font color=#008000>; click 'stack' button in emulator to see the contents of the stack. </font>
+
+<font color=#008000>; stack is important element in computer architecture. </font>
+
+<font color=#008000>; this code does nothing useful, except printing "Hi" in the end. </font>
+
+name <font color=#800080>"stack"</font>
+
+<font color=#000064>org</font>     100h   <font color=#008000>; create tiny com file. </font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 1234h
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+
+<font color=#0000FF>mov</font>     <font color=#C80000>dx</font>, 5678h
+<font color=#0000FF>push</font>    <font color=#C80000>dx</font>
+
+<font color=#0000FF>pop</font>     <font color=#C80000>bx</font>
+<font color=#0000FF>pop</font>     <font color=#C80000>cx</font>
+
+<font color=#008000>; function call pushes ip value of the next instruction: </font>
+
+<font color=#0000FF>call</font>    tfunc
+
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 7890h
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+<font color=#0000FF>pop</font>     <font color=#C80000>bx</font>
+
+<font color=#008000>; interrupts are like funtions, </font>
+<font color=#008000>; but in addition they push code segment into the stack </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 3
+<font color=#0000FF>int</font>     10h    <font color=#008000>; set standart video mode. </font>
+
+<font color=#008000>; a typical use of stack is to set segment registers. </font>
+<font color=#008000>; set ds to video memory segment: </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ax</font>, 0b800h
+<font color=#0000FF>push</font>    <font color=#C80000>ax</font>
+<font color=#0000FF>pop</font>     <font color=#800000>ds</font>
+
+<font color=#008000>; print "hi": </font>
+<font color=#0000FF>mov</font>     <font color=#0064C8>[</font>170h<font color=#0064C8>]</font>, <font color=#800080>'H'</font>
+<font color=#0000FF>mov</font>     <font color=#0064C8>[</font>172h<font color=#0064C8>]</font>, <font color=#800080>'i'</font>
+
+<font color=#008000>; color attribute for 'h' </font>
+<font color=#0000FF>mov</font>     <font color=#0064C8>[</font>171h<font color=#0064C8>]</font>, 11001110b
+
+<font color=#008000>; color attribute for 'i' </font>
+<font color=#0000FF>mov</font>     <font color=#0064C8>[</font>173h<font color=#0064C8>]</font>, 10011110b
+
+
+<font color=#008000>; wait for any key press.... </font>
+<font color=#0000FF>mov</font>     <font color=#C80000>ah</font>, 0
+<font color=#0000FF>int</font>     16h
+
+<font color=#008000>; here we "pop" the ip value, </font>
+<font color=#008000>; and return control to the operating system: </font>
+<font color=#0000FF>ret</font>
+
+<font color=#008000>; the test procedure: </font>
+
+tfunc   <font color=#0000FF>proc</font>
+
+        <font color=#0000FF>xor</font>     <font color=#C80000>bx</font>, <font color=#C80000>bx</font>
+        <font color=#0000FF>xor</font>     <font color=#C80000>cx</font>, <font color=#C80000>cx</font>
+
+<font color=#008000>; here we "pop" the ip value, </font>
+<font color=#008000>; and return control to the main program: </font>
+        <font color=#0000FF>ret</font>
+endp
+
+</font></pre>
+<br>  <br> <center> <font color=#FFFFFF>;</font>  <font face="verdana" size=3><a href="index-2.html"><u>- Other Assembler Source Codes -</u></a></font> </center> <br>  <br><br>
+<center> <font color=#FFFFFF>;</font> <a href="http://www.emu8086.com/"><font face=verdana size=1 color=#000000> - asm2html by emu8086 - </font></a> </center>
+<!-- emu8086 version 3.27xp    -->
+<!-- STOP AUTOMATIC ASM TO HTML EXPORT -->
+
+
+
+
+
+
+<!-- *** -->
+
+
+</body>
+
+<!-- Mirrored from www.emu8086.com/dr/asm2html/assembler_source_code/stack.asm.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:47:37 GMT -->
+</html>
+
+<!-- www.000webhost.com Analytics Code -->
+<script type="text/javascript" src="http://analytics.hosting24.com/count.php"></script>
+<noscript><a href="http://www.hosting24.com/"><img src="http://analytics.hosting24.com/count.php" alt="web hosting" /></a></noscript>
+<!-- End Of Code -->

@@ -1,0 +1,571 @@
+<html>
+<!-- Mirrored from www.thaiall.com/assembly/computersim.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:40 GMT -->
+<head><title>CPU Simulation</title>
+<meta http-equiv=content-type content="text/html; charset=windows-874">
+<meta name="keywords" content="CPU,Simulation,computer">
+<meta name="description" content="CPU Simulation">
+<style type="text/css">
+body{font-family:microsoft sans serif;font-size:10pt}
+a:link{color:red;}
+a:visited{color:purple;}
+textarea{font-family:microsoft sans serif;color:blue;background-color:#ddffdd}
+td{font-size:10pt;font-family:microsoft sans serif;}
+</style>
+</head>
+<body text=black bgcolor=white topmargin=0 leftmargin=0>
+<table width=100% cellpadding=0 cellspacing=0 border=0 bgcolor=#808080><tr bgcolor=red height=1><td colspan=3> </td></tr>
+<tr><td><a href=http://www.thaiall.com/me><img src=ta1.gif border=0></a></td><td align=center><font color=white>
+CPU Simulation</td><td align=right><a href=http://www.thaiall.com/sponsor.htm><img src=ta2.gif border=0></a></td></tr><tr bgcolor=#dddddd height=3><td colspan=3> </td></tr>
+</table>
+
+<br>ปรับปรุง : 2550-08-22 (เตรียมเอกสาร)
+<br> 
+
+<table align=center width=760><tr><td align=center>
+<font size=6>จำลองการทำงาน (Simulation)<br>
+ของหน่วยประมวลผลของคอมพิวเตอร์ยุค 8 Bit
+</table>
+
+<table align=center width=760><tr><td><pre>
+<b>ขั้นตอนการทดสอบโปรแกรม</b> : 
+- Download: <a href=computer80286.zip>computer80286.zip</a> หรือ <a href=computer1_en50.zip>computer1_en50.zip</a>
+- เปิดโปรแกรม
+- กด F2 เข้าส่วนของ Data
+- กด F4 เพื่อ Load แฟ้มตัวอย่าง
+- พิมพ์ชื่อแฟ้มที่มีอยู่เช่น add_8bit.cpu
+- กด ESC กลับสู่ส่วนการ Data
+- กด ESC กลับสู่ Main Menu
+- กด F3 เข้าสู่ Editor แสดง Simulation
+- กด F5 หรือ F6 ไปบรรทัดที่ต้องการ
+- กด F3 เพื่อพิมพ์ภาษา Assembly แทนตำแหน่งเดิม
+- กด F2 เพื่อทำ Simulation [<a href=add_8bit.html>add_8bit.cpu</a>]
+<dd>* Control Bus ชี้ที่ IP
+<dd>- ย้าย IP ซึ่งชี้อยู่ที่ 01 เข้า Address Bus
+<dd>- IP เปลี่ยนเป็น 02 ทันที เพราะมีการเลื่อน IP
+<dd>- ย้าย 47 จาก Code Segment เข้า OP-Code => Mnemonic คือ mov a,[c]
+<dd>- ย้าย IP ซึ่งชี้อยู่ที่ 02 เข้า Address Bus
+<dd>- ย้าย 80 จาก Code Segment ซึ่งชี้อยู่ที่ 02 เข้า Address Bus
+<dd>- ย้ายข้อมูลมีค่า 37 จาก Data Segment ที่ตำแหน่ง 80 เข้าไป ALU 
+<dd>- ย้ายข้อมูลจาก ALU เข้า Register A
+<dd>* ย้าย IP ซึ่งชี้อยู่ที่ 03 เข้า Address Bus
+</pre><td valign=top bgcolor=#f9f9f9>
+<font size=4 face="courier new">
+<b>Sample code for SIM.</b>
+<font color=red>
+<br>IP: OP-Code  Mnemonic</font>
+<br>01: <font color=blue>47 80</font>  MOV A,[80]
+<br>03: <font color=blue>67 88</font>  ADD A,[88]
+<br>05: <font color=blue>3B 90</font>  MOV [90],A
+<br>07: <font color=blue>47 80</font>  MOV A,[80]
+<hr></font><center>
+Screen 1<br><a href=computer01.gif><img src=computer01t.jpg border=1></a>
+</table>
+<table width=760 align=center>
+<tr align=center>
+<td valign=top>Screen 2<br><a href=computer02.gif><img src=computer02t.jpg border=1></a>
+<td valign=top>Screen 3<br><a href=computer03.gif><img src=computer03t.jpg border=1></a>
+<td valign=top>Screen 4<br><a href=computer04.gif><img src=computer04t.jpg border=1></a>
+<tr align=center>
+<td valign=top>Screen 5<br><a href=computer05.gif><img src=computer05t.jpg border=1></a>
+<td valign=top>Screen 6<br><a href=computer06.gif><img src=computer06t.jpg border=1></a>
+<td valign=top>Screen 7<br><a href=computer07.gif><img src=computer07t.jpg border=1></a>
+</table>
+
+<table width=760 bgcolor=#ddffdd align=center><td>
+<font size=6>OpCode of Intel Assembly 80x86
+<br>Mnemonics</font> 
+<br>From :<a href=http://www.jegerlehner.ch/intel/opcode.html>http://www.jegerlehner.ch/intel/opcode.html</a>
+<hr>
+<big>TRANSFER</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">MOV</td>
+<td width="48%" valign="top">Move (copy)</td>
+<td width="34%" valign="top">MOV Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">XCHG</td>
+<td width="48%" valign="top">Exchange</td>
+<td width="34%" valign="top">XCHG Op1,Op2</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STC</td>
+<td width="48%" valign="top">Set Carry</td>
+<td width="34%" valign="top">STC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLC</td>
+<td width="48%" valign="top">Clear Carry</td>
+<td width="34%" valign="top">CLC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CMC</td>
+<td width="48%" valign="top">Complement Carry</td>
+<td width="34%" valign="top">CMC</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STD</td>
+<td width="48%" valign="top">Set Direction</td>
+<td width="34%" valign="top">STD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLD</td>
+<td width="48%" valign="top">Clear Direction</td>
+<td width="34%" valign="top">CLD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">STI</td>
+<td width="48%" valign="top">Set Interrupt</td>
+<td width="34%" valign="top">STI</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CLI</td>
+<td width="48%" valign="top">Clear Interrupt</td>
+<td width="34%" valign="top">CLI</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSH</td>
+<td width="48%" valign="top">Push onto stack</td>
+<td width="34%" valign="top">PUSH Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSHF</td>
+<td width="48%" valign="top">Push flags</td>
+<td width="34%" valign="top">PUSHF</td>
+</tr>
+<tr>
+<td width="18%" valign="top">PUSHA</td>
+<td width="48%" valign="top">Push all general registers</td>
+<td width="34%" valign="top">PUSHA</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POP</td>
+<td width="48%" valign="top">Pop from stack</td>
+<td width="34%" valign="top">POP Dest</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POPF</td>
+<td width="48%" valign="top">Pop flags</td>
+<td width="34%" valign="top">POPF</td>
+</tr>
+<tr>
+<td width="18%" valign="top">POPA</td>
+<td width="48%" valign="top">Pop all general registers</td>
+<td width="34%" valign="top">POPA</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CBW</td>
+<td width="48%" valign="top">Convert byte to word</td>
+<td width="34%" valign="top">CBW</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CWD</td>
+<td width="48%" valign="top">Convert word to double</td>
+<td width="34%" valign="top">CWD</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CWDE</td>
+<td width="48%" valign="top">Conv word extended double</td>
+<td width="34%" valign="top">CWDE</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IN</td>
+<td width="48%" valign="top">Input</td>
+<td width="34%" valign="top">IN Dest, Port</td>
+</tr>
+<tr>
+<td width="18%" valign="top">OUT</td>
+<td width="48%" valign="top">Output</td>
+<td width="34%" valign="top">OUT Port, Source</td>
+</tr>
+</table>
+<br/>
+
+<big>ARITHMETIC</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">ADD</td>
+<td width="48%" valign="top">Add</td>
+<td width="34%" valign="top">ADD Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ADC</td>
+<td width="48%" valign="top">Add with Carry</td>
+<td width="34%" valign="top">ADC Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SUB</td>
+<td width="48%" valign="top">Subtract</td>
+<td width="34%" valign="top">SUB Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SBB</td>
+<td width="48%" valign="top">Subtract with borrow</td>
+<td width="34%" valign="top">SBB Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">DIV</td>
+<td width="48%" valign="top">Divide (unsigned)</td>
+<td width="34%" valign="top">DIV Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IDIV</td>
+<td width="48%" valign="top">Signed Integer Divide</td>
+<td width="34%" valign="top">IDIV Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">MUL</td>
+<td width="48%" valign="top">Multiply (unsigned)</td>
+<td width="34%" valign="top">MUL Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">IMUL</td>
+<td width="48%" valign="top">Signed Integer Multiply</td>
+<td width="34%" valign="top">IMUL Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">INC</td>
+<td width="48%" valign="top">Increment</td>
+<td width="34%" valign="top">INC Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">DEC</td>
+<td width="48%" valign="top">Decrement</td>
+<td width="34%" valign="top">DEC Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">CMP</td>
+<td width="48%" valign="top">Compare</td>
+<td width="34%" valign="top">CMP Op1,Op2</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SAL</td>
+<td width="48%" valign="top">Shift arithmetic left</td>
+<td width="34%" valign="top">SAL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SAR</td>
+<td width="48%" valign="top">Shift arithmetic right</td>
+<td width="34%" valign="top">SAR Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">RCL</td>
+<td width="48%" valign="top">Rotate left through Carry</td>
+<td width="34%" valign="top">RCL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">RCR</td>
+<td width="48%" valign="top">Rotate right through Carry</td>
+<td width="34%" valign="top">RCR Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ROL</td>
+<td width="48%" valign="top">Rotate left</td>
+<td width="34%" valign="top">ROL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">ROR</td>
+<td width="48%" valign="top">Rotate right</td>
+<td width="34%" valign="top">ROR Op,Quantity</td>
+</tr>
+</table>
+<br/>
+
+<big>LOGIC</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">NEG</td>
+<td width="48%" valign="top">Negate (two-complement)</td>
+<td width="34%" valign="top">NEG Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">NOT</td>
+<td width="48%" valign="top">Invert each bit</td>
+<td width="34%" valign="top">NOT Op</td>
+</tr>
+<tr>
+<td width="18%" valign="top">AND</td>
+<td width="48%" valign="top">Logical and</td>
+<td width="34%" valign="top">AND Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">OR</td>
+<td width="48%" valign="top">Logical or</td>
+<td width="34%" valign="top">OR Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">XOR</td>
+<td width="48%" valign="top">Logical exclusive or</td>
+<td width="34%" valign="top">XOR Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SHL</td>
+<td width="48%" valign="top">Shift logical left</td>
+<td width="34%" valign="top">SHL Op,Quantity</td>
+</tr>
+<tr>
+<td width="18%" valign="top">SHR</td>
+<td width="48%" valign="top">Shift logical right</td>
+<td width="34%" valign="top">SHR Op,Quantity</td>
+</tr>
+</table>
+<br/>
+
+<big>MISCELLANEOUS</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td width="18%" valign="top"><b>Name</b></td>
+<td width="48%" valign="top"><b>Comment</b></td>
+<td width="34%" valign="top"><b>Syntax</b></td>
+</tr>
+<tr>
+<td width="18%" valign="top">NOP</td>
+<td width="48%" valign="top">No operation</td>
+<td width="34%" valign="top">NOP</td>
+</tr>
+<tr>
+<td width="18%" valign="top">LEA</td>
+<td width="48%" valign="top">Load effective adress</td>
+<td width="34%" valign="top">LEA Dest,Source</td>
+</tr>
+<tr>
+<td width="18%" valign="top">INT</td>
+<td width="48%" valign="top">Interrupt</td>
+<td width="34%" valign="top">INT Nr</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS (general)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td><b>Name</b></td>
+<td><b>Comment</b></td>
+<td><b>Syntax</b></td>
+</tr>
+<tr>
+<td>CALL</td>
+<td>Call subroutine</td>
+<td>CALL Proc</td>
+</tr>
+<tr>
+<td>JMP</td>
+<td>Jump</td>
+<td>JMP Dest</td>
+</tr>
+<tr>
+<td>JE</td>
+<td>Jump if Equal</td>
+<td>JE Dest</td>
+</tr>
+<tr>
+<td>JZ</td>
+<td>Jump if Zero</td>
+<td>JZ Dest</td>
+</tr>
+<tr>
+<td>JCXZ</td>
+<td>Jump if CX Zero</td>
+<td>JCXZ Dest</td>
+</tr>
+<tr>
+<td>JP</td>
+<td>Jump if Parity (Parity Even)</td>
+<td>JP Dest</td>
+</tr>
+<tr>
+<td>JPE</td>
+<td>Jump if Parity Even</td>
+<td>JPE Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">RET</td>
+<td width="34%" valign="top">Return from subroutine</td>
+<td width="17%" valign="top">RET</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNE</td>
+<td width="34%" valign="top">Jump if not Equal</td>
+<td width="17%" valign="top">JNE Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNZ</td>
+<td width="34%" valign="top">Jump if not Zero</td>
+<td width="17%" valign="top">JNZ Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JECXZ</td>
+<td width="34%" valign="top">Jump if ECX Zero</td>
+<td width="17%" valign="top">JECXZ Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JNP</td>
+<td width="34%" valign="top">Jump if no Parity (Parity Odd)</td>
+<td width="17%" valign="top">JNP Dest</td>
+</tr>
+<tr>
+<td width="13%" valign="top">JPO</td>
+<td width="34%" valign="top">Jump if Parity Odd</td>
+<td width="17%" valign="top">JPO Dest</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS unsigned (Cardinal)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td>JA</td>
+<td>Jump if Above</td>
+<td>JA Dest</td>
+</tr>
+<tr>
+<td>JAE</td>
+<td>Jump if Above or Equal</td>
+<td>JAE Dest</td>
+</tr>
+<tr>
+<td>JB</td>
+<td>Jump if Below</td>
+<td>JB Dest</td>
+</tr>
+<tr>
+<td>JBE</td>
+<td>Jump if Below or Equal</td>
+<td>JBE Dest</td>
+</tr>
+<tr>
+<td>JNA</td>
+<td>Jump if not Above</td>
+<td>JNA Dest</td>
+</tr>
+<tr>
+<td>JNAE</td>
+<td>Jump if not Above or Equal</td>
+<td>JNAE Dest</td>
+</tr>
+<tr>
+<td>JNB</td>
+<td>Jump if not Below</td>
+<td>JNB Dest</td>
+</tr>
+<tr>
+<td>JNBE</td>
+<td>Jump if not Below or Equal</td>
+<td>JNBE Dest</td>
+</tr>
+<tr>
+<td>JC</td>
+<td>Jump if Carry</td>
+<td>JC Dest</td>
+</tr>
+<tr>
+<td>JNC</td>
+<td>Jump if no Carry</td>
+<td>JNC Dest</td>
+</tr>
+</table>
+<br/>
+
+<big>JUMPS signed (Integer)</big><br/>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr>
+<td>JG</td>
+<td>Jump if Greater</td>
+<td>JG Dest</td>
+</tr>
+<tr>
+<td>JGE</td>
+<td>Jump if Greater or Equal</td>
+<td>JGE Dest</td>
+</tr>
+<tr>
+<td>JL</td>
+<td>Jump if Less</td>
+<td>JL Dest</td>
+</tr>
+<tr>
+<td>JLE</td>
+<td>Jump if Less or Equal</td>
+<td>JLE Dest</td>
+</tr>
+<tr>
+<td>JNG</td>
+<td>Jump if not Greater</td>
+<td>JNG Dest</td>
+</tr>
+<tr>
+<td>JNGE</td>
+<td>Jump if not Greater or Equal</td>
+<td>JNGE Dest</td>
+</tr>
+<tr>
+<td>JNL</td>
+<td>Jump if not Less</td>
+<td>JNL Dest</td>
+</tr>
+<tr>
+<td>JNLE</td>
+<td>Jump if not Less or Equal</td>
+<td>JNLE Dest</td>
+</tr>
+<tr>
+<td>JO</td>
+<td>Jump if Overflow</td>
+<td>JO Dest</td>
+</tr>
+<tr>
+<td>JNO</td>
+<td>Jump if no Overflow</td>
+<td>JNO Dest</td>
+</tr>
+<tr>
+<td>JS</td>
+<td>Jump if Sign  (= negative)</td>
+<td>JS Dest</td>
+</tr>
+<tr>
+<td>JNS</td>
+<td>Jump if no Sign (= positive)</td>
+<td>JNS Dest</td>
+</tr>
+</table>
+</table>
+
+<center>
+<! v 7.2549.10 >
+<form action=http://www.thaiall.com/cgi/srchweb.pl method=post><hr color=red>
+<a href=http://www.thaiall.com/cgi/putting.pl>แนะนำเว็บใหม่</a> : <a href=http://www.thaiall.com/rangeweb.htm>ผลการจัดอันดับ</a>
+<input type=text name=SearchText Size=10><input type=submit value=สืบค้นเว็บไซต์>
+<br><a href=http://www.lovelampang.com/>รักลำปาง</a> : <a href=http://lampang.thcity.com/>thcity.com</a> : <a href=http://www.korattown.com/>korattown.com</a> : <a href=http://www.topsiam.com/>topsiam.com</a> : <a href=http://www.yonok.ac.th/>มหาวิทยาลัยโยนก</a>
+<br><a href=http://www.thaiall.com/quiz>ศูนย์สอบ</a> : <a href=http://www.thaiall.com/article>รวมบทความ</a> : <a href=http://www.thaiall.com/itinlife>ไอทีในชีวิตประจำวัน</a> :  <a href=http://www.thaiall.com/download>ดาวน์โหลด</a> : <a href=http://mail.thaiall.com/>yourname@thaiall.com</a>
+<br>ติดต่อ <a href=http://www.thaiall.com/me>ทีมงาน</a> ชาวลำปาง <a href=http://www.thaiall.com/me/dream.htm>มีฝันเพื่อการศึกษา</a> Tel.08-1992-7223
+</form>
+<script language=javascript>
+<!--
+url=document.location.href.substr(7,11)
+page="assembly_Register"
+if(url == "lampang.thc") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013199.js'></script>")
+if(url == "www.yonok.a") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001943.js'></script>")
+if(url == "www.thaiall") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/c0001941.js'></script>")
+if(url == "www.perlphp") document.write("<script language='javascript1.1' src='../../hits1.truehits.net/data/h0013336.js'></script>")
+if(url == "thaiall.kor") document.write("<script language='javascript1.1' src='../../hits0.truehits.net/data/k0020653.js'></script>")
+-->
+</script>
+</body>
+<!-- Mirrored from www.thaiall.com/assembly/computersim.htm by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:44:54 GMT -->
+</html>

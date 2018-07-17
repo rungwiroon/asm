@@ -1,0 +1,759 @@
+<html>
+
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/Interfacing.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:59 GMT -->
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=windows-874">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>การติดต่อมี 2 ลักษณะ 1.</title>
+</head>
+
+<body background="Bk.gif">
+
+<p align="center"><font color="#0080FF" size="7"><strong><u>INTERFACING.</u></strong></font></p>
+
+<p align="center"><font size="6"><strong><u><img src="c3.gif"
+width="146" height="39"></u></strong></font></p>
+
+<table border="2">
+    <tr>
+        <td><img src="Computer.gif" width="60" height="48"></td>
+    </tr>
+</table>
+
+<table border="0">
+    <tr>
+        <td><font color="#FF0080" size="5" face="CordiaUPC"><strong><u>Interfacing</u></strong></font></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><font size="5"><strong>มีการติดต่อมี
+        2 ลักษณะ</strong></font></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><font size="5"><strong><img src="Rosebul.gif"
+        width="17" height="17"> </strong></font><font
+        color="#0080FF" size="5"><strong>ระหว่างภาษา</strong></font></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><font size="5"><strong><img src="Rosebul.gif"
+        width="17" height="17"> </strong></font><font
+        color="#0080FF" size="5"><strong>ในภาษาเดียวกัน</strong></font></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p align="center"><font color="#FF0080" size="6"><strong><u>INTERFACING
+SUBROUTINES</u></strong></font></p>
+
+<p align="center"><font color="#008080" size="4"><strong>เมื่อต้องการติดต่อ
+SUBROUTINES ภาษา ASSEMBLY กับ
+ภาษาระดับสูง
+ต้องรู้สิ่งนี้ คือ</strong></font></p>
+<div align="center"><center>
+
+<table border="0">
+    <tr>
+        <td><font color="#008080" size="4"><strong>1.
+        โปรแกรมย่อย (SUBROUTINES)</strong></font></td>
+        <td><font color="#008080" size="4"><strong>ที่ถูกเรียกใช้เป็นอย่างไร
+        </strong></font></td>
+    </tr>
+    <tr>
+        <td><font color="#008080" size="4"><strong>2.
+        พารามิเตอร์ (PARAMETERS) </strong></font></td>
+        <td><font color="#008080" size="4"><strong>ที่ถูกส่งผ่านค่าเป็นอย่างไร</strong></font></td>
+    </tr>
+    <tr>
+        <td><font color="#008080" size="4"><strong>3. ค่า (VALUES)
+        </strong></font></td>
+        <td><font color="#008080" size="4"><strong>ที่ถูกส่งกลับเป็นอย่างไร</strong></font></td>
+    </tr>
+</table>
+</center></div>
+
+<p>&nbsp;</p>
+
+<hr width="80%">
+<div align="center"><center>
+
+<table border="0">
+    <tr>
+        <td><font color="#FF0080" size="5"><strong><u>PASSING
+        PARAMETERS</u></strong></font></td>
+    </tr>
+</table>
+</center></div>
+
+<blockquote>
+    <table border="0" width="90%">
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>โดยทั่วๆไป
+                ใช้ STACK
+                ในการผ่านค่าพารามิเตอร์ไปยังโปรแกรมย่อย</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong><u>พารามิเตอร์ที่ถูกส่งไป
+            STACK เป็นอย่างไร</u></strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>1.
+                ปกติพารามิเตอร์
+                จะส่งเป็นตัวเลขแบบ
+                SHORT INTEGER</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>INTEGER = 16 BITS
+                    หรือ
+                    สั้นกว่ากรณีเป็น
+                    SHORT INTEGER (INTEGER กับ SHORT
+                    INTEGER</strong></font></p>
+                </blockquote>
+            </blockquote>
+            <blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>เวลาเก็บจริงๆ
+                    จะ 2 BYTES เท่านั้นแต่
+                    SHORT INTEGER จะเร็วกว่า
+                    INTEGER
+                    กรณีในเครื่อง
+                    MICROCOMPUTER)</strong></font></p>
+                </blockquote>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>2.
+                พารามิเตอร์ที่ส่งเป็นตัวอักษร
+                </strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>STRING = POINTER
+                    ที่ STRING ถูกส่งผ่าน</strong></font></p>
+                </blockquote>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong><u>ACCESSING PARAMETER ON
+            THE STACK (STACK)</u></strong></font></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>จะใช้ BP
+                REGISTER (BASE POINTER)</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>SP REGISTER (STACK
+                    POINTER)</strong></font></p>
+                </blockquote>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>- NEAR = STACK
+                จะเก็บแต่ OFFSET
+                เนื่องจาก CODE SEGMENT
+                และ DATA SEGMENT
+                เก็บอยู่ที่เดียวกัน</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>- FAR = STACK
+                จะเก็บทั้ง SEGMENT และ
+                OFFSET เนื่องจาก CODE SEGMENT
+                และ DATA SEGMENT
+                เก็บแยกกัน</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+    <table border="0">
+        <tr>
+            <td><font color="#8000FF" size="4"><strong><u>การผ่านค่าพารามิเตอร์ใน
+            STACK อย่างไร ในภาษา
+            ASSEMBLY</u></strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>1.
+                กำหนด พารามิเตอร์
+                ว่าแต่ละตัวเป็นกี่
+                BYTE A=4, B=6, C=8</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>2.
+                กำหนด PROCEDURE
+                เป็นอย่างไร (NEAR,FAR)</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>3.
+                เก็บ BP
+                เริ่มต้นลงใน STACK
+                ก่อน</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>4. MOV
+                SP ไปใส่ใน BP</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>5. MOV
+                ค่า LOCATION ของ
+                พารามิเตอร์ A,B,C
+                ไปไว้ที่ AX,BX,CX </strong></font></p>
+                <p><font color="#8000FF" size="4"><strong>LOCATION
+                ของพารามิเตอร์ =
+                ADDRESS ของ BP REGISTER +
+                DISPLACEMENTDISPLACEMENT =
+                ค่าคงที่ของพารามิเตอร์ที่เรากำหนดขึ้น</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>6. POP
+                BP</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>7. RET</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#8000FF" size="4"><strong>8. ENDP</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</blockquote>
+
+<hr width="80%">
+
+<p align="center"><font color="#FF0080" size="6"><strong><u>RETURNING
+VALUES</u></strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>การ
+            RETURN
+            ค่าโดยผ่านค่าได้ 3
+            ทาง</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#0000A0" size="4"><strong>1.
+                STACK</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#0000A0" size="4"><strong>2.
+                REGISTER</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#0000A0" size="4"><strong>3.
+                MEMORY</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font color="#0000A0" size="4"><strong>เช่น
+            เมื่อเห็นคำสั่ง RET =
+            RETURN ADDRESS</strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>เวลา PUSH
+                จะใส่ LOWBYTE ก่อน เช่น
+                0CA8: 0014 จะเก็บค่า 41
+                ก่อน 00 และ A8 แล้ว
+                จึงเก็บ 0C และต้อง
+                PUSH OFFSET ก่อน SEGMENT</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><font color="#FF0000" size="4"><strong><u>สิ่งที่ใช้
+            STACK บ่อย คือ</u></strong></font></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>1. INTERRUPT VECTOR</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>2. CALL</strong></font></p>
+            </blockquote>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>3. RECURSIVE</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+    </table>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0000" size="4"><strong><u>การปฏิบัติการข้อมูล</u></strong></font></td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>ในการเขียนโปรแกรม
+                MODULE ใน ASSEMBLY
+                ที่ถูกเรียกใช้ MODULE
+                โดย HIGH LEVELต้องบอกลักษณะของ
+                SEGMENT โปรแกรม</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font color="#FF0000" size="4"><strong>คำที่ควรรู้</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>BYTE = DIRECT ACCESS</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>PUBLIC =
+                รวมหลายโปรแกรม MODULE
+                (*.OBJ)</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>'CODE' =
+                บอกชนิดของ CLASS ของ
+                SEGMENT </strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<hr width="80%">
+
+<p align="center"><font color="#FF0000" size="6"><strong><u>ASSEMBLY
+LINK PASCA</u></strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong>การ LINK SUM.ASM
+            กับ ADDVALUE.PAS โดยผ่าน ADD.TPU
+            มีขั้นตอนดังนี้</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>1. สร้าง SUM.ASM
+            แล้ว COMPILE ด้วย ASSEMBLY
+            ให้ได้ SUM.OBJ</strong></font></td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4" face="Times New Roman"><strong>A</strong></font><font
+                size="4"><strong>&gt;MASM SUM;</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>2. สร้าง UNIT
+            โดยสร้าง ADD.PAS แล้ว COMPILE
+            ให้ได้ ADD.TPU โดยใช้ TURBO
+            PASCALของ BORLAND
+            ถ้าเป็นของMICROSOFT
+            ไม่ต้องทำส่วนนี้
+            ใช้ COMPILER ก็จะได้ ADD.OBJ
+            และ LINKได้เลย</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>3. สร้าง
+            ADDVALUE.PAS แล้ว COMPILE เป็น
+            ADDVALUE.EXE เรียกชื่อ RUN
+            ได้เลย</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#008080" size="4"><strong>การ
+            LINK ULDATA.ASM กับ ULPRG.PAS
+            โดยผ่าน ULSTR.TPU มี 2 แบบ
+            คือ แบบ PROCEDUREและแบบ
+            FUNCTION
+            มีขั้นตอนดังนี้</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>1. เขียน ROUTINE
+            ASSEMBLY (UPPER &amp; LOWER) แล้ว COMPILE
+            เป็น .OBJ</strong></font><p><font size="4"><strong>ULDATA.ASM
+            - - - - -- -&gt; ASSEMBLER - - - - -- -&gt; OBJECT (ULDATA.OBJ)</strong></font></p>
+            </td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>2. เขียน ROUTINE
+            UNIT ในภาษา PASCAL</strong></font><p><font
+            size="4"><strong>{$L ULDATA.OBJ} อยู่ใน
+            ULSTR.TPU เพื่อ LINK
+            แล้วเขียน PROCEDURE หรือ
+            FUNCTION</strong></font></p>
+            </td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>3. เขียน MAIN
+            PROGRAM PASCAL (ULPRG.PAS)</strong></font><p><font
+            size="4"><strong>USES ULSTR; เรียกใช้
+            UNIT ULSTR ในโปรแกรมหลัก </strong></font></p>
+            </td>
+        </tr>
+    </table>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0000" size="4"><strong>การส่งพารามิเตอร์
+            มี 2 แบบ คือ</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>1.
+            ส่งในโปรแกรม</strong></font><p><font
+            size="4"><strong>2. ส่งแบบ DOS COMMAND
+            LINE</strong></font></p>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<hr width="80%">
+
+<p align="center"><font color="#FF0000" size="6"><strong><u>คำสั่ง
+AND</u></strong></font></p>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong>AND INSTRUCTION คือ
+            คำสั่งคำนวณทางตรรกศาสตร์ของ
+            โอเปอร์แรนด์ 2 ตัว</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>รูปแบบ AND
+            DEST, SOURCE</strong></font></td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>DEST =
+                ปลายทาง</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>SOURCE =
+                ต้นทาง</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>FLAG
+            ที่ถูกกระทำ = OF=0, PF,SF,ZF</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>FLAG
+            ที่ไม่ต้องกำหนด = AF</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>OPERATOR = AND</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>OPERATION = DEST, SOURCE</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>หลักการของ
+            AND คือ T AND T ได้ T หรือ 1 AND
+            1 ได้ 1</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font color="#FF0000" size="4"><strong>วิธีใช้
+            ตามลักษณะของข้อมูล</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>1. REGISTER กับ
+            REGISTER
+            จะเร็วเพราะผ่านทาง
+            CPU ไม่ผ่าน MEMORY เพราะ
+            REGISTER อยู่ใน CPU</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>2. REGISTER กับ
+            MEMORY
+            ทำเมื่อมีขนาดไม่พอ</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>3. REGISTER กับ
+            VALUE เช่น AND AL, FC</strong></font></td>
+        </tr>
+        <tr>
+            <td><font size="4"><strong>เมื่อใช้
+            DEBUG DUMP จาก NEMONIC CODE (INSTRUCTION)
+            จะแปลงเป็น MACHINE CODE
+            มีขั้นตอนดังนี้</strong></font></td>
+        </tr>
+    </table>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><font size="4"><strong>ตรวจสอบโดยใช้
+            DEBUG</strong></font><p><font size="4"><strong>- A100</strong></font></p>
+            <p><font size="4"><strong>XXXX: 0100 AND AL,FC</strong></font></p>
+            <p><font size="4"><strong>- U100</strong></font></p>
+            <p><font size="4"><strong>XXXX 24 FC</strong></font></p>
+            <p><font size="4"><strong>- R ดูค่า REGITER
+            เริ่มต้นก่อน</strong></font></p>
+            <p><font size="4"><strong>- T TRACE 1 ครั้ง</strong></font></p>
+            <p><font size="4"><strong>- R ดูค่า
+            REGISTER สิ้นสุดจากการ AND</strong></font></p>
+            </td>
+        </tr>
+    </table>
+    <p>&nbsp;</p>
+    <hr width="80%">
+    <p align="center"><font color="#FF0000" size="5"><strong><u>RECURSIVE</u></strong></font></p>
+</blockquote>
+
+<blockquote>
+    <table border="0">
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>RECURSIVE
+                คือการเรียกตัวเอง
+                ทำงานซ้ำกัน
+                เป็นหลักการเขียนโปรแกรมทำปัญหาใหญ่ให้เป็นปัญหาย่อยโดยมีลักษณะปัญหาเดียวกันเช่น
+                N!</strong></font></p>
+            </blockquote>
+            </td>
+        </tr>
+        <tr>
+            <td><blockquote>
+                <p><font size="4"><strong>ข้อดี
+                เขียนโปรแกรมง่าย</strong></font></p>
+            </blockquote>
+            <blockquote>
+                <p><font size="4"><strong>ข้อเสีย
+                เปลือง STACK
+                ไม่สามารถ CONTROLได้</strong></font></p>
+            </blockquote>
+            <blockquote>
+                <p><font size="4"><strong>INTERACTIVE คือ
+                การเขียนธรรมดา
+                CONTROL ได้เร็ว
+                แต่เขียนโปรแกรมยาว</strong></font></p>
+                <blockquote>
+                    <p><font size="4"><strong>ภาษา
+                    โคบอล ฟอร์แทรน
+                    เขียนโปรแกรมแบบเรียกตัวเองไม่ได้</strong></font></p>
+                </blockquote>
+                <blockquote>
+                    <p><font size="4"><strong>ภาษา
+                    ปาสคาล เบสิค ซี
+                    แอสเซมบลี้
+                    เขียนโปรแกรมแบบเรียกตัวเองได้</strong></font></p>
+                </blockquote>
+                <p><font size="4"><strong>การทำตัวอักษรเล็ก
+                เป็นตัวอักษรใหญ่
+                ทำได้ 2 วิธี คือ</strong></font></p>
+                <blockquote>
+                    <p><font size="4"><strong>1. SUB AL, 20H</strong></font></p>
+                    <p><font size="4"><strong>2. AND AL, 5FH</strong></font></p>
+                </blockquote>
+                <p><font size="4"><strong>การทำตัวอักษรใหญ่
+                เป็นตัวอักษรเล็ก
+                ทำได้โดย</strong></font></p>
+                <blockquote>
+                    <p><font size="4"><strong>OR AL, 20H
+                    ด้วย </strong></font></p>
+                    <p><font size="4"><strong>A&gt;RECUR</strong></font></p>
+                    <p><font size="4"><strong>abcde - - - - - - -&gt;
+                    SUB AL, 20H - - - - - - -&gt; PUSH abcde0 - -
+                    - - - - -&gt; POP 0edcba</strong></font></p>
+                    <p><font size="4"><strong>FUNCTION POWER( - -
+                    - - - );</strong></font></p>
+                    <p><font size="4"><strong>BEGIN</strong></font></p>
+                    <blockquote>
+                        <p><font size="4"><strong>IF CONDITION
+                        THEN</strong></font></p>
+                    </blockquote>
+                    <blockquote>
+                        <blockquote>
+                            <p><font size="4"><strong>{ RECUR }</strong></font></p>
+                        </blockquote>
+                    </blockquote>
+                    <blockquote>
+                        <p><font size="4"><strong>Else</strong></font></p>
+                    </blockquote>
+                    <blockquote>
+                        <blockquote>
+                            <p><font size="4"><strong>X := POWER(
+                            );</strong></font></p>
+                        </blockquote>
+                    </blockquote>
+                    <blockquote>
+                        <p><font size="4"><strong>END;</strong></font></p>
+                    </blockquote>
+                    <p><font size="4"><strong>END.</strong></font></p>
+                </blockquote>
+            </blockquote>
+            </td>
+        </tr>
+    </table>
+</blockquote>
+
+<hr width="80%">
+
+<p><a href="Menu.html"><img src="Back.gif" border="0" width="83"
+height="28"></a></p>
+</body>
+
+<!-- Mirrored from dit.dru.ac.th/task/assembly/Interfacing.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 21 Dec 2009 05:59:59 GMT -->
+</html>
